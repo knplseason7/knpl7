@@ -834,6 +834,11 @@ function renderJoin(out, r, l4){
   };
 }
 
+/* TRIAL banner: shown automatically before real registration opens on 10 Nov 2026 (India time),
+   and afterwards whenever "Trial mode" is YES in the Settings sheet. */
+const REAL_OPENING = new Date('2026-11-10T00:00:00+05:30');
+if (Date.now() < REAL_OPENING.getTime()) $('trialBar').hidden = false;
+
 api('getRegistrationInfo').then(i => {
   if (i.trial) $('trialBar').hidden = false;
   if (!i.open){
@@ -846,7 +851,10 @@ api('getRegistrationInfo').then(i => {
   const left = i.max - i.used;
   $('slots').hidden = false;
   $('slots').textContent = `${left} of ${i.max} slots left. Registration closes when all ${i.max} are filled.`;
-}).catch(() => {});
+}).catch(err => {
+  $('slots').hidden = false; $('slots').className = 'qual no';
+  $('slots').textContent = 'Server check failed: ' + (err && err.message ? err.message : err) + ' (Please send a screenshot of this to the KNPL committee.)';
+});
 
 refresh();
 </script>
