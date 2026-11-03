@@ -401,7 +401,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const state = {photo:null};
 /* Your Apps Script web app link (Deploy → Manage deployments → Web app URL). */
-const API_URL = 'https://script.google.com/macros/s/AKfycbwMNnkpT_3vw26rTJGav1CYjDu61kvmNmbI2hPTF7uvr9QkNRxREgh_65X8s9B1kgDX/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
 const LIVE = /^https?:$/.test(location.protocol) && !/claude|anthropic/i.test(location.hostname);
 if (!LIVE) $('previewBar').hidden = false;
 
