@@ -186,6 +186,8 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .fee b{font-family:var(--display);font-size:28px;line-height:1}
 .fee small{flex-basis:100%;font-size:14px;font-weight:600;overflow-wrap:anywhere}
 .lockwarn{border-color:var(--gold);background:var(--gold-soft)}
+.trial{background:var(--bad-bg);color:var(--bad);border-bottom:2px solid var(--bad);font-size:14px;line-height:1.45}
+main .trial .wrap{display:block;padding-block:10px}
 .preview{background:var(--gold-soft);border-bottom:1px solid var(--gold);font-size:13px}
 .preview .wrap{padding-block:8px}
 @media (prefers-reduced-motion:no-preference){.step,.panel{transition:border-color .15s}}
@@ -213,6 +215,7 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 </div>
 
 <main>
+<div class="trial" id="trialBar" hidden><div class="wrap"><b>TRIAL RUN.</b> This is a practice form. All trial entries will be deleted on 8 Nov 2026. <b>Do not pay any fee now.</b> Real registration opens on 10 Nov 2026, so register again then.</div></div>
 <!-- ============ REGISTER ============ -->
 <div class="wrap" id="view-reg" role="tabpanel" aria-labelledby="tab-reg">
   <div class="notice" role="note">
@@ -223,7 +226,7 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
   <div class="qual ok" id="slots" hidden></div>
   <section class="step" id="closedBox" hidden>
     <header><h2>Registration is closed</h2></header>
-    <p style="margin:0">All 250 slots for KNPL-7 have been filled. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.</p>
+    <p style="margin:0" id="closedMsg">KNPL-7 registration is closed right now. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.</p>
   </section>
   <form id="regForm" novalidate>
   <div style="display:grid;gap:18px">
@@ -431,7 +434,7 @@ const MOCK = (() => {
     {regId:'KNPL7-0003', name:'SAMPLE PLAYER REJECTED', district:'Kottayam', status:'Rejected', joined:false, last4:'1234', remarks:'CBL-5 profile ID does not match the team squad.'}
   ];
   return {
-    getRegistrationInfo: () => wait({open:true, used:87, max:250}),
+    getRegistrationInfo: () => wait({open:true, full:false, used:87, max:1000, trial:true}),
     submitRegistration: d => wait({ok:true, regId:'KNPL7-0042', name:d.name}),
     searchPlayers: q => wait(people.filter(p => q.toUpperCase().split(/\s+/).every(t => p.name.includes(t))).map(p => ({regId:p.regId, name:p.name, district:p.district, status:p.status, joined:p.joined, photoId:''}))),
     verifyPlayer: (id, l4) => { const p = people.find(x => x.regId === id); return l4 !== p.last4 ? Promise.reject(new Error('The last 4 digits do not match the WhatsApp number on this registration.')) : wait({name:p.name, status:p.status, remarks:p.remarks||'', category:p.category||'', skillRating:p.skillRating||'', joined:p.joined, availability:p.availability||'', preferredTeam:p.preferredTeam||'', open:true, teams:TEAMS, anyTeam:'Any Team', days:DAYS, feeAmount:1000, feePayTo:'UPI ID: 339980003460298@cnrb'}); },
@@ -832,7 +835,14 @@ function renderJoin(out, r, l4){
 }
 
 api('getRegistrationInfo').then(i => {
-  if (!i.open){ $('regForm').hidden = true; $('closedBox').hidden = false; return; }
+  if (i.trial) $('trialBar').hidden = false;
+  if (!i.open){
+    $('regForm').hidden = true; $('closedBox').hidden = false;
+    $('closedMsg').innerHTML = i.full
+      ? `All ${i.max} slots for KNPL-7 have been filled. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.`
+      : 'KNPL-7 registration is closed right now. It opens on <b>10 November 2026</b>. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.';
+    return;
+  }
   const left = i.max - i.used;
   $('slots').hidden = false;
   $('slots').textContent = `${left} of ${i.max} slots left. Registration closes when all ${i.max} are filled.`;
