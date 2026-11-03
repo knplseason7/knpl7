@@ -422,7 +422,7 @@ const MOCK = (() => {
   const TEAMS = ['Devils Of Chithrakoot','Madhura Mavericks','Guardians Of Kamboja','Kalinga United','MAHA JANAPADDAS OF UJJAIN','Gandhara Giants','Kurukshetra Yodhas','KaaliyanZ of Dwaraka','Mighty Mithilas','Magadha Dheeras','Ayodhya Warriors Kpl','VARAHAS OF VIJAYANAGARA','VAMOS VRINDAVAN','Kombans Of Pataleeputhra','JAGUARS OF JHANSI','Titans Of Takshashila'];
   const DAYS = ['11 Feb 2027','12 Feb 2027','13 Feb 2027','14 Feb 2027'];
   const people = [
-    {regId:'KNPL7-0001', name:'SAMPLE PLAYER APPROVED', district:'Ernakulam', status:'Approved', category:'Category B', skillRating:'72', joined:false, last4:'1234'},
+    {regId:'KNPL7-0001', name:'SAMPLE PLAYER APPROVED', district:'Ernakulam', status:'Approved', category:'Dominator Apex', skillRating:'72', joined:false, last4:'1234'},
     {regId:'KNPL7-0004', name:'SAMPLE PLAYER GRADING', district:'Palakkad', status:'Approved', category:'', joined:false, last4:'1234'},
     {regId:'KNPL7-0002', name:'SAMPLE PLAYER PENDING', district:'Thrissur', status:'Pending', joined:false, last4:'1234'},
     {regId:'KNPL7-0003', name:'SAMPLE PLAYER REJECTED', district:'Kottayam', status:'Rejected', joined:false, last4:'1234', remarks:'CBL-5 profile ID does not match the team squad.'}
@@ -821,7 +821,7 @@ function renderJoin(out, r, l4){
       $('jBtn').disabled = true; $('jBtn').textContent = 'Joining…';
       try {
         const res = await api('joinAuction', pick.id, l4, {days, team, receipt, consents:{availability:true, draft:true, honour:true, final:true}});
-        out.innerHTML = lockedCard(r.category, res.availability, res.preferredTeam, `${pick.name} has joined the KNPL-7 Mega Auction. These choices are now locked.`);
+        out.innerHTML = lockedCard(r, res.availability, res.preferredTeam, `${pick.name} has joined the KNPL-7 Mega Auction. These choices are now locked.`);
         const pill = document.querySelector(`.pl[data-id="${CSS.escape(pick.id)}"] .pill`); if (pill){ pill.className = 'pill Joined'; pill.textContent = 'In auction pool'; }
       } catch(err){ $('m-join').textContent = err.message; $('jBtn').disabled = false; $('jBtn').textContent = 'Confirm and join KNPL-7 Mega Auction'; }
     };
