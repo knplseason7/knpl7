@@ -178,7 +178,10 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .sum{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:0;font-size:14px}
 .sum dt{color:var(--muted)}
 .sum dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
-.fee{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold)}
+.fee{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold)}
+.fee-txt{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;min-width:0;flex:1 1 200px}
+.upi-qr{width:120px;height:120px;background:#fff;padding:4px;border-radius:6px;flex:none;image-rendering:pixelated}
+.upi-btn{display:inline-flex;align-items:center;text-decoration:none;margin-top:6px}
 .fee span{font-size:13px;color:var(--muted);font-weight:600}
 .fee b{font-family:var(--display);font-size:28px;line-height:1}
 .fee small{flex-basis:100%;font-size:14px;font-weight:600;overflow-wrap:anywhere}
@@ -419,7 +422,7 @@ async function api(fn, ...args){
 }
 const MOCK = (() => {
   const wait = v => new Promise(r => setTimeout(() => r(v), 500));
-  const TEAMS = ['Devils Of Chithrakoot','Madhura Mavericks','Guardians Of Kamboja','Kalinga United','MAHA JANAPADDAS OF UJJAIN','Gandhara Giants','Kurukshetra Yodhas','KaaliyanZ of Dwaraka','Mighty Mithilas','Magadha Dheeras','Ayodhya Warriors Kpl','VARAHAS OF VIJAYANAGARA','VAMOS VRINDAVAN','Kombans Of Pataleeputhra','JAGUARS OF JHANSI','Titans Of Takshashila'];
+  const TEAMS = ['KOMBANS OF PATALEEPUTHRA','MADHURA MAVERICKS','MIGHTY MIDHILAS','KALINGA ADHIPANS','VARAHAS OF VIJAYANAGARA','KAALIYANZ OF DWARAKA','GUARDIANS OF KAMBOJA','AYODHYA WARRIORS','JAGUARS OF JHANSI','GANDHARA GIANTS','DEVILS OF CHITHRAKOOT','KURUKSHETRA YODHAS','VAMOS VRINDAVAN','KNIGHTS OF KANCHI','SPARTANS OF NALANDA','PANCHAALA PANTHERS'];
   const DAYS = ['11 Feb 2027','12 Feb 2027','13 Feb 2027','14 Feb 2027'];
   const people = [
     {regId:'KNPL7-0001', name:'SAMPLE PLAYER APPROVED', district:'Ernakulam', status:'Approved', category:'Dominator Apex', skillRating:'72', joined:false, last4:'1234'},
@@ -431,7 +434,7 @@ const MOCK = (() => {
     getRegistrationInfo: () => wait({open:true, used:87, max:250}),
     submitRegistration: d => wait({ok:true, regId:'KNPL7-0042', name:d.name}),
     searchPlayers: q => wait(people.filter(p => q.toUpperCase().split(/\s+/).every(t => p.name.includes(t))).map(p => ({regId:p.regId, name:p.name, district:p.district, status:p.status, joined:p.joined, photoId:''}))),
-    verifyPlayer: (id, l4) => { const p = people.find(x => x.regId === id); return l4 !== p.last4 ? Promise.reject(new Error('The last 4 digits do not match the WhatsApp number on this registration.')) : wait({name:p.name, status:p.status, remarks:p.remarks||'', category:p.category||'', skillRating:p.skillRating||'', joined:p.joined, availability:p.availability||'', preferredTeam:p.preferredTeam||'', open:true, teams:TEAMS, anyTeam:'Any Team', days:DAYS, feeAmount:1000, feePayTo:'[UPI ID / BANK ACCOUNT DETAILS]'}); },
+    verifyPlayer: (id, l4) => { const p = people.find(x => x.regId === id); return l4 !== p.last4 ? Promise.reject(new Error('The last 4 digits do not match the WhatsApp number on this registration.')) : wait({name:p.name, status:p.status, remarks:p.remarks||'', category:p.category||'', skillRating:p.skillRating||'', joined:p.joined, availability:p.availability||'', preferredTeam:p.preferredTeam||'', open:true, teams:TEAMS, anyTeam:'Any Team', days:DAYS, feeAmount:1000, feePayTo:'UPI ID: 339980003460298@cnrb'}); },
     joinAuction: (id, l4, c) => { const p = people.find(x => x.regId === id); if (p.joined) return Promise.reject(new Error('You have already joined the auction. Your choices are locked.')); p.joined = true; p.availability = c.days.length === 4 ? 'All days (11-14 Feb 2027)' : c.days.join(', '); p.preferredTeam = c.team; return wait({ok:true, name:p.name, regId:p.regId, availability:p.availability, preferredTeam:p.preferredTeam}); }
   };
 })();
@@ -729,7 +732,7 @@ function renderJoin(out, r, l4){
     </div>
     <div class="f" id="w-receipt">
       <span class="lbl req">Registration fee payment receipt</span>
-      <div class="fee"><span>Registration fee</span><b>₹${Number(r.feeAmount).toLocaleString('en-IN')}</b><small>Pay to: ${esc(r.feePayTo)}</small></div>
+      <div class="fee"><div class="fee-txt"><span>Registration fee</span><b>₹${Number(r.feeAmount).toLocaleString('en-IN')}</b><small>Pay to ${esc(r.feePayTo)}</small><a class="ghost upi-btn" href="upi://pay?pa=339980003460298@cnrb&amp;pn=ONE%20ORGANIZATION%20FOR%20NAMBOODIRIS%20EVOLUT&amp;mc=8398&amp;tr=1234567887654321&amp;am=0&amp;mam=0&amp;cu=INR&amp;refUrl=http://npci.org/upi/schema/">Pay with a UPI app</a></div><img class="upi-qr" alt="UPI QR code for the registration fee" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtwAAALcAQAAAAD80lrEAAAFnUlEQVR42u2dS47kOAxEg4PZyzfI+x+rbiCfgLPQj6TdvStggHxGIeFyOt9CiwBFUkFz/dp1/6NfvIADBw4cOHDgwIEDBw4cOHDgwP/XcNvXNf+Nn+P5+NMd/jWbP79eIKw5cOBfDJe7u7uaxxs19y5J41PSeDIfjqufm/GwQLyz5sCBA1eIN5bsdNlnaciP2cen2ozQ5eMzjLmOBGUIaw4c+NfC/30PZm6TZPFmRS82X7h0m0vWXJI1t9ZZc+DAgf9dWzQVo29VMUm3SVLrW15sf7XFhzUHDhx4hu/MydzX3Kbb1HzcnFTMbWpul1ZSZQpRgbDmwIEDl1YKZdR9RtDy8X0zUyujHjSUpPmpHO1SUYSw5sCBsyfKOxq/bf5pRi++XtifIw8z3hn3b9si1hw4cFGDniXmdgrQ8Z248YkP909GCcnjRQ0aOHC05U1qplzstpau2vrSTnPL/naqE9oCHDja4r61ogQwJyZZadsZnPTUBjOFRecTbQEOHG2JWjEjkNCCuzc+sfP2VIh2L65O3IK2AAeOtpwG/rDlOcHJSqRIqnmY5qX6fJ6wJwIOHG2Jh4NiMjY0ruxIJp4nShndkqUhbgEOHG3ZQrHTsL2eRkwHGENVaDfDnExL3CihLcCBoy0h0xJrQFt29hVL0vGFl7QM2gIcOHuifhpuo6PCrhlFs4USrhx5qUzWHDhwtEUpPul5ixS3Qp6zKznZwp4IOHDgpVkuRiypoSW0rOzUblGemJlBW4ADBx7PE7nk97UOCl26L82zRZff80Si35dat3E4el3nbvyENQcOHHiOW2IdOYYuuwwdw5h6qihkY8i3AAeOtsSGllP3UUybKJaE0pMe+lty5z/aAhw42vLSLxeyLvWUYik3h+aWU2BCW4ADB16k5sfiIcThOLfHhRyf7SFBIznTNR3qhpfUMYxizYEDp3dO8aDQ6Z3rtaElubX02p17+u6IW4ADR1seh51Tm25M85Z6dPO/HpRmzYEDB64xfmhuZ5rvbc406I5+ucum23/MrrONSt65rDlw4KK/RYqet+veWh9jRIZlrsKUIu0Wl2H7H7+9L9YcOHD2RMl3Ludbzq4nV4LSO/FII/kW4MCBF3g0rrzt7IykOZJ1lITc56yiWCHK/TAhr8uaAwdOf0t2mXt2zcUE79Nfl7gFOHDgf6oTeQ080glEJauW4tlS/OvQFuDA0ZbisVDSKdHVPza9VNNLT8+pQQMHjra8+LfkgSBFVbKTf3WoSz51aAtw4GhL3s7EvriTWtEjZ5vfOREOcQtw4GhLyKi8iEbz5/DE1ymKcVAacQtw4GjL03cuBSEt2+GGSWdHVaLs4GkJHDjw51nF5unsYT6WGC1z08izOGU+TThizYEDJ9+SZyY+fbn14s6doxSld9AW4MDFeSJZ68cRdxjnSjaOCDW3dVbIh4PuurfmNk8VXWqu+/JlvcuaAwdO3FKijjhl/jXNUv0W8kEk+nKBAwde/Vvi6Gf35FH5mNaaUisemv8b+RbgwIG/nIMuoUgUjTSw9XkcoORq0BbgwNkTlQmJb25yz1pSmdYap0WjLcCBoy2pHS5/Ve1cSv1IqTZN3AIcOPD3GSI5YVvmhhSfqNKmW2MbtAU4cOCS7esKBnSjvhwmtE7PqOFjeck+foyktpvuSd2w5sCB69v9cld/i0m2Njhj7nPc7Xh4c3vnWvw2zIlmzYEDR1vmyPjWZ1PcuA/Ckjy6JV9G3L5UyIKb9+rEY82BAwd+rrEt8h+bmZZ7TlScGZg1aTFe0QYzfMWaAwcueufSfHlPjnO1SNSrnqTDjPTOAQcOPPvlxvba7CCXDypGt5Y/WOaiLcCBoy2prSVPdk6dLVJxv8xVoWc/HmsOHPjXws1/j32z5sCBAwcOHDhw4MCBAwcOHDjwL4T/B6YVI7gsDKQcAAAAAElFTkSuQmCC"></div>
       <div class="photo">
         <div class="ph-frame" id="rcFrame">No receipt yet</div>
         <div style="display:grid;gap:6px">
