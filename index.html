@@ -395,7 +395,7 @@ const LEAGUES = [
 ];
 
 /* Playing in at least one of these is required to register */
-const LAST_SEASON = ['SPL8','CBL6','NPL5','YPL16'];
+const QUALIFYING = ['SPL6','SPL7','SPL8','CBL4','CBL5','CBL6','NPL3','NPL4','NPL5','YPL14','YPL15','YPL16'];
 const NP = '__NP__';
 
 /* ===================================================================== */
@@ -455,7 +455,7 @@ $('cards').innerHTML = LEAGUES.map(l => `
     <h3>${l.code}<span>${esc(l.name)}</span></h3>
     ${l.seasons.map(s => `
     <div class="srow" id="w-${s.key}">
-      <div class="shead"><b>${s.label}</b><span>${esc(s.where)}</span>${LAST_SEASON.includes(s.key) ? '<i class="tag">Last season</i>' : ''}</div>
+      <div class="shead"><b>${s.label}</b><span>${esc(s.where)}</span></div>
       <div class="f">
         <label for="t-${s.key}" class="req">Team you played for in ${s.label}</label>
         <select id="t-${s.key}"><option value="">Select team</option><option value="${NP}">I did not play in ${s.label}</option>${s.teams.map(t => `<option>${esc(t)}</option>`).join('')}</select>
@@ -502,9 +502,9 @@ function refresh(){
   const q = $('qual');
   if (!any){ q.hidden = true; return; }
   q.hidden = false;
-  const ls = ALL.filter(s => LAST_SEASON.includes(s.key) && played(s));
-  if (ls.length){ q.className = 'qual ok'; q.textContent = `Qualified: you played ${ls.map(s => s.label).join(', ')} in the last season.`; }
-  else { q.className = 'qual no'; q.textContent = 'To register you must have played in the last season of a qualifying league: SPL-8, CBL-6, NPL-5 or YPL-16.'; }
+  const ls = ALL.filter(s => QUALIFYING.includes(s.key) && played(s));
+  if (ls.length){ q.className = 'qual ok'; q.textContent = `Qualified: you played ${ls.map(s => s.label).join(', ')}.`; }
+  else { q.className = 'qual no'; q.textContent = 'To register you must have played in at least one of the last 3 seasons of a qualifying league: SPL, CBL, NPL or YPL. KNPL alone does not qualify.'; }
 }
 document.addEventListener('change', e => { if (e.target.closest('#chips, #cards, #sameBox')) refresh(); });
 
@@ -572,7 +572,7 @@ function validate(){
     const z = ALL.filter(s => s.zonal && s.g === g && played(s));
     if (z.length > 1) fail(z[1].key, `Only one zonal league per season: ${z.map(x => x.label).join(' and ')} are in the same season.`);
   });
-  if (on.length && !ALL.some(s => LAST_SEASON.includes(s.key) && played(s))) fail('leagues', 'You must have played in SPL-8, CBL-6, NPL-5 or YPL-16 to register for KNPL-7.');
+  if (on.length && !ALL.some(s => QUALIFYING.includes(s.key) && played(s))) fail('leagues', 'You must have played in at least one of the last 3 seasons of SPL, CBL, NPL or YPL to register for KNPL-7.');
   if (!($('d1').checked && $('d2').checked && $('d3').checked)) fail('decl', 'Tick all three declarations to submit.');
   return {errs, name, comm: comm && comm.value, code, ph, same};
 }
