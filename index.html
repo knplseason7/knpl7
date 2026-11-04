@@ -1,8 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>KNPL-7 Player Registration</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -197,8 +192,6 @@ main .trial .wrap{display:block;padding-block:10px}
 @media (prefers-reduced-motion:no-preference){.step,.panel{transition:border-color .15s}}
 </style>
 
-</head>
-<body>
 <div class="preview" id="previewBar" hidden><div class="wrap"><b>Preview mode.</b> Nothing you enter here is saved. In the Join tab, search <b>SAMPLE</b> and use last 4 digits <b>1234</b>.</div></div>
 
 <div class="band">
@@ -238,7 +231,7 @@ main .trial .wrap{display:block;padding-block:10px}
   <!-- STEP 1 -->
   <section class="step" aria-labelledby="h-s1">
     <header><span class="num">1</span><h2 id="h-s1">Community eligibility</h2></header>
-    <p class="act">A franchise player must belong to the Kerala Brahmin community covered by the definition of ‘Namboothiri’ in the Kerala Namboothiri Act, 1958 (Section 2-f). Players who were part of KNPL in its earlier seasons continue as <b>KNPL Legacy Members</b>.</p>
+    <p class="act">A franchise player must belong to the Kerala Brahmin community covered by the definition of ‘Namboothiri’ in the Kerala Namboothiri Act, 1958 (Section 2-f). Players from other communities who were part of KNPL in its earlier seasons continue as <b>KNPL Legacy Members</b>.</p>
     <div class="f" id="w-community">
       <span class="lbl req" id="lbl-comm">Your sub-community</span>
       <div class="comm" id="commList" role="radiogroup" aria-labelledby="lbl-comm"></div>
@@ -246,7 +239,7 @@ main .trial .wrap{display:block;padding-block:10px}
     </div>
     <div class="f legacy" id="w-legacy" hidden>
       <span class="lbl req" id="lbl-legacy">KNPL seasons you played in</span>
-      <p class="hint">KNPL Legacy Membership is for players who were part of KNPL in its earlier seasons. Tick every season you played. The committee will verify this.</p>
+      <p class="hint">Choose KNPL Legacy Member only if you are <b>not</b> from any of the communities listed above. If you belong to one of them, select that community instead, even if you played in earlier KNPL seasons. Tick every KNPL season you played. The committee will verify this.</p>
       <div class="legacy-grid" role="group" aria-labelledby="lbl-legacy">
         <label class="check"><input type="checkbox" class="lgs" value="KNPL-1"><span>KNPL-1</span></label>
         <label class="check"><input type="checkbox" class="lgs" value="KNPL-2"><span>KNPL-2</span></label>
@@ -381,7 +374,7 @@ const COMMUNITIES = [
   {v:'Adikal / Elayath / Moosath / Pidaran', ml:'അടികൾ / ഇളയത് / മൂസ്സത് / പിടാരൻ'},
   {v:'Brahmana Nambiar / Nambeesan / Unni', ml:'ബ്രാഹ്മണ നമ്പ്യാർ / നമ്പീശൻ / ഉണ്ണി'},
   {v:'Embranthiri', ml:'എമ്പ്രാന്തിരി', note:'Following Namboothiri customs and rites'},
-  {v:'KNPL Legacy Member', ml:'KNPL കുടുംബാംഗം', note:'Part of KNPL in its earlier seasons (KNPL-1 to KNPL-6)', legacy:true}
+  {v:'KNPL Legacy Member', ml:'KNPL കുടുംബാംഗം', note:'Only for players NOT from the communities listed above, who played in an earlier KNPL season (KNPL-1 to KNPL-6)', legacy:true}
 ];
 const LEGACY = 'KNPL Legacy Member';
 
@@ -884,6 +877,3 @@ api('getRegistrationInfo').then(i => {
 
 refresh();
 </script>
-
-</body>
-</html>
