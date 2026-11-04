@@ -86,6 +86,10 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .opt input{margin-top:4px;accent-color:var(--turf);width:18px;height:18px;flex:none}
 .opt .ml{font-family:var(--ml);font-size:15px;display:block}
 .opt small{color:var(--muted);font-size:13px}
+.opt-legacy{border-style:dashed;border-color:var(--gold)}
+.opt-legacy .ml{font-weight:600}
+.legacy{padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold)}
+.legacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
 .act{font-size:13px;color:var(--muted);border-left:3px solid var(--gold);padding-left:10px;margin:0}
 
 /* photo */
@@ -234,11 +238,24 @@ main .trial .wrap{display:block;padding-block:10px}
   <!-- STEP 1 -->
   <section class="step" aria-labelledby="h-s1">
     <header><span class="num">1</span><h2 id="h-s1">Community eligibility</h2></header>
-    <p class="act">A franchise player must belong to the Kerala Brahmin community covered by the definition of ‘Namboothiri’ in the Kerala Namboothiri Act, 1958 (Section 2-f).</p>
+    <p class="act">A franchise player must belong to the Kerala Brahmin community covered by the definition of ‘Namboothiri’ in the Kerala Namboothiri Act, 1958 (Section 2-f). Players who were part of KNPL in its earlier seasons continue as <b>KNPL Legacy Members</b>.</p>
     <div class="f" id="w-community">
       <span class="lbl req" id="lbl-comm">Your sub-community</span>
       <div class="comm" id="commList" role="radiogroup" aria-labelledby="lbl-comm"></div>
       <p class="msg" id="m-community"></p>
+    </div>
+    <div class="f legacy" id="w-legacy" hidden>
+      <span class="lbl req" id="lbl-legacy">KNPL seasons you played in</span>
+      <p class="hint">KNPL Legacy Membership is for players who were part of KNPL in its earlier seasons. Tick every season you played. The committee will verify this.</p>
+      <div class="legacy-grid" role="group" aria-labelledby="lbl-legacy">
+        <label class="check"><input type="checkbox" class="lgs" value="KNPL-1"><span>KNPL-1</span></label>
+        <label class="check"><input type="checkbox" class="lgs" value="KNPL-2"><span>KNPL-2</span></label>
+        <label class="check"><input type="checkbox" class="lgs" value="KNPL-3"><span>KNPL-3</span></label>
+        <label class="check"><input type="checkbox" class="lgs" value="KNPL-4"><span>KNPL-4</span></label>
+        <label class="check"><input type="checkbox" class="lgs" value="KNPL-5"><span>KNPL-5</span></label>
+        <label class="check"><input type="checkbox" class="lgs" value="KNPL-6"><span>KNPL-6</span></label>
+      </div>
+      <p class="msg" id="m-legacy"></p>
     </div>
     <div class="f" id="w-illam">
       <label for="illam" class="req">Illam / House name</label>
@@ -312,7 +329,7 @@ main .trial .wrap{display:block;padding-block:10px}
   <section class="step" aria-labelledby="h-s4">
     <header><span class="num">4</span><h2 id="h-s4">Declaration</h2></header>
     <div class="f" id="w-decl" style="gap:12px">
-      <label class="check"><input type="checkbox" id="d1"><span>I belong to the Namboothiri community as defined in the Kerala Namboothiri Act, 1958 (Section 2-f), under the sub-community selected above.</span></label>
+      <label class="check"><input type="checkbox" id="d1"><span>I belong to the Namboothiri community as defined in the Kerala Namboothiri Act, 1958 (Section 2-f) under the sub-community selected above, or I am a KNPL Legacy Member who played in the KNPL seasons I have ticked.</span></label>
       <label class="check"><input type="checkbox" id="d2"><span>I have listed every CricHeroes profile I used in these leagues and have not hidden any profile.</span></label>
       <label class="check"><input type="checkbox" id="d3"><span>All information given is true. I understand that wrong or incorrect information will lead to rejection of my registration.</span></label>
       <p class="msg" id="m-decl"></p>
@@ -363,8 +380,10 @@ const COMMUNITIES = [
   {v:'Potti', ml:'പോറ്റി'},
   {v:'Adikal / Elayath / Moosath / Pidaran', ml:'അടികൾ / ഇളയത് / മൂസ്സത് / പിടാരൻ'},
   {v:'Brahmana Nambiar / Nambeesan / Unni', ml:'ബ്രാഹ്മണ നമ്പ്യാർ / നമ്പീശൻ / ഉണ്ണി'},
-  {v:'Embranthiri', ml:'എമ്പ്രാന്തിരി', note:'Following Namboothiri customs and rites'}
+  {v:'Embranthiri', ml:'എമ്പ്രാന്തിരി', note:'Following Namboothiri customs and rites'},
+  {v:'KNPL Legacy Member', ml:'KNPL കുടുംബാംഗം', note:'Part of KNPL in its earlier seasons (KNPL-1 to KNPL-6)', legacy:true}
 ];
+const LEGACY = 'KNPL Legacy Member';
 
 const KNPL_TEAMS_16 = ['Devils Of Chithrakoot','Madhura Mavericks','Guardians Of Kamboja','Kalinga Adhipans','MAHA JANAPADDAS OF UJJAIN','Gandhara Giants','Kurukshetra Yodhas','KaaliyanZ of Dwaraka','Mighty Mithilas','Magadha Dheeras','Ayodhya Warriors Kpl','VARAHAS OF VIJAYANAGARA','VAMOS VRINDAVAN','Kombans Of Pataleeputhra','JAGUARS OF JHANSI','Titans Of Takshashila'];
 
@@ -444,8 +463,12 @@ const MOCK = (() => {
 
 /* ---------- build static parts ---------- */
 $('commList').innerHTML = COMMUNITIES.map((c, i) => `
-  <label class="opt"><input type="radio" name="community" value="${esc(c.v)}" id="c${i}">
+  <label class="opt${c.legacy ? ' opt-legacy' : ''}"><input type="radio" name="community" value="${esc(c.v)}" id="c${i}">
   <span><span class="ml">${esc(c.ml)}</span><small>${esc(c.v)}${c.note ? ' · ' + esc(c.note) : ''}</small></span></label>`).join('');
+
+document.querySelectorAll('input[name=community]').forEach(r => r.addEventListener('change', () => {
+  $('w-legacy').hidden = !(document.querySelector('input[name=community]:checked') || {}).value || document.querySelector('input[name=community]:checked').value !== LEGACY;
+}));
 
 $('district').insertAdjacentHTML('beforeend', DISTRICTS.map(d => `<option>${d}</option>`).join(''));
 
@@ -550,6 +573,9 @@ function validate(){
 
   const comm = document.querySelector('input[name=community]:checked');
   if (!comm) fail('community', 'Select your sub-community.');
+  const legacySeasons = [...document.querySelectorAll('.lgs:checked')].map(x => x.value);
+  setMsg('legacy', '');
+  if (comm && comm.value === LEGACY && !legacySeasons.length) fail('legacy', 'KNPL Legacy Members must tick the earlier KNPL seasons they played in.');
   if ($('illam').value.trim().length < 2) fail('illam', 'Enter your Illam or house name.');
   const name = $('name').value.trim().replace(/\s+/g, ' ');
   if (!/^[A-Z][A-Z .]{2,59}$/.test(name)) fail('name', 'Enter your full name using letters only, in capitals.');
@@ -577,7 +603,7 @@ function validate(){
   });
   if (on.length && !ALL.some(s => QUALIFYING.includes(s.key) && played(s))) fail('leagues', 'You must have played in at least one of the last 3 seasons of SPL, CBL, NPL or YPL to register for KNPL-7.');
   if (!($('d1').checked && $('d2').checked && $('d3').checked)) fail('decl', 'Tick all three declarations to submit.');
-  return {errs, name, comm: comm && comm.value, code, ph, same};
+  return {errs, name, comm: comm && comm.value, code, ph, same, legacySeasons: comm && comm.value === LEGACY ? legacySeasons : []};
 }
 
 $('regForm').addEventListener('submit', async e => {
@@ -598,7 +624,7 @@ $('regForm').addEventListener('submit', async e => {
   });
   const payload = {
     name: v.name, phoneCode: v.code, phone: v.ph, district: $('district').value,
-    illam: $('illam').value.trim(), community: v.comm,
+    illam: $('illam').value.trim(), community: v.comm, legacySeasons: v.legacySeasons,
     leagues: LEAGUES.filter(l => leagueOn(l.code)).map(l => l.code),
     sameProfile: v.same, commonProfile: v.same ? $('common').value.trim() : '',
     seasons, declarations: true,
