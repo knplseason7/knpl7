@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>KNPL-7 Player Registration</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,6 +90,9 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .opt-legacy .ml{font-weight:600}
 .legacy{padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold)}
 .legacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
+.idhelp{display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold);font-size:14px;line-height:1.45}
+.idhelp p{margin:4px 0 0}
+.idpic{width:84px;height:105px;flex:none}
 .act{font-size:13px;color:var(--muted);border-left:3px solid var(--gold);padding-left:10px;margin:0}
 
 /* photo */
@@ -192,6 +200,8 @@ main .trial .wrap{display:block;padding-block:10px}
 @media (prefers-reduced-motion:no-preference){.step,.panel{transition:border-color .15s}}
 </style>
 
+</head>
+<body>
 <div class="preview" id="previewBar" hidden><div class="wrap"><b>Preview mode.</b> Nothing you enter here is saved. In the Join tab, search <b>SAMPLE</b> and use last 4 digits <b>1234</b>.</div></div>
 
 <div class="band">
@@ -217,7 +227,7 @@ main .trial .wrap{display:block;padding-block:10px}
 <div class="wrap" id="view-reg" role="tabpanel" aria-labelledby="tab-reg">
   <div class="notice" role="note">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <span>Giving wrong or incorrect information will lead to rejection of your registration. List every CricHeroes profile you used. Hiding a profile is treated as incorrect information.</span>
+    <span>Giving wrong or incorrect information will lead to rejection of your registration. List every CricHeroes Profile ID you used. Hiding a profile is treated as incorrect information.</span>
   </div>
 
   <div class="qual ok" id="slots" hidden></div>
@@ -298,6 +308,27 @@ main .trial .wrap{display:block;padding-block:10px}
   <section class="step" aria-labelledby="h-s3">
     <header><span class="num">3</span><h2 id="h-s3">Qualifying leagues</h2></header>
     <p class="lede">Select every league you played in during the last three seasons. Only the seasons for the leagues you tick will appear.</p>
+    <div class="idhelp">
+      <svg class="idpic" viewBox="0 0 120 150" role="img" aria-label="Sample CricHeroes profile QR screen with the ID number below the QR code">
+        <rect x="1" y="1" width="118" height="148" rx="10" fill="#ffffff" stroke="#cfd5dd"/>
+        <circle cx="60" cy="20" r="11" fill="#c9d3df"/>
+        <rect x="38" y="35" width="44" height="4" rx="2" fill="#9aa6b5"/>
+        <rect x="28" y="46" width="64" height="64" rx="6" fill="#ffffff" stroke="#cfd5dd"/>
+        <g fill="#1d2433">
+          <rect x="33" y="51" width="14" height="14" rx="2"/><rect x="73" y="51" width="14" height="14" rx="2"/><rect x="33" y="91" width="14" height="14" rx="2"/>
+          <rect x="52" y="53" width="5" height="5"/><rect x="60" y="58" width="5" height="5"/><rect x="52" y="66" width="5" height="5"/><rect x="64" y="70" width="5" height="5"/>
+          <rect x="73" y="74" width="5" height="5"/><rect x="82" y="80" width="5" height="5"/><rect x="56" y="80" width="5" height="5"/><rect x="66" y="88" width="5" height="5"/>
+          <rect x="52" y="96" width="5" height="5"/><rect x="74" y="94" width="5" height="5"/><rect x="82" y="99" width="5" height="5"/><rect x="62" y="100" width="5" height="5"/>
+        </g>
+        <circle cx="60" cy="78" r="6" fill="#d33"/>
+        <rect x="26" y="121" width="68" height="20" rx="5" fill="#fff3cf" stroke="#c99a36" stroke-width="2"/>
+        <text x="60" y="135" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#1d2433">ID: 384486</text>
+      </svg>
+      <div>
+        <b>Where is my CricHeroes Profile ID?</b>
+        <p>Open your profile in the CricHeroes app and tap the <b>QR code</b> icon. Your Profile ID is the <b>number shown below the QR code</b>, for example <b>ID: 384486</b>. Enter only the number.</p>
+      </div>
+    </div>
     <div class="f" id="w-leagues">
       <div class="chips" id="chips"></div>
       <p class="rule">SPL, CBL and NPL are zonal leagues. In any one season you can play in only one of them.</p>
@@ -305,11 +336,11 @@ main .trial .wrap{display:block;padding-block:10px}
     </div>
 
     <div class="same" id="sameBox" hidden>
-      <label class="check"><input type="checkbox" id="sameProfile"><span>I used the same CricHeroes profile in all these leagues</span></label>
+      <label class="check"><input type="checkbox" id="sameProfile"><span>I used the same CricHeroes Profile ID in all these leagues</span></label>
       <div class="f" id="w-common" hidden>
-        <label for="common" class="req">Your CricHeroes profile link</label>
-        <input type="url" id="common" inputmode="url" placeholder="https://cricheroes.com/player-profile/1234567/your-name">
-        <p class="hint">In the CricHeroes app: open your profile → Share → Copy link. A profile ID number also works.</p>
+        <label for="common" class="req">Your CricHeroes Profile ID (number)</label>
+        <input type="text" id="common" class="pid" inputmode="numeric" maxlength="10" placeholder="e.g. 384486" autocomplete="off">
+        <p class="hint">The number shown below the QR code on your CricHeroes profile.</p>
         <p class="msg" id="m-common"></p>
       </div>
     </div>
@@ -323,7 +354,7 @@ main .trial .wrap{display:block;padding-block:10px}
     <header><span class="num">4</span><h2 id="h-s4">Declaration</h2></header>
     <div class="f" id="w-decl" style="gap:12px">
       <label class="check"><input type="checkbox" id="d1"><span>I belong to the Namboothiri community as defined in the Kerala Namboothiri Act, 1958 (Section 2-f) under the sub-community selected above, or I am a KNPL Legacy Member who played in the KNPL seasons I have ticked.</span></label>
-      <label class="check"><input type="checkbox" id="d2"><span>I have listed every CricHeroes profile I used in these leagues and have not hidden any profile.</span></label>
+      <label class="check"><input type="checkbox" id="d2"><span>I have given every CricHeroes Profile ID I used in these leagues and have not hidden any profile.</span></label>
       <label class="check"><input type="checkbox" id="d3"><span>All information given is true. I understand that wrong or incorrect information will lead to rejection of my registration.</span></label>
       <p class="msg" id="m-decl"></p>
     </div>
@@ -480,8 +511,8 @@ $('cards').innerHTML = LEAGUES.map(l => `
         <select id="t-${s.key}"><option value="">Select team</option><option value="${NP}">I did not play in ${s.label}</option>${s.teams.map(t => `<option>${esc(t)}</option>`).join('')}</select>
       </div>
       <div class="f" id="pfw-${s.key}" hidden>
-        <label for="p-${s.key}" class="req">CricHeroes profile link used in ${s.label}</label>
-        <div class="inrow"><input type="url" id="p-${s.key}" inputmode="url" placeholder="https://cricheroes.com/player-profile/…"><button type="button" class="ghost" data-copy="${s.key}">Same as above</button></div>
+        <label for="p-${s.key}" class="req">CricHeroes Profile ID used in ${s.label}</label>
+        <div class="inrow"><input type="text" id="p-${s.key}" class="pid" inputmode="numeric" maxlength="10" placeholder="e.g. 384486" autocomplete="off"><button type="button" class="ghost" data-copy="${s.key}">Same as above</button></div>
       </div>
       <p class="msg" id="m-${s.key}"></p>
     </div>`).join('')}
@@ -492,11 +523,9 @@ const leagueOn = code => $('lg-' + code).checked;
 const team = key => $('t-' + key).value;
 const played = s => leagueOn(s.league) && team(s.key) && team(s.key) !== NP;
 function profileOk(v){
-  v = (v || '').trim();
-  if (!v) return false;
-  if (/^\d{4,12}$/.test(v)) return true;
-  return /cricheroes/i.test(v);
+  return /^\d{4,10}$/.test((v || '').trim());
 }
+document.addEventListener('input', e => { if (e.target.classList && e.target.classList.contains('pid')) e.target.value = e.target.value.replace(/\D/g, ''); });
 function setMsg(id, text){ const m = $('m-' + id); if (m) m.textContent = text || ''; const w = $('w-' + id); if (w) w.classList.toggle('bad', !!text); }
 
 function refresh(){
@@ -534,7 +563,7 @@ document.addEventListener('click', e => {
     const s = ALL[i]; const v = $('p-' + s.key).value.trim();
     if (played(s) && v){ $('p-' + b.dataset.copy).value = v; setMsg(b.dataset.copy, ''); return; }
   }
-  setMsg(b.dataset.copy, 'Fill a profile link in an earlier season first, or tick “same profile in all leagues”.');
+  setMsg(b.dataset.copy, 'Fill a Profile ID in an earlier season first, or tick “same Profile ID in all leagues”.');
 });
 
 $('name').addEventListener('input', e => { const p = e.target.selectionStart; e.target.value = e.target.value.toUpperCase(); e.target.setSelectionRange(p, p); });
@@ -581,12 +610,12 @@ function validate(){
   const on = LEAGUES.filter(l => leagueOn(l.code));
   if (!on.length) fail('leagues', 'Select at least one league you played in.');
   const same = $('sameProfile').checked;
-  if (same && !profileOk($('common').value)) fail('common', 'Paste your CricHeroes profile link (or profile ID number).');
+  if (same && !profileOk($('common').value)) fail('common', 'Enter your CricHeroes Profile ID: the number below the QR code on your CricHeroes profile (e.g. 384486).');
   on.forEach(l => {
     const ss = ALL.filter(s => s.league === l.code);
     ss.forEach(s => {
       if (!team(s.key)) return fail(s.key, `Select your ${s.label} team, or choose “I did not play in ${s.label}”.`);
-      if (played(s) && !same && !profileOk($('p-' + s.key).value)) fail(s.key, `Paste the CricHeroes profile link you used in ${s.label}.`);
+      if (played(s) && !same && !profileOk($('p-' + s.key).value)) fail(s.key, `Enter the CricHeroes Profile ID (number) you used in ${s.label}, e.g. 384486.`);
     });
     if (ss.every(s => team(s.key) === NP)) fail(ss[0].key, `You ticked ${l.code} but marked every season as not played. Untick ${l.code} or select your team.`);
   });
@@ -877,3 +906,6 @@ api('getRegistrationInfo').then(i => {
 
 refresh();
 </script>
+
+</body>
+</html>
