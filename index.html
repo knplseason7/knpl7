@@ -90,6 +90,12 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .opt-legacy .ml{font-weight:600}
 .legacy{padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold)}
 .legacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
+.qrbtn{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.qrbtn input{position:absolute;opacity:0;width:1px;height:1px}
+.qrbtn:focus-within{outline:2px solid var(--turf);outline-offset:2px}
+.qrok{margin:0;font-size:13px;color:var(--ok);font-weight:500}
+.qrok:empty{display:none}
+.qrok.warn{color:var(--warn)}
 .idhelp{display:flex;gap:14px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold);font-size:14px;line-height:1.45}
 .idhelp p{margin:4px 0 0}
 .idpic{width:84px;height:105px;flex:none}
@@ -198,6 +204,9 @@ main .trial .wrap{display:block;padding-block:10px}
 .preview{background:var(--gold-soft);border-bottom:1px solid var(--gold);font-size:13px}
 .preview .wrap{padding-block:8px}
 @media (prefers-reduced-motion:no-preference){.step,.panel{transition:border-color .15s}}
+main .inrow{flex-wrap:wrap}
+main .inrow > input.pid{flex:1 1 100%;min-width:0}
+main .inrow > .ghost{flex:1 1 0}
 </style>
 
 </head>
@@ -326,7 +335,7 @@ main .trial .wrap{display:block;padding-block:10px}
       </svg>
       <div>
         <b>Where is my CricHeroes Profile ID?</b>
-        <p>Open your profile in the CricHeroes app and tap the <b>QR code</b> icon. Your Profile ID is the <b>number shown below the QR code</b>, for example <b>ID: 384486</b>. Enter only the number.</p>
+        <p>Open your profile in the CricHeroes app and tap the <b>QR code</b> icon. Your Profile ID is the <b>number shown below the QR code</b>, for example <b>ID: 384486</b>. Type only the number, <b>or</b> download your profile QR code from the CricHeroes app and use <b>Upload QR</b> to fill it automatically.</p>
       </div>
     </div>
     <div class="f" id="w-leagues">
@@ -339,8 +348,9 @@ main .trial .wrap{display:block;padding-block:10px}
       <label class="check"><input type="checkbox" id="sameProfile"><span>I used the same CricHeroes Profile ID in all these leagues</span></label>
       <div class="f" id="w-common" hidden>
         <label for="common" class="req">Your CricHeroes Profile ID (number)</label>
-        <input type="text" id="common" class="pid" inputmode="numeric" maxlength="10" placeholder="e.g. 384486" autocomplete="off">
-        <p class="hint">The number shown below the QR code on your CricHeroes profile.</p>
+        <div class="inrow"><input type="text" id="common" class="pid" inputmode="numeric" maxlength="10" placeholder="e.g. 384486" autocomplete="off"><label class="ghost qrbtn"><input type="file" accept="image/*" data-qr="common">Upload QR</label></div>
+        <p class="hint">Type the number shown below the QR code on your CricHeroes profile, <b>or</b> tap <b>Upload QR</b> and choose the profile QR code you downloaded from CricHeroes to fill it automatically.</p>
+        <p class="qrok" id="q-common"></p>
         <p class="msg" id="m-common"></p>
       </div>
     </div>
@@ -448,7 +458,7 @@ const NP = '__NP__';
 const ALL = LEAGUES.flatMap(l => l.seasons.map(s => Object.assign({}, s, {league:l.code, zonal:l.zonal})));
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const state = {photo:null};
+const state = {photo:null, qr:{}};   // qr: field key -> {id, data}
 /* Your Apps Script web app link (Deploy → Manage deployments → Web app URL). */
 const API_URL = 'https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
 const LIVE = /^https?:$/.test(location.protocol) && !/claude|anthropic/i.test(location.hostname);
@@ -512,7 +522,8 @@ $('cards').innerHTML = LEAGUES.map(l => `
       </div>
       <div class="f" id="pfw-${s.key}" hidden>
         <label for="p-${s.key}" class="req">CricHeroes Profile ID used in ${s.label}</label>
-        <div class="inrow"><input type="text" id="p-${s.key}" class="pid" inputmode="numeric" maxlength="10" placeholder="e.g. 384486" autocomplete="off"><button type="button" class="ghost" data-copy="${s.key}">Same as above</button></div>
+        <div class="inrow"><input type="text" id="p-${s.key}" class="pid" inputmode="numeric" maxlength="10" placeholder="e.g. 384486" autocomplete="off"><label class="ghost qrbtn"><input type="file" accept="image/*" data-qr="${s.key}">Upload QR</label><button type="button" class="ghost" data-copy="${s.key}" title="Copy the Profile ID from the season above">Same ID as above</button></div>
+        <p class="qrok" id="q-${s.key}"></p>
       </div>
       <p class="msg" id="m-${s.key}"></p>
     </div>`).join('')}
@@ -561,10 +572,63 @@ document.addEventListener('click', e => {
   const idx = ALL.findIndex(s => s.key === b.dataset.copy);
   for (let i = idx - 1; i >= 0; i--){
     const s = ALL[i]; const v = $('p-' + s.key).value.trim();
-    if (played(s) && v){ $('p-' + b.dataset.copy).value = v; setMsg(b.dataset.copy, ''); return; }
+    if (played(s) && v){ $('p-' + b.dataset.copy).value = v; setMsg(b.dataset.copy, ''); if (state.qr[s.key] && state.qr[s.key].id === v) { state.qr[b.dataset.copy] = state.qr[s.key]; $('q-' + b.dataset.copy).textContent = '✓ Same QR as ' + s.label; } return; }
   }
   setMsg(b.dataset.copy, 'Fill a Profile ID in an earlier season first, or tick “same Profile ID in all leagues”.');
 });
+
+/* ---------- CricHeroes QR upload: reads the Profile ID from a screenshot of the profile QR code ---------- */
+function loadJsQR(){
+  if (window.jsQR) return Promise.resolve(window.jsQR);
+  return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'; sc.onload = () => res(window.jsQR); sc.onerror = () => rej(new Error('QR reader could not load')); document.head.appendChild(sc); });
+}
+function idFromText(t){
+  const m = String(t || '').match(/player-profile\/(\d{4,10})/i) || String(t || '').match(/\b(\d{4,10})\b/);
+  return m ? m[1] : '';
+}
+async function readQr(img){
+  // 1) Built-in barcode reader (Android Chrome, Mac)
+  if ('BarcodeDetector' in window){
+    try { const det = new BarcodeDetector({formats: ['qr_code']}); const r = await det.detect(img); for (const x of r){ const id = idFromText(x.rawValue); if (id) return id; } } catch(_) {}
+  }
+  // 2) jsQR at a few sizes and a sharpened black/white version (helps with rounded-dot QR styles)
+  const jsQR = await loadJsQR();
+  for (const max of [1000, 700, 1400, 500]){
+    const sc = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+    const d = ctx.getImageData(0, 0, c.width, c.height);
+    let r = jsQR(d.data, c.width, c.height, {inversionAttempts: 'attemptBoth'});
+    if (!r){ const px = d.data; for (let i = 0; i < px.length; i += 4){ const v = (px[i] * .3 + px[i+1] * .59 + px[i+2] * .11) < 140 ? 0 : 255; px[i] = px[i+1] = px[i+2] = v; } r = jsQR(px, c.width, c.height, {inversionAttempts: 'dontInvert'}); }
+    if (r){ const id = idFromText(r.data); if (id) return id; }
+  }
+  return '';
+}
+document.addEventListener('change', async e => {
+  const inp = e.target.closest('input[data-qr]'); if (!inp) return;
+  const key = inp.dataset.qr, f = inp.files[0], out = $('q-' + key), field = key === 'common' ? $('common') : $('p-' + key);
+  if (!f) return;
+  out.className = 'qrok'; out.textContent = 'Reading QR code…';
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); const u = URL.createObjectURL(f); i.onload = () => { res(i); URL.revokeObjectURL(u); }; i.onerror = rej; i.src = u; });
+    // Read first (full quality), then store a small grey-scale copy to save space
+    const sc = Math.min(1, 600 / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
+    const cx = c.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, c.width, c.height); cx.drawImage(img, 0, 0, c.width, c.height);
+    const gd = cx.getImageData(0, 0, c.width, c.height), px = gd.data;
+    for (let i = 0; i < px.length; i += 4){ const g = px[i] * .3 + px[i+1] * .59 + px[i+2] * .11; px[i] = px[i+1] = px[i+2] = g; }
+    cx.putImageData(gd, 0, 0);
+    const data = c.toDataURL('image/jpeg', 0.7).split(',')[1];
+    let id = '';
+    try { id = await readQr(img); } catch(_) {}
+    state.qr[key] = {id: id || null, data};
+    if (id){ field.value = id; out.textContent = '✓ Profile ID ' + id + ' read from your QR code. Please check it matches the ID below your QR.'; setMsg(key, ''); }
+    else { out.className = 'qrok warn'; out.textContent = 'QR code saved, but the ID could not be read automatically. Please type the number shown below your QR code.'; field.focus(); }
+  } catch(_) { out.className = 'qrok warn'; out.textContent = 'This image could not be opened. Please type the Profile ID number instead.'; }
+  inp.value = '';
+});
+// If the player edits the number by hand, keep the screenshot but forget the auto-read ID
+document.addEventListener('input', e => { const m = e.target.id && (e.target.id === 'common' ? 'common' : e.target.id.startsWith('p-') ? e.target.id.slice(2) : null); if (m && state.qr[m] && state.qr[m].id !== e.target.value) state.qr[m].id = null; });
 
 $('name').addEventListener('input', e => { const p = e.target.selectionStart; e.target.value = e.target.value.toUpperCase(); e.target.setSelectionRange(p, p); });
 $('phone').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, ''); });
@@ -577,10 +641,10 @@ $('photo').addEventListener('change', async e => {
   try {
     const img = await new Promise((res, rej) => { const i = new Image(); const u = URL.createObjectURL(f); i.onload = () => { res(i); URL.revokeObjectURL(u); }; i.onerror = () => rej(); i.src = u; });
     if (Math.min(img.naturalWidth, img.naturalHeight) < 250){ setMsg('photo', 'This photo is too small. Use a clearer photo at least 250 pixels wide.'); return; }
-    const max = 900, sc = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const max = 720, sc = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
     const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
     c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-    const url = c.toDataURL('image/jpeg', 0.85);
+    const url = c.toDataURL('image/jpeg', 0.8);
     state.photo = url;
     $('phFrame').innerHTML = `<img src="${url}" alt="Your selected photo">`;
   } catch(_) { setMsg('photo', 'This file could not be opened. Try a JPG or PNG photo.'); }
@@ -650,16 +714,40 @@ $('regForm').addEventListener('submit', async e => {
     leagues: LEAGUES.filter(l => leagueOn(l.code)).map(l => l.code),
     sameProfile: v.same, commonProfile: v.same ? $('common').value.trim() : '',
     seasons, declarations: true,
-    photo: {data: state.photo.split(',')[1], mime: 'image/jpeg'}
+    photo: {data: state.photo.split(',')[1], mime: 'image/jpeg'},
+    qrImages: (() => {
+      const byId = {};
+      const keys = v.same ? ['common'] : Object.keys(seasons).filter(k => seasons[k].link);
+      keys.forEach(k => { const q = state.qr[k]; if (!q) return; const id = v.same ? $('common').value.trim() : seasons[k].link;
+        const label = v.same ? 'All leagues' : (ALL.find(s => s.key === k) || {}).label;
+        if (!byId[id]) byId[id] = {id, data: q.data, seasons: []}; byId[id].seasons.push(label); });
+      return Object.values(byId).slice(0, 8);
+    })()
   };
+  // One token per form, so a retried submission is never registered twice
+  if (!state.token) state.token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+  payload.clientToken = state.token;
   const btn = $('submitBtn'); btn.disabled = true; btn.textContent = 'Submitting…';
+  const busy = m => /^BUSY|too many|simultaneous|timed? ?out|try again|could not reach|did not respond|service|server error/i.test(m || '');
   try {
-    const r = await api('submitRegistration', payload);
+    let r, lastErr;
+    for (let attempt = 1; attempt <= 5; attempt++){
+      try { r = await api('submitRegistration', payload); break; }
+      catch(err){
+        lastErr = err;
+        if (!busy(err.message) || attempt === 5) throw err;
+        const wait = 2000 * attempt + Math.floor(Math.random() * 1500);
+        btn.textContent = `Many players are registering. Retrying (${attempt}/4)…`;
+        sum.hidden = false; sum.textContent = 'High traffic right now. Please keep this page open. Your registration will be retried automatically.';
+        await new Promise(res => setTimeout(res, wait));
+      }
+    }
+    sum.hidden = true;
     $('regForm').hidden = true;
     $('doneId').textContent = r.regId; $('doneName').textContent = r.name;
     $('doneBox').hidden = false; $('doneBox').scrollIntoView({behavior:'smooth'});
   } catch(err){
-    sum.hidden = false; sum.textContent = err.message || 'Submission failed. Check your connection and try again.';
+    sum.hidden = false; sum.textContent = String(err.message || 'Submission failed. Check your connection and try again.').replace(/^BUSY:\s*/, '') + (busy(err.message) ? ' Please tap Submit registration again.' : '');
   } finally { btn.disabled = false; btn.textContent = 'Submit registration'; }
 });
 
