@@ -199,8 +199,44 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .fee b{font-family:var(--display);font-size:28px;line-height:1}
 .fee small{flex-basis:100%;font-size:14px;font-weight:600;overflow-wrap:anywhere}
 .lockwarn{border-color:var(--gold);background:var(--gold-soft)}
+.sbar{background:var(--band);color:var(--on-band);border-bottom:3px solid var(--gold);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.sbar-in{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 16px;padding-block:10px;font-size:14px}
+.sb-win{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.02em}
+.sb-pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px;background:var(--gold);color:#112347;vertical-align:2px;margin-left:6px}
+.sb-pill.paused{background:#f3c26b}.sb-pill.closed{background:#e9a39b}
+.sb-right{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--band-muted)}
+.sb-right b{color:var(--on-band);font-variant-numeric:tabular-nums}
+#soon{padding-block:8px 48px}
+.soon-in{display:grid;gap:16px;max-width:760px}
+.soon-eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-top:18px}
+.soon-h{font-family:var(--display);font-weight:800;font-size:clamp(28px,6.5vw,42px);line-height:1.05;margin:0;text-wrap:balance}
+.soon-ml{margin:-6px 0 0;color:var(--muted);font-size:15px}
+.cd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cd div{background:var(--band);color:var(--on-band);border-radius:12px;padding:12px 4px;text-align:center;border-bottom:4px double var(--gold)}
+.cd b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(30px,9vw,48px);line-height:1;font-variant-numeric:tabular-nums}
+.cd span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--band-muted)}
+.soon-sub{font-family:var(--display);font-size:24px;margin:10px 0 0}
+.wins{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.win{display:grid;grid-template-columns:44px 1fr;gap:4px 12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.win .wn{grid-row:span 3;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:20px;background:var(--sunk);color:var(--muted)}
+.win h4{margin:0;font-family:var(--display);font-size:20px;line-height:1.15}
+.win .wt{font-weight:700;font-size:14px}
+.win p{margin:0;font-size:14px;color:var(--muted)}
+.win .wtag{justify-self:start;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--sunk);color:var(--muted)}
+.win.next,.win.active{border:2px solid var(--gold);background:var(--gold-soft)}
+.win.next .wn,.win.active .wn{background:var(--band);color:var(--gold)}
+.win.next .wtag,.win.active .wtag{background:var(--band);color:var(--on-band)}
+.win.done{opacity:.6}
+.soon-note{margin:0;font-size:14px;line-height:1.5;padding:12px 14px;border-radius:10px;background:var(--sunk)}
+.soon-contact{margin:0;font-size:15px}
+#closedBox .wins{margin-top:10px}
 .trial{background:var(--bad-bg);color:var(--bad);border-bottom:2px solid var(--bad);font-size:14px;line-height:1.45}
 main .trial .wrap{display:block;padding-block:10px}
+.share{display:grid;gap:10px;padding:14px;border-radius:12px;border:1px solid var(--gold);background:var(--gold-soft)}
+.share img{width:100%;max-width:360px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.25);justify-self:center}
+.share-btns{display:grid;grid-template-columns:1fr auto;gap:8px}
+.share-btns .ghost{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.ml-err{display:block;margin-top:4px;font-family:var(--ml);font-size:14px}
 .preview{background:var(--gold-soft);border-bottom:1px solid var(--gold);font-size:13px}
 .preview .wrap{padding-block:8px}
 @media (prefers-reduced-motion:no-preference){.step,.panel{transition:border-color .15s}}
@@ -211,7 +247,7 @@ main .inrow > .ghost{flex:1 1 0}
 
 </head>
 <body>
-<div class="preview" id="previewBar" hidden><div class="wrap"><b>Preview mode.</b> Nothing you enter here is saved. In the Join tab, search <b>SAMPLE</b> and use last 4 digits <b>1234</b>.</div></div>
+<div class="preview" id="previewBar" hidden><div class="wrap"><b>Preview mode.</b> Nothing is saved. Demo Power Play codes (preview only): <b>DEMO-OWNR</b>, <b>DEMO-CHCE</b>. In the Join tab, search <b>SAMPLE</b>, last 4 digits <b>1234</b>.</div></div>
 
 <div class="band">
   <div class="wrap">
@@ -231,7 +267,27 @@ main .inrow > .ghost{flex:1 1 0}
 </div>
 
 <main>
-<div class="trial" id="trialBar" hidden><div class="wrap"><b>TRIAL RUN.</b> This is a practice form. All trial entries will be deleted on 8 Nov 2026. <b>Do not pay any fee now.</b> Real registration opens on 10 Nov 2026, so register again then.</div></div>
+<div class="trial" id="trialBar" hidden><div class="wrap"><b>TRIAL RUN.</b> <span id="trialText">This is a practice form. Trial entries will not count. <b>Do not pay any fee now.</b></span></div></div>
+<div class="sbar" id="statusBar" hidden aria-live="polite"><div class="wrap sbar-in">
+  <div><span class="sb-win" id="sbWin"></span> <span class="sb-pill" id="sbState"></span></div>
+  <div class="sb-right"><span id="sbCount"></span><span id="sbNext"></span></div>
+</div></div>
+
+<!-- ============ COMING SOON (between trial close and Power Play) ============ -->
+<section id="soon" hidden>
+  <div class="wrap soon-in">
+    <div class="soon-eyebrow">KNPL Season 7 · Phase 1</div>
+    <h2 class="soon-h">KNPL-7 Phase 1 Player Registration starts on <span id="soonWhen">09-11-2026, 7:30 PM</span></h2>
+    <p class="soon-ml">KNPL-7 ഒന്നാം ഘട്ട പ്ലെയർ രജിസ്ട്രേഷൻ ഉടൻ ആരംഭിക്കുന്നു</p>
+    <div class="cd" id="soonCd" role="timer" aria-live="off">
+      <div><b id="cdD">0</b><span>days</span></div><div><b id="cdH">00</b><span>hours</span></div><div><b id="cdM">00</b><span>minutes</span></div><div><b id="cdS">00</b><span>seconds</span></div>
+    </div>
+    <h3 class="soon-sub">How registration works</h3>
+    <ol class="wins" id="soonSteps"></ol>
+    <p class="soon-note">Each window pauses when its count is reached and reopens at the next time shown. Players join the auction pool after verification. If you do not have a Power Play code, please register from Middle Overs, <b id="soonMO">10 Nov, 10:30 AM</b>.</p>
+    <p class="soon-contact">Questions? Krishnadas, KNPL committee coordinator, <b>+91 99862 18725</b></p>
+  </div>
+</section>
 <!-- ============ REGISTER ============ -->
 <div class="wrap" id="view-reg" role="tabpanel" aria-labelledby="tab-reg">
   <div class="notice" role="note">
@@ -244,6 +300,24 @@ main .inrow > .ghost{flex:1 1 0}
     <header><h2>Registration is closed</h2></header>
     <p style="margin:0" id="closedMsg">KNPL-7 registration is closed right now. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.</p>
   </section>
+  <section class="step" id="codeGate" hidden aria-labelledby="h-gate">
+    <header><span class="num">PP</span><h2 id="h-gate">Power Play code</h2></header>
+    <p class="lede">Power Play is open only to Franchise Owners and KNPL Choice players. Enter your WhatsApp number and the code you received.</p>
+    <p class="act" style="margin:0">പവർ പ്ലേ കോഡ് ഉള്ളവർക്ക് മാത്രം. കോഡ് ഇല്ലെങ്കിൽ Middle Overs ഘട്ടത്തിൽ രജിസ്റ്റർ ചെയ്യുക.</p>
+    <div class="f" id="w-gphone">
+      <label for="gPhone" class="req">WhatsApp number</label>
+      <div class="phone"><input type="tel" id="gCode" value="+91" maxlength="5" aria-label="Country code"><input type="tel" id="gPhone" inputmode="numeric" maxlength="15" placeholder="10-digit number" autocomplete="tel-national"></div>
+    </div>
+    <div class="f" id="w-gcode">
+      <label for="gCodeIn" class="req">Power Play code</label>
+      <input type="text" id="gCodeIn" class="caps" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="e.g. AB3K-7QXM">
+      <p class="hint">Capital or small letters both work. Spaces and hyphens are ignored.</p>
+    </div>
+    <p class="msg" id="m-gate" role="alert"></p>
+    <button type="button" class="primary" id="gateBtn">Check code and continue</button>
+    <p class="small">No code? You can register without a code when Middle Overs opens on <b id="gateMO">10 Nov, 10:30 AM</b>.</p>
+  </section>
+  <div class="qual ok" id="gateOk" hidden></div>
   <form id="regForm" novalidate>
   <div style="display:grid;gap:18px">
 
@@ -380,6 +454,16 @@ main .inrow > .ghost{flex:1 1 0}
     <header><span class="num">✓</span><h2>Registration received</h2></header>
     <div class="idrow"><span class="regid" id="doneId">KNPL7-0000</span><button type="button" class="ghost" id="copyId">Copy Reg ID</button></div>
     <p style="margin:0">Thank you, <b id="doneName"></b>. Your status is <span class="pill Pending">Pending verification</span>.</p>
+    <p class="qual ok" id="donePool" hidden style="margin:0"></p>
+    <div class="share" id="shareBox" hidden>
+      <b>Share your registration</b>
+      <img id="shareImg" alt="Your KNPL-7 Phase 1 registration poster">
+      <div class="share-btns">
+        <button type="button" class="primary" id="shareBtn">Share on WhatsApp</button>
+        <a class="ghost" id="dlBtn" download="KNPL-7-Registration.png" href="#">Download poster</a>
+      </div>
+      <p class="hint" id="shareHint">On a phone, tap Share and choose WhatsApp. The poster and message are sent together.</p>
+    </div>
     <p class="small">Save this Reg ID. When the committee approves your registration, open the <b>Join Mega Auction</b> tab, search your name and confirm with the last 4 digits of your WhatsApp number.</p>
   </section>
 </div>
@@ -462,6 +546,7 @@ const state = {photo:null, qr:{}};   // qr: field key -> {id, data}
 /* Your Apps Script web app link (Deploy → Manage deployments → Web app URL). */
 const API_URL = 'https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
 const LIVE = /^https?:$/.test(location.protocol) && !/claude|anthropic/i.test(location.hostname);
+const TEST_KEY = (location.search.match(/[?&]test=([\w-]{6,64})/) || [])[1] || '';   // private test link only
 if (!LIVE) $('previewBar').hidden = false;
 
 /* ---------- backend bridge: plain fetch() to the web app, works with any number of signed-in Google accounts ---------- */
@@ -469,13 +554,56 @@ async function api(fn, ...args){
   if (!LIVE) return MOCK[fn](...args);
   let res;
   try {
-    res = await fetch(API_URL, {method:'POST', body: JSON.stringify({fn, args}), redirect:'follow'});
+    res = await fetch(API_URL, {method:'POST', body: JSON.stringify({fn, args, testKey: TEST_KEY}), redirect:'follow'});
   } catch(_) { throw new Error('Could not reach the KNPL server. Check your internet connection and try again.'); }
   let j;
   try { j = await res.json(); } catch(_) { throw new Error('The KNPL server did not respond properly. Please try again in a minute.'); }
   if (!j.ok) throw new Error(j.error || 'Something went wrong. Please try again.');
   return j.result;
 }
+/* Preview-only fake server so the page can be tried here. Demo codes DEMO-OWNR / DEMO-CHCE work ONLY in this preview.
+   Choose a moment with ?mock=trial | soon | pp | paused | mo | full (default: pp). */
+const MOCKSRV = (() => {
+  const IST = (d, mo, h, mi) => Date.UTC(2026, mo - 1, d, h, mi) - 330 * 60000;
+  const W = [['Power Play Registration', IST(9,11,19,30), 100, true], ['Middle Overs Registration', IST(10,11,10,30), 150, false], ['Slog Overs Registration', IST(10,11,18,30), 200, false], ['Final Over Registration', IST(10,11,21,30), 250, false], ['12th Man Registration (waiting list)', IST(11,11,10,30), 275, false]]
+    .map(w => ({name: w[0], opensAt: w[1], cap: w[2], codeRequired: w[3]}));
+  const trialClose = IST(8,11,20,30);
+  const sc = (location.search.match(/[?&]mock=(\w+)/) || [])[1] || 'pp';
+  const start = {trial: [IST(8,11,20,29) + 50000, 40], soon: [IST(9,11,19,29) + 50000, 0], pp: [IST(9,11,19,45), 63], paused: [IST(10,11,9,0), 100], mo: [IST(10,11,11,0), 120], full: [IST(11,11,12,0), 275]}[sc] || [IST(9,11,19,45), 63];
+  const t0 = Date.now(); let total = start[1], used = new Set(), choice = 0;
+  const now = () => (window.__MOCK_NOW != null ? window.__MOCK_NOW : start[0] + (Date.now() - t0));
+  function state(){
+    const n = now(), base = {now: n, serverNow: n, trialClose, mainCap: 250, finalCap: 275, total, windows: W};
+    if (n < trialClose) return Object.assign(base, {mode: 'trial', next: 0, current: -1, nextChangeAt: trialClose, trialOpen: true, used: total, max: 1000});
+    let i = -1; W.forEach((w, k) => { if (w.opensAt <= n) i = k; });
+    if (i < 0) return Object.assign(base, {mode: 'coming_soon', current: -1, next: 0, nextChangeAt: W[0].opensAt});
+    const w = W[i], nx = i + 1 < W.length ? i + 1 : -1;
+    const st = Object.assign(base, {current: i, next: nx, window: w.name, cap: w.cap, codeRequired: w.codeRequired, nextChangeAt: nx >= 0 ? W[nx].opensAt : null});
+    return Object.assign(st, total >= w.cap ? {mode: nx >= 0 ? 'paused' : 'closed', reason: 'CAP'} : {mode: 'live'});
+  }
+  const delay = v => new Promise(r => setTimeout(() => r(v), 400));
+  const fail = m => new Promise((_, j) => setTimeout(() => j(new Error(m)), 400));
+  function gate(st){
+    if (st.mode === 'coming_soon' || st.mode === 'trial') return 'NOT_OPEN: Registration has not opened yet.';
+    if (st.mode === 'paused') return (st.codeRequired ? 'PP_FULL: Power Play is full.' : 'PAUSED: ' + st.window + ' is full.') + ' Registration reopens with ' + W[st.next].name + '.';
+    if (st.mode === 'closed') return 'CLOSED: KNPL-7 registration is closed.';
+    return '';
+  }
+  function codeErr(code){
+    const c = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (c === 'DEMOOWNR') return used.has(c) ? 'CODE_USED: This Franchise Owner code has already been used.' : '';
+    if (c === 'DEMOCHCE') return choice >= 84 ? 'CHOICE_FULL: All 84 KNPL Choice places are taken.' : '';
+    return 'CODE_INVALID: This Power Play code is not valid. Please check the code and enter it carefully.';
+  }
+  return {
+    status: () => state(),
+    checkCode(ph, code){ const st = state(), g = gate(st); if (g) return fail(g); if (!st.codeRequired) return delay({ok: true, type: 'NONE'}); const e = codeErr(code); if (e) return fail(e);
+      return delay({ok: true, type: /OWNR/i.test(code) ? 'OWNER' : 'CHOICE', label: /OWNR/i.test(code) ? 'Franchise Owner code accepted' : 'KNPL Choice code accepted'}); },
+    submit(d){ const st = state(); if (st.mode !== 'trial'){ const g = gate(st); if (g) return fail(g); if (st.codeRequired){ const e = codeErr(d.code); if (e) return fail(e); const c = String(d.code).toUpperCase().replace(/[^A-Z0-9]/g, ''); if (c === 'DEMOOWNR') used.add(c); else choice++; } }
+      total++; const wait = st.mode !== 'trial' && total > 250;
+      return delay({ok: true, regId: 'KNPL7-' + String(total).padStart(4, '0'), name: d.name, count: total, cap: st.mode === 'trial' ? 1000 : 275, window: st.window || 'Trial', pool: st.mode === 'trial' ? 'TRIAL' : (wait ? 'WAITING LIST' : 'MAIN'), waitingNo: wait ? total - 250 : ''}); }
+  };
+})();
 const MOCK = (() => {
   const wait = v => new Promise(r => setTimeout(() => r(v), 500));
   const TEAMS = ['KOMBANS OF PATALEEPUTHRA','MADHURA MAVERICKS','MIGHTY MIDHILAS','KALINGA ADHIPANS','VARAHAS OF VIJAYANAGARA','KAALIYANZ OF DWARAKA','GUARDIANS OF KAMBOJA','AYODHYA WARRIORS','JAGUARS OF JHANSI','GANDHARA GIANTS','DEVILS OF CHITHRAKOOT','KURUKSHETRA YODHAS','VAMOS VRINDAVAN','KNIGHTS OF KANCHI','SPARTANS OF NALANDA','PANCHAALA PANTHERS'];
@@ -488,7 +616,9 @@ const MOCK = (() => {
   ];
   return {
     getRegistrationInfo: () => wait({open:true, full:false, used:87, max:1000, trial:true}),
-    submitRegistration: d => wait({ok:true, regId:'KNPL7-0042', name:d.name}),
+    getStatus: () => wait(MOCKSRV.status()),
+    checkCode: (pc, ph, code) => MOCKSRV.checkCode(ph, code),
+    submitRegistration: d => MOCKSRV.submit(d),
     searchPlayers: q => wait(people.filter(p => q.toUpperCase().split(/\s+/).every(t => p.name.includes(t))).map(p => ({regId:p.regId, name:p.name, district:p.district, status:p.status, joined:p.joined, photoId:''}))),
     verifyPlayer: (id, l4) => { const p = people.find(x => x.regId === id); return l4 !== p.last4 ? Promise.reject(new Error('The last 4 digits do not match the WhatsApp number on this registration.')) : wait({name:p.name, status:p.status, remarks:p.remarks||'', category:p.category||'', skillRating:p.skillRating||'', joined:p.joined, availability:p.availability||'', preferredTeam:p.preferredTeam||'', open:true, teams:TEAMS, anyTeam:'Any Team', days:DAYS, feeAmount:1000, feePayTo:'UPI ID: 339980003460298@cnrb'}); },
     joinAuction: (id, l4, c) => { const p = people.find(x => x.regId === id); if (p.joined) return Promise.reject(new Error('You have already joined the auction. Your choices are locked.')); p.joined = true; p.availability = c.days.length === 4 ? 'All days (11-14 Feb 2027)' : c.days.join(', '); p.preferredTeam = c.team; return wait({ok:true, name:p.name, regId:p.regId, availability:p.availability, preferredTeam:p.preferredTeam}); }
@@ -727,8 +857,13 @@ $('regForm').addEventListener('submit', async e => {
   // One token per form, so a retried submission is never registered twice
   if (!state.token) state.token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
   payload.clientToken = state.token;
+  state.playedLabels = ALL.filter(s => played(s)).map(s => s.label);
+  if (ST && ST.mode === 'live' && ST.codeRequired){
+    if (!state.ppCode){ showGate(); return; }
+    payload.code = state.ppCode;
+  }
   const btn = $('submitBtn'); btn.disabled = true; btn.textContent = 'Submitting…';
-  const busy = m => /^BUSY|too many|simultaneous|timed? ?out|try again|could not reach|did not respond|service|server error/i.test(m || '');
+  const busy = m => !KNOWN_ERR.test(m || '') && /^BUSY|too many|simultaneous|timed? ?out|try again|could not reach|did not respond|service|server error/i.test(m || '');
   try {
     let r, lastErr;
     for (let attempt = 1; attempt <= 5; attempt++){
@@ -745,9 +880,17 @@ $('regForm').addEventListener('submit', async e => {
     sum.hidden = true;
     $('regForm').hidden = true;
     $('doneId').textContent = r.regId; $('doneName').textContent = r.name;
+    $('gateOk').hidden = true; $('codeGate').hidden = true;
+    if (r.pool === 'WAITING LIST'){ $('donePool').hidden = false; $('donePool').className = 'qual no'; $('donePool').textContent = `You are on the 12th Man waiting list, No. ${r.waitingNo}. You will be added to the auction pool if a registered player is rejected.`; }
+    else if (r.window && r.window !== 'Trial'){ $('donePool').hidden = false; $('donePool').textContent = `Registered in ${r.window}.`; }
+    makeSharePoster(r).catch(() => {});
     $('doneBox').hidden = false; $('doneBox').scrollIntoView({behavior:'smooth'});
   } catch(err){
-    sum.hidden = false; sum.textContent = String(err.message || 'Submission failed. Check your connection and try again.').replace(/^BUSY:\s*/, '') + (busy(err.message) ? ' Please tap Submit registration again.' : '');
+    const m = String(err.message || 'Submission failed. Check your connection and try again.');
+    sum.hidden = false; sum.innerHTML = friendly(m) + (busy(m) ? ' Please tap Submit registration again.' : '');
+    const code = (m.match(KNOWN_ERR) || [])[1];
+    if (/^(CODE_INVALID|CODE_USED|CHOICE_FULL|BLOCKED|CODE_REQUIRED)$/.test(code || '')){ state.ppCode = ''; showGate(friendly(m)); }
+    if (/^(NOT_OPEN|PAUSED|PP_FULL|CLOSED)$/.test(code || '')) loadStatus();
   } finally { btn.disabled = false; btn.textContent = 'Submit registration'; }
 });
 
@@ -970,28 +1113,230 @@ function renderJoin(out, r, l4){
   };
 }
 
-/* TRIAL banner: shown automatically before real registration opens on 10 Nov 2026 (India time),
-   and afterwards whenever "Trial mode" is YES in the Settings sheet. */
-const REAL_OPENING = new Date('2026-11-10T00:00:00+05:30');
-if (Date.now() < REAL_OPENING.getTime()) $('trialBar').hidden = false;
+/* =====================================================================
+   REGISTRATION WINDOWS – everything is decided by the SERVER clock.
+   The page asks the server for the status, counts down to the next change,
+   and asks again exactly when a countdown reaches zero (no manual refresh).
+   ===================================================================== */
+const KNOWN_ERR = /^(NOT_OPEN|PAUSED|PP_FULL|CLOSED|CODE_INVALID|CODE_USED|CHOICE_FULL|BLOCKED|DUPLICATE|PHONE|CODE_REQUIRED):\s*/;
+const ML_ERR = {
+  NOT_OPEN: 'രജിസ്ട്രേഷൻ ഇതുവരെ ആരംഭിച്ചിട്ടില്ല.',
+  PAUSED: 'രജിസ്ട്രേഷൻ താൽക്കാലികമായി നിർത്തിയിരിക്കുന്നു. അടുത്ത ഘട്ടത്തിൽ വീണ്ടും തുറക്കും.',
+  PP_FULL: 'പവർ പ്ലേ നിറഞ്ഞു. Middle Overs ഘട്ടത്തിൽ രജിസ്ട്രേഷൻ വീണ്ടും തുറക്കും.',
+  CLOSED: 'രജിസ്ട്രേഷൻ അവസാനിച്ചു.',
+  CODE_INVALID: 'ഈ പവർ പ്ലേ കോഡ് ശരിയല്ല. ശ്രദ്ധയോടെ വീണ്ടും നൽകുക.',
+  CODE_USED: 'ഈ Franchise Owner കോഡ് ഇതിനകം ഉപയോഗിച്ചു.',
+  CHOICE_FULL: 'KNPL Choice സ്ഥാനങ്ങൾ എല്ലാം നിറഞ്ഞു.',
+  BLOCKED: 'തെറ്റായ കോഡുകൾ കാരണം ഈ നമ്പർ കുറച്ചു സമയത്തേക്ക് തടഞ്ഞിരിക്കുന്നു.',
+  DUPLICATE: 'ഈ WhatsApp നമ്പറിൽ ഇതിനകം രജിസ്ട്രേഷൻ ഉണ്ട്.'
+};
+function friendly(m){
+  const code = (String(m).match(KNOWN_ERR) || [])[1];
+  const en = esc(String(m).replace(KNOWN_ERR, '').replace(/^BUSY:\s*/, ''));
+  return code && ML_ERR[code] ? `${en}<br><span class="ml-err">${ML_ERR[code]}</span>` : en;
+}
+const WIN_TEXT = ['For Franchise Owners and Choice players, by code only.', 'Open to all eligible players.', 'Open to all eligible players.', 'Last main window. These 250 form the auction pool after verification.', 'Waiting list. A 12th Man is added if a registered player is rejected.'];
+const fmtIST = (ms, o) => new Intl.DateTimeFormat('en-IN', Object.assign({timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true}, o || {})).format(new Date(ms)).replace(/\b(am|pm)\b/, x => x.toUpperCase());
+const fmtNum = ms => { const p = new Intl.DateTimeFormat('en-GB', {timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric'}).format(new Date(ms)).replace(/\//g, '-'); return `${p}, ${fmtIST(ms, {day: undefined, month: undefined})}`; };
+let ST = null, clockOffset = 0, lastLoad = 0, loading = null, nextPoll = 0;
+const serverNow = () => Date.now() + clockOffset;
+const pad = n => String(n).padStart(2, '0');
+function hms(ms){ ms = Math.max(0, ms); const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60); return (d ? d + 'd ' : '') + pad(h) + ':' + pad(m) + ':' + pad(s % 60); }
 
-api('getRegistrationInfo').then(i => {
-  if (i.trial) $('trialBar').hidden = false;
-  if (!i.open){
-    $('regForm').hidden = true; $('closedBox').hidden = false;
-    $('closedMsg').innerHTML = i.full
-      ? `All ${i.max} slots for KNPL-7 have been filled. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.`
-      : 'KNPL-7 registration is closed right now. It opens on <b>10 November 2026</b>. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.';
-    return;
+function loadStatus(){
+  if (loading) return loading;
+  loading = api('getStatus').then(st => {
+    ST = st; clockOffset = st.serverNow - Date.now(); lastLoad = Date.now();
+    render();
+  }).catch(err => {
+    if (!ST){ $('slots').hidden = false; $('slots').className = 'qual no'; $('slots').textContent = 'Could not load the registration status: ' + (err && err.message ? err.message : err) + ' Pull down to refresh the page.'; }
+  }).finally(() => { loading = null; schedulePoll(); });
+  return loading;
+}
+function schedulePoll(){
+  const base = !ST ? 20000 : ST.mode === 'live' ? 30000 : ST.mode === 'closed' ? 120000 : 60000;
+  nextPoll = Date.now() + base + Math.floor(Math.random() * 8000);    // spread out the requests
+}
+function windowsHtml(){
+  const W = ST.windows || [];
+  return W.map((w, i) => {
+    let cls = 'upcoming', tag = 'Upcoming';
+    if (ST.mode === 'live' && i === ST.current){ cls = 'active'; tag = 'Open now'; }
+    else if (ST.current >= 0 && i < ST.current){ cls = 'done'; tag = 'Done'; }
+    else if (ST.mode === 'paused' && i === ST.current){ cls = 'done'; tag = 'Paused'; }
+    else if (i === ST.next){ cls = 'next'; tag = 'Next'; }
+    const last = i === W.length - 1;
+    return `<li class="win ${cls}"><span class="wn">${i + 1}</span><h4>${esc(w.name)}</h4><span class="wt">${esc(fmtIST(w.opensAt, {weekday: 'short'}))}</span>
+      <p>${esc(WIN_TEXT[i] || 'Open to all eligible players.')} ${last ? 'Closes' : 'Pauses'} at <b>${w.cap}</b>.</p><span class="wtag">${tag}</span></li>`;
+  }).join('');
+}
+function counterText(){
+  if (!ST || ST.current < 0) return '';
+  const w = ST.windows[ST.current];
+  if (w.codeRequired) return `Power Play: <b>${Math.min(ST.total, w.cap)}/${w.cap}</b>`;
+  const wl = Math.max(0, ST.total - ST.mainCap);
+  return `Registered: <b>${ST.total}/${w.cap}</b>` + (wl ? ` · waiting list <b>${wl}</b>` : '');
+}
+function render(){
+  if (!ST) return;
+  const mode = ST.mode, done = !$('doneBox').hidden;
+  const tabs = document.querySelector('.tabs');
+  const soon = mode === 'coming_soon';
+  $('soon').hidden = !soon;
+  tabs.hidden = soon;
+  if (soon){ $('view-reg').hidden = true; $('view-auc').hidden = true; }
+  else if ($('view-reg').hidden && $('view-auc').hidden) showTab(/[?&]tab=auction/.test(location.search) ? 'auc' : 'reg');
+  $('trialBar').hidden = mode !== 'trial';
+  if (mode === 'trial') $('trialText').innerHTML = `This is a practice form. The trial closes on <b>${esc(fmtIST(ST.trialClose))}</b> and trial entries will not count. <b>Do not pay any fee now.</b> Phase 1 opens on ${esc(fmtIST(ST.windows[0].opensAt))}; register again then.`;
+  // status banner
+  const sb = $('statusBar');
+  sb.hidden = soon || mode === 'trial';
+  if (!sb.hidden){
+    $('sbWin').textContent = ST.window || 'KNPL-7 Registration';
+    const pill = $('sbState');
+    pill.className = 'sb-pill' + (mode === 'paused' ? ' paused' : mode === 'closed' ? ' closed' : '');
+    pill.textContent = mode === 'live' ? 'Open' : mode === 'paused' ? 'Paused' : 'Closed';
+    $('sbCount').innerHTML = counterText();
   }
-  const left = i.max - i.used;
-  $('slots').hidden = false;
-  $('slots').textContent = `${left} of ${i.max} slots left. Registration closes when all ${i.max} are filled.`;
-}).catch(err => {
-  $('slots').hidden = false; $('slots').className = 'qual no';
-  $('slots').textContent = 'Server check failed: ' + (err && err.message ? err.message : err) + ' (Please send a screenshot of this to the KNPL committee.)';
+  if (soon){
+    $('soonWhen').textContent = fmtNum(ST.windows[0].opensAt);
+    $('soonSteps').innerHTML = windowsHtml();
+    if (ST.windows[1]) $('soonMO').textContent = fmtIST(ST.windows[1].opensAt);
+  }
+  if (ST.windows && ST.windows[1]) $('gateMO').textContent = fmtIST(ST.windows[1].opensAt);
+  // register tab content
+  const formOk = mode === 'trial' ? ST.trialOpen : mode === 'live';
+  const needCode = mode === 'live' && ST.codeRequired && !state.ppCode;
+  $('codeGate').hidden = done || !needCode;
+  $('gateOk').hidden = done || !(mode === 'live' && ST.codeRequired && state.ppCode);
+  $('regForm').hidden = done || !formOk || needCode;
+  $('closedBox').hidden = done || formOk || soon;
+  if (!formOk && !soon){
+    const nx = ST.next >= 0 ? ST.windows[ST.next] : null;
+    const head = $('closedBox').querySelector('h2');
+    if (mode === 'paused'){
+      head.textContent = ST.reason === 'ADMIN' ? 'Registration is paused' : `${ST.window} is full`;
+      $('closedMsg').innerHTML = ST.reason === 'ADMIN' ? 'Registration is paused by the KNPL committee for a short while. This page updates by itself.'
+        : `${ST.total}/${ST.cap} registered. Registration reopens with <b>${esc(nx.name)}</b> on <b>${esc(fmtIST(nx.opensAt))}</b>. This page updates by itself.` + `<ol class="wins">${windowsHtml()}</ol>`;
+    } else if (mode === 'trial'){
+      head.textContent = 'Trial is closed'; $('closedMsg').textContent = 'The trial form is closed right now.';
+    } else {
+      head.textContent = 'Registration is closed';
+      $('closedMsg').innerHTML = `KNPL-7 Phase 1 registration is closed. All ${ST.finalCap} places are filled. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.`;
+    }
+  }
+  if (mode === 'trial' && ST.trialOpen){ $('slots').hidden = false; $('slots').className = 'qual ok'; $('slots').textContent = `${ST.max - ST.used} of ${ST.max} trial slots left.`; }
+  else $('slots').hidden = true;
+  tick();
+}
+function tick(){
+  if (!ST) return;
+  const now = serverNow();
+  if (ST.mode === 'coming_soon'){
+    const ms = Math.max(0, ST.nextChangeAt - now), s = Math.floor(ms / 1000);
+    $('cdD').textContent = Math.floor(s / 86400); $('cdH').textContent = pad(Math.floor(s % 86400 / 3600)); $('cdM').textContent = pad(Math.floor(s % 3600 / 60)); $('cdS').textContent = pad(s % 60);
+  }
+  if (!$('statusBar').hidden){
+    const nx = ST.next >= 0 ? ST.windows[ST.next] : null;
+    $('sbNext').innerHTML = ST.mode === 'closed' ? '' : nx ? `${ST.mode === 'paused' ? 'Reopens' : 'Next'}: ${esc(nx.name.replace(' Registration', ''))} · opens in <b>${hms(nx.opensAt - now)}</b>` : '';
+  }
+  // reached a change point → ask the server again (once), then keep polling until it agrees
+  if (ST.nextChangeAt && now >= ST.nextChangeAt && Date.now() - lastLoad > 3000) loadStatus();
+  else if (Date.now() >= nextPoll && !loading) loadStatus();
+}
+setInterval(tick, 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastLoad > 5000) loadStatus(); });
+
+/* ---------- share poster after a successful Phase 1 registration ---------- */
+const FORM_LINK = 'https://knplseason7.github.io/knpl7/';
+function loadImg(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+async function makeSharePoster(r){
+  try { await document.fonts.ready; } catch(_) {}
+  const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d');
+  const NAVY = '#112347', GOLD = '#c99a36', IVORY = '#f3f5fa', SOFT = '#c3cbe0';
+  const D = "'Saira Condensed','Arial Narrow',sans-serif", B = "'Public Sans',Arial,sans-serif";
+  const ctr = (t, y, f, c) => { x.font = f; x.fillStyle = c; x.textAlign = 'center'; x.fillText(t, W / 2, y); };
+  const fit = (t, y, size, weight, family, c, maxW) => { let s = size; do { x.font = `${weight} ${s}px ${family}`; s -= 2; } while (x.measureText(t).width > maxW && s > 20); x.fillStyle = c; x.textAlign = 'center'; x.fillText(t, W / 2, y); };
+  x.fillStyle = NAVY; x.fillRect(0, 0, W, H);
+  x.strokeStyle = GOLD; x.lineWidth = 4; x.strokeRect(28, 28, W - 56, H - 56); x.lineWidth = 2; x.strokeRect(40, 40, W - 80, H - 80);
+  try { const lg = await loadImg(document.querySelector('img.logo').src); x.drawImage(lg, W / 2 - 95, 70, 190, 190); } catch(_) {}
+  ctr('KNPL SEASON 7', 310, `700 30px ${B}`, GOLD);
+  fit('PHASE 1 REGISTRATION COMPLETED', 375, 64, 800, D, IVORY, W - 140);
+  // player photo
+  const cx = W / 2, cy = 590, rad = 185;
+  x.save(); x.beginPath(); x.arc(cx, cy, rad, 0, Math.PI * 2); x.closePath(); x.fillStyle = '#1b3463'; x.fill(); x.clip();
+  try { const ph = await loadImg(state.photo); const s = Math.max(2 * rad / ph.width, 2 * rad / ph.height); x.drawImage(ph, cx - ph.width * s / 2, cy - ph.height * s / 2, ph.width * s, ph.height * s); } catch(_) {}
+  x.restore(); x.beginPath(); x.arc(cx, cy, rad + 8, 0, Math.PI * 2); x.strokeStyle = GOLD; x.lineWidth = 10; x.stroke();
+  fit(String(r.name || ''), 860, 66, 800, D, IVORY, W - 160);
+  // leagues played (skill category is decided later, so it is not shown)
+  const played = state.playedLabels || [];
+  ctr('LEAGUES PLAYED', 902, `700 22px ${B}`, SOFT);
+  const chips = played.length ? played : ['Qualifying leagues'];
+  x.font = `700 28px ${B}`;
+  const rows = []; let cur = [], curW = 0, maxW = W - 180;
+  chips.forEach(c => { const w = x.measureText(c).width + 44; if (curW + w > maxW && cur.length){ rows.push(cur); cur = []; curW = 0; } cur.push([c, w]); curW += w + 12; });
+  if (cur.length) rows.push(cur);
+  const chipH = 46, rowsUsed = rows.slice(0, 2);
+  rowsUsed.forEach((row, ri) => {
+    const tw = row.reduce((s, c) => s + c[1], 0) + 12 * (row.length - 1); let cx2 = W / 2 - tw / 2; const y = 920 + ri * (chipH + 10);
+    row.forEach(([c, w]) => { x.fillStyle = GOLD; x.beginPath(); x.roundRect ? x.roundRect(cx2, y, w, chipH, 23) : x.rect(cx2, y, w, chipH); x.fill();
+      x.font = `700 28px ${B}`; x.fillStyle = NAVY; x.textAlign = 'center'; x.fillText(c, cx2 + w / 2, y + 33); cx2 += w + 12; });
+  });
+  const cat = played.join(', ');
+  // count box
+  const by = 1030;
+  x.fillStyle = 'rgba(255,255,255,.08)'; x.fillRect(190, by, W - 380, 132); x.strokeStyle = 'rgba(201,154,54,.6)'; x.lineWidth = 2; x.strokeRect(190, by, W - 380, 132);
+  ctr(r.pool === 'WAITING LIST' ? `REGISTRATION · 12TH MAN WAITING LIST NO. ${r.waitingNo}` : 'REGISTRATION', by + 38, `700 24px ${B}`, SOFT);
+  ctr(`${r.count || ''} / ${r.cap || ''}`, by + 110, `800 72px ${D}`, GOLD);
+  ctr(`Reg ID ${r.regId}`, 1192, `600 24px ${B}`, SOFT);
+  ctr('Mega Auction 12 Dec 2026  ·  KNPL-7 11–14 Feb 2027, Angamaly', 1232, `500 26px ${B}`, IVORY);
+  ctr('Register: knplseason7.github.io/knpl7', 1280, `700 28px ${B}`, GOLD);
+  const url = cv.toDataURL('image/png');
+  $('shareImg').src = url; $('dlBtn').href = url;
+  const blob = await new Promise(res => cv.toBlob(res, 'image/png'));
+  const file = new File([blob], `KNPL-7-${r.regId}.png`, {type: 'image/png'});
+  const text = `🏏 I have completed my *KNPL-7 Phase-1 Player Registration*! ✅\n\nRegistration ${r.count}/${r.cap}${cat ? '\nLeagues played: ' + cat : ''}\n\nKerala Namboodiris Premier League – Season 7\nMega Auction: 12 Dec 2026 · KNPL-7: 11–14 Feb 2027, Angamaly\n\nRegister here: ${FORM_LINK}`;
+  $('shareBtn').onclick = async () => {
+    try {
+      if (navigator.canShare && navigator.canShare({files: [file]})) { await navigator.share({files: [file], text}); return; }
+    } catch(e) { if (e && e.name === 'AbortError') return; }
+    $('dlBtn').click();
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    $('shareHint').textContent = 'The poster was downloaded. In WhatsApp, attach it from your gallery along with the message.';
+  };
+  $('shareBox').hidden = false;
+}
+
+/* ---------- Power Play code step ---------- */
+function showGate(msg){
+  $('codeGate').hidden = false; $('regForm').hidden = true; $('gateOk').hidden = true;
+  $('m-gate').innerHTML = msg || '';
+  $('phone').readOnly = false; $('code').readOnly = false;
+}
+$('gPhone').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, ''); });
+$('gCodeIn').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
+$('gateBtn').addEventListener('click', async () => {
+  const pc = $('gCode').value.trim(), ph = $('gPhone').value.trim(), code = $('gCodeIn').value.trim();
+  $('m-gate').textContent = '';
+  if (pc === '+91' ? !/^[6-9]\d{9}$/.test(ph) : !/^\d{6,14}$/.test(ph)){ $('m-gate').textContent = 'Enter a valid 10-digit WhatsApp number.'; return; }
+  if (code.replace(/[^A-Za-z0-9]/g, '').length < 4){ $('m-gate').textContent = 'Enter your Power Play code.'; return; }
+  const b = $('gateBtn'); b.disabled = true; b.textContent = 'Checking…';
+  try {
+    const r = await api('checkCode', pc, ph, code);
+    state.ppCode = code;
+    $('code').value = pc; $('phone').value = ph; $('phone').readOnly = true; $('code').readOnly = true;
+    $('gateOk').innerHTML = `✓ ${esc(r.label || 'Code accepted')} for ${esc(pc + ' ' + ph)}. Now fill in the form below. <button type="button" class="ghost" id="gateChange" style="margin-left:6px;min-height:32px">Change</button>`;
+    $('gateChange').onclick = () => { state.ppCode = ''; showGate(); };
+    $('codeGate').hidden = true; $('gateOk').hidden = false; $('regForm').hidden = false;
+  } catch(err){
+    const m = String(err.message || err);
+    $('m-gate').innerHTML = friendly(m);
+    if (/^(NOT_OPEN|PAUSED|PP_FULL|CLOSED):/.test(m)) loadStatus();
+  } finally { b.disabled = false; b.textContent = 'Check code and continue'; }
 });
 
+loadStatus();
 refresh();
 </script>
 
