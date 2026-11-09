@@ -9,26 +9,29 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600&display=swap">
 <style>
-/* Layout: turf-green header band edged with a kasavu (gold double-line) border, then one narrow column of numbered form steps. */
+/* Layout: KNPL navy header band edged with a saffron double line (colours of the KNPL logo), then one column of numbered form steps. */
 :root{
-  --bg:#f3f5ef; --surface:#ffffff; --sunk:#eaeee6; --ink:#12241b; --muted:#56665d; --line:#d3dacd;
-  --turf:#1d5a40; --turf-ink:#ffffff; --band:#163f2e; --on-band:#eef5ee; --band-muted:#b9cfbf;
-  --gold:#b88a2c; --gold-soft:#f4ead3;
-  --ok:#24704a; --ok-bg:#dcefe3; --warn:#8a5a00; --warn-bg:#fbefd2; --bad:#a3271f; --bad-bg:#f8e0dd;
+  --bg:#eef2f8; --surface:#ffffff; --sunk:#e4eaf4; --ink:#14213d; --muted:#4f5d78; --line:#c5d0e2;
+  --field:#f7f9fd; --field-line:#8fa3c4; --info:#1f4f9a; --info-bg:#e6eefb;
+  --turf:#1d3f86; --turf-ink:#ffffff; --band:#112347; --on-band:#f2f5fb; --band-muted:#b9c5de;
+  --gold:#e07a1f; --gold-soft:#fdeedc;
+  --ok:#1e7a46; --ok-bg:#dcf1e4; --warn:#8a5200; --warn-bg:#fdf0d9; --bad:#b0281f; --bad-bg:#fbe4e1;
   --display:'Saira Condensed','Arial Narrow',sans-serif;
   --body:'Public Sans','Noto Sans Malayalam',system-ui,-apple-system,'Segoe UI',sans-serif;
   --ml:'Noto Sans Malayalam','Public Sans',sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0e1712; --surface:#15221b; --sunk:#1b2b22; --ink:#e6eee8; --muted:#9fb2a6; --line:#2a3d32;
-  --turf:#5bbd8b; --turf-ink:#06140d; --band:#0b2419; --on-band:#e6f1e9; --band-muted:#97b5a2;
-  --gold:#d8ad57; --gold-soft:#2e2615;
-  --ok:#7dd3a2; --ok-bg:#163526; --warn:#e9c06a; --warn-bg:#33280f; --bad:#f19a92; --bad-bg:#3a1a17; color-scheme:dark}}
+  --bg:#0c1426; --surface:#131e36; --sunk:#1a2742; --ink:#e8edf7; --muted:#a3b0cb; --line:#2c3b5c;
+  --field:#0f1930; --field-line:#5a6f98; --info:#9cc0ff; --info-bg:#172a4d;
+  --turf:#8fb3ff; --turf-ink:#0b1430; --band:#0a1530; --on-band:#eef2fb; --band-muted:#9fb0d2;
+  --gold:#f39a45; --gold-soft:#33230f;
+  --ok:#7dd3a2; --ok-bg:#133626; --warn:#f0c46e; --warn-bg:#33270e; --bad:#f39a92; --bad-bg:#3b1a17; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0e1712; --surface:#15221b; --sunk:#1b2b22; --ink:#e6eee8; --muted:#9fb2a6; --line:#2a3d32;
-  --turf:#5bbd8b; --turf-ink:#06140d; --band:#0b2419; --on-band:#e6f1e9; --band-muted:#97b5a2;
-  --gold:#d8ad57; --gold-soft:#2e2615;
-  --ok:#7dd3a2; --ok-bg:#163526; --warn:#e9c06a; --warn-bg:#33280f; --bad:#f19a92; --bad-bg:#3a1a17; color-scheme:dark}
+  --bg:#0c1426; --surface:#131e36; --sunk:#1a2742; --ink:#e8edf7; --muted:#a3b0cb; --line:#2c3b5c;
+  --field:#0f1930; --field-line:#5a6f98; --info:#9cc0ff; --info-bg:#172a4d;
+  --turf:#8fb3ff; --turf-ink:#0b1430; --band:#0a1530; --on-band:#eef2fb; --band-muted:#9fb0d2;
+  --gold:#f39a45; --gold-soft:#33230f;
+  --ok:#7dd3a2; --ok-bg:#133626; --warn:#f0c46e; --warn-bg:#33270e; --bad:#f39a92; --bad-bg:#3b1a17; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -55,22 +58,29 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,7vw,48px);lin
 main .wrap{padding-block:22px 64px;display:grid;gap:18px}
 .notice{display:flex;gap:10px;align-items:flex-start;background:var(--bad-bg);color:var(--bad);border-radius:10px;padding:12px 14px;font-size:14px;font-weight:500}
 .notice.info{background:var(--gold-soft);color:var(--ink)}
+.notice.guide{background:var(--info-bg);color:var(--ink);border-left:5px solid var(--info);font-weight:400;line-height:1.5}
+.notice.guide svg{color:var(--info)}
+.notice.guide b{color:var(--info)}
 .notice svg{flex:none;margin-top:2px}
 
-.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;gap:16px;min-width:0}
-.step > header{display:flex;gap:12px;align-items:baseline}
-.num{font-family:var(--display);font-weight:800;font-size:28px;line-height:1;color:var(--gold)}
+.step{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--band);border-radius:14px;padding:20px;display:grid;gap:18px;min-width:0;box-shadow:0 2px 10px rgba(17,35,71,.07)}
+@media(min-width:620px){.step{padding:24px 26px}}
+.step > header{display:flex;gap:12px;align-items:center}
+h2{color:var(--band)}
+.num{font-family:var(--display);font-weight:800;font-size:22px;line-height:1;color:#fff;background:var(--gold);width:36px;height:36px;border-radius:50%;display:inline-grid;place-items:center;flex:none;align-self:center}
 h2{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.1;margin:0;letter-spacing:.01em}
 .lede{margin:-8px 0 0;color:var(--muted);font-size:14px}
 
 .f{display:grid;gap:6px;min-width:0}
-label,.lbl{font-weight:600;font-size:14px}
-.req::after{content:" *";color:var(--bad)}
+label,.lbl{font-weight:700;font-size:14.5px;color:var(--ink)}
+.req::after{content:" *";color:var(--gold);font-weight:800}
 .hint{font-size:13px;color:var(--muted);margin:0}
 input[type=text],input[type=tel],input[type=url],input[type=search],select{
-  width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
+  width:100%;min-height:48px;padding:11px 13px;border:1.5px solid var(--field-line);border-radius:9px;background:var(--field);color:var(--ink);font:inherit;font-size:16px;box-shadow:inset 0 1px 2px rgba(17,35,71,.06)}
+input::placeholder{color:#8a96ad}
+select:invalid,select.empty{color:var(--muted)}
 select{padding-right:32px}
-input:focus,select:focus{outline:2px solid var(--turf);outline-offset:1px;border-color:var(--turf)}
+input:focus,select:focus{outline:3px solid rgba(224,122,31,.35);outline-offset:0;border-color:var(--gold);background:var(--surface)}
 input.caps{text-transform:uppercase;letter-spacing:.03em}
 .grid2{display:grid;gap:16px;grid-template-columns:1fr}
 @media(min-width:620px){.grid2{grid-template-columns:1fr 1fr}}
@@ -81,8 +91,8 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 
 /* community list */
 .comm{display:grid;gap:8px}
-.opt{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--surface)}
-.opt:has(input:checked){border-color:var(--turf);background:var(--sunk)}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--field)}
+.opt:has(input:checked){border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 1px var(--gold)}
 .opt input{margin-top:4px;accent-color:var(--turf);width:18px;height:18px;flex:none}
 .opt .ml{font-family:var(--ml);font-size:15px;display:block}
 .opt small{color:var(--muted);font-size:13px}
@@ -103,39 +113,40 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 
 /* photo */
 .photo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.ph-frame{width:96px;height:120px;border-radius:10px;border:1px dashed var(--line);background:var(--sunk);display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center;flex:none}
+.ph-frame{width:96px;height:120px;border-radius:10px;border:2px dashed var(--field-line);background:var(--sunk);display:grid;place-items:center;overflow:hidden;color:var(--muted);font-size:12px;text-align:center;flex:none}
 .ph-frame img{width:100%;height:100%;object-fit:cover}
-.filebtn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--turf);color:var(--turf);font-weight:600;cursor:pointer;background:transparent}
+.filebtn{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 16px;border-radius:9px;border:1.5px solid var(--turf);color:var(--turf);font-weight:600;cursor:pointer;background:transparent}
 .filebtn:focus-within{outline:2px solid var(--turf);outline-offset:2px}
 .filebtn input{position:absolute;opacity:0;width:1px;height:1px}
 
 /* league chips */
 .chips{display:grid;gap:8px;grid-template-columns:1fr}
 @media(min-width:560px){.chips{grid-template-columns:1fr 1fr}}
-.chip{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--surface)}
-.chip:has(input:checked){border-color:var(--turf);background:var(--sunk)}
+.chip{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1.5px solid var(--field-line);border-radius:10px;cursor:pointer;background:var(--field)}
+.chip:has(input:checked){border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 1px var(--gold)}
 .chip input{accent-color:var(--turf);width:18px;height:18px;flex:none}
 .chip b{font-family:var(--display);font-size:20px;letter-spacing:.02em;display:block;line-height:1.1}
 .chip small{color:var(--muted);font-size:13px}
 .chip em{font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-left:auto;flex:none}
 .rule{font-size:13px;color:var(--muted);margin:0}
 
-.same{display:grid;gap:10px;padding:14px;border-radius:10px;background:var(--sunk)}
+.same{display:grid;gap:10px;padding:14px;border-radius:10px;background:var(--info-bg);border:1px solid var(--line)}
 .check{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-weight:500}
 .check input{accent-color:var(--turf);width:18px;height:18px;margin-top:2px;flex:none}
 
-.lcard{border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
-.lcard > h3{margin:0;padding:10px 14px;background:var(--sunk);font-family:var(--display);font-weight:700;font-size:20px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
-.lcard > h3 span{font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted)}
-.srow{padding:14px;display:grid;gap:10px;border-top:1px solid var(--line);min-width:0}
+.lcard{border:1.5px solid var(--field-line);border-radius:12px;overflow:hidden;min-width:0}
+.lcard > h3{margin:0;padding:10px 14px;background:var(--band);color:var(--on-band);border-bottom:3px solid var(--gold);font-family:var(--display);font-weight:700;font-size:21px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lcard > h3 span{font-family:var(--body);font-weight:500;font-size:13px;color:var(--band-muted)}
+.srow{padding:14px;display:grid;gap:10px;border-top:2px dashed var(--line);min-width:0}
+.srow:nth-of-type(even){background:var(--sunk)}
 .lcard > h3 + .srow{border-top:0}
 .shead{display:flex;gap:8px 12px;align-items:baseline;flex-wrap:wrap}
-.shead b{font-family:var(--display);font-size:19px;letter-spacing:.02em}
+.shead b{font-family:var(--display);font-size:20px;letter-spacing:.02em;color:var(--band);background:var(--gold-soft);border:1px solid var(--gold);border-radius:6px;padding:0 8px}
 .shead span{font-size:13px;color:var(--muted)}
 .tag{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--gold-soft);color:var(--ink);border:1px solid var(--gold)}
 .inrow{display:flex;gap:8px;min-width:0}
 .inrow input{flex:1;min-width:0}
-.ghost{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:0 12px;min-height:44px;font:600 13px var(--body);cursor:pointer;white-space:nowrap}
+.ghost{appearance:none;border:1.5px solid var(--field-line);background:var(--surface);color:var(--ink);border-radius:8px;padding:0 12px;min-height:44px;font:600 13px var(--body);cursor:pointer;white-space:nowrap}
 .ghost:hover{border-color:var(--turf)}
 .ghost:focus-visible{outline:2px solid var(--turf);outline-offset:2px}
 
@@ -143,7 +154,8 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .qual.ok{background:var(--ok-bg);color:var(--ok)}
 .qual.no{background:var(--warn-bg);color:var(--warn)}
 
-.primary{appearance:none;border:0;background:var(--turf);color:var(--turf-ink);font:700 16px var(--body);min-height:50px;border-radius:10px;padding:0 24px;cursor:pointer;width:100%}
+.primary{appearance:none;border:0;background:var(--gold);color:#fff;font:700 17px var(--body);min-height:54px;border-radius:12px;padding:0 24px;cursor:pointer;width:100%;box-shadow:0 4px 12px rgba(224,122,31,.35)}
+.primary:hover{filter:brightness(1.05)}
 .primary:disabled{opacity:.6;cursor:progress}
 .primary:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .errsum{background:var(--bad-bg);color:var(--bad);border-radius:10px;padding:12px 14px;font-size:14px}
@@ -151,7 +163,18 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 
 /* done + auction */
 .done{text-align:left;display:grid;gap:12px}
-.regid{font-family:var(--display);font-weight:800;font-size:40px;letter-spacing:.04em;color:var(--turf);line-height:1}
+.regid{font-family:var(--display);font-weight:800;font-size:40px;letter-spacing:.04em;color:var(--band);line-height:1}
+.done{border-top-color:var(--ok)!important}
+.okhero{display:flex;gap:14px;align-items:center;padding:16px;border-radius:12px;background:var(--ok-bg);border:1.5px solid var(--ok)}
+.okhero svg{flex:none}
+.okhero h2{color:var(--ok);font-size:30px}
+.okhero p{margin:2px 0 0;font-weight:600}
+.okhero .ml{font-family:var(--ml);font-weight:500;color:var(--muted)}
+.regbox{display:grid;gap:6px;padding:12px 14px;border-radius:12px;border:2px dashed var(--gold);background:var(--gold-soft)}
+.acked{display:grid;gap:8px;padding:12px 14px;border-radius:12px;background:var(--warn-bg);border:1.5px solid #e2b04f;color:var(--ink);font-size:14px;line-height:1.5}
+.acked b{color:var(--warn)}
+.acked ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.acked p{margin:0}
 .idrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .results{display:grid;gap:8px}
 .pl{display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
@@ -186,7 +209,7 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .ms-list .ghost{margin-top:4px;justify-self:end}
 .cat small{color:var(--band-muted);font-size:12px}
 .eyebrow2{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--band-muted);font-weight:600}
-.fs{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0;display:grid;gap:10px;min-width:0}
+.fs{border:1.5px solid var(--field-line);border-radius:10px;padding:12px 14px;margin:0;display:grid;gap:10px;min-width:0}
 .fs legend{font-weight:600;font-size:14px;padding:0 6px}
 .sum{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:0;font-size:14px}
 .sum dt{color:var(--muted)}
@@ -202,6 +225,7 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .sbar{background:var(--band);color:var(--on-band);border-bottom:3px solid var(--gold);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
 .sbar-in{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 16px;padding-block:10px;font-size:14px}
 .sb-win{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.02em}
+main .sbar .sbar-in{display:flex;padding-block:8px;gap:2px 16px}
 .sb-pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px;background:var(--gold);color:#112347;vertical-align:2px;margin-left:6px}
 .sb-pill.paused{background:#f3c26b}.sb-pill.closed{background:#e9a39b}
 .sb-right{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--band-muted)}
@@ -313,9 +337,9 @@ main .inrow > .ghost{flex:1 1 0}
 </section>
 <!-- ============ REGISTER ============ -->
 <div class="wrap" id="view-reg" role="tabpanel" aria-labelledby="tab-reg">
-  <div class="notice" role="note">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-    <span>Giving wrong or incorrect information will lead to rejection of your registration. List every CricHeroes Profile ID you used. Hiding a profile is treated as incorrect information.</span>
+  <div class="notice guide" role="note" id="regGuide">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 11v6M12 7.5v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    <span><b>Before you start:</b> keep your photo and CricHeroes Profile ID(s) ready. Please give correct details and list <b>every CricHeroes Profile ID you have used</b>, including old profiles. Wrong or hidden information can lead to rejection.</span>
   </div>
 
   <div class="qual ok" id="slots" hidden></div>
@@ -474,9 +498,19 @@ main .inrow > .ghost{flex:1 1 0}
   </form>
 
   <section class="step done" id="doneBox" hidden aria-live="polite">
-    <header><span class="num">✓</span><h2>Registration received</h2></header>
-    <div class="idrow"><span class="regid" id="doneId">KNPL7-0000</span><button type="button" class="ghost" id="copyId">Copy Reg ID</button></div>
-    <p style="margin:0">Thank you, <b id="doneName"></b>. Your status is <span class="pill Pending">Pending verification</span>.</p>
+    <div class="okhero">
+      <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#1e7a46"/><path d="M19 33l9 9 17-19" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><h2>Registration successful!</h2><p>Your KNPL-7 Phase 1 registration has been submitted.</p><p class="ml">നിങ്ങളുടെ രജിസ്ട്രേഷൻ വിജയകരമായി സമർപ്പിച്ചു.</p></div>
+    </div>
+    <div class="regbox"><span class="small">Your Registration ID</span>
+      <div class="idrow"><span class="regid" id="doneId">KNPL7-0000</span><button type="button" class="ghost" id="copyId">Copy Reg ID</button></div>
+    </div>
+    <p style="margin:0">Thank you, <b id="doneName"></b>. Your status is <span class="pill Pending">Pending verification</span>. The committee will verify your details.</p>
+    <div class="acked" id="doneAck" hidden>
+      <b>Please note: you chose “Proceed anyway” for these points</b>
+      <ul id="doneAckList"></ul>
+      <p>The committee will check them. If any of these was a mistake, please inform Krishnadas, KNPL committee coordinator, <b>+91 99862 18725</b>, with your Reg ID.</p>
+    </div>
     <p class="qual ok" id="donePool" hidden style="margin:0"></p>
     <div class="share" id="shareBox" hidden>
       <b>Share your registration</b>
@@ -1181,6 +1215,9 @@ $('regForm').addEventListener('submit', async e => {
     sum.hidden = true;
     $('regForm').hidden = true;
     $('doneId').textContent = r.regId; $('doneName').textContent = r.name;
+    $('regGuide').hidden = true;
+    $('doneAck').hidden = !chIssues.length;
+    $('doneAckList').innerHTML = chIssues.map(t => `<li>${esc(t)}</li>`).join('');
     $('gateOk').hidden = true; $('codeGate').hidden = true;
     if (r.pool === 'WAITING LIST'){ $('donePool').hidden = false; $('donePool').className = 'qual no'; $('donePool').textContent = `You are on the 12th Man waiting list, No. ${r.waitingNo}. You will be added to the auction pool if a registered player is rejected.`; }
     else if (r.window && r.window !== 'Trial'){ $('donePool').hidden = false; $('donePool').textContent = `Registered in ${r.window}.`; }
