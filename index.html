@@ -255,6 +255,16 @@ main .inrow > .ghost{flex:1 1 0}
 .chm-ml{font-family:var(--ml);color:var(--muted)}
 .chm-btns{display:grid;gap:8px}
 .chm-btns .ghost{min-height:46px;font-weight:600}
+.chm-sec{display:grid;gap:8px}
+.chm-sec h4{margin:0;font-size:15px}
+.chm-list.found li{background:var(--gold-soft);color:var(--ink);border:1px solid var(--gold)}
+.chm-sug{display:grid;gap:6px;margin-top:8px}
+.chm-sug span{font-weight:700;font-size:13px}
+.chm-sug small{font-size:12px;opacity:.85;margin-top:-4px}
+.chm-act{white-space:normal!important;text-align:left;justify-content:flex-start;min-height:40px;padding:8px 12px;font-size:13px;color:var(--ink)}
+.chm-all{font-weight:700;border-color:var(--gold);min-height:44px}
+.chm-all:disabled{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);opacity:1}
+.chm-act:disabled{background:var(--ok-bg);color:var(--ok);border-color:var(--ok);opacity:1}
 .srow.chbad{outline:2px solid var(--bad);outline-offset:4px;border-radius:8px}
 </style>
 
@@ -503,9 +513,17 @@ main .inrow > .ghost{flex:1 1 0}
 <div class="chm" id="chModal" role="dialog" aria-modal="true" aria-labelledby="chTitle" hidden>
   <div class="chm-box">
     <h3 id="chTitle">Please check your CricHeroes details</h3>
-    <p>We compared your entries with the CricHeroes match records of these tournaments. You seem to have made a wrong entry:</p>
-    <ul class="chm-list" id="chList"></ul>
-    <p class="chm-ml">നിങ്ങൾ നൽകിയ CricHeroes ID / ടീം വിവരങ്ങൾ CricHeroes രേഖകളുമായി ഒത്തുപോകുന്നില്ല. ദയവായി ഒന്നുകൂടി പരിശോധിക്കുക. വിവരങ്ങൾ ശരിയാണെങ്കിൽ “Proceed anyway” അമർത്തുക.</p>
+    <p>We compared your entries with the saved CricHeroes match records of the qualifying tournaments and KNPL records.</p>
+    <div id="chIssuesBox" class="chm-sec">
+      <h4>You seem to have made a wrong entry</h4>
+      <ul class="chm-list" id="chList"></ul>
+    </div>
+    <div id="chFoundBox" class="chm-sec">
+      <h4>We found your profile in tournaments you did not mention</h4>
+      <button type="button" class="ghost chm-all" id="chAddAll" hidden>Add all of these to my form</button>
+      <ul class="chm-list found" id="chFound"></ul>
+    </div>
+    <p class="chm-ml">നിങ്ങൾ നൽകിയ CricHeroes ID / ടീം വിവരങ്ങൾ CricHeroes രേഖകളുമായി ഒത്തുപോകുന്നില്ല, അല്ലെങ്കിൽ നിങ്ങൾ കളിച്ച ചില ടൂർണമെന്റുകൾ ഫോമിൽ ചേർത്തിട്ടില്ല. ദയവായി പരിശോധിക്കുക. “Use ID” / “Add … to my form” ബട്ടൺ ഉപയോഗിച്ച് ശരിയാക്കാം. വിവരങ്ങൾ ശരിയാണെങ്കിൽ “Proceed anyway” അമർത്തുക.</p>
     <p class="small">If your details are correct (for example, you were in the squad but did not play a match, or you used another CricHeroes profile), tap <b>Proceed anyway</b>. Your registration will not be rejected because of this check. The committee will verify it.</p>
     <div class="chm-btns">
       <button type="button" class="primary" id="chRecheck">Recheck my entries</button>
@@ -642,6 +660,7 @@ const MOCK = (() => {
     {regId:'KNPL7-0003', name:'SAMPLE PLAYER REJECTED', district:'Kottayam', status:'Rejected', joined:false, last4:'1234', remarks:'CBL-5 profile ID does not match the team squad.'}
   ];
   return {
+    reviewEntries: e => loadCh().then(d => chReviewCore(d, null, e)),   // preview: public records only
     getRegistrationInfo: () => wait({open:true, full:false, used:87, max:1000, trial:true}),
     getStatus: () => wait(MOCKSRV.status()),
     checkCode: (pc, ph, code) => MOCKSRV.checkCode(ph, code),
@@ -861,7 +880,106 @@ function faceCrop(W, H, f){
   return [(W - m) / 2, (H - m) / 2, m];
 }
 
-/* ---------- CricHeroes check: compares each season's Profile ID and team with the tournament match records ---------- */
+/* CH-CORE-START – shared by Code.gs (server) and Index.html (form fallback). Edit cricheroes/core.js, then run cricheroes/inject.py. */
+/**
+ * Checks a player's entries against the saved CricHeroes tournament records.
+ *  data  : ch-data.json  {tournaments:{KEY:{label,teams,p:{id:teamIdx}}}, names:{id:name}}
+ *  ref   : KNPL reference list [[refNo, name, phone10, [ids], cricheroesName], ...] – server only (private), null in the browser
+ *  entry : {phone, name, seasons:{KEY:{team, link}}}   (link = CricHeroes Profile ID)
+ * Returns {issues:[...], found:[...], refIds:[...], refNos:[...]}
+ *  issues: declared seasons that do not match (kind missing | team | owner), each with up to 3 suggestions
+ *  found : tournaments where the player's IDs (entered, or linked to his mobile in the reference list) played but he did not mention
+ */
+function chReviewCore(data, ref, entry) {
+  const norm = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const digits = s => String(s || '').replace(/\D/g, '');
+  const toks = s => String(s || '').toUpperCase().replace(/[^A-Z ]/g, ' ').split(/\s+/).filter(Boolean)
+    .reduce((a, t) => a.concat(t.length <= 2 ? t.split('') : [t]), []);
+  const nameScore = (a, b) => {
+    const A = toks(a), B = toks(b);
+    if (!A.length || !B.length) return 0;
+    const hit = t => B.some(u => u === t || (t.length === 1 && u[0] === t) || (u.length === 1 && t[0] === u) ||
+      (t.length >= 4 && u.length >= 4 && (u.indexOf(t) === 0 || t.indexOf(u) === 0)));
+    const strong = t => B.some(u => u === t || (u.length >= 4 && (u.indexOf(t) === 0 || t.indexOf(u) === 0)));
+    const long = A.filter(t => t.length >= 4);
+    if (long.length && !long.some(strong)) return 0;         // the main name must match (not just an initial)
+    return A.filter(hit).length / Math.max(A.length, B.length);
+  };
+  const near = (a, b) => {                                 // one digit wrong / missing / extra, or two neighbours swapped
+    if (a === b) return false;
+    if (a.length === b.length) {
+      const d = []; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) d.push(i);
+      return d.length === 1 || (d.length === 2 && d[1] === d[0] + 1 && a[d[0]] === b[d[1]] && a[d[1]] === b[d[0]]);
+    }
+    return lev(a, b) === 1;
+  };
+  const lev = (a, b) => {
+    if (Math.abs(a.length - b.length) > 1) return 9;
+    let prev = Array.from({length: b.length + 1}, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i];
+      for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+    return prev[b.length];
+  };
+  const T = data.tournaments || {}, NM = data.names || {}, S = entry.seasons || {};
+  const phone = digits(entry.phone).slice(-10);
+  const entered = [];
+  Object.keys(S).forEach(k => { const id = digits(S[k] && S[k].link); if (S[k] && S[k].team && id && entered.indexOf(id) < 0) entered.push(id); });
+  const R = ref || [];
+  const mine = R.filter(r => phone && r[2] === phone);
+  const refIds = [];
+  mine.forEach(r => r[3].forEach(i => { if (refIds.indexOf(i) < 0) refIds.push(i); }));
+  const byName = mine.length ? [] : R.filter(r => nameScore(entry.name, r[1]) >= 0.67 || nameScore(entry.name, r[4]) >= 0.67);
+  const nameRefIds = byName.reduce((a, r) => a.concat(r[3]), []);
+  const owner = {};
+  R.forEach(r => r[3].forEach(i => { owner[i] = r[2]; }));
+  const notMine = i => owner[i] && phone && owner[i] !== phone;        // ID belongs to another player in the KNPL records
+  const known = entered.filter(i => !notMine(i)).concat(refIds.filter(i => entered.indexOf(i) < 0));
+  const issues = [], found = [];
+
+  Object.keys(T).forEach(k => {
+    const t = T[k], e = S[k] || {}, label = t.label, id = digits(e.link);
+    if (e.team && id) {
+      const idx = t.p[id];
+      let kind = '', text = '';
+      if (idx === undefined) { kind = 'missing'; text = label + ': CricHeroes ID ' + id + ' was not found in ' + label + '.'; }
+      else if (idx >= 0 && norm(t.teams[idx]) !== norm(e.team)) { kind = 'team'; text = label + ': you do not seem to be part of ' + e.team + '. CricHeroes shows ID ' + id + ' playing for ' + t.teams[idx] + '.'; }
+      else if (notMine(id)) { kind = 'owner'; text = label + ': KNPL records link CricHeroes ID ' + id + ' to another player\'s mobile number. Please make sure this is your own profile.'; }
+      if (kind) {
+        const sug = [];
+        const add = (cid, why) => {
+          if (cid === id || t.p[cid] === undefined || sug.some(s => s.id === cid) || sug.length >= 3) return;
+          sug.push({id: cid, name: NM[cid] || '', team: t.p[cid] >= 0 ? t.teams[t.p[cid]] : '', why: why});
+        };
+        if (kind !== 'owner') {
+          refIds.forEach(c => add(c, 'linked to your mobile number in KNPL records'));
+          nameRefIds.forEach(c => add(c, 'your name in KNPL records'));
+          const ti = t.teams.findIndex(x => norm(x) === norm(e.team));
+          const mates = Object.keys(t.p).filter(p => t.p[p] === ti);
+          mates.filter(p => nameScore(entry.name, NM[p]) >= 0.6).forEach(p => add(p, 'similar name in ' + e.team));
+          mates.filter(p => near(p, id)).forEach(p => add(p, 'similar ID number in ' + e.team));
+        }
+        issues.push({key: k, label: label, kind: kind, id: id, text: text, changeTeam: kind === 'team' ? t.teams[idx] : '', suggestions: sug});
+      }
+    }
+    if (!e.team) {                                         // season not mentioned (or marked "did not play")
+      for (let i = 0; i < known.length; i++) {
+        const idx = t.p[known[i]];
+        if (idx === undefined) continue;
+        const team = idx >= 0 ? t.teams[idx] : '';
+        found.push({key: k, label: label, id: known[i], team: team, fromRef: entered.indexOf(known[i]) < 0,
+          text: 'We found your CricHeroes profile (ID ' + known[i] + ') in ' + label + (team ? ', playing for ' + team : '') + ', but you did not mention ' + label + '.'});
+        break;
+      }
+    }
+  });
+  return {issues: issues, found: found, refIds: refIds, refNos: mine.map(r => r[0])};
+}
+/* CH-CORE-END */
+
+/* ---------- CricHeroes check: compares each season's Profile ID and team with the saved tournament records ---------- */
 const CH_URL = 'https://knplseason7.github.io/knpl7/ch-data.json';
 let chP = null;
 function loadCh(){
@@ -869,41 +987,91 @@ function loadCh(){
   return chP;
 }
 const normTeam = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-function chCompare(data, seasons){
-  const out = [];
-  ALL.forEach(s => {
-    const e = seasons[s.key];
-    if (!e || !e.team || !e.link) return;
-    const t = data.tournaments && data.tournaments[s.key];
-    if (!t) return;                                          // no records yet (e.g. NPL-5 not played)
-    const idx = t.p[e.link];
-    if (idx === undefined) out.push({key: s.key, kind: 'missing', text: `${s.label}: CricHeroes ID ${e.link} was not found in ${s.label}.`});
-    else if (idx >= 0 && normTeam(t.teams[idx]) !== normTeam(e.team)) out.push({key: s.key, kind: 'team', text: `${s.label}: you do not seem to be part of ${e.team}. CricHeroes shows ID ${e.link} playing for ${t.teams[idx]}.`});
-  });
-  return out;
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), ms))]);
+/* Asks the KNPL server (saved records + KNPL reference list); falls back to the public records in the browser. */
+async function chFetchReview(entry){
+  try { return await withTimeout(api('reviewEntries', entry), 9000); }
+  catch(_) {
+    try { return chReviewCore(await withTimeout(loadCh(), 5000), null, entry); } catch(__) { return null; }
+  }
 }
-/* Resolves with the list of mismatches the player accepted ([] if none), or null if the player wants to recheck */
+function seasonByKey(k){ return ALL.find(s => s.key === k); }
+/* Can this season be added without breaking the one-zonal-league-per-season rule? */
+function canAddSeason(k){
+  const s = seasonByKey(k); if (!s) return false;
+  return !(s.zonal && ALL.some(o => o.zonal && o.g === s.g && o.key !== k && played(o)));
+}
+function unSame(){
+  if (!$('sameProfile').checked) return;
+  const c = $('common').value.trim();
+  $('sameProfile').checked = false;
+  ALL.forEach(s => { if (played(s) && !$('p-' + s.key).value) $('p-' + s.key).value = c; });
+  refresh();
+}
+function setTeam(k, team){
+  const sel = $('t-' + k), opt = [...sel.options].find(o => normTeam(o.value) === normTeam(team));
+  if (!opt) return false;
+  sel.value = opt.value; refresh(); return true;
+}
+function useId(k, id){
+  const same = $('sameProfile').checked;
+  if (same) unSame();
+  $('p-' + k).value = id; if (state.qr[k]) state.qr[k].id = null;
+  const w = $('w-' + k); if (w) w.classList.remove('chbad'); setMsg(k, '');
+}
+function addSeason(k, team, id){
+  const s = seasonByKey(k); if (!s) return false;
+  if (!leagueOn(s.league)){ $('lg-' + s.league).checked = true; refresh(); }
+  if (!setTeam(k, team)) return false;
+  if ($('sameProfile').checked && $('common').value.trim() === id) return true;
+  useId(k, id); return true;
+}
+/* Resolves with the warnings the player accepted ([] if none), or null if the player wants to look at the form again */
 async function chReview(seasons){
-  let data;
-  try { data = await Promise.race([loadCh(), new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 5000))]); }
-  catch(_) { return []; }                                   // check unavailable: never hold up a registration
-  const issues = chCompare(data, seasons);
+  const entry = {phone: $('code').value.trim() + ' ' + $('phone').value.trim(), name: $('name').value.trim(), seasons};
+  const r = await chFetchReview(entry);
   document.querySelectorAll('.srow.chbad').forEach(el => el.classList.remove('chbad'));
-  if (!issues.length) return [];
-  const sig = JSON.stringify(issues.map(i => i.text));
-  if (state.chAccepted === sig) return issues;
-  $('chList').innerHTML = issues.map(i => `<li class="${i.kind}">${esc(i.text)}</li>`).join('');
-  $('chModal').hidden = false; $('chRecheck').focus();
+  if (!r || (!r.issues.length && !r.found.length)) return [];
+  const sig = JSON.stringify([r.issues.map(i => i.text), r.found.map(f => f.text)]);
+  if (state.chAccepted === sig) return r.issues.map(i => i.text).concat(r.found.map(f => f.text));
+  const btn = (cls, attrs, label) => `<button type="button" class="ghost chm-act ${cls}" ${attrs}>${esc(label)}</button>`;
+  $('chIssuesBox').hidden = !r.issues.length;
+  $('chList').innerHTML = r.issues.map((i, n) => `<li class="${i.kind}">${esc(i.text)}` +
+    (i.changeTeam ? `<div class="chm-sug">${btn('', `data-a="team" data-k="${i.key}" data-team="${esc(i.changeTeam)}"`, 'Change my ' + i.label + ' team to ' + i.changeTeam)}</div>` : '') +
+    (i.suggestions.length ? `<div class="chm-sug"><span>Is this your profile?</span>${i.suggestions.map(g => btn('', `data-a="id" data-k="${i.key}" data-id="${g.id}"`, `Use ID ${g.id}` + (g.name ? ` · ${g.name}` : '') + (g.team ? ` (${g.team})` : '')) + `<small>${esc(g.why)}</small>`).join('')}</div>` : '') + '</li>').join('');
+  $('chFoundBox').hidden = !r.found.length;
+  $('chFound').innerHTML = r.found.map(f => {
+    const ok = canAddSeason(f.key) && [...$('t-' + f.key).options].some(o => normTeam(o.value) === normTeam(f.team));
+    return `<li>${esc(f.text)}<div class="chm-sug">` + (ok ? btn('', `data-a="add" data-k="${f.key}" data-team="${esc(f.team)}" data-id="${f.id}"`, `Add ${f.label} (${f.team}) to my form`)
+      : `<small>${f.team ? 'Only one zonal league per season is allowed, so this cannot be added here. The committee will review it.' : 'Please add this season yourself if it is yours.'}</small>`) + '</div></li>';
+  }).join('');
+  const addable = () => [...$('chFound').querySelectorAll('.chm-act:not(:disabled)')];
+  $('chAddAll').hidden = addable().length < 2; $('chAddAll').disabled = false; $('chAddAll').textContent = 'Add all ' + addable().length + ' to my form';
+  $('chAddAll').onclick = () => { addable().forEach(b => b.click()); $('chAddAll').disabled = true; $('chAddAll').textContent = '✓ Added to your form'; };
+  $('chModal').hidden = false; $('chRecheck').focus({preventScroll: true}); document.querySelector('.chm-box').scrollTop = 0;
+  let changed = false;
+  $('chModal').onclick = e => {
+    const b = e.target.closest('.chm-act'); if (!b || b.disabled) return;
+    const k = b.dataset.k, a = b.dataset.a;
+    const done = a === 'team' ? setTeam(k, b.dataset.team) : a === 'id' ? (useId(k, b.dataset.id), true) : addSeason(k, b.dataset.team, b.dataset.id);
+    if (!done) return;
+    changed = true;
+    b.closest('.chm-sug').querySelectorAll('.chm-act').forEach(x => { x.disabled = true; });
+    b.textContent = '✓ Done' + (a === 'add' ? ': ' + seasonByKey(k).label + ' added' : a === 'id' ? ': ID ' + b.dataset.id + ' filled in' : ': team changed');
+    $('chRecheck').textContent = 'Check my form and submit again';
+  };
   const choice = await new Promise(res => { $('chRecheck').onclick = () => res('recheck'); $('chProceed').onclick = () => res('proceed'); });
-  $('chModal').hidden = true;
-  if (choice === 'proceed'){ state.chAccepted = sig; return issues; }
-  issues.forEach(i => { const w = $('w-' + i.key); if (w) w.classList.add('chbad'); setMsg(i.key, i.text + ' Please check the team and the Profile ID.'); });
-  const first = $('w-' + issues[0].key); if (first) first.scrollIntoView({behavior: 'smooth', block: 'center'});
+  $('chModal').hidden = true; $('chModal').onclick = null; $('chRecheck').textContent = 'Recheck my entries';
+  if (choice === 'proceed' && !changed){ state.chAccepted = sig; return r.issues.map(i => i.text).concat(r.found.map(f => f.text)); }
+  if (choice === 'proceed') return null;                     // form was changed: show the updated form first
+  r.issues.forEach(i => { const w = $('w-' + i.key); if (w && !w.querySelector('.chm-act')) { w.classList.add('chbad'); setMsg(i.key, i.text + ' Please check the team and the Profile ID.'); } });
+  const first = r.issues.length ? $('w-' + r.issues[0].key) : (r.found.length ? $('w-' + r.found[0].key) : null);
+  if (first) first.scrollIntoView({behavior: 'smooth', block: 'center'});
   return null;
 }
 document.addEventListener('change', e => { const r = e.target.closest && e.target.closest('.srow.chbad'); if (r) r.classList.remove('chbad'); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('chModal').hidden) $('chRecheck').click(); });
-setTimeout(() => loadCh().catch(() => {}), 1500);            // fetch early, so the check is instant at submit
+setTimeout(() => loadCh().catch(() => {}), 1500);            // fetch early, so the fallback check is ready
 
 /* ---------- validate + submit ---------- */
 function validate(){
@@ -988,7 +1156,7 @@ $('regForm').addEventListener('submit', async e => {
   // One token per form, so a retried submission is never registered twice
   if (!state.token) state.token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
   payload.clientToken = state.token;
-  payload.chWarning = chIssues.map(i => i.text).join(' | ');
+  payload.chWarning = chIssues.join(' | ');
   state.playedLabels = ALL.filter(s => played(s)).map(s => s.label);
   if (ST && ST.mode === 'live' && ST.codeRequired){
     if (!state.ppCode){ showGate(); return; }
