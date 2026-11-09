@@ -243,6 +243,19 @@ main .trial .wrap{display:block;padding-block:10px}
 main .inrow{flex-wrap:wrap}
 main .inrow > input.pid{flex:1 1 100%;min-width:0}
 main .inrow > .ghost{flex:1 1 0}
+/* CricHeroes check popup */
+.chm{position:fixed;inset:0;z-index:50;background:rgba(6,20,13,.62);display:grid;place-items:center;padding:16px}
+.chm-box{background:var(--surface);color:var(--ink);border-radius:14px;border-top:6px solid var(--gold);max-width:520px;width:100%;max-height:calc(100dvh - 32px);overflow:auto;padding:18px 18px 16px;display:grid;gap:12px;box-shadow:0 18px 48px rgba(0,0,0,.35)}
+.chm-box h3{margin:0;font-family:var(--display);font-size:24px;line-height:1.1}
+.chm-box p{margin:0;font-size:14px;line-height:1.5}
+.chm-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.chm-list li{padding:10px 12px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-size:14px;line-height:1.45}
+.chm-list li.team{background:var(--warn-bg);color:var(--warn)}
+.chm-list b{color:inherit}
+.chm-ml{font-family:var(--ml);color:var(--muted)}
+.chm-btns{display:grid;gap:8px}
+.chm-btns .ghost{min-height:46px;font-weight:600}
+.srow.chbad{outline:2px solid var(--bad);outline-offset:4px;border-radius:8px}
 </style>
 
 </head>
@@ -486,6 +499,20 @@ main .inrow > .ghost{flex:1 1 0}
   </section>
 </div>
 </main>
+
+<div class="chm" id="chModal" role="dialog" aria-modal="true" aria-labelledby="chTitle" hidden>
+  <div class="chm-box">
+    <h3 id="chTitle">Please check your CricHeroes details</h3>
+    <p>We compared your entries with the CricHeroes match records of these tournaments. You seem to have made a wrong entry:</p>
+    <ul class="chm-list" id="chList"></ul>
+    <p class="chm-ml">നിങ്ങൾ നൽകിയ CricHeroes ID / ടീം വിവരങ്ങൾ CricHeroes രേഖകളുമായി ഒത്തുപോകുന്നില്ല. ദയവായി ഒന്നുകൂടി പരിശോധിക്കുക. വിവരങ്ങൾ ശരിയാണെങ്കിൽ “Proceed anyway” അമർത്തുക.</p>
+    <p class="small">If your details are correct (for example, you were in the squad but did not play a match, or you used another CricHeroes profile), tap <b>Proceed anyway</b>. Your registration will not be rejected because of this check. The committee will verify it.</p>
+    <div class="chm-btns">
+      <button type="button" class="primary" id="chRecheck">Recheck my entries</button>
+      <button type="button" class="ghost" id="chProceed">Proceed anyway</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* =====================================================================
@@ -777,8 +804,106 @@ $('photo').addEventListener('change', async e => {
     const url = c.toDataURL('image/jpeg', 0.8);
     state.photo = url;
     $('phFrame').innerHTML = `<img src="${url}" alt="Your selected photo">`;
+    // Find the face in the background (full-size photo), so the share poster can centre on it
+    state.face = null;
+    const mine = state.facePromise = findFace(img).then(f => { if (state.facePromise === mine) state.face = f; return f; }).catch(() => null);
   } catch(_) { setMsg('photo', 'This file could not be opened. Try a JPG or PNG photo.'); }
 });
+
+/* ---------- face finder for the share poster (runs on the player's phone; nothing is uploaded) ---------- */
+const FACE_CDN = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/';
+let faceApiP = null;
+function loadFaceApi(){
+  if (!faceApiP) faceApiP = new Promise((res, rej) => {
+    if (window.faceapi) return res(window.faceapi);
+    const s = document.createElement('script'); s.src = FACE_CDN + 'dist/face-api.js'; s.async = true;
+    s.onload = () => window.faceapi ? res(window.faceapi) : rej(new Error('face lib')); s.onerror = () => rej(new Error('face lib'));
+    document.head.appendChild(s);
+  }).then(async fa => { await fa.nets.tinyFaceDetector.loadFromUri(FACE_CDN + 'model'); return fa; })
+    .catch(e => { faceApiP = null; throw e; });
+  return faceApiP;
+}
+async function findFace(img){
+  const fa = await loadFaceApi();
+  const W = img.naturalWidth, H = img.naturalHeight, m = Math.min(W, H);
+  let best = null;
+  const scan = async (sx, sy, sw, sh, inputSize) => {
+    const sc = Math.min(1, 640 / Math.max(sw, sh));
+    const c = document.createElement('canvas'); c.width = Math.round(sw * sc); c.height = Math.round(sh * sc);
+    c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+    const found = await fa.detectAllFaces(c, new fa.TinyFaceDetectorOptions({inputSize, scoreThreshold: 0.45}));
+    found.forEach(d => {
+      const b = d.box, f = {x: sx + b.x / sc, y: sy + b.y / sc, w: b.width / sc, h: b.height / sc, score: d.score};
+      if (f.w < m * 0.04) return;                          // ignore tiny specks (crowd in the background)
+      if (!best || f.score > best.score + 0.05 || (f.score > best.score - 0.05 && f.w > best.w)) best = f;
+    });
+  };
+  await scan(0, 0, W, H, 608);
+  // Full-length photos: the face is small, so look again in overlapping squares across the upper part
+  for (const part of [0.5, 0.34]) {
+    if (best) break;
+    const s = Math.round(m * part), step = Math.round(s / 2), maxY = Math.max(0, Math.round(H * 0.8) - s);
+    for (let y = 0; y <= maxY && !best; y += step)
+      for (let x = 0; x <= W - s; x += step) await scan(x, y, s, s, 416);
+  }
+  return best ? {x: best.x / W, y: best.y / H, w: best.w / W, h: best.h / H} : null;
+}
+/* Square crop of the photo for the round frame: centred on the face, or the top part of a tall photo */
+function faceCrop(W, H, f){
+  const m = Math.min(W, H);
+  if (f){
+    const fw = f.w * W, fh = f.h * H, cx = (f.x + f.w / 2) * W, cy = (f.y + f.h / 2) * H;
+    const side = Math.min(m, Math.max(fw * 3, fh * 2.6, m * 0.18));
+    const sx = Math.max(0, Math.min(W - side, cx - side / 2)), sy = Math.max(0, Math.min(H - side, cy - side * 0.42));
+    return [sx, sy, side];
+  }
+  if (H > W * 1.15){ const side = Math.min(W, H * 0.55); return [(W - side) / 2, Math.min(H - side, H * 0.03), side]; }
+  return [(W - m) / 2, (H - m) / 2, m];
+}
+
+/* ---------- CricHeroes check: compares each season's Profile ID and team with the tournament match records ---------- */
+const CH_URL = 'https://knplseason7.github.io/knpl7/ch-data.json';
+let chP = null;
+function loadCh(){
+  if (!chP) chP = fetch(CH_URL, {cache: 'no-cache'}).then(r => { if (!r.ok) throw new Error('ch'); return r.json(); }).catch(e => { chP = null; throw e; });
+  return chP;
+}
+const normTeam = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+function chCompare(data, seasons){
+  const out = [];
+  ALL.forEach(s => {
+    const e = seasons[s.key];
+    if (!e || !e.team || !e.link) return;
+    const t = data.tournaments && data.tournaments[s.key];
+    if (!t) return;                                          // no records yet (e.g. NPL-5 not played)
+    const idx = t.p[e.link];
+    if (idx === undefined) out.push({key: s.key, kind: 'missing', text: `${s.label}: CricHeroes ID ${e.link} was not found in ${s.label}.`});
+    else if (idx >= 0 && normTeam(t.teams[idx]) !== normTeam(e.team)) out.push({key: s.key, kind: 'team', text: `${s.label}: you do not seem to be part of ${e.team}. CricHeroes shows ID ${e.link} playing for ${t.teams[idx]}.`});
+  });
+  return out;
+}
+/* Resolves with the list of mismatches the player accepted ([] if none), or null if the player wants to recheck */
+async function chReview(seasons){
+  let data;
+  try { data = await Promise.race([loadCh(), new Promise((_, rej) => setTimeout(() => rej(new Error('slow')), 5000))]); }
+  catch(_) { return []; }                                   // check unavailable: never hold up a registration
+  const issues = chCompare(data, seasons);
+  document.querySelectorAll('.srow.chbad').forEach(el => el.classList.remove('chbad'));
+  if (!issues.length) return [];
+  const sig = JSON.stringify(issues.map(i => i.text));
+  if (state.chAccepted === sig) return issues;
+  $('chList').innerHTML = issues.map(i => `<li class="${i.kind}">${esc(i.text)}</li>`).join('');
+  $('chModal').hidden = false; $('chRecheck').focus();
+  const choice = await new Promise(res => { $('chRecheck').onclick = () => res('recheck'); $('chProceed').onclick = () => res('proceed'); });
+  $('chModal').hidden = true;
+  if (choice === 'proceed'){ state.chAccepted = sig; return issues; }
+  issues.forEach(i => { const w = $('w-' + i.key); if (w) w.classList.add('chbad'); setMsg(i.key, i.text + ' Please check the team and the Profile ID.'); });
+  const first = $('w-' + issues[0].key); if (first) first.scrollIntoView({behavior: 'smooth', block: 'center'});
+  return null;
+}
+document.addEventListener('change', e => { const r = e.target.closest && e.target.closest('.srow.chbad'); if (r) r.classList.remove('chbad'); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('chModal').hidden) $('chRecheck').click(); });
+setTimeout(() => loadCh().catch(() => {}), 1500);            // fetch early, so the check is instant at submit
 
 /* ---------- validate + submit ---------- */
 function validate(){
@@ -838,6 +963,12 @@ $('regForm').addEventListener('submit', async e => {
     if (!leagueOn(s.league) || !team(s.key)) return;
     seasons[s.key] = {team: team(s.key) === NP ? '' : team(s.key), link: played(s) ? (v.same ? $('common').value : $('p-' + s.key).value).trim() : ''};
   });
+  // CricHeroes check: warn about IDs/teams that do not match the match records. Never blocks the registration.
+  if (state.chBusy) return;
+  state.chBusy = true;
+  let chIssues;
+  try { chIssues = await chReview(seasons); } finally { state.chBusy = false; }
+  if (chIssues === null) return;                             // player chose to recheck
   const payload = {
     name: v.name, phoneCode: v.code, phone: v.ph, district: $('district').value,
     illam: $('illam').value.trim(), community: v.comm, legacySeasons: v.legacySeasons,
@@ -857,6 +988,7 @@ $('regForm').addEventListener('submit', async e => {
   // One token per form, so a retried submission is never registered twice
   if (!state.token) state.token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
   payload.clientToken = state.token;
+  payload.chWarning = chIssues.map(i => i.text).join(' | ');
   state.playedLabels = ALL.filter(s => played(s)).map(s => s.label);
   if (ST && ST.mode === 'live' && ST.codeRequired){
     if (!state.ppCode){ showGate(); return; }
@@ -1266,7 +1398,12 @@ async function makeSharePoster(r){
   // player photo
   const cx = W / 2, cy = 590, rad = 185;
   x.save(); x.beginPath(); x.arc(cx, cy, rad, 0, Math.PI * 2); x.closePath(); x.fillStyle = '#1b3463'; x.fill(); x.clip();
-  try { const ph = await loadImg(state.photo); const s = Math.max(2 * rad / ph.width, 2 * rad / ph.height); x.drawImage(ph, cx - ph.width * s / 2, cy - ph.height * s / 2, ph.width * s, ph.height * s); } catch(_) {}
+  try {
+    const ph = await loadImg(state.photo);
+    if (state.facePromise) await Promise.race([state.facePromise, new Promise(r => setTimeout(r, 6000))]);   // give face finding a moment
+    const [sx, sy, side] = faceCrop(ph.width, ph.height, state.face);
+    x.drawImage(ph, sx, sy, side, side, cx - rad, cy - rad, 2 * rad, 2 * rad);
+  } catch(_) {}
   x.restore(); x.beginPath(); x.arc(cx, cy, rad + 8, 0, Math.PI * 2); x.strokeStyle = GOLD; x.lineWidth = 10; x.stroke();
   fit(String(r.name || ''), 860, 66, 800, D, IVORY, W - 160);
   // leagues played (skill category is decided later, so it is not shown)
