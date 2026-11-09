@@ -883,7 +883,7 @@ function faceCrop(W, H, f){
 /* CH-CORE-START – shared by Code.gs (server) and Index.html (form fallback). Edit cricheroes/core.js, then run cricheroes/inject.py. */
 /**
  * Checks a player's entries against the saved CricHeroes tournament records.
- *  data  : ch-data.json  {tournaments:{KEY:{label,teams,p:{id:teamIdx}}}, names:{id:name}}
+ *  data  : ch-data.json  {tournaments:{KEY:{label,teams,p:{id:teamIdx or [teamIdx,...]}}}, names:{id:name}}
  *  ref   : KNPL reference list [[refNo, name, phone10, [ids], cricheroesName], ...] – server only (private), null in the browser
  *  entry : {phone, name, seasons:{KEY:{team, link}}}   (link = CricHeroes Profile ID)
  * Returns {issues:[...], found:[...], refIds:[...], refNos:[...]}
@@ -942,33 +942,34 @@ function chReviewCore(data, ref, entry) {
   Object.keys(T).forEach(k => {
     const t = T[k], e = S[k] || {}, label = t.label, id = digits(e.link);
     if (e.team && id) {
-      const idx = t.p[id];
+      const idx = t.p[id], all = [].concat(idx === undefined ? [] : idx), names = all.filter(i => i >= 0).map(i => t.teams[i]);
       let kind = '', text = '';
       if (idx === undefined) { kind = 'missing'; text = label + ': CricHeroes ID ' + id + ' was not found in ' + label + '.'; }
-      else if (idx >= 0 && norm(t.teams[idx]) !== norm(e.team)) { kind = 'team'; text = label + ': you do not seem to be part of ' + e.team + '. CricHeroes shows ID ' + id + ' playing for ' + t.teams[idx] + '.'; }
+      else if (names.length && !names.some(n => norm(n) === norm(e.team))) { kind = 'team'; text = label + ': you do not seem to be part of ' + e.team + '. CricHeroes shows ID ' + id + ' playing for ' + names.join(' / ') + '.'; }
       else if (notMine(id)) { kind = 'owner'; text = label + ': KNPL records link CricHeroes ID ' + id + ' to another player\'s mobile number. Please make sure this is your own profile.'; }
       if (kind) {
         const sug = [];
         const add = (cid, why) => {
           if (cid === id || t.p[cid] === undefined || sug.some(s => s.id === cid) || sug.length >= 3) return;
-          sug.push({id: cid, name: NM[cid] || '', team: t.p[cid] >= 0 ? t.teams[t.p[cid]] : '', why: why});
+          const ci = [].concat(t.p[cid])[0];
+          sug.push({id: cid, name: NM[cid] || '', team: ci >= 0 ? t.teams[ci] : '', why: why});
         };
         if (kind !== 'owner') {
           refIds.forEach(c => add(c, 'linked to your mobile number in KNPL records'));
           nameRefIds.forEach(c => add(c, 'your name in KNPL records'));
           const ti = t.teams.findIndex(x => norm(x) === norm(e.team));
-          const mates = Object.keys(t.p).filter(p => t.p[p] === ti);
+          const mates = Object.keys(t.p).filter(p => [].concat(t.p[p]).indexOf(ti) >= 0);
           mates.filter(p => nameScore(entry.name, NM[p]) >= 0.6).forEach(p => add(p, 'similar name in ' + e.team));
           mates.filter(p => near(p, id)).forEach(p => add(p, 'similar ID number in ' + e.team));
         }
-        issues.push({key: k, label: label, kind: kind, id: id, text: text, changeTeam: kind === 'team' ? t.teams[idx] : '', suggestions: sug});
+        issues.push({key: k, label: label, kind: kind, id: id, text: text, changeTeam: kind === 'team' ? names[0] : '', suggestions: sug});
       }
     }
     if (!e.team) {                                         // season not mentioned (or marked "did not play")
       for (let i = 0; i < known.length; i++) {
         const idx = t.p[known[i]];
         if (idx === undefined) continue;
-        const team = idx >= 0 ? t.teams[idx] : '';
+        const fi = [].concat(idx)[0], team = fi >= 0 ? t.teams[fi] : '';
         found.push({key: k, label: label, id: known[i], team: team, fromRef: entered.indexOf(known[i]) < 0,
           text: 'We found your CricHeroes profile (ID ' + known[i] + ') in ' + label + (team ? ', playing for ' + team : '') + ', but you did not mention ' + label + '.'});
         break;
