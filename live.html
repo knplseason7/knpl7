@@ -69,6 +69,8 @@ function render(){
   $('wins').innerHTML=W.map((x,i)=>'<div class="'+(i===cur&&open?'on':'')+'"><span>'+x.name.replace(' Registration','')+'</span><span>'+fmt(x.opensAt)+' · up to '+x.cap+'</span></div>').join('');
 }
 load();setInterval(render,1000);
-(function poll(){setTimeout(()=>{if(!document.hidden)load();poll()},30000+Math.random()*15000)})();
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-last>20000)load()});
+let nextAt=Date.now()+20000;
+(function poll(){const d=20000+Math.random()*5000;nextAt=Date.now()+d;setTimeout(()=>{if(!document.hidden)load();poll()},d)})();
+setInterval(()=>{if(!last)return;const n=Math.max(0,Math.ceil((nextAt-Date.now())/1000));$('ft').textContent='Updated '+new Date(last).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'numeric',minute:'2-digit',second:'2-digit'})+' · auto-refresh in '+n+'s – no need to reload';},1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-last>8000)load()});
 </script></body></html>
