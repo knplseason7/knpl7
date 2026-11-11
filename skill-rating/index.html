@@ -99,9 +99,9 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
 .gate{margin-block:24px 40px;max-width:520px;background:var(--surface);border:2px solid var(--navy);border-radius:16px;padding:22px}
 .gate h2{font:800 28px/1.1 var(--display);margin:0 0 6px}
 .gate p{margin:0 0 12px;color:var(--muted)}
-.gate form{display:flex;gap:8px;flex-wrap:wrap}
-.gate input{flex:1 1 200px;min-width:0;font:700 20px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:12px 14px}
-.gate input:focus{outline:3px solid var(--focus);outline-offset:1px}
+.gate form{display:flex;flex-direction:column;gap:12px}.fld{display:flex;flex-direction:column;gap:5px;border:0;padding:0;margin:0}.fld label,.fld legend{font:700 14px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0}.rb{display:flex!important;align-items:center;gap:8px;font:600 16px var(--body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ink)!important;padding:6px 0!important}.rb input{width:20px;height:20px;accent-color:var(--navy)}
+.gate input[type=text],.gate input[type=tel]{width:100%;min-width:0;font:700 20px var(--body);letter-spacing:.08em;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:12px 14px}
+#code{text-transform:uppercase}.gate input:focus{outline:3px solid var(--focus);outline-offset:1px}
 .gate button{font:700 16px var(--body);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px 20px;cursor:pointer}
 .gate button[disabled]{opacity:.6;cursor:progress}
 .gmsg{min-height:22px;margin-top:10px;font-weight:600}
@@ -124,9 +124,15 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
   <section id="gate" class="gate" aria-labelledby="gate-h">
     <h2 id="gate-h">Enter your access code</h2>
     <p>This page is for the KNPL Core Committee and Franchise Owners only. Enter the access code shared by Team KNPL.</p>
-    <form id="gf" autocomplete="off">
-      <label for="code" class="sr">Access code</label>
-      <input id="code" name="code" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="e.g. AB7K-9QXW" required>
+    <form id="gf" autocomplete="off" class="gform">
+      <div class="fld"><label for="code">Access code</label>
+      <input id="code" name="code" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="e.g. AB7K-9QXW" required></div>
+      <div class="fld"><label for="mob">Your mobile number</label>
+      <input id="mob" name="mob" type="tel" inputmode="numeric" maxlength="14" placeholder="10-digit mobile number" required></div>
+      <fieldset class="fld"><legend>Your role</legend>
+        <label class="rb"><input type="radio" name="role" value="Franchise Owner" required> Franchise Owner</label>
+        <label class="rb"><input type="radio" name="role" value="Core Committee Member"> Core Committee Member</label>
+      </fieldset>
       <button type="submit" id="gbtn">Unlock</button>
     </form>
     <div id="gmsg" class="gmsg" role="status" aria-live="polite"></div>
@@ -220,7 +226,7 @@ async function unlock(keyB64,name){
   P=JSON.parse(new TextDecoder().decode(await decrypt('d.bin')));
   P.forEach(p=>{p.k=norm(p.n);p.ik=p.i.replace(/^0+/,'')});
   cards=new Map(P.map(p=>[p.i,card(p)]));
-  $('who').textContent=name?'Unlocked':'';
+  $('who').textContent=name?('Unlocked · '+name):'';
   gate.hidden=true;app.hidden=false;render();
   try{sessionStorage.setItem('knpl-sk',JSON.stringify({k:keyB64,n:name||''}))}catch(e){}
 }
@@ -275,9 +281,10 @@ function render(){
 }
 q.addEventListener('input',render);
 $('gf').addEventListener('submit',async e=>{
-  e.preventDefault();const c=codeI.value.trim();if(!c)return;
+  e.preventDefault();const c=codeI.value.trim();const m=$('mob').value.trim();const ro=(document.querySelector('input[name=role]:checked')||{}).value||'';
+  if(!c||!m||!ro){gmsg.className='gmsg err';gmsg.textContent='Please enter the code, your mobile number and your role.';return}
   gbtn.disabled=true;gmsg.className='gmsg';gmsg.textContent='Checking your code…';
-  try{const r=await api('skillAccess',c);await unlock(r.key,r.name);codeI.value='';gmsg.textContent=''}
+  try{const r=await api('skillAccess',c,m,ro);await unlock(r.key,r.name);codeI.value='';gmsg.textContent=''}
   catch(err){gmsg.className='gmsg err';gmsg.textContent=err.message}
   finally{gbtn.disabled=false}
 });
