@@ -101,6 +101,10 @@ async function findFace(img){
   }
   return best ? {x: best.x / W, y: best.y / H, w: best.w / W, h: best.h / H} : null;
 }
+/* Manual face boxes (fractions of the photo) for photos the automatic detector gets wrong */
+const FACE_FIX = {
+  'KNPL7-0220': {x: 0.22, y: 0.05, w: 0.58, h: 0.6}
+};
 /* Square crop of the photo for the round frame: centred on the face, or the top part of a tall photo */
 function faceCrop(W, H, f){
   const m = Math.min(W, H);
@@ -222,7 +226,7 @@ async function pick(regId){
     Object.assign(state,{photo:d.photo||'',face:null,facePromise:null,playedLabels:d.played||[],career:d.career,qIds:d.career?d.career.ids:[]});
     cur={regId:d.regId,name:d.name,count:d.count,cap:d.cap,pool:d.pool,waitingNo:d.waitingNo};
     $('stats').disabled=!d.career;$('stats').checked=!!d.career;$('statsNote').textContent=d.career?'Career in qualifying leagues & KNPL':'No CricHeroes stats found yet';
-    if(state.photo)state.facePromise=loadImg(state.photo).then(findFace).then(f=>{state.face=f}).catch(()=>{});
+    if(state.photo)state.facePromise=(FACE_FIX[d.regId]?Promise.resolve(FACE_FIX[d.regId]):loadImg(state.photo).then(findFace)).then(f=>{state.face=f}).catch(()=>{});
     await render();$('out').hidden=false;$('msg').textContent='';$('res').innerHTML='';
     $('out').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(e){$('msg').textContent=e.message}
