@@ -1518,6 +1518,7 @@ function counterText(){
   const w = ST.windows[ST.current];
   if (w.codeRequired) return `Power Play: <b>${Math.min(ST.total, w.cap)}/${w.cap}</b>`;
   const wl = Math.max(0, ST.total - ST.mainCap);
+  if (ST.mode === 'closed') return `Total registered: <b>${ST.total}</b>` + (wl ? ` · waiting list <b>${wl}</b>` : '');
   return `Registered: <b>${ST.total}/${w.cap}</b>` + (wl ? ` · waiting list <b>${wl}</b>` : '');
 }
 function render(){
