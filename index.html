@@ -1565,7 +1565,9 @@ function render(){
       head.textContent = 'Trial is closed'; $('closedMsg').textContent = 'The trial form is closed right now.';
     } else {
       head.textContent = 'Registration is closed';
-      $('closedMsg').innerHTML = `KNPL-7 Phase 1 registration is closed. All ${ST.finalCap} places are filled. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.`;
+      $('closedMsg').innerHTML = ST.reason === 'TIME'
+        ? `KNPL-7 Phase 1 registration (including 12th Man) closed at <b>${esc(fmtIST(ST.closeAt))}</b>. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.`
+        : `KNPL-7 Phase 1 registration is closed. All ${ST.finalCap} places are filled. Already registered? Use the <b>Join Mega Auction</b> tab to check your status.`;
     }
   }
   if (mode === 'trial' && ST.trialOpen){ $('slots').hidden = false; $('slots').className = 'qual ok'; $('slots').textContent = `${ST.max - ST.used} of ${ST.max} trial slots left.`; }
@@ -1581,7 +1583,7 @@ function tick(){
   }
   if (!$('statusBar').hidden){
     const nx = ST.next >= 0 ? ST.windows[ST.next] : null;
-    $('sbNext').innerHTML = ST.mode === 'closed' ? '' : nx ? `${ST.mode === 'paused' ? 'Reopens' : 'Next'}: ${esc(nx.name.replace(' Registration', ''))} · opens in <b>${hms(nx.opensAt - now)}</b>` : '';
+    $('sbNext').innerHTML = ST.mode === 'closed' ? '' : nx ? `${ST.mode === 'paused' ? 'Reopens' : 'Next'}: ${esc(nx.name.replace(' Registration', ''))} · opens in <b>${hms(nx.opensAt - now)}</b>` : (ST.closeAt && ST.mode === 'live' ? `Closes at ${esc(fmtIST(ST.closeAt))} · in <b>${hms(Math.max(0, ST.closeAt - now))}</b>` : '');
   }
   // reached a change point → ask the server again (once), then keep polling until it agrees
   if (ST.nextChangeAt && now >= ST.nextChangeAt && Date.now() - lastLoad > 3000) loadStatus();
