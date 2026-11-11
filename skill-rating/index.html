@@ -123,14 +123,14 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
 <main class="wrap">
   <section id="gate" class="gate" aria-labelledby="gate-h">
     <h2 id="gate-h">Enter your access code</h2>
-    <p>This page is for the KNPL Core Committee and Franchise Owners only. Enter the personal access code given to you by Team KNPL.</p>
+    <p>This page is for the KNPL Core Committee and Franchise Owners only. Enter the access code shared by Team KNPL.</p>
     <form id="gf" autocomplete="off">
       <label for="code" class="sr">Access code</label>
       <input id="code" name="code" type="text" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="e.g. AB7K-9QXW" required>
       <button type="submit" id="gbtn">Unlock</button>
     </form>
     <div id="gmsg" class="gmsg" role="status" aria-live="polite"></div>
-    <p class="small">Do not share your code. Every use is recorded against your name.</p>
+    <p class="small">Do not share the code or this page with anyone outside the Core Committee and Franchise Owners.</p>
   </section>
   <div id="app" hidden>
   <div class="who"><span id="who"></span> <button type="button" id="out" class="linkbtn">Lock this page</button></div>
@@ -220,7 +220,7 @@ async function unlock(keyB64,name){
   P=JSON.parse(new TextDecoder().decode(await decrypt('d.bin')));
   P.forEach(p=>{p.k=norm(p.n);p.ik=p.i.replace(/^0+/,'')});
   cards=new Map(P.map(p=>[p.i,card(p)]));
-  $('who').textContent=name?('Signed in: '+name):'';
+  $('who').textContent=name?'Unlocked':'';
   gate.hidden=true;app.hidden=false;render();
   try{sessionStorage.setItem('knpl-sk',JSON.stringify({k:keyB64,n:name||''}))}catch(e){}
 }
