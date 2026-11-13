@@ -429,8 +429,8 @@ function renderCompare(){
   t.appendChild(tb);tw.appendChild(t);
   const kd=el('div','keyd');kd.appendChild(el('h3',null,'Where the difference comes from'));const ul=el('ul');keyDiffs(L).forEach(x=>ul.appendChild(el('li',null,x)));kd.appendChild(ul);
   kd.appendChild(el('p','count','Highlighted cells show the highest value in that row. Rating points = part score × its weight. All figures are provisional until NPL-5 is completed.'));
-  const ca=el('div','cact');const btn=el('button','dl','Download combined report (PDF)');btn.type='button';
-  const lab=el('label');const cb=el('input');cb.type='checkbox';cb.checked=true;cb.id='cinc';lab.append(cb,document.createTextNode('Include each player’s full calculation statement'));
+  const ca=el('div','cact');const btn=el('button','dl','Download detailed comparison (PDF)');btn.type='button';
+  const lab=el('label');const cb=el('input');cb.type='checkbox';cb.checked=false;cb.id='cinc';lab.append(cb,document.createTextNode('Also attach each player’s own statement at the end'));
   const msg=el('span','msg');btn.addEventListener('click',()=>combinedReport(L,cb.checked,btn,msg));
   ca.append(btn,lab,msg);
   out.append(tw,kd,ca);
@@ -438,59 +438,21 @@ function renderCompare(){
 let PDFLIB=null;
 function loadPdfLib(){if(PDFLIB)return PDFLIB;PDFLIB=new Promise((res,rej)=>{const s=document.createElement('script');s.src='pdf-lib.min.js';s.onload=()=>res(window.PDFLib);s.onerror=()=>{PDFLIB=null;rej(new Error('lib'))};document.head.appendChild(s)});return PDFLIB}
 const asc=s=>String(s).replace(/₹/g,'Rs ').replace(/[–—]/g,'-').replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/×/g,'x').replace(/÷/g,'/').replace(/✓/g,'').replace(/·/g,'|').replace(/[^\x20-\x7e]/g,'');
+let REPJS=null;
+function loadRep(){if(REPJS)return REPJS;REPJS=new Promise((res,rej)=>{const s=document.createElement('script');s.src='rep.js?v=2';s.onload=()=>res(window.KNPLReport);s.onerror=()=>{REPJS=null;rej(new Error('rep'))};document.head.appendChild(s)});return REPJS}
 async function combinedReport(L,inc,btn,msg){
   btn.disabled=true;msg.textContent='Preparing the report…';
   try{
-    const {PDFDocument,StandardFonts,rgb}=await loadPdfLib();
-    const doc=await PDFDocument.create();
-    const F=await doc.embedFont(StandardFonts.Helvetica),B=await doc.embedFont(StandardFonts.HelveticaBold);
-    let logo=null;try{logo=await doc.embedPng(await (await fetch('logo.png')).arrayBuffer())}catch(e){}
-    const NAVY=rgb(.043,.102,.22),SAF=rgb(.878,.478,.122),SAFS=rgb(1,.953,.902),INK=rgb(.075,.13,.247),MUT=rgb(.36,.4,.52),LINE=rgb(.85,.875,.925),BG=rgb(.953,.961,.98);
-    const W=842,H=595,M=32;const now=new Date();const ds=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-    const wrap=(t,font,sz,w)=>{const out=[];String(t).split('\n').forEach(par=>{let line='';par.split(' ').forEach(wd=>{const tr=line?line+' '+wd:wd;if(font.widthOfTextAtSize(tr,sz)<=w)line=tr;else{if(line)out.push(line);line=wd;while(font.widthOfTextAtSize(line,sz)>w&&line.length>1){let k=line.length;while(k>1&&font.widthOfTextAtSize(line.slice(0,k),sz)>w)k--;out.push(line.slice(0,k));line=line.slice(k)}}});out.push(line)});return out};
-    let pg,y,pno=0;
-    const footer=()=>{pg.drawText(asc('KNPL-7 | Skill Rating comparison | Strictly confidential: Core Committee and Franchise Owners only | Provisional until NPL-5 is completed'),{x:M,y:16,size:7.5,font:F,color:MUT});pg.drawText('Page '+pno,{x:W-M-40,y:16,size:7.5,font:F,color:MUT})};
-    const newPage=(first)=>{if(pg)footer();pg=doc.addPage([W,H]);pno++;
-      pg.drawRectangle({x:0,y:H-(first?78:40),width:W,height:first?78:40,color:NAVY});pg.drawRectangle({x:0,y:H-(first?82:43),width:W,height:first?4:3,color:SAF});
-      if(first){if(logo)pg.drawImage(logo,{x:M,y:H-72,width:60,height:60});const lx=logo?M+72:M;
-        pg.drawText('KNPL-7 | CONFIDENTIAL',{x:lx,y:H-28,size:9,font:B,color:rgb(1,.7,.4)});
-        pg.drawText('Skill Rating Comparison',{x:lx,y:H-52,size:22,font:B,color:rgb(1,1,1)});
-        pg.drawText(asc(L.map(p=>p.n).join('  vs  ')),{x:lx,y:H-68,size:9.5,font:F,color:rgb(.79,.83,.92)});
-        const g=asc('Generated '+ds+(WHO?' | '+WHO:''));pg.drawText(g,{x:W-M-F.widthOfTextAtSize(g,8.5),y:H-28,size:8.5,font:F,color:rgb(.79,.83,.92)});
-        y=H-100}else{pg.drawText('Skill Rating Comparison (continued)',{x:M,y:H-26,size:12,font:B,color:rgb(1,1,1)});y=H-60}};
-    newPage(true);
-    const rows=compareModel(L);const lw=210,cw=(W-2*M-lw)/L.length;
-    const head=()=>{const hh=34;pg.drawRectangle({x:M,y:y-hh,width:W-2*M,height:hh,color:NAVY});
-      L.forEach((p,j)=>{const x=M+lw+j*cw+6;pg.drawText('KNPL7-'+p.i,{x,y:y-12,size:7.5,font:B,color:rgb(1,.7,.4)});
-        const nm=wrap(asc(p.n.toUpperCase()),B,10,cw-12)[0];pg.drawText(nm,{x,y:y-26,size:10,font:B,color:rgb(1,1,1)})});y-=hh};
-    head();
-    for(const r of rows){
-      if(r.sec){if(y<70){newPage(false);head()}pg.drawRectangle({x:M,y:y-18,width:W-2*M,height:18,color:BG});pg.drawText(asc(r.sec.toUpperCase()),{x:M+6,y:y-12.5,size:8,font:B,color:MUT});y-=18;continue}
-      const lab=wrap(asc(r.label),B,8.5,lw-12),sub=r.sub?wrap(asc(r.sub),F,7,lw-12):[];
-      const cells=r.vals.map(v=>{const big=v.big;const sz=big?15:8.5;const ls=wrap(asc(v.t),big?B:(v.pts||v.cat?B:F),sz,cw-12);return{v,ls,sz}});
-      const hl=Math.max(lab.length*10.5+sub.length*8.5,...cells.map(c=>c.ls.length*(c.sz+2.5)+(c.v.pts?9:0)+(c.v.bar!=null?6:0)))+8;
-      if(y-hl<36){newPage(false);head()}
-      cells.forEach((c,j)=>{if(c.v.best)pg.drawRectangle({x:M+lw+j*cw,y:y-hl,width:cw,height:hl,color:SAFS});if(c.v.best)pg.drawRectangle({x:M+lw+j*cw,y:y-hl,width:2.5,height:hl,color:SAF})});
-      let yy=y-11;lab.forEach(l=>{pg.drawText(l,{x:M+6,y:yy,size:8.5,font:B,color:INK});yy-=10.5});sub.forEach(l=>{pg.drawText(l,{x:M+6,y:yy+1.5,size:7,font:F,color:MUT});yy-=8.5});
-      cells.forEach((c,j)=>{const x=M+lw+j*cw+6;let yc=y-4-c.sz;
-        c.ls.forEach(l=>{pg.drawText(l,{x,y:yc,size:c.sz,font:(c.v.big||c.v.pts||c.v.cat)?B:F,color:INK});yc-=c.sz+2.5});
-        if(c.v.pts){pg.drawText(asc(c.v.pts),{x,y:yc+1,size:7.5,font:F,color:MUT});yc-=9}
-        if(c.v.bar!=null){const bw=Math.min(110,cw-14);pg.drawRectangle({x,y:yc+1,width:bw,height:3.5,color:LINE});pg.drawRectangle({x,y:yc+1,width:bw*Math.max(0,Math.min(100,c.v.bar))/100,height:3.5,color:SAF})}});
-      pg.drawLine({start:{x:M,y:y-hl},end:{x:W-M,y:y-hl},thickness:.6,color:LINE});y-=hl;
-    }
-    const kd=keyDiffs(L);
-    const blk=['WHERE THE DIFFERENCE COMES FROM',...kd];
-    let need=26+kd.reduce((a,t)=>a+wrap(asc(t),F,9,W-2*M-20).length*12,0)+30;
-    if(y-need<36)newPage(false);
-    y-=16;pg.drawText('Where the difference comes from',{x:M,y,size:12,font:B,color:INK});y-=16;
-    kd.forEach(t=>{wrap(asc(t),F,9,W-2*M-20).forEach((l,k)=>{if(!k)pg.drawText('-',{x:M+4,y,size:9,font:B,color:SAF});pg.drawText(l,{x:M+16,y,size:9,font:F,color:INK});y-=12})});
-    y-=4;wrap('Highlighted cells show the highest value in each row. Rating points = part score x its weight (Performance 55%, Win Impact 15%, Awards 10%, Consistency 10%, Experience 10%). Skill Rating = total rounded to the nearest whole number. Only auction-based tournaments are counted.'+(inc?' Each player\'s full calculation statement follows.':''),F,8,W-2*M).forEach(l=>{pg.drawText(l,{x:M,y,size:8,font:F,color:MUT});y-=10.5});
-    footer();
-    if(inc){for(const p of L){if(!p.d)continue;msg.textContent='Adding '+p.n+'’s statement…';
-      const src=await PDFDocument.load(await decrypt('p/'+p.i+'.bin'));const cp=await doc.copyPages(src,src.getPageIndices());cp.forEach(x=>doc.addPage(x))}}
-    doc.setTitle('KNPL-7 Skill Rating Comparison');doc.setAuthor('Team KNPL');doc.setSubject('Confidential - '+L.map(p=>'KNPL7-'+p.i).join(', '));
-    const bytes=await doc.save();const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
-    const a=document.createElement('a');a.href=url;a.download='KNPL7-Compare-'+L.map(p=>p.i).join('-')+'.pdf';document.body.appendChild(a);a.click();a.remove();
+    const [PL,REP]=await Promise.all([loadPdfLib(),loadRep()]);
+    let logo=null;try{logo=await (await fetch('logo.png')).arrayBuffer()}catch(e){}
+    const players=[];for(const p of L){msg.textContent='Reading '+p.n+'’s matches…';const det=JSON.parse(new TextDecoder().decode(await decrypt('m/'+p.i+'.bin')));players.push({...p,det})}
+    msg.textContent='Building the PDF…';
+    const date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    let bytes=await REP({PDFLib:PL,players,logo,who:WHO,date,keyDiffs:keyDiffs(L)});
+    if(inc){const doc=await PL.PDFDocument.load(bytes);for(const p of L){if(!p.d)continue;msg.textContent='Adding '+p.n+'’s statement…';
+      const src=await PL.PDFDocument.load(await decrypt('p/'+p.i+'.bin'));(await doc.copyPages(src,src.getPageIndices())).forEach(x=>doc.addPage(x))}bytes=await doc.save()}
+    const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+    const a=document.createElement('a');a.href=url;a.download='KNPL7-Skill-Rating-Comparison-'+L.map(p=>p.i).join('-')+'.pdf';document.body.appendChild(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),60000);msg.textContent='Downloaded';
   }catch(e){console.error(e);msg.textContent='Could not build the report. Please check your connection and try again.'}
   finally{btn.disabled=false}
