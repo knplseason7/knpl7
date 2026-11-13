@@ -274,7 +274,7 @@ async function start(code){
   try{sessionStorage.setItem('knpl-draft',code)}catch(e){}
   $('gate').hidden=true;$('app').hidden=false;
   const tl=$('tlogo');tl.replaceChildren();const im=el('img','tlogo');im.alt=title(r.team)+' logo';im.src='logos/'+slug(r.team)+'.jpg';
-  im.onerror=()=>{const d=el('div','tinit',r.team.split(' ').filter(w=>w.length>2).map(w=>w[0]).join('').slice(0,3));tl.replaceChildren(d)};tl.appendChild(im);
+  im.onerror=()=>{im.onerror=null;im.src='../skill-rating/logo.png';im.style.background='#fff';im.style.objectFit='contain'};tl.appendChild(im);
   $('tname').textContent=title(r.team);$('tname2').textContent=title(r.team);
   const w=r.window;$('twin').textContent=w.closed?' · Draft window closed':w.before?' · Draft opens '+fmtDate(w.opens):' · Submit by '+fmtDate(w.deadline);
   $('dl-en').textContent=fmtDate(w.deadline);$('dl-ml').textContent=fmtDate(w.deadline);
