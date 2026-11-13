@@ -36,7 +36,7 @@ input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(-
 .msg{min-height:22px;font-weight:600;margin-top:10px}.msg.err{color:var(--red)}
 .gate{max-width:520px}
 .teambar{display:flex;gap:14px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:16px}
-.tlogo{width:64px;height:64px;border-radius:12px;background:#000;object-fit:cover;flex:none}
+.tlogo{width:72px;height:72px;border-radius:12px;object-fit:contain;flex:none}
 .tinit{width:64px;height:64px;border-radius:12px;background:var(--navy);color:#ffc94a;font:800 26px/64px var(--display);text-align:center;flex:none}
 .teambar b{font:800 24px/1.05 var(--display);text-transform:uppercase;display:block}
 .teambar .sp{flex:1;min-width:0}
@@ -273,7 +273,7 @@ async function start(code){
   const all=JSON.parse(new TextDecoder().decode(await decrypt(DATA_BASE+'d.bin')));P=new Map(all.map(p=>[p.i,p]));
   try{sessionStorage.setItem('knpl-draft',code)}catch(e){}
   $('gate').hidden=true;$('app').hidden=false;
-  const tl=$('tlogo');tl.replaceChildren();const im=el('img','tlogo');im.alt=title(r.team)+' logo';im.src='logos/'+slug(r.team)+'.jpg';
+  const tl=$('tlogo');tl.replaceChildren();const im=el('img','tlogo');im.alt=title(r.team)+' logo';im.src='logos/'+slug(r.team)+'.png';
   im.onerror=()=>{im.onerror=null;im.src='../skill-rating/logo.png';im.style.background='#fff';im.style.objectFit='contain'};tl.appendChild(im);
   $('tname').textContent=title(r.team);$('tname2').textContent=title(r.team);
   const w=r.window;$('twin').textContent=w.closed?' · Draft window closed':w.before?' · Draft opens '+fmtDate(w.opens):' · Submit by '+fmtDate(w.deadline);
