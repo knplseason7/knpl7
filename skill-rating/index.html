@@ -20,6 +20,7 @@
   --bg:#0c1426; --surface:#142039; --ink:#e7ecf7; --muted:#9aa7c4; --line:#26355a;
   --navy:#08101f; --navy-ink:#ffffff; --saffron:#f2933c; --saffron-soft:#2a2116; --teal:#3cc4c4; --teal-soft:#0f2e33; --focus:#f2933c; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
 .wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 header{background:var(--navy);color:var(--navy-ink);border-bottom:4px solid var(--saffron)}
@@ -109,6 +110,49 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
 .small{font-size:13px}
 .who{display:flex;justify-content:flex-end;gap:10px;align-items:center;margin-top:12px;font-size:13px;color:var(--muted)}
 .linkbtn{background:none;border:0;color:var(--saffron);font:600 13px var(--body);cursor:pointer;text-decoration:underline}
+
+.tabs{display:flex;gap:6px;margin-top:18px;border-bottom:2px solid var(--line)}
+.tabs button{font:800 18px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;background:none;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;color:var(--muted);padding:12px 14px;cursor:pointer}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--saffron)}
+.tabs button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.tabs .nb{display:inline-block;min-width:22px;margin-left:6px;padding:3px 6px;border-radius:11px;background:var(--saffron);color:#fff;font-size:13px;text-align:center}
+button.cmpb{font:700 14px var(--body);background:var(--surface);color:var(--ink);border:1.5px solid var(--navy);border-radius:9px;padding:8px 12px;cursor:pointer}
+button.cmpb[aria-pressed=true]{background:var(--teal-soft);border-color:var(--teal);color:var(--teal)}
+button.cmpb[disabled]{opacity:.5;cursor:not-allowed}
+.cbar{position:sticky;bottom:0;z-index:5;background:var(--navy);color:#fff;border-radius:12px 12px 0 0;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;box-shadow:0 -6px 18px rgba(0,0,0,.18)}
+.cbar span{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.cbar .bb{display:flex;gap:8px}
+.cbar button{font:700 14px var(--body);border:0;border-radius:9px;padding:9px 13px;cursor:pointer;background:var(--saffron);color:#fff}
+.cbar button.ghost{background:transparent;border:1.5px solid #8796b8}
+.cpick{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--teal);border-radius:20px;padding:5px 6px 5px 12px;font-weight:600;font-size:14px}
+.chip button{border:0;background:var(--teal-soft);color:var(--teal);width:24px;height:24px;border-radius:50%;font-weight:800;cursor:pointer;line-height:1}
+.hits{display:flex;flex-wrap:wrap;gap:6px}
+.hits button{font:600 14px var(--body);background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:9px;padding:7px 10px;cursor:pointer}
+.hits button:hover{border-color:var(--saffron)}
+.ctw{overflow-x:auto;margin-top:14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface)}
+table.ct{border-collapse:separate;border-spacing:0;width:100%;min-width:560px;table-layout:fixed;font-variant-numeric:tabular-nums}
+.ct th,.ct td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.ct thead th{background:var(--navy);color:#fff;vertical-align:bottom}
+.ct thead .pid{display:block;font:700 12px var(--display);letter-spacing:.1em;color:#ffb366}
+.ct thead .pn{display:block;font:800 18px/1.05 var(--display);text-transform:uppercase}
+.ct th[scope=row]{position:sticky;left:0;background:var(--surface);font-weight:600;min-width:170px;max-width:220px;z-index:1}
+.ct th[scope=row] small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.ct tr.sec th{background:var(--bg);font:800 15px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);position:static}
+.ct td.best{background:var(--saffron-soft);box-shadow:inset 3px 0 0 var(--saffron)}
+.ct .cat{white-space:normal;display:inline-block;line-height:1.2}
+.ct .big{font:800 26px/1 var(--display)}
+.ct .pts{display:block;font-size:12.5px;color:var(--muted)}
+.mb{height:6px;border-radius:3px;background:var(--line);margin-top:5px;overflow:hidden;max-width:160px}.mb i{display:block;height:100%;background:var(--saffron)}
+.keyd{margin-top:14px;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 16px}
+.keyd h3{font:800 20px var(--display);margin:0 0 6px}
+.keyd ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.cact{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-block:14px 32px}
+.ct col.c0{width:210px}@media (max-width:520px){.ct col.c0{width:140px}.ct th[scope=row]{min-width:0}}
+.cact label{font-size:14px;display:flex;gap:6px;align-items:center}
+.cempty{margin-top:14px}
+@media print{header,.tabs,.cbar,.cpick,.cact,.notice,.who,#pl{display:none!important}}
 </style>
 </head><body>
 
@@ -151,6 +195,11 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
   </ol>
   <div class="jump"><a href="#how-it-works">How the Skill Rating is calculated</a> · <a href="#categories">Categories, base price and points</a> · <a href="#contact">Queries</a></div>
 
+  <div class="tabs" role="tablist" aria-label="Views">
+    <button type="button" role="tab" id="t-pl" aria-controls="pl" aria-selected="true">All players</button>
+    <button type="button" role="tab" id="t-cm" aria-controls="cm" aria-selected="false" tabindex="-1">Compare players<span class="nb" id="nb" hidden>0</span></button>
+  </div>
+  <div id="pl" role="tabpanel" aria-labelledby="t-pl">
   <div class="search">
     <label for="q">Find a player</label>
     <input id="q" type="search" placeholder="Type a name or Reg ID, e.g. Sreekanth or 0028" autocomplete="off" enterkeyhint="search">
@@ -158,6 +207,17 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
   </div>
 
   <div class="grid" id="grid"></div>
+  <div class="cbar" id="cbar" hidden><span id="cbt"></span><div class="bb"><button type="button" class="ghost" id="cclr">Clear</button><button type="button" id="cgo">Compare now</button></div></div>
+  </div>
+  <section id="cm" role="tabpanel" aria-labelledby="t-cm" hidden>
+    <div class="cpick">
+      <label for="cq" style="font:700 14px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Add players to compare (2 to 4)</label>
+      <div class="search" style="margin-top:0"><input id="cq" type="search" placeholder="Type a name or Reg ID, then pick the player" autocomplete="off"></div>
+      <div class="hits" id="hits"></div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div id="cout"></div>
+  </section>
 
   <section class="ref">
     <div id="how-it-works">
@@ -226,6 +286,8 @@ async function unlock(keyB64,name){
   P=JSON.parse(new TextDecoder().decode(await decrypt('d.bin')));
   P.forEach(p=>{p.k=norm(p.n);p.ik=p.i.replace(/^0+/,'')});
   cards=new Map(P.map(p=>[p.i,card(p)]));
+  WHO=name||'';try{SEL=JSON.parse(sessionStorage.getItem('knpl-cmp')||'[]').filter(i=>P.some(p=>p.i===i)).slice(0,4)}catch(e){SEL=[]}
+  syncSel();
   $('who').textContent=name?('Unlocked · '+name):'';
   gate.hidden=true;app.hidden=false;render();
   try{sessionStorage.setItem('knpl-sk',JSON.stringify({k:keyB64,n:name||''}))}catch(e){}
@@ -262,7 +324,7 @@ function card(p){
       }catch(e){msg.textContent='Could not download. Please try again.'}
       finally{b.disabled=false}
     });
-    act.append(b,msg);info.appendChild(act);
+    act.append(b,cmpBtn(p),msg);info.appendChild(act);
   }else{
     const n=document.createElement('div');n.className='nod';n.textContent='No CricHeroes match data mapped yet, so there is no walkthrough.';info.appendChild(n)
   }
@@ -278,6 +340,160 @@ function render(){
   grid.replaceChildren(...L.map(p=>cards.get(p.i)));
   if(!L.length){const e=document.createElement('div');e.className='empty';e.textContent='No player matches "'+v+'". Check the spelling or try the Reg ID number.';grid.appendChild(e)}
   count.textContent=n?(L.length+' of '+P.length+' players'):('All '+P.length+' registered players, by Reg ID');
+}
+
+/* ---------- Compare players ---------- */
+let SEL=[],WHO='';const MAXC=4;const byId=id=>P.find(p=>p.i===id);
+const PARTS=[['P','Performance',.55,'How much he contributes per match (adjusted MVP per match vs the reference)'],['W','Win Impact',.15,'How often he is one of his team’s top 2 in a match the team won'],['Aw','Awards',.10,'Player of the Match and Heroes awards, vs the reference'],['C','Consistency',.10,'Share of matches with MVP 1 or more'],['E','Experience',.10,'Matches played, full marks at 30']];
+const f1=v=>(Math.round(v*10)/10).toFixed(1),f2=v=>(Math.round(v*100)/100).toFixed(2);
+function cmpBtn(p){const b=document.createElement('button');b.type='button';b.className='cmpb';b.dataset.id=p.i;b.addEventListener('click',()=>toggleSel(p.i));return b}
+function toggleSel(id){const k=SEL.indexOf(id);if(k>=0)SEL.splice(k,1);else if(SEL.length<MAXC)SEL.push(id);syncSel()}
+function syncSel(){
+  try{sessionStorage.setItem('knpl-cmp',JSON.stringify(SEL))}catch(e){}
+  document.querySelectorAll('button.cmpb').forEach(b=>{const on=SEL.includes(b.dataset.id);b.setAttribute('aria-pressed',on);b.textContent=on?'✓ In compare':'+ Compare';b.disabled=!on&&SEL.length>=MAXC;b.title=b.disabled?'You can compare up to 4 players at a time':''});
+  const nb=$('nb');nb.textContent=SEL.length;nb.hidden=!SEL.length;
+  const cb=$('cbar');cb.hidden=!SEL.length;
+  $('cbt').textContent=SEL.length+' of '+MAXC+' selected: '+SEL.map(i=>byId(i).n).join(', ');
+  $('cgo').disabled=SEL.length<2;$('cgo').textContent=SEL.length<2?'Pick one more':'Compare now';
+  if(!$('cm').hidden)renderCompare();
+}
+function showTab(t){const c=t==='cm';$('pl').hidden=c;$('cm').hidden=!c;$('t-pl').setAttribute('aria-selected',!c);$('t-cm').setAttribute('aria-selected',c);$('t-pl').tabIndex=c?-1:0;$('t-cm').tabIndex=c?0:-1;if(c)renderCompare()}
+$('t-pl').addEventListener('click',()=>showTab('pl'));$('t-cm').addEventListener('click',()=>showTab('cm'));
+document.querySelector('.tabs').addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const c=$('cm').hidden;showTab(c?'cm':'pl');(c?$('t-cm'):$('t-pl')).focus()}});
+$('cgo').addEventListener('click',()=>{showTab('cm');$('t-cm').scrollIntoView({behavior:'smooth',block:'start'})});
+$('cclr').addEventListener('click',()=>{SEL=[];syncSel()});
+$('cq').addEventListener('input',renderHits);
+function findP(v){const base=v.replace(/knpl\s*-?\s*7/ig,' ');const nq=norm(base.replace(/\d/g,''));const num=base.replace(/\D/g,'').replace(/^0+/,'');if(!nq&&!num)return[];return P.filter(p=>(nq&&p.k.includes(nq))||(num&&p.ik===num))}
+function renderHits(){
+  const h=$('hits');h.replaceChildren();const L=findP($('cq').value.trim()).filter(p=>!SEL.includes(p.i)).slice(0,8);
+  L.forEach(p=>{const b=document.createElement('button');b.type='button';b.textContent=p.i+' · '+p.n+' · '+p.s;b.disabled=SEL.length>=MAXC;b.addEventListener('click',()=>{toggleSel(p.i);$('cq').value='';renderHits();$('cq').focus()});h.appendChild(b)});
+  if($('cq').value.trim()&&!L.length){const s=document.createElement('span');s.className='count';s.textContent='No player matches.';h.appendChild(s)}
+}
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function compareModel(L){
+  const rows=[];const sec=t=>rows.push({sec:t});
+  const add=(label,sub,vals,opt={})=>rows.push({label,sub,vals,...opt});
+  sec('Result');
+  add('Skill Rating','out of 100',L.map(p=>({t:String(p.s),big:1,n:p.s})),{best:1});
+  add('Category','',L.map(p=>({t:p.c,cat:p.c})));
+  add('Base Price','',L.map(p=>({t:inr(p.bp)})));
+  add('Draft Price','Base Price + Base Price × SR ÷ 100',L.map(p=>({t:inr(p.dp)})));
+  add('Draft Point','rounded up',L.map(p=>({t:p.dt.toLocaleString('en-IN')+' Pts'})));
+  sec('The five parts · score out of 100 and points added to the rating');
+  PARTS.forEach(([k,n,w,d])=>add(n+' ('+Math.round(w*100)+'%)',d,L.map(p=>p.x?({t:f1(p.x[k]),pts:'+'+f1(p.x[k]*w)+' pts',bar:p.x[k],n:p.x[k]}):({t:'–'})),{best:1}));
+  add('Total before rounding','sum of the five parts',L.map(p=>p.x?({t:f2(p.x.cmp),n:p.x.cmp}):({t:'–'})),{best:1});
+  sec('Behind the numbers');
+  const X=(label,sub,fn,best)=>add(label,sub,L.map(p=>p.x?({t:fn(p.x).t,n:fn(p.x).n}):({t:'–'})),{best});
+  X('Matches counted','auction-based tournaments only',x=>({t:String(x.m),n:x.m}),1);
+  X('Weighted matches','season weights 1.00 / 0.85 / 0.70',x=>({t:f2(x.wm),n:x.wm}),1);
+  X('Weighted MVP total','',x=>({t:f2(x.ws),n:x.ws}),1);
+  X('Adjusted MVP per match','after the fair start of 8 average matches',x=>({t:x.adj.toFixed(3),n:x.adj}),1);
+  X('Match-winning contributions','team won and he was top 2 in his team',x=>({t:String(x.mwc),n:x.mwc}),1);
+  X('Matches with MVP 1 or more','',x=>({t:x.cons+' of '+x.m,n:x.m?x.cons/x.m:0}),1);
+  X('Player of the Match','of which in finals',x=>({t:x.pom+(x.pomF?' ('+x.pomF+' in finals)':''),n:x.pom}),1);
+  X('Award points','Player of the Match + Heroes',x=>({t:f1(x.awP)+' + '+f1(x.awH)+' = '+f1(x.awP+x.awH),n:x.awP+x.awH}),1);
+  X('Heroes awards','',x=>({t:x.A.length?x.A.join(', '):'None'}),0);
+  if(L.some(p=>p.x&&p.x.rule))X('Category rule applied','',x=>({t:x.rule||'–'}),0);
+  rows.forEach(r=>{if(!r.best||!r.vals)return;const ns=r.vals.map(v=>v.n).filter(v=>v!=null);if(ns.length<2)return;const m=Math.max(...ns);if(ns.every(v=>v===m))return;r.vals.forEach(v=>{if(v.n===m)v.best=1})});
+  return rows;
+}
+function keyDiffs(L){
+  const out=[];const X=L.filter(p=>p.x);if(X.length<2)return out;
+  const s=[...X].sort((a,b)=>b.s-a.s);
+  out.push(s[0].n+' has the highest Skill Rating ('+s[0].s+'), '+(s[0].s-s[1].s)+' ahead of '+s[1].n+' ('+s[1].s+').');
+  const gaps=PARTS.map(([k,n,w])=>{const o=[...X].sort((a,b)=>b.x[k]-a.x[k]);return{n,k,w,lead:o[0],next:o[1],g:(o[0].x[k]-o[1].x[k])*w}}).sort((a,b)=>b.g-a.g);
+  gaps.forEach(g=>{if(g.g<0.05){const t=X.filter(p=>Math.abs(p.x[g.k]-g.lead.x[g.k])<0.05/g.w);out.push(g.n+': '+t.map(p=>p.n).join(' and ')+' are level ('+f1(g.lead.x[g.k])+').')}else out.push(g.n+': '+g.lead.n+' leads by '+f1(g.g)+' rating points ('+f1(g.lead.x[g.k])+' vs '+f1(g.next.x[g.k])+' for '+g.next.n+').')});
+  return out;
+}
+function renderCompare(){
+  const ch=$('chips');ch.replaceChildren();
+  SEL.forEach(i=>{const p=byId(i);const c=el('span','chip',p.i+' · '+p.n);const b=el('button','','×');b.type='button';b.setAttribute('aria-label','Remove '+p.n);b.addEventListener('click',()=>toggleSel(i));c.appendChild(b);ch.appendChild(c)});
+  renderHits();
+  const out=$('cout');out.replaceChildren();
+  if(SEL.length<2){const e=el('div','empty cempty',SEL.length?'Add one more player to see the comparison.':'Pick 2 to 4 players here, or tap “+ Compare” on any player card in All players.');out.appendChild(e);return}
+  const L=SEL.map(byId);const rows=compareModel(L);
+  const tw=el('div','ctw');const t=el('table','ct');const cg=el('colgroup');const k0=el('col','c0');cg.appendChild(k0);L.forEach(()=>cg.appendChild(el('col')));t.appendChild(cg);const th=el('thead');const hr=el('tr');
+  const c0=el('th');c0.scope='col';c0.appendChild(el('span','vh','Item'));hr.appendChild(c0);
+  L.forEach(p=>{const h=el('th');h.scope='col';h.append(el('span','pid','KNPL7-'+p.i),el('span','pn',p.n));hr.appendChild(h)});
+  th.appendChild(hr);t.appendChild(th);const tb=el('tbody');
+  rows.forEach(r=>{const tr=el('tr');
+    if(r.sec){tr.className='sec';const h=el('th',null,r.sec);h.colSpan=L.length+1;h.scope='colgroup';tr.appendChild(h);tb.appendChild(tr);return}
+    const h=el('th',null,r.label);h.scope='row';if(r.sub)h.appendChild(el('small',null,r.sub));tr.appendChild(h);
+    r.vals.forEach(v=>{const td=el('td',v.best?'best':'');
+      if(v.cat){const c=el('span','cat',v.t);c.style.background=CC[v.t];td.appendChild(c)}
+      else{const b=el(v.big?'span':'b',v.big?'big':'',v.t);if(!v.big&&!v.pts)b.style.fontWeight='600';td.appendChild(b)}
+      if(v.pts)td.appendChild(el('span','pts',v.pts));
+      if(v.bar!=null){const m=el('div','mb');const i=el('i');i.style.width=Math.max(0,Math.min(100,v.bar))+'%';m.appendChild(i);td.appendChild(m)}
+      tr.appendChild(td)});
+    tb.appendChild(tr)});
+  t.appendChild(tb);tw.appendChild(t);
+  const kd=el('div','keyd');kd.appendChild(el('h3',null,'Where the difference comes from'));const ul=el('ul');keyDiffs(L).forEach(x=>ul.appendChild(el('li',null,x)));kd.appendChild(ul);
+  kd.appendChild(el('p','count','Highlighted cells show the highest value in that row. Rating points = part score × its weight. All figures are provisional until NPL-5 is completed.'));
+  const ca=el('div','cact');const btn=el('button','dl','Download combined report (PDF)');btn.type='button';
+  const lab=el('label');const cb=el('input');cb.type='checkbox';cb.checked=true;cb.id='cinc';lab.append(cb,document.createTextNode('Include each player’s full calculation statement'));
+  const msg=el('span','msg');btn.addEventListener('click',()=>combinedReport(L,cb.checked,btn,msg));
+  ca.append(btn,lab,msg);
+  out.append(tw,kd,ca);
+}
+let PDFLIB=null;
+function loadPdfLib(){if(PDFLIB)return PDFLIB;PDFLIB=new Promise((res,rej)=>{const s=document.createElement('script');s.src='pdf-lib.min.js';s.onload=()=>res(window.PDFLib);s.onerror=()=>{PDFLIB=null;rej(new Error('lib'))};document.head.appendChild(s)});return PDFLIB}
+const asc=s=>String(s).replace(/₹/g,'Rs ').replace(/[–—]/g,'-').replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/×/g,'x').replace(/÷/g,'/').replace(/✓/g,'').replace(/·/g,'|').replace(/[^\x20-\x7e]/g,'');
+async function combinedReport(L,inc,btn,msg){
+  btn.disabled=true;msg.textContent='Preparing the report…';
+  try{
+    const {PDFDocument,StandardFonts,rgb}=await loadPdfLib();
+    const doc=await PDFDocument.create();
+    const F=await doc.embedFont(StandardFonts.Helvetica),B=await doc.embedFont(StandardFonts.HelveticaBold);
+    let logo=null;try{logo=await doc.embedPng(await (await fetch('logo.png')).arrayBuffer())}catch(e){}
+    const NAVY=rgb(.043,.102,.22),SAF=rgb(.878,.478,.122),SAFS=rgb(1,.953,.902),INK=rgb(.075,.13,.247),MUT=rgb(.36,.4,.52),LINE=rgb(.85,.875,.925),BG=rgb(.953,.961,.98);
+    const W=842,H=595,M=32;const now=new Date();const ds=now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    const wrap=(t,font,sz,w)=>{const out=[];String(t).split('\n').forEach(par=>{let line='';par.split(' ').forEach(wd=>{const tr=line?line+' '+wd:wd;if(font.widthOfTextAtSize(tr,sz)<=w)line=tr;else{if(line)out.push(line);line=wd;while(font.widthOfTextAtSize(line,sz)>w&&line.length>1){let k=line.length;while(k>1&&font.widthOfTextAtSize(line.slice(0,k),sz)>w)k--;out.push(line.slice(0,k));line=line.slice(k)}}});out.push(line)});return out};
+    let pg,y,pno=0;
+    const footer=()=>{pg.drawText(asc('KNPL-7 | Skill Rating comparison | Strictly confidential: Core Committee and Franchise Owners only | Provisional until NPL-5 is completed'),{x:M,y:16,size:7.5,font:F,color:MUT});pg.drawText('Page '+pno,{x:W-M-40,y:16,size:7.5,font:F,color:MUT})};
+    const newPage=(first)=>{if(pg)footer();pg=doc.addPage([W,H]);pno++;
+      pg.drawRectangle({x:0,y:H-(first?78:40),width:W,height:first?78:40,color:NAVY});pg.drawRectangle({x:0,y:H-(first?82:43),width:W,height:first?4:3,color:SAF});
+      if(first){if(logo)pg.drawImage(logo,{x:M,y:H-72,width:60,height:60});const lx=logo?M+72:M;
+        pg.drawText('KNPL-7 | CONFIDENTIAL',{x:lx,y:H-28,size:9,font:B,color:rgb(1,.7,.4)});
+        pg.drawText('Skill Rating Comparison',{x:lx,y:H-52,size:22,font:B,color:rgb(1,1,1)});
+        pg.drawText(asc(L.map(p=>p.n).join('  vs  ')),{x:lx,y:H-68,size:9.5,font:F,color:rgb(.79,.83,.92)});
+        const g=asc('Generated '+ds+(WHO?' | '+WHO:''));pg.drawText(g,{x:W-M-F.widthOfTextAtSize(g,8.5),y:H-28,size:8.5,font:F,color:rgb(.79,.83,.92)});
+        y=H-100}else{pg.drawText('Skill Rating Comparison (continued)',{x:M,y:H-26,size:12,font:B,color:rgb(1,1,1)});y=H-60}};
+    newPage(true);
+    const rows=compareModel(L);const lw=210,cw=(W-2*M-lw)/L.length;
+    const head=()=>{const hh=34;pg.drawRectangle({x:M,y:y-hh,width:W-2*M,height:hh,color:NAVY});
+      L.forEach((p,j)=>{const x=M+lw+j*cw+6;pg.drawText('KNPL7-'+p.i,{x,y:y-12,size:7.5,font:B,color:rgb(1,.7,.4)});
+        const nm=wrap(asc(p.n.toUpperCase()),B,10,cw-12)[0];pg.drawText(nm,{x,y:y-26,size:10,font:B,color:rgb(1,1,1)})});y-=hh};
+    head();
+    for(const r of rows){
+      if(r.sec){if(y<70){newPage(false);head()}pg.drawRectangle({x:M,y:y-18,width:W-2*M,height:18,color:BG});pg.drawText(asc(r.sec.toUpperCase()),{x:M+6,y:y-12.5,size:8,font:B,color:MUT});y-=18;continue}
+      const lab=wrap(asc(r.label),B,8.5,lw-12),sub=r.sub?wrap(asc(r.sub),F,7,lw-12):[];
+      const cells=r.vals.map(v=>{const big=v.big;const sz=big?15:8.5;const ls=wrap(asc(v.t),big?B:(v.pts||v.cat?B:F),sz,cw-12);return{v,ls,sz}});
+      const hl=Math.max(lab.length*10.5+sub.length*8.5,...cells.map(c=>c.ls.length*(c.sz+2.5)+(c.v.pts?9:0)+(c.v.bar!=null?6:0)))+8;
+      if(y-hl<36){newPage(false);head()}
+      cells.forEach((c,j)=>{if(c.v.best)pg.drawRectangle({x:M+lw+j*cw,y:y-hl,width:cw,height:hl,color:SAFS});if(c.v.best)pg.drawRectangle({x:M+lw+j*cw,y:y-hl,width:2.5,height:hl,color:SAF})});
+      let yy=y-11;lab.forEach(l=>{pg.drawText(l,{x:M+6,y:yy,size:8.5,font:B,color:INK});yy-=10.5});sub.forEach(l=>{pg.drawText(l,{x:M+6,y:yy+1.5,size:7,font:F,color:MUT});yy-=8.5});
+      cells.forEach((c,j)=>{const x=M+lw+j*cw+6;let yc=y-4-c.sz;
+        c.ls.forEach(l=>{pg.drawText(l,{x,y:yc,size:c.sz,font:(c.v.big||c.v.pts||c.v.cat)?B:F,color:INK});yc-=c.sz+2.5});
+        if(c.v.pts){pg.drawText(asc(c.v.pts),{x,y:yc+1,size:7.5,font:F,color:MUT});yc-=9}
+        if(c.v.bar!=null){const bw=Math.min(110,cw-14);pg.drawRectangle({x,y:yc+1,width:bw,height:3.5,color:LINE});pg.drawRectangle({x,y:yc+1,width:bw*Math.max(0,Math.min(100,c.v.bar))/100,height:3.5,color:SAF})}});
+      pg.drawLine({start:{x:M,y:y-hl},end:{x:W-M,y:y-hl},thickness:.6,color:LINE});y-=hl;
+    }
+    const kd=keyDiffs(L);
+    const blk=['WHERE THE DIFFERENCE COMES FROM',...kd];
+    let need=26+kd.reduce((a,t)=>a+wrap(asc(t),F,9,W-2*M-20).length*12,0)+30;
+    if(y-need<36)newPage(false);
+    y-=16;pg.drawText('Where the difference comes from',{x:M,y,size:12,font:B,color:INK});y-=16;
+    kd.forEach(t=>{wrap(asc(t),F,9,W-2*M-20).forEach((l,k)=>{if(!k)pg.drawText('-',{x:M+4,y,size:9,font:B,color:SAF});pg.drawText(l,{x:M+16,y,size:9,font:F,color:INK});y-=12})});
+    y-=4;wrap('Highlighted cells show the highest value in each row. Rating points = part score x its weight (Performance 55%, Win Impact 15%, Awards 10%, Consistency 10%, Experience 10%). Skill Rating = total rounded to the nearest whole number. Only auction-based tournaments are counted.'+(inc?' Each player\'s full calculation statement follows.':''),F,8,W-2*M).forEach(l=>{pg.drawText(l,{x:M,y,size:8,font:F,color:MUT});y-=10.5});
+    footer();
+    if(inc){for(const p of L){if(!p.d)continue;msg.textContent='Adding '+p.n+'’s statement…';
+      const src=await PDFDocument.load(await decrypt('p/'+p.i+'.bin'));const cp=await doc.copyPages(src,src.getPageIndices());cp.forEach(x=>doc.addPage(x))}}
+    doc.setTitle('KNPL-7 Skill Rating Comparison');doc.setAuthor('Team KNPL');doc.setSubject('Confidential - '+L.map(p=>'KNPL7-'+p.i).join(', '));
+    const bytes=await doc.save();const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+    const a=document.createElement('a');a.href=url;a.download='KNPL7-Compare-'+L.map(p=>p.i).join('-')+'.pdf';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);msg.textContent='Downloaded';
+  }catch(e){console.error(e);msg.textContent='Could not build the report. Please check your connection and try again.'}
+  finally{btn.disabled=false}
 }
 q.addEventListener('input',render);
 $('gf').addEventListener('submit',async e=>{
