@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>KNPL-7 Team Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#f3f5fa;--surface:#fff;--ink:#13213f;--muted:#5b6784;--line:#d9dfec;--navy:#0b1a38;--saffron:#e07a1f;--saffron-soft:#fff3e6;
+  --teal:#0b8a8a;--teal-soft:#e2f6f6;--red:#c0392b;--red-soft:#fdeceb;--ok:#1f8a5b;--ok-soft:#e5f5ec;--focus:#e07a1f;
+  --c-cv:#c0392b;--c-cc:#d9532f;--c-da:#7b3fbf;--c-dc:#4a5fd1;--c-re:#1f8a5b;--c-rc:#5d7a8c;
+  --display:"Saira Condensed","Arial Narrow",Arial,sans-serif;--body:"Public Sans","Noto Sans Malayalam",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1426;--surface:#142039;--ink:#e7ecf7;--muted:#9aa7c4;--line:#26355a;--navy:#08101f;--saffron:#f2933c;--saffron-soft:#2a2116;--teal:#3cc4c4;--teal-soft:#0f2e33;--red:#ff7a6b;--red-soft:#3a1714;--ok:#4cc38a;--ok-soft:#10301f;--focus:#f2933c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c1426;--surface:#142039;--ink:#e7ecf7;--muted:#9aa7c4;--line:#26355a;--navy:#08101f;--saffron:#f2933c;--saffron-soft:#2a2116;--teal:#3cc4c4;--teal-soft:#0f2e33;--red:#ff7a6b;--red-soft:#3a1714;--ok:#4cc38a;--ok-soft:#10301f;--focus:#f2933c;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--navy);color:#fff;border-bottom:4px solid var(--saffron)}
+header .wrap{padding-block:20px 18px;display:flex;gap:16px;align-items:center}
+.hlogo{width:58px;height:58px;border-radius:50%;background:#fff;flex:none;object-fit:contain}
+.kick{font:700 13px/1 var(--display);letter-spacing:.22em;color:#ffb366;text-transform:uppercase}
+h1{font:800 clamp(30px,5.4vw,46px)/1 var(--display);margin:4px 0 0}
+.tagline{color:#c9d3ea;font-size:14px;margin-top:4px}
+main{padding-block:20px 40px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:18px}
+h2{font:800 28px/1.1 var(--display);margin:0 0 6px;text-wrap:balance}
+h3{font:800 20px/1.15 var(--display);margin:14px 0 6px}
+.muted{color:var(--muted)}.small{font-size:13px}
+label.fl{display:block;font:700 14px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+input[type=text]{width:100%;font:700 20px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:12px 14px}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn{font:700 15px var(--body);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px 18px;cursor:pointer}
+.btn.or{background:var(--saffron)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.msg{min-height:22px;font-weight:600;margin-top:10px}.msg.err{color:var(--red)}
+.gate{max-width:520px}
+.teambar{display:flex;gap:14px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:16px}
+.tlogo{width:64px;height:64px;border-radius:12px;background:#000;object-fit:cover;flex:none}
+.tinit{width:64px;height:64px;border-radius:12px;background:var(--navy);color:#ffc94a;font:800 26px/64px var(--display);text-align:center;flex:none}
+.teambar b{font:800 24px/1.05 var(--display);text-transform:uppercase;display:block}
+.teambar .sp{flex:1;min-width:0}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;padding:0;list-style:none}
+.steps li{flex:1 1 120px;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font:700 15px/1.15 var(--display);letter-spacing:.04em;color:var(--muted);display:flex;gap:8px;align-items:center}
+.steps li span{width:24px;height:24px;border-radius:50%;background:var(--line);color:var(--ink);font:800 14px/24px var(--display);text-align:center;flex:none}
+.steps li.on{border-color:var(--saffron);color:var(--ink)}.steps li.on span{background:var(--saffron);color:#fff}
+.steps li.done span{background:var(--ok);color:#fff}
+.tabs{display:flex;gap:6px;margin:8px 0 12px}
+.tabs button{font:700 15px var(--body);border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:20px;padding:6px 14px;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.rules ol{padding-left:22px;margin:0;display:flex;flex-direction:column;gap:8px}
+.rules li b{color:var(--ink)}
+.ml{font-family:"Noto Sans Malayalam",var(--body);line-height:1.75}
+.combo{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:10px 0}
+.combo div{border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font-weight:600;font-size:14px;display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.chipc{color:#fff;font:700 12px/1 var(--display);letter-spacing:.05em;padding:4px 7px;border-radius:5px;text-transform:uppercase}
+.gC{background:var(--c-cv)}.gD{background:var(--c-da)}.gR{background:var(--c-re)}
+.ack{display:flex;gap:10px;align-items:flex-start;background:var(--saffron-soft);border:1.5px solid var(--saffron);border-radius:12px;padding:12px 14px;margin-top:14px;cursor:pointer}
+.ack input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--saffron)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.pc{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px;display:grid;grid-template-columns:72px 1fr;gap:12px}
+.pc.sel{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal)}
+.pc.dis{opacity:.62}
+.ph{width:72px;height:90px;border-radius:9px;overflow:hidden;background:var(--line);border:2px solid var(--navy)}.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.rid{font:700 14px/1 var(--display);letter-spacing:.1em;color:var(--saffron)}
+.nm{font:800 20px/1.05 var(--display);text-transform:uppercase;overflow-wrap:anywhere}
+.row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:4px}
+.sr{font:800 26px/1 var(--display)}.sr small{font:600 13px var(--body);color:var(--muted)}
+.cat{color:#fff;font:700 13px/1 var(--display);letter-spacing:.05em;padding:5px 8px;border-radius:6px}
+.parts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.parts div{font-size:11.5px;color:var(--muted);min-width:0}
+.parts b{display:block;font:800 16px var(--display);color:var(--ink)}
+.bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:2px}.bar i{display:block;height:100%;background:var(--saffron)}
+.money{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.money div{border:1.5px solid var(--saffron);background:var(--saffron-soft);border-radius:8px;padding:5px 8px}
+.money span{display:block;font:700 11px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.money b{font:800 18px var(--display)}
+.pact{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.pick{font:700 14px var(--body);border-radius:9px;padding:9px 13px;cursor:pointer;border:1.5px solid var(--teal);background:var(--surface);color:var(--teal)}
+.pick[aria-pressed=true]{background:var(--teal);color:#fff}
+.pick[disabled]{opacity:.55;cursor:not-allowed}
+.why{font-size:12.5px;color:var(--red);font-weight:600}
+.lnk{color:var(--saffron);font-weight:600;font-size:14px;background:none;border:0;cursor:pointer;padding:0;text-decoration:underline}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;margin-top:12px}
+.sticky{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;border-radius:0 0 12px 12px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.sticky .k{font:700 11px var(--display);letter-spacing:.1em;text-transform:uppercase;color:#c9d3ea;display:block}
+.sticky b{font:800 20px var(--display)}
+.sticky .st{margin-left:auto;font-weight:700}
+.st.okk{color:#7dffb8}.st.bad{color:#ffb3a8}
+.empty{padding:24px;text-align:center;color:var(--muted);background:var(--surface);border:1.5px dashed var(--line);border-radius:14px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:var(--navy);color:#fff;font:700 14px var(--display);letter-spacing:.06em;text-transform:uppercase}
+td.n,th.n{text-align:right}
+tr.tot td{font-weight:800;background:var(--saffron-soft)}
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0}
+.meter{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+.meter .big{font:800 30px var(--display)}
+.meter .mb{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin:8px 0}.meter .mb i{display:block;height:100%;background:var(--saffron)}
+.meter dl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:0;font-size:14px}.meter dd{margin:0;font-weight:700;text-align:right}
+.note{background:var(--teal-soft);border:1.5px solid var(--teal);border-radius:12px;padding:10px 14px;font-size:14px;margin-top:12px}
+.alert{background:var(--red-soft);border:1.5px solid var(--red);border-radius:12px;padding:10px 14px;font-size:14px;margin-top:12px;color:var(--ink)}
+.done{background:var(--ok-soft);border:2px solid var(--ok);border-radius:14px;padding:18px}
+.done h2{color:var(--ok)}
+dialog{border:0;border-radius:16px;padding:20px;max-width:440px;width:calc(100% - 32px);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(5,10,25,.55)}
+footer{color:var(--muted);font-size:13px;padding-block:0 28px}
+@media (max-width:520px){.pc{grid-template-columns:60px 1fr}.ph{width:60px;height:76px}.parts{grid-template-columns:repeat(3,1fr)}.teambar b{font-size:20px}}
+@media print{header,.steps,.nav,.sticky,.tabs,button{display:none!important}body{background:#fff}}
+</style>
+</head><body>
+<header><div class="wrap">
+  <img class="hlogo" src="../skill-rating/logo.png" alt="KNPL logo">
+  <div><div class="kick">KNPL-7 · Franchise Owners only</div><h1>Team Draft</h1><div class="tagline">Read the draft rules, choose your players, check your points and Skill Rating, and submit your draft.</div></div>
+</div></header>
+<main class="wrap">
+
+<section id="gate" class="card gate" aria-labelledby="gate-h">
+  <h2 id="gate-h">Enter your team code</h2>
+  <p class="muted">Each team has its own draft code, shared privately with the franchise owner by the KNPL committee. Do not share it.</p>
+  <form id="gf" autocomplete="off">
+    <label class="fl" for="code">Team draft code</label>
+    <input id="code" type="text" autocapitalize="characters" spellcheck="false" placeholder="KD7-XXXXX-XXXXX" required>
+    <div style="margin-top:12px"><button class="btn" id="gbtn" type="submit">Open my draft</button></div>
+  </form>
+  <div id="gmsg" class="msg" role="status" aria-live="polite"></div>
+</section>
+
+<div id="app" hidden>
+  <div class="teambar"><span id="tlogo"></span><div class="sp"><span class="muted small">Logged in as</span><b id="tname"></b><span class="small muted" id="twin"></span></div><button class="btn ghost" type="button" id="out">Log out</button></div>
+  <ol class="steps" id="steps">
+    <li data-s="1"><span>1</span>Draft rules</li><li data-s="2"><span>2</span>Owner consent</li><li data-s="3"><span>3</span>Select players</li><li data-s="4"><span>4</span>Review &amp; confirm</li><li data-s="5"><span>5</span>Submitted</li>
+  </ol>
+
+  <!-- STEP 1 -->
+  <section class="card" id="s1" hidden>
+    <h2>Draft rules</h2>
+    <div class="tabs" role="group" aria-label="Language"><button type="button" data-l="en" aria-pressed="true">English</button><button type="button" data-l="ml" aria-pressed="false">മലയാളം</button></div>
+    <div class="rules" id="r-en">
+      <ol>
+        <li><b>What the draft is.</b> A team can secure up to <b>3 players including the owner</b> before the auction, at a fixed rating-based price. Drafting other players is <b>optional</b>.</li>
+        <li><b>Who you can draft.</b> Only players who chose <b>your team</b> as their preferred team in Phase 2 (Join Auction). Players who chose <b>"Any Team"</b> cannot be drafted; they go directly to the auction. The list in Step 3 shows only the players who chose your team.</li>
+        <li><b>Owner.</b> The owner is playing and is part of the draft. He counts as 1 of the 3 draft places.</li>
+        <li><b>Allowed category combinations</b> (owner included) – at most 1 Conqueror, at most 2 Dominators:
+          <div class="combo" id="combo-en"></div>
+          Any smaller selection that fits one of these is also allowed. Conqueror – Dominator – Dominator, two Conquerors, or three Dominators are <b>not</b> allowed. In addition, at most <b>1 Dominator Apex</b> (auction Round 1 limit, drafted players included).</li>
+        <li><b>Draft Point.</b> Each drafted player's Draft Point is deducted from your <b>1,00,000-point purse</b>. Draft Point = Base Point + Base Point × Skill Rating ÷ 100, rounded up.</li>
+        <li><b>Draft Price (draft fee, ₹).</b> Draft Price = Base Price + Base Price × Skill Rating ÷ 100. The <b>owner's draft fee is paid in full in year 1</b>. For the other drafted players the fee can be paid over 3 years – <b>50% in year 1, 25% in year 2, 25% in year 3</b>. If a drafted player is released and another team takes him, the remaining instalments pass to the new team; if he does not register again, the remaining instalments are cancelled.</li>
+        <li><b>Skill Rating cap.</b> Drafted players count towards the team's <b>Skill Rating cap of 560</b> for the 14-member squad, and towards the auction category limits (at most 6 Conqueror + Dominator in a squad).</li>
+        <li><b>Mutual match.</b> A player drafted this way joins your team directly without open bidding.</li>
+        <li><b>Deadline and finality.</b> Submit by <b id="dl-en">28 November 2026</b>. Once submitted, the draft is <b>final</b>; any change only through the KNPL Core Committee. Drafted players are removed from the auction pool.</li>
+        <li><b>Values.</b> Skill Ratings and draft values are those in the final auction pool published after the NPL-5 update.</li>
+      </ol>
+    </div>
+    <div class="rules ml" id="r-ml" hidden>
+      <ol>
+        <li><b>ഡ്രാഫ്റ്റ് എന്നാൽ.</b> ലേലത്തിന് മുൻപ്, റേറ്റിംഗ് അടിസ്ഥാനത്തിലുള്ള നിശ്ചിത വിലയിൽ <b>ഉടമ ഉൾപ്പെടെ പരമാവധി 3 കളിക്കാരെ</b> ടീമിന് ഉറപ്പാക്കാം. മറ്റ് കളിക്കാരെ ഡ്രാഫ്റ്റ് ചെയ്യുന്നത് <b>നിർബന്ധമല്ല</b>.</li>
+        <li><b>ആരെ ഡ്രാഫ്റ്റ് ചെയ്യാം.</b> Phase 2-ൽ (Join Auction) <b>നിങ്ങളുടെ ടീമിനെ</b> മുൻഗണനയായി തിരഞ്ഞെടുത്ത കളിക്കാരെ മാത്രം. <b>"Any Team"</b> തിരഞ്ഞെടുത്തവരെ ഡ്രാഫ്റ്റ് ചെയ്യാനാവില്ല; അവർ നേരിട്ട് ലേലത്തിലേക്ക് പോകും. Step 3-ൽ നിങ്ങളുടെ ടീമിനെ തിരഞ്ഞെടുത്തവരെ മാത്രമേ കാണിക്കൂ.</li>
+        <li><b>ഉടമ.</b> ഉടമ കളിക്കുന്നു; ഡ്രാഫ്റ്റിന്റെ ഭാഗമാണ്. 3 ഡ്രാഫ്റ്റ് സ്ഥാനങ്ങളിൽ ഒന്നായി കണക്കാക്കും.</li>
+        <li><b>അനുവദനീയമായ കാറ്റഗറി കോമ്പിനേഷനുകൾ</b> (ഉടമ ഉൾപ്പെടെ) – പരമാവധി 1 Conqueror, പരമാവധി 2 Dominators:
+          <div class="combo" id="combo-ml"></div>
+          ഇവയിൽ ഒന്നിനുള്ളിൽ വരുന്ന ചെറിയ തിരഞ്ഞെടുപ്പുകളും അനുവദനീയം. Conqueror – Dominator – Dominator, രണ്ട് Conqueror, മൂന്ന് Dominator എന്നിവ <b>അനുവദനീയമല്ല</b>. കൂടാതെ <b>Dominator Apex പരമാവധി 1</b> (ലേലം Round 1 പരിധി, ഡ്രാഫ്റ്റ് ഉൾപ്പെടെ).</li>
+        <li><b>Draft Point.</b> ഓരോ ഡ്രാഫ്റ്റ് കളിക്കാരന്റെയും Draft Point നിങ്ങളുടെ <b>1,00,000 പോയിന്റ് Purse-ൽ</b> നിന്ന് കുറയ്ക്കും. Draft Point = Base Point + Base Point × Skill Rating ÷ 100 (മുകളിലേക്ക് റൗണ്ട് ചെയ്യും).</li>
+        <li><b>Draft Price (ഡ്രാഫ്റ്റ് ഫീസ്, ₹).</b> Draft Price = Base Price + Base Price × Skill Rating ÷ 100. <b>ഉടമയുടെ ഡ്രാഫ്റ്റ് ഫീസ് ഒന്നാം വർഷം തന്നെ പൂർണ്ണമായി</b> അടയ്ക്കണം. മറ്റ് ഡ്രാഫ്റ്റ് കളിക്കാരുടെ ഫീസ് 3 വർഷ ഗഡുക്കളായി – <b>ഒന്നാം വർഷം 50%, രണ്ടാം വർഷം 25%, മൂന്നാം വർഷം 25%</b>. റിലീസ് ചെയ്യപ്പെട്ട കളിക്കാരനെ മറ്റൊരു ടീം എടുത്താൽ ബാക്കി ഗഡുക്കൾ പുതിയ ടീമിന്; അദ്ദേഹം വീണ്ടും രജിസ്റ്റർ ചെയ്തില്ലെങ്കിൽ ബാക്കി ഗഡുക്കൾ റദ്ദാകും.</li>
+        <li><b>Skill Rating Cap.</b> ഡ്രാഫ്റ്റ് കളിക്കാർ 14 അംഗ squad-ന്റെ <b>560 Skill Rating Cap-ലും</b>, ലേല കാറ്റഗറി പരിധികളിലും (ഒരു squad-ൽ Conqueror + Dominator പരമാവധി 6) കണക്കാക്കും.</li>
+        <li><b>Mutual Match.</b> ഇങ്ങനെ ഡ്രാഫ്റ്റ് ചെയ്യുന്ന കളിക്കാരൻ തുറന്ന ലേലം കൂടാതെ നേരിട്ട് നിങ്ങളുടെ ടീമിൽ ചേരും.</li>
+        <li><b>സമയപരിധിയും അന്തിമതയും.</b> <b id="dl-ml">2026 നവംബർ 28</b>-നകം സമർപ്പിക്കണം. സമർപ്പിച്ചാൽ ഡ്രാഫ്റ്റ് <b>അന്തിമം</b>; മാറ്റം KNPL കോർ കമ്മിറ്റി വഴി മാത്രം. ഡ്രാഫ്റ്റ് ചെയ്ത കളിക്കാരെ ലേല പൂളിൽ നിന്ന് ഒഴിവാക്കും.</li>
+        <li><b>മൂല്യങ്ങൾ.</b> NPL-5 അപ്ഡേറ്റിന് ശേഷം പ്രസിദ്ധീകരിക്കുന്ന അന്തിമ ലേല പൂളിലെ Skill Rating-ഉം ഡ്രാഫ്റ്റ് മൂല്യങ്ങളും ആണ് ബാധകം.</li>
+      </ol>
+    </div>
+    <label class="ack"><input type="checkbox" id="a-rules"><span><b>I have read and understood the draft rules</b> (English and Malayalam) and I accept them on behalf of my team.<br><span class="ml small">ഡ്രാഫ്റ്റ് നിയമങ്ങൾ (ഇംഗ്ലീഷ്, മലയാളം) വായിച്ച് മനസ്സിലാക്കി; എന്റെ ടീമിന് വേണ്ടി അംഗീകരിക്കുന്നു.</span></span></label>
+    <div class="nav"><span></span><button class="btn or" type="button" id="n1" disabled>Continue</button></div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card" id="s2" hidden>
+    <h2>Owner consent</h2>
+    <p class="muted">The owner is playing in KNPL-7 and is included in the team's draft. He uses one of the 3 draft places, and his draft fee is paid in full in year 1.</p>
+    <div id="ownerCard"></div>
+    <label class="ack"><input type="checkbox" id="a-owner"><span><b>I confirm that I, the franchise owner, am playing in KNPL-7 and I include myself in my team's draft.</b> I understand my Draft Point is deducted from the purse and my draft fee is paid in full in year 1.<br><span class="ml small">ഫ്രാഞ്ചൈസി ഉടമയായ ഞാൻ KNPL-7-ൽ കളിക്കുന്നു എന്നും എന്റെ ടീമിന്റെ ഡ്രാഫ്റ്റിൽ എന്നെ ഉൾപ്പെടുത്തുന്നു എന്നും സ്ഥിരീകരിക്കുന്നു. എന്റെ Draft Point Purse-ൽ നിന്ന് കുറയ്ക്കുമെന്നും ഡ്രാഫ്റ്റ് ഫീസ് ഒന്നാം വർഷം പൂർണ്ണമായി അടയ്ക്കണമെന്നും മനസ്സിലാക്കുന്നു.</span></span></label>
+    <p class="small muted" style="margin-top:10px">If you will not be playing this season, do not continue – contact the KNPL Core Committee first.</p>
+    <div class="nav"><button class="btn ghost" type="button" data-go="1">Back</button><button class="btn or" type="button" id="n2" disabled>Continue</button></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section id="s3" hidden>
+    <div class="sticky" id="sum3"></div>
+    <div class="card" style="margin-top:12px">
+      <h2>Select your draft players</h2>
+      <p class="muted" style="margin:0">These players chose <b id="tname2"></b> as their preferred team in Phase 2. You can select <b>up to 2</b> of them (the owner is already the first draft place). Selecting nobody is also allowed – the draft is optional.</p>
+      <div class="combo" id="combo3"></div>
+      <p class="small muted" style="margin:0">Players who cannot be added because of the category combination rule are shown with the reason.</p>
+    </div>
+    <div id="list"></div>
+    <div class="nav"><button class="btn ghost" type="button" data-go="2">Back</button><button class="btn or" type="button" id="n3">Review draft</button></div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section id="s4" hidden>
+    <div class="card">
+      <h2>Review &amp; confirm</h2>
+      <p class="muted" style="margin:0">Check the players, the points and Skill Rating you will use, and the draft fee before you submit.</p>
+      <div class="tw" style="margin-top:12px"><table id="revT"></table></div>
+      <div class="meters" id="meters"></div>
+      <h3>Draft fee payment schedule</h3>
+      <div class="tw"><table id="feeT"></table></div>
+      <div id="revNote"></div>
+      <label class="ack"><input type="checkbox" id="a-review"><span><b>I have checked the Draft Points used and the points balance, and the Skill Rating used and the Skill Rating cap balance</b>, shown above, and I understand they apply to my 14-member squad in the auction.<br><span class="ml small">മുകളിൽ കാണിച്ച ഉപയോഗിച്ച Draft Points, ബാക്കി പോയിന്റ്, ഉപയോഗിച്ച Skill Rating, ബാക്കി Skill Rating Cap എന്നിവ പരിശോധിച്ചു; ഇവ ലേലത്തിലെ 14 അംഗ squad-ന് ബാധകമാണെന്ന് മനസ്സിലാക്കുന്നു.</span></span></label>
+      <label class="ack"><input type="checkbox" id="a-fee"><span><b>I agree to pay the draft fees as per the schedule above</b> (owner 100% in year 1; other drafted players 50% / 25% / 25%).<br><span class="ml small">മുകളിലെ ഷെഡ്യൂൾ പ്രകാരം ഡ്രാഫ്റ്റ് ഫീസ് അടയ്ക്കാൻ സമ്മതിക്കുന്നു (ഉടമ ഒന്നാം വർഷം 100%; മറ്റുള്ളവർ 50% / 25% / 25%).</span></span></label>
+      <label class="ack"><input type="checkbox" id="a-final"><span><b>I understand that once submitted, this draft is final</b> and can be changed only through the KNPL Core Committee.<br><span class="ml small">സമർപ്പിച്ചാൽ ഈ ഡ്രാഫ്റ്റ് അന്തിമമാണെന്നും KNPL കോർ കമ്മിറ്റി വഴി മാത്രമേ മാറ്റാനാകൂ എന്നും മനസ്സിലാക്കുന്നു.</span></span></label>
+      <div class="msg" id="smsg" role="status" aria-live="polite"></div>
+      <div class="nav"><button class="btn ghost" type="button" data-go="3">Back</button><button class="btn or" type="button" id="n4" disabled>Submit draft</button></div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section id="s5" hidden>
+    <div class="done" id="doneBox"></div>
+  </section>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-h">
+  <h2 id="dlg-h">Submit your draft?</h2>
+  <p id="dlg-p"></p>
+  <div class="nav"><button class="btn ghost" type="button" id="dlg-no">Go back</button><button class="btn or" type="button" id="dlg-yes">Yes, submit</button></div>
+</dialog>
+</main>
+<footer class="wrap">KNPL-7 Team Draft · Queries: Krishnadas – 99862 18725 · Team KNPL</footer>
+
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
+const DATA_BASE='../skill-rating/';
+const CC={"Conqueror Vanguard":"var(--c-cv)","Conqueror Core":"var(--c-cc)","Dominator Apex":"var(--c-da)","Dominator Core":"var(--c-dc)","Rising Star Elite":"var(--c-re)","Rising Star Core":"var(--c-rc)"};
+const COMBOS=[['C','D','R'],['C','R','R'],['D','D','R'],['D','R','R'],['R','R','R']];
+const GN={C:'Conqueror',D:'Dominator',R:'Rising Star'};
+const $=id=>document.getElementById(id);
+let S=null,KEY=null,P=new Map(),SEL=[],CODE='',STEP=1;
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const inr=v=>'₹'+Math.round(v).toLocaleString('en-IN');
+const pts=v=>Math.round(v).toLocaleString('en-IN');
+const grp=c=>c.startsWith('Conqueror')?'C':c.startsWith('Dominator')?'D':'R';
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+async function api(fn,...args){let r;try{r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'})}catch(_){throw new Error('Could not reach the KNPL server. Check your internet connection and try again.')}
+  const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed.');return j.result}
+async function decrypt(url){const r=await fetch(url,{cache:'no-cache'});if(!r.ok)throw new Error('File not found.');const b=new Uint8Array(await r.arrayBuffer());return crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},KEY,b.slice(12))}
+const slug=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const title=t=>t.toLowerCase().replace(/\b[a-z]/g,m=>m.toUpperCase()).replace(/\bOf\b/g,'of');
+function fmtDate(iso){try{return new Date(iso).toLocaleString('en-IN',{day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit',timeZone:'Asia/Kolkata'})}catch(e){return iso}}
+
+/* combos display */
+function comboHTML(target){const t=$(target);t.replaceChildren();COMBOS.forEach(c=>{const d=el('div');c.forEach((g,i)=>{if(i)d.append(' – ');const s=el('span','chipc g'+g,GN[g]);d.appendChild(s)});t.appendChild(d)})}
+['combo-en','combo-ml','combo3'].forEach(comboHTML);
+
+/* combination rule: owner + selected */
+function checkCombo(list){
+  const g=list.map(p=>grp(p.c));const c=g.filter(x=>x==='C').length,d=g.filter(x=>x==='D').length;const apex=list.filter(p=>p.c==='Dominator Apex').length;
+  if(list.length>3)return'A team can draft at most 3 players, owner included.';
+  if(c>1)return'At most 1 Conqueror can be drafted.';
+  if(d>2)return'At most 2 Dominators can be drafted.';
+  if(c+d>2)return'With 3 players, at least one must be a Rising Star (Conqueror – Dominator – Dominator is not allowed).';
+  if(apex>1)return'At most 1 Dominator Apex (auction Round 1 limit).';
+  return'';
+}
+
+/* login */
+$('gf').addEventListener('submit',async e=>{e.preventDefault();const c=$('code').value.trim().toUpperCase();if(!c)return;
+  $('gbtn').disabled=true;$('gmsg').className='msg';$('gmsg').textContent='Checking your code…';
+  try{await start(c);$('gmsg').textContent=''}catch(err){$('gmsg').className='msg err';$('gmsg').textContent=err.message}finally{$('gbtn').disabled=false}});
+async function start(code){
+  const r=await api('draftLogin',code);S=r;CODE=code;
+  KEY=await crypto.subtle.importKey('raw',b64(r.key),'AES-GCM',false,['decrypt']);
+  const all=JSON.parse(new TextDecoder().decode(await decrypt(DATA_BASE+'d.bin')));P=new Map(all.map(p=>[p.i,p]));
+  try{sessionStorage.setItem('knpl-draft',code)}catch(e){}
+  $('gate').hidden=true;$('app').hidden=false;
+  const tl=$('tlogo');tl.replaceChildren();const im=el('img','tlogo');im.alt=title(r.team)+' logo';im.src='logos/'+slug(r.team)+'.jpg';
+  im.onerror=()=>{const d=el('div','tinit',r.team.split(' ').filter(w=>w.length>2).map(w=>w[0]).join('').slice(0,3));tl.replaceChildren(d)};tl.appendChild(im);
+  $('tname').textContent=title(r.team);$('tname2').textContent=title(r.team);
+  const w=r.window;$('twin').textContent=w.closed?' · Draft window closed':w.before?' · Draft opens '+fmtDate(w.opens):' · Submit by '+fmtDate(w.deadline);
+  $('dl-en').textContent=fmtDate(w.deadline);$('dl-ml').textContent=fmtDate(w.deadline);
+  SEL=[];
+  if(r.submitted){showDone(r.submitted);return}
+  go(1);
+}
+$('out').addEventListener('click',()=>{try{sessionStorage.removeItem('knpl-draft')}catch(e){}location.reload()});
+(async()=>{try{const c=sessionStorage.getItem('knpl-draft');if(c){$('code').value=c;await start(c)}}catch(e){}})();
+
+/* navigation */
+function go(n){STEP=n;['s1','s2','s3','s4','s5'].forEach((id,i)=>$(id).hidden=i+1!==n);
+  document.querySelectorAll('#steps li').forEach(li=>{const s=+li.dataset.s;li.classList.toggle('on',s===n);li.classList.toggle('done',s<n)});
+  if(n===2)renderOwner();if(n===3)renderList();if(n===4)renderReview();window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(+b.dataset.go)));
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));$('r-en').hidden=b.dataset.l!=='en';$('r-ml').hidden=b.dataset.l!=='ml'}));
+$('a-rules').addEventListener('change',e=>$('n1').disabled=!e.target.checked);$('n1').addEventListener('click',()=>go(2));
+$('a-owner').addEventListener('change',e=>$('n2').disabled=!e.target.checked);$('n2').addEventListener('click',()=>go(3));
+$('n3').addEventListener('click',()=>go(4));
+['a-review','a-fee','a-final'].forEach(id=>$(id).addEventListener('change',()=>$('n4').disabled=!(['a-review','a-fee','a-final'].every(x=>$(x).checked)&&S.window.open)));
+
+/* player card */
+function pcard(p,opts={}){
+  const a=el('article','pc');const ph=el('div','ph');if(p.p){const im=el('img');im.alt='';im.loading='lazy';im.src='data:image/jpeg;base64,'+p.p;ph.appendChild(im)}
+  const info=el('div');info.style.minWidth='0';
+  info.append(el('div','rid','KNPL7-'+p.i+(opts.owner?' · OWNER':'')),el('div','nm',p.n));
+  const row=el('div','row');const sr=el('span','sr',String(p.s));sr.appendChild(el('small',null,' / 100'));const cat=el('span','cat',p.c);cat.style.background=CC[p.c];row.append(sr,cat);info.appendChild(row);
+  if(p.x){const pr=el('div','parts');[['P','Perf.'],['W','Win'],['Aw','Awards'],['C','Consist.'],['E','Exp.']].forEach(([k,l])=>{const d=el('div');d.appendChild(el('b',null,(Math.round(p.x[k]*10)/10).toFixed(1)));d.append(l);const br=el('div','bar');const i=el('i');i.style.width=Math.min(100,p.x[k])+'%';br.appendChild(i);d.appendChild(br);pr.appendChild(d)});info.appendChild(pr);
+    info.appendChild(el('div','small muted',p.x.m+' matches · '+p.x.mwc+' match-winning contributions · '+p.x.pom+' Player of the Match'))}
+  const mo=el('div','money');[['Draft Point',pts(p.dt)+' pts'],['Draft Price',inr(p.dp)]].forEach(([l,v])=>{const d=el('div');d.append(el('span',null,l),el('b',null,v));mo.appendChild(d)});info.appendChild(mo);
+  const act=el('div','pact');
+  if(opts.pick)act.appendChild(opts.pick);
+  if(p.d){const b=el('button','lnk','Full statement (PDF)');b.type='button';b.addEventListener('click',async()=>{b.textContent='Preparing…';try{const buf=await decrypt(DATA_BASE+'p/'+p.i+'.bin');const u=URL.createObjectURL(new Blob([buf],{type:'application/pdf'}));const x=document.createElement('a');x.href=u;x.download='KNPL7-'+p.i+'-Skill-Rating.pdf';document.body.appendChild(x);x.click();x.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);b.textContent='Full statement (PDF)'}catch(e){b.textContent='Could not download'}});act.appendChild(b)}
+  if(opts.why){act.appendChild(el('span','why',opts.why))}
+  info.appendChild(act);a.append(ph,info);return a}
+
+function owner(){return P.get(S.ownerId)}
+function renderOwner(){const o=owner();const t=$('ownerCard');t.replaceChildren();if(!o){t.appendChild(el('div','alert','Owner record KNPL7-'+S.ownerId+' was not found. Contact the KNPL committee.'));return}t.appendChild(pcard(o,{owner:1}))}
+
+/* summary */
+function totals(){const L=[owner(),...SEL.map(i=>P.get(i))].filter(Boolean);return{L,pts:L.reduce((a,p)=>a+p.dt,0),sr:L.reduce((a,p)=>a+p.s,0),fee:L.reduce((a,p)=>a+p.dp,0)}}
+function renderSum(){const t=totals();const s=$('sum3');s.replaceChildren();
+  const item=(k,v)=>{const d=el('div');d.append(el('span','k',k),el('b',null,v));return d};
+  s.append(item('Drafted (owner incl.)',t.L.length+' / 3'),item('Combination',t.L.map(p=>grp(p.c)).map(g=>GN[g]).join(' – ')),item('Draft Points used',pts(t.pts)),item('Skill Rating used',String(t.sr)+' / '+S.srCap));
+  const err=checkCombo(t.L);const st=el('span','st '+(err?'bad':'okk'),err?'✗ '+err:'✓ Allowed combination');s.appendChild(st)}
+
+function renderList(){
+  renderSum();const box=$('list');box.replaceChildren();
+  const elig=S.eligible.map(i=>P.get(i)).filter(Boolean).sort((a,b)=>b.s-a.s);
+  if(!elig.length){box.appendChild(el('div','empty',S.eligible.length?'Player data is still loading.':'No player has chosen your team as preferred team yet. Players choose their preferred team in Phase 2 (Join Auction). Check again later – you can still submit a draft with the owner only.'));return}
+  const g=el('div','grid');
+  elig.forEach(p=>{const on=SEL.includes(p.i);let why='';
+    if(!on){if(SEL.length>=2)why='You already selected 2 players (3 with the owner).';else why=checkCombo([owner(),...SEL.map(i=>P.get(i)),p])}
+    const b=el('button','pick',on?'✓ Selected for draft':'+ Select for draft');b.type='button';b.setAttribute('aria-pressed',on);b.disabled=!on&&!!why;
+    b.addEventListener('click',()=>{if(SEL.includes(p.i))SEL=SEL.filter(x=>x!==p.i);else SEL.push(p.i);renderList()});
+    const c=pcard(p,{pick:b,why:on?'':why});if(on)c.classList.add('sel');if(!on&&why)c.classList.add('dis');g.appendChild(c)});
+  box.appendChild(g);
+  $('n3').disabled=!!checkCombo(totals().L);
+}
+
+/* review */
+function renderReview(){
+  const t=totals();const L=t.L;
+  const T=$('revT');T.replaceChildren();const h=el('tr');['Player','Category','Skill Rating','Draft Point','Draft Price'].forEach((x,i)=>{const th=el('th',i>1?'n':'',x);h.appendChild(th)});T.appendChild(h);
+  L.forEach((p,i)=>{const r=el('tr');r.append(el('td',null,(i===0?'Owner · ':'')+'KNPL7-'+p.i+' '+p.n),el('td',null,p.c),el('td','n',String(p.s)),el('td','n',pts(p.dt)),el('td','n',inr(p.dp)));T.appendChild(r)});
+  const tr=el('tr','tot');tr.append(el('td',null,'Total ('+L.length+' player'+(L.length>1?'s':'')+')'),el('td',null,L.map(p=>GN[grp(p.c)]).join(' – ')),el('td','n',String(t.sr)),el('td','n',pts(t.pts)),el('td','n',inr(t.fee)));T.appendChild(tr);
+  const left=14-L.length;const resP=left*2000;const resS=left*19;
+  const M=$('meters');M.replaceChildren();
+  const meter=(title,used,cap,unit,res,resLbl)=>{const m=el('div','meter');m.appendChild(el('div','small muted',title));const big=el('div','big',(unit==='pts'?pts(cap-used):String(cap-used))+(unit==='pts'?' pts left':' left'));m.appendChild(big);
+    const mb=el('div','mb');const i=el('i');i.style.width=Math.min(100,used/cap*100)+'%';mb.appendChild(i);m.appendChild(mb);
+    const dl=el('dl');[['Total',unit==='pts'?pts(cap):String(cap)],['Used by draft',unit==='pts'?pts(used):String(used)],['Balance for the auction',unit==='pts'?pts(cap-used):String(cap-used)],[resLbl,unit==='pts'?pts(res):String(res)]].forEach(([a,b])=>{dl.append(el('dt',null,a),el('dd',null,b))});m.appendChild(dl);
+    const ok=cap-used>=res;m.appendChild(el('div','small '+(ok?'':'why'),ok?'✓ Enough left to complete the squad of 14.':'✗ Not enough left to complete the squad.'));return m};
+  M.append(meter('Points purse',t.pts,S.purse,'pts',resP,'Reserve for '+left+' more players (2,000 each)'),meter('Squad Skill Rating cap',t.sr,S.srCap,'sr',resS,'Reserve for '+left+' more players (~19 each)'));
+  const F=$('feeT');F.replaceChildren();const fh=el('tr');['Player','Payment rule','Year 1','Year 2','Year 3','Total'].forEach((x,i)=>fh.appendChild(el('th',i>1?'n':'',x)));F.appendChild(fh);
+  let y=[0,0,0];L.forEach((p,i)=>{const s=i===0?[1,0,0]:[.5,.25,.25];const v=s.map(f=>p.dp*f);y=y.map((a,k)=>a+v[k]);const r=el('tr');r.append(el('td',null,(i===0?'Owner · ':'')+p.n),el('td',null,i===0?'100% in year 1':'50% / 25% / 25%'),...v.map(x=>el('td','n',inr(x))),el('td','n',inr(p.dp)));F.appendChild(r)});
+  const ft=el('tr','tot');ft.append(el('td',null,'Total'),el('td'),...y.map(x=>el('td','n',inr(x))),el('td','n',inr(t.fee)));F.appendChild(ft);
+  const n=$('revNote');n.replaceChildren();
+  if(L.length===1)n.appendChild(el('div','note','You are submitting the owner only. Other players who chose your team will go to the auction.'));
+  if(!S.window.open)n.appendChild(el('div','alert',S.window.before?'The draft window opens on '+fmtDate(S.window.opens)+'. You can review now and submit once it opens.':'The draft deadline has passed. Contact the KNPL committee.'));
+  ['a-review','a-fee','a-final'].forEach(x=>$(x).checked=false);$('n4').disabled=true;$('smsg').textContent='';
+}
+$('n4').addEventListener('click',()=>{const t=totals();$('dlg-p').textContent='You are drafting '+t.L.length+' player'+(t.L.length>1?'s':'')+' ('+t.L.map(p=>p.n).join(', ')+'), using '+pts(t.pts)+' Draft Points and '+t.sr+' Skill Rating. Draft fee total '+inr(t.fee)+'. This cannot be changed after submission.';$('dlg').showModal()});
+$('dlg-no').addEventListener('click',()=>$('dlg').close());
+$('dlg-yes').addEventListener('click',async()=>{$('dlg').close();const b=$('n4');b.disabled=true;$('smsg').className='msg';$('smsg').textContent='Submitting…';
+  try{const r=await api('draftSubmit',CODE,{ownerPlaying:true,players:SEL.slice(),acks:{rules:$('a-rules').checked,owner:$('a-owner').checked,review:$('a-review').checked,fee:$('a-fee').checked,final:$('a-final').checked}});showDone(r.submitted)}
+  catch(e){$('smsg').className='msg err';$('smsg').textContent=e.message;b.disabled=false}});
+
+function showDone(sub){
+  go(5);const d=$('doneBox');d.replaceChildren();
+  d.appendChild(el('h2',null,'✓ Draft submitted'));
+  d.appendChild(el('p',null,'Submission ID '+sub.id+' · '+sub.submittedOn));
+  const ids=[S.ownerId,...sub.players];
+  const g=el('div','grid');ids.forEach((id,i)=>{const p=P.get(id);if(p)g.appendChild(pcard(p,{owner:i===0}))});d.appendChild(g);
+  const t=el('div','meters');[['Draft Points used',pts(sub.pointsUsed)],['Points balance',pts(sub.pointsBalance)],['Skill Rating used',String(sub.srUsed)],['Skill Rating balance',String(sub.srBalance)],['Draft fee total',inr(sub.feeTotal)],['Year-1 draft fee',inr(sub.feeYear1)]].forEach(([a,b])=>{const m=el('div','meter');m.append(el('div','small muted',a),el('div','big',b));t.appendChild(m)});d.appendChild(t);
+  d.appendChild(el('p','small muted','Your draft is final. For any change, contact the KNPL Core Committee. Queries: Krishnadas – 99862 18725.'));
+  const pr=el('button','btn','Print / save confirmation');pr.type='button';pr.addEventListener('click',()=>window.print());d.appendChild(pr);
+}
+</script>
+</body></html>
