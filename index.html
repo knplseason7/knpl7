@@ -233,6 +233,19 @@ main .sbar .sbar-in{display:flex;padding-block:8px;gap:2px 16px}
 .sb-pill.paused{background:#f3c26b}.sb-pill.closed{background:#e9a39b}
 .sb-right{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--band-muted)}
 .sb-right b{color:var(--on-band);font-variant-numeric:tabular-nums}
+#p2soon{padding-block:8px 48px}
+.p2pay{display:grid;gap:14px;padding:16px;border-radius:14px;border:2px solid var(--gold);background:var(--gold-soft)}
+.p2pay h3{margin:0;font-family:var(--display);font-size:24px}
+.p2grid{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}
+@media (max-width:560px){.p2grid{grid-template-columns:1fr}.p2grid img{justify-self:center}}
+.p2grid img{width:200px;height:200px;border-radius:12px;background:#fff;padding:6px;border:1px solid var(--line)}
+.p2rows{display:grid;gap:8px;font-size:15px}
+.p2rows div{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.p2rows span{color:var(--muted);min-width:110px}
+.p2rows b{font-size:16px;word-break:break-all}
+.p2copy{font:600 12px var(--body,inherit);padding:3px 8px;border-radius:7px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.p2upi{justify-self:start;display:inline-block;padding:10px 16px;border-radius:10px;background:var(--band);color:var(--on-band);font-weight:700;text-decoration:none}
+.p2steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
 #soon{padding-block:8px 48px}
 .soon-in{display:grid;gap:16px;max-width:760px}
 .soon-eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-text);font-weight:700;margin-top:18px}
@@ -335,6 +348,42 @@ main .inrow > .ghost{flex:1 1 0}
     <h3 class="soon-sub">How registration works</h3>
     <ol class="wins" id="soonSteps"></ol>
     <p class="soon-note">Each window pauses when its count is reached and reopens at the next time shown. Players join the auction pool after verification. If you do not have a Power Play code, please register from Middle Overs, <b id="soonMO">10 Nov, 10:30 AM</b>.</p>
+    <p class="soon-contact">Questions? Krishnadas, KNPL committee coordinator, <b>+91 99862 18725</b></p>
+  </div>
+</section>
+<section id="p2soon" hidden>
+  <div class="wrap soon-in">
+    <div class="soon-eyebrow">KNPL Season 7 · Phase 2</div>
+    <h2 class="soon-h">Phase 2 · Join the Mega Auction starts on <span>18 November 2026, 8:30 AM</span></h2>
+    <p class="soon-ml">KNPL-7 രണ്ടാം ഘട്ട രജിസ്ട്രേഷൻ 18 നവംബർ 2026, രാവിലെ 8:30 ന് ആരംഭിക്കുന്നു</p>
+    <div class="cd" id="p2Cd" role="timer" aria-live="off">
+      <div><b id="p2D">0</b><span>days</span></div><div><b id="p2H">00</b><span>hours</span></div><div><b id="p2M">00</b><span>minutes</span></div><div><b id="p2S">00</b><span>seconds</span></div>
+    </div>
+    <p class="soon-note"><b>Last date: 20 November 2026.</b> Complete Phase 2 and pay the registration fee on or before 20-11-2026. Players who do not, and players found to have purposely hidden a CricHeroes profile, will be rejected and waiting-list players will be taken in by priority (they must complete Phase 2 by 22-11-2026). The final list will be published on 24 November 2026.</p>
+    <div class="p2pay">
+      <h3>Pay the registration fee now: ₹1,000</h3>
+      <p style="margin:0">You can pay in advance. <b>Save the payment screenshot / receipt</b>: you will upload it in the Phase 2 form.</p>
+      <div class="p2grid">
+        <img src="pay/knpl7-upi-qr.png" alt="UPI QR code for the KNPL-7 registration fee" width="200" height="200">
+        <div class="p2rows">
+          <div><span>UPI ID</span><b id="p2Upi">339980003460298@cnrb</b><button type="button" class="p2copy" data-copy="339980003460298@cnrb">Copy</button></div>
+          <div><span>Amount</span><b>₹1,000</b></div>
+          <div id="p2Gpay" hidden><span>GPay / PhonePe</span><b></b><button type="button" class="p2copy">Copy</button></div>
+          <div id="p2AcName" hidden><span>A/c name</span><b></b></div>
+          <div id="p2AcNo" hidden><span>A/c number</span><b></b><button type="button" class="p2copy">Copy</button></div>
+          <div id="p2Ifsc" hidden><span>IFSC</span><b></b><button type="button" class="p2copy">Copy</button></div>
+          <div id="p2Bank" hidden><span>Bank</span><b></b></div>
+          <a class="p2upi" href="upi://pay?pa=339980003460298@cnrb&amp;pn=ONE%20ORGANIZATION%20FOR%20NAMBOODIRIS%20EVOLUT&amp;mc=8398&amp;am=1000&amp;cu=INR&amp;tn=KNPL-7%20Phase%202%20fee">Pay ₹1,000 with a UPI app</a>
+        </div>
+      </div>
+    </div>
+    <h3 class="soon-sub">On 18 November, from 8:30 AM</h3>
+    <ol class="p2steps">
+      <li>Open this page again and search your name</li>
+      <li>Enter the last 4 digits of your WhatsApp number</li>
+      <li>Give your availability consent and choose your preferred team (or Any Team)</li>
+      <li>Upload the payment receipt and tap <b>Confirm and join</b></li>
+    </ol>
     <p class="soon-contact">Questions? Krishnadas, KNPL committee coordinator, <b>+91 99862 18725</b></p>
   </div>
 </section>
@@ -1245,9 +1294,31 @@ $('copyId').addEventListener('click', () => {
 function selectText(n){ const r = document.createRange(); r.selectNodeContents(n); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 
 /* ---------- tabs ---------- */
+const P2_OPEN = Date.UTC(2026, 10, 18, 3, 0, 0);   // 18-11-2026 08:30 IST: Phase 2 opens
+const P2_PAY = {gpay: '', acName: '', acNo: '', ifsc: '', bank: ''};   // fill to show on the Phase 2 page
+let p2Timer = null;
+function p2Pre(){ return Date.now() < P2_OPEN; }
+function p2Tick(){
+  let t = Math.max(0, P2_OPEN - Date.now());
+  if (!t){ clearInterval(p2Timer); location.reload(); return; }
+  const d = Math.floor(t / 864e5); t -= d * 864e5; const h = Math.floor(t / 36e5); t -= h * 36e5; const m = Math.floor(t / 6e4); const sec = Math.floor((t - m * 6e4) / 1e3);
+  $('p2D').textContent = d; $('p2H').textContent = String(h).padStart(2, '0'); $('p2M').textContent = String(m).padStart(2, '0'); $('p2S').textContent = String(sec).padStart(2, '0');
+}
+(function(){
+  [['p2Gpay','gpay'],['p2AcName','acName'],['p2AcNo','acNo'],['p2Ifsc','ifsc'],['p2Bank','bank']].forEach(([id,k]) => {
+    const v = P2_PAY[k]; if (!v) return; const el = $(id); el.hidden = false; el.querySelector('b').textContent = v; const b = el.querySelector('button'); if (b) b.dataset.copy = v;
+  });
+  document.querySelectorAll('.p2copy').forEach(b => b.onclick = () => { try { navigator.clipboard.writeText(b.dataset.copy || ''); b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy', 1500); } catch(_) {} });
+})();
 function showTab(which){
   const reg = which === 'reg';
   $('tab-reg').setAttribute('aria-selected', reg); $('tab-auc').setAttribute('aria-selected', !reg);
+  if (!reg && p2Pre()){
+    $('view-reg').hidden = true; $('view-auc').hidden = true; $('p2soon').hidden = false;
+    if (!p2Timer){ p2Tick(); p2Timer = setInterval(p2Tick, 1000); }
+    return;
+  }
+  $('p2soon').hidden = true;
   $('view-reg').hidden = !reg; $('view-auc').hidden = reg;
 }
 $('tab-reg').onclick = () => showTab('reg');
@@ -1528,8 +1599,8 @@ function render(){
   const soon = mode === 'coming_soon';
   $('soon').hidden = !soon;
   tabs.hidden = soon;
-  if (soon){ $('view-reg').hidden = true; $('view-auc').hidden = true; }
-  else if ($('view-reg').hidden && $('view-auc').hidden) showTab(/[?&]tab=auction/.test(location.search) ? 'auc' : 'reg');
+  if (soon){ $('view-reg').hidden = true; $('view-auc').hidden = true; $('p2soon').hidden = true; }
+  else if ($('view-reg').hidden && $('view-auc').hidden && $('p2soon').hidden) showTab(/[?&]tab=auction/.test(location.search) ? 'auc' : 'reg');
   $('trialBar').hidden = mode !== 'trial';
   if (mode === 'trial') $('trialText').innerHTML = `This is a practice form. The trial closes on <b>${esc(fmtIST(ST.trialClose))}</b> and trial entries will not count. <b>Do not pay any fee now.</b> Phase 1 opens on ${esc(fmtIST(ST.windows[0].opensAt))}; register again then.`;
   // status banner
