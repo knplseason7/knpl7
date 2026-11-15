@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>KNPL Skill Rating</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: navy scoreboard header band, one search field, a responsive grid of player cards */
+:root{
+  --bg:#f3f5fa; --surface:#ffffff; --ink:#13213f; --muted:#5b6784; --line:#d9dfec;
+  --navy:#0b1a38; --navy-ink:#ffffff; --saffron:#e07a1f; --saffron-soft:#fff3e6;
+  --teal:#0b8a8a; --teal-soft:#e2f6f6; --focus:#e07a1f;
+  --c-cv:#c0392b; --c-cc:#d9532f; --c-da:#7b3fbf; --c-dc:#4a5fd1; --c-re:#1f8a5b; --c-rc:#5d7a8c;
+  --display:"Saira Condensed","Arial Narrow",Arial,sans-serif; --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1426; --surface:#142039; --ink:#e7ecf7; --muted:#9aa7c4; --line:#26355a;
+  --navy:#08101f; --navy-ink:#ffffff; --saffron:#f2933c; --saffron-soft:#2a2116; --teal:#3cc4c4; --teal-soft:#0f2e33; --focus:#f2933c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1426; --surface:#142039; --ink:#e7ecf7; --muted:#9aa7c4; --line:#26355a;
+  --navy:#08101f; --navy-ink:#ffffff; --saffron:#f2933c; --saffron-soft:#2a2116; --teal:#3cc4c4; --teal-soft:#0f2e33; --focus:#f2933c; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--navy);color:var(--navy-ink);border-bottom:4px solid var(--saffron)}
+header .wrap{padding-block:22px 20px;display:flex;flex-direction:column;gap:6px}
+.kick{font:700 13px/1 var(--display);letter-spacing:.22em;color:#ffb366;text-transform:uppercase}
+h1{font:800 clamp(34px,6vw,54px)/1 var(--display);margin:0;letter-spacing:.01em;text-wrap:balance}
+.tagline{font:800 clamp(18px,3vw,24px)/1.1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:#ffc94a}
+.howto{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;list-style:none;padding:0;counter-reset:st}
+.howto li{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;counter-increment:st;display:flex;gap:10px;align-items:flex-start;min-width:0}
+.howto li::before{content:counter(st);flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font:800 16px/28px var(--display);text-align:center}
+.howto b{display:block;font:700 17px/1.2 var(--display);letter-spacing:.03em}
+.howto span{font-size:14px;color:var(--muted)}
+.jump{font-size:14px;margin-top:8px}.jump a{color:var(--saffron);font-weight:600}
+.ref{display:flex;flex-direction:column;gap:22px;margin-block:8px 28px}
+.ref h2{font:800 28px/1.1 var(--display);margin:0 0 8px;text-wrap:balance}
+.ref p,.ref li{max-width:72ch}
+.ref ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.tw{overflow-x:auto}
+table.cat-t{border-collapse:collapse;width:100%;min-width:520px;background:var(--surface);font-variant-numeric:tabular-nums}
+.cat-t th,.cat-t td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+.cat-t th{background:var(--navy);color:#fff;font:700 15px var(--display);letter-spacing:.06em;text-transform:uppercase}
+.cat-t td.n{text-align:right}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.parts div{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.parts b{display:block;font:800 18px var(--display)}.parts em{font-style:normal;font:800 22px var(--display);color:var(--saffron);float:right}
+.parts span{font-size:13.5px;color:var(--muted)}
+.formula{background:var(--navy);color:#fff;border-radius:12px;padding:12px 16px;font-weight:600;line-height:1.7;overflow-wrap:anywhere}
+.formula small{display:block;color:#c9d3ea;font-weight:500}
+.contact{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 16px}
+.contact .ph-n{font-weight:700;user-select:all}
+.sub{color:#c9d3ea;max-width:62ch;margin:0}
+.notice{margin-top:18px;background:var(--saffron-soft);border:2px solid var(--saffron);border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start}
+.notice b{color:var(--saffron)}
+@media (max-width:520px){.notice{flex-direction:column;gap:8px}.card{grid-template-columns:60px 1fr}.ph{width:60px;height:76px}}
+.notice .tag{flex:none;background:var(--saffron);color:#fff;font:800 13px/1 var(--display);letter-spacing:.08em;padding:6px 9px;border-radius:6px;margin-top:2px}
+.search{margin-top:18px;display:flex;flex-direction:column;gap:6px}
+.search label{font:700 14px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.search input{width:100%;font:500 18px var(--body);color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:14px 16px}
+.search input:focus{outline:3px solid var(--focus);outline-offset:1px;border-color:transparent}
+.count{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-block:14px 32px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px;display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:start}
+.card.n5{border-color:var(--teal)}
+.ph{width:72px;height:90px;border-radius:9px;overflow:hidden;background:var(--line);border:2px solid var(--navy)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.info{min-width:0;display:flex;flex-direction:column;gap:4px}
+.rid{font:700 14px/1 var(--display);letter-spacing:.1em;color:var(--saffron)}
+.nm{font:800 21px/1.05 var(--display);text-transform:uppercase;overflow-wrap:anywhere}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.sr{font:800 26px/1 var(--display);font-variant-numeric:tabular-nums}
+.sr small{font:600 13px var(--body);color:var(--muted);margin-left:2px}
+.cat{color:#fff;font:700 13px/1 var(--display);letter-spacing:.05em;padding:5px 8px;border-radius:6px;white-space:nowrap}
+.n5t{background:var(--teal-soft);color:var(--teal);border:1px solid var(--teal);font:700 12px/1 var(--display);letter-spacing:.06em;padding:4px 7px;border-radius:5px}
+.n5note{font-size:12.5px;color:var(--teal);font-weight:600}
+.act{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:center}
+button.dl{font:700 14px var(--body);background:var(--navy);color:#fff;border:0;border-radius:9px;padding:9px 13px;cursor:pointer}
+button.dl:hover{background:var(--saffron)}
+button.dl:focus-visible,a.op:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+button.dl[disabled]{opacity:.6;cursor:progress}
+a.op{font-weight:600;color:var(--saffron);font-size:14px}
+.msg{font-size:12.5px;color:var(--muted)}
+.money{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:6px;margin-top:2px}
+.money div{border:1.5px solid var(--saffron);border-radius:8px;padding:5px 7px;background:var(--saffron-soft);min-width:0}
+.money div.d{background:var(--saffron);border-color:var(--saffron)}
+.money span{display:block;font:700 11px/1.2 var(--display);letter-spacing:.06em;white-space:nowrap;text-transform:uppercase;color:var(--muted)}
+.money .d span{color:#fff7ee}
+.money b{display:block;font:800 17px/1.15 var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.money .d b{color:#fff}
+.prov{font-size:12px;color:var(--muted);font-style:italic}
+.nod{font-size:13px;color:var(--muted);background:var(--bg);border-radius:8px;padding:6px 8px}
+.empty{padding:28px;text-align:center;color:var(--muted);background:var(--surface);border:1.5px dashed var(--line);border-radius:14px;grid-column:1/-1}
+footer{color:var(--muted);font-size:13px;padding-block:0 28px}
+@media (prefers-reduced-motion:no-preference){button.dl{transition:background .15s}}
+
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.gate{margin-block:24px 40px;max-width:520px;background:var(--surface);border:2px solid var(--navy);border-radius:16px;padding:22px}
+.gate h2{font:800 28px/1.1 var(--display);margin:0 0 6px}
+.gate p{margin:0 0 12px;color:var(--muted)}
+.gate form{display:flex;flex-direction:column;gap:12px}.fld{display:flex;flex-direction:column;gap:5px;border:0;padding:0;margin:0}.fld label,.fld legend{font:700 14px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0}.rb{display:flex!important;align-items:center;gap:8px;font:600 16px var(--body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--ink)!important;padding:6px 0!important}.rb input{width:20px;height:20px;accent-color:var(--navy)}
+.gate input[type=text],.gate input[type=tel]{width:100%;min-width:0;font:700 20px var(--body);letter-spacing:.08em;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:12px 14px}
+#code{text-transform:uppercase}.gate input:focus{outline:3px solid var(--focus);outline-offset:1px}
+.gate button{font:700 16px var(--body);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px 20px;cursor:pointer}
+.gate button[disabled]{opacity:.6;cursor:progress}
+.gmsg{min-height:22px;margin-top:10px;font-weight:600}
+.gmsg.err{color:#c0392b}
+.small{font-size:13px}
+.who{display:flex;justify-content:flex-end;gap:10px;align-items:center;margin-top:12px;font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--saffron);font:600 13px var(--body);cursor:pointer;text-decoration:underline}
+
+.cmpbox{position:sticky;top:0;z-index:5;margin-top:18px;background:var(--navy);color:#fff;border-radius:0 0 12px 12px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.cmpbox .ch{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 240px}
+.cmpbox .ch b{font:800 17px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:#ffc94a}
+.cmpbox .ch span{font-size:13.5px;color:#d6deef}
+.cmpbox .cb2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cmpbox button{font:700 14px var(--body);border:0;border-radius:9px;padding:10px 14px;cursor:pointer;background:var(--saffron);color:#fff}
+.cmpbox button[disabled]{opacity:.55;cursor:not-allowed}
+.cmpbox button.ghost{background:transparent;border:1.5px solid #8796b8}
+.cmpbox button:focus-visible{outline:3px solid #ffc94a;outline-offset:2px}
+.cmpbox .msg{color:#d6deef}
+.chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#1c2d52;border:1px solid #3a4f7a;border-radius:20px;padding:4px 5px 4px 11px;font-weight:600;font-size:13.5px}
+.chip button{border:0;background:#33496f;color:#fff;width:22px;height:22px;border-radius:50%;font-weight:800;cursor:pointer;line-height:1;padding:0}
+label.addc{display:inline-flex;align-items:center;gap:7px;font:600 14px var(--body);border:1.5px solid var(--navy);border-radius:9px;padding:7px 11px;cursor:pointer;background:var(--surface)}
+label.addc input{width:18px;height:18px;accent-color:var(--teal);margin:0}
+label.addc.on{background:var(--teal-soft);border-color:var(--teal);color:var(--teal)}
+label.addc.off{opacity:.5;cursor:not-allowed}
+.card.sel{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal)}
+
+</style>
+</head><body>
+
+
+<header><div class="wrap">
+  <div class="kick">KNPL-7 · Final Skill Rating · Verification copy · Core Committee</div>
+  <h1>KNPL Skill Rating</h1>
+  <div class="tagline">Your Game. Your Data. Your Rating.</div>
+  <p class="sub">Every registered player's Skill Rating, category, Draft Price and Draft Point, worked out only from his own CricHeroes match data. Search any player, check every number, and download his full calculation statement.</p>
+</div></header>
+
+<main class="wrap">
+  <section id="gate" class="gate" aria-live="polite"><h2>Loading the Skill Ratings…</h2><p id="gmsg" class="gmsg">Please wait a moment.</p></section>
+  <div id="app" hidden>
+  
+  <div class="notice" role="note"><span class="tag">VERIFY</span><div><b>Final KNPL Skill Ratings, after NPL-5.</b> Every registered player's rating now includes all matches of the 15 qualifying tournaments, NPL-5 included (players with NPL-5 matches carry a teal NPL-5 badge). Check your matches on page 2 of your statement and report anything missing to the KNPL committee.</div></div>
+
+  <ol class="howto">
+    <li><div><b>Search</b><span>Type your name or your Reg ID (for example 28 or KNPL7-0028) in the box below.</span></div></li>
+    <li><div><b>Check your card</b><span>See your Skill Rating, category, Base Price, Draft Price and Draft Point.</span></div></li>
+    <li><div><b>Download your statement</b><span>Tap Download PDF and confirm. If you see Open PDF instead, tap it and save from there.</span></div></li>
+    <li><div><b>Verify your matches</b><span>Page 2 of the PDF lists every match counted, with its CricHeroes match ID. Report anything missing to the KNPL committee.</span></div></li>
+  </ol>
+  <div class="jump"><a href="#how-it-works">How the Skill Rating is calculated</a> · <a href="#categories">Categories, base price and points</a> · <a href="#contact">Queries</a></div>
+
+  <div class="cmpbox" id="cmpbox" role="region" aria-label="Compare players">
+    <div class="ch"><b>Compare players</b><span id="cbt">Tick “Add to compare” on 2 to 4 player cards, then generate the report.</span></div>
+    <div class="chips" id="chips"></div>
+    <div class="cb2"><button type="button" class="ghost" id="cclr" hidden>Clear</button><button type="button" id="cgo" disabled>Generate comparison report</button><span class="msg" id="cmsg" role="status" aria-live="polite"></span></div>
+  </div>
+
+  <div class="search">
+    <label for="q">Find a player</label>
+    <input id="q" type="search" placeholder="Type a name or Reg ID, e.g. Sreekanth or 0028" autocomplete="off" enterkeyhint="search">
+    <div class="count" id="count" aria-live="polite"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <section class="ref">
+    <div id="how-it-works">
+      <h2>How your Skill Rating is calculated</h2>
+      <p>We use every match in which you were in the playing XI over the last 3 seasons of the qualifying leagues (SPL, CBL, NPL, YPL) and KNPL, from your verified CricHeroes profiles. The latest season counts most (1.00, then 0.85, then 0.70). Each of the five parts below is scored out of 100.</p>
+      <div class="parts">
+        <div><em>55%</em><b>Performance</b><span>Your MVP points per match, batting, bowling and fielding together.</span></div>
+        <div><em>15%</em><b>Win Impact</b><span>Matches your team won where you were one of its top 2 MVP contributors.</span></div>
+        <div><em>10%</em><b>Awards</b><span>Player of the Match, Player of the Tournament, Best Batter and Best Bowler.</span></div>
+        <div><em>10%</em><b>Consistency</b><span>Share of your matches with 1 or more MVP points.</span></div>
+        <div><em>10%</em><b>Experience</b><span>Matches played in the playing XI; 30 matches gives full marks.</span></div>
+      </div>
+      <p style="margin-top:10px">The weighted total of the five parts, <b>rounded off to the nearest whole number</b>, is your Skill Rating out of 100 (0.5 and above rounds up). Your category, Draft Price and Draft Point all use this rounded Skill Rating. KNPL-1 to KNPL-3 are not used.</p>
+    </div>
+
+    <div id="categories">
+      <h2>Categories, base price and base point</h2>
+      <p>Every player is placed by his own Skill Rating against the same fixed bands. There is no limit on the number of players in any category. <b>Conqueror and Dominator need at least 8 MVP matches</b> (matches in which your name appears in the match MVP list); below that, a player is placed in Rising Star Elite.</p>
+      <div class="tw"><table class="cat-t">
+        <thead><tr><th>Category</th><th>Skill Rating</th><th>Base Price</th><th>Base Point</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sw" style="background:var(--c-cv)"></span>Conqueror Vanguard</td><td>85 – 100</td><td class="n">₹10,000</td><td class="n">12,000 Pts</td></tr>
+          <tr><td><span class="sw" style="background:var(--c-cc)"></span>Conqueror Core</td><td>75 – 84</td><td class="n">₹8,000</td><td class="n">10,000 Pts</td></tr>
+          <tr><td><span class="sw" style="background:var(--c-da)"></span>Dominator Apex</td><td>63 – 74</td><td class="n">₹6,000</td><td class="n">8,000 Pts</td></tr>
+          <tr><td><span class="sw" style="background:var(--c-dc)"></span>Dominator Core</td><td>50 – 62</td><td class="n">₹4,000</td><td class="n">6,000 Pts</td></tr>
+          <tr><td><span class="sw" style="background:var(--c-re)"></span>Rising Star Elite</td><td>25 – 49</td><td class="n">₹2,000</td><td class="n">4,000 Pts</td></tr>
+          <tr><td><span class="sw" style="background:var(--c-rc)"></span>Rising Star Core</td><td>0 – 24</td><td class="n">₹1,000</td><td class="n">2,000 Pts</td></tr>
+        </tbody>
+      </table></div>
+      <div class="formula" style="margin-top:12px">Draft Price = Base Price + Base Price × (Skill Rating ÷ 100)<br>Draft Point = Base Point + Base Point × (Skill Rating ÷ 100)<small>Draft Point is then rounded up to the next multiple of: 100 (1,000–2,000) · 200 (2,000–8,000) · 400 (8,000–10,000) · 500 (above 10,000).</small><small>Example: a Dominator Apex player with Skill Rating 71 → Draft Price ₹6,000 + ₹6,000 × 0.71 = ₹10,260 · Draft Point 8,000 + 8,000 × 0.71 = 13,680 → rounded up to 14,000 Pts</small></div>
+    </div>
+
+    <div id="contact">
+      <h2>Found something wrong?</h2>
+      <div class="contact">
+        <p style="margin:0 0 8px">First check page 2 of your statement: every match counted is listed with its CricHeroes match ID. If a match or a CricHeroes profile of yours is missing, or a number looks wrong, contact Krishnadas with the player's Reg ID and the details:</p>
+        <ul><li>Krishnadas: <span class="ph-n">+91 99862 18725</span></li></ul>
+        
+      </div>
+    </div>
+  </section>
+  </div>
+</main>
+<footer class="wrap">KNPL Skill Rating · Source: CricHeroes match MVP lists, playing XIs, results and tournament awards (verified profiles) · Final Skill Rating after NPL-5.</footer>
+
+
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
+const CC={"Conqueror Vanguard":"var(--c-cv)","Conqueror Core":"var(--c-cc)","Dominator Apex":"var(--c-da)","Dominator Core":"var(--c-dc)","Rising Star Elite":"var(--c-re)","Rising Star Core":"var(--c-rc)"};
+const $=id=>document.getElementById(id);
+const grid=$('grid'),q=$('q'),count=$('count'),gate=$('gate'),app=$('app'),gmsg=$('gmsg');
+let KEY=null,P=[],cards=new Map();
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function api(fn,...args){
+  let r;try{r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'})}catch(_){throw new Error('Could not reach the KNPL server. Check your internet connection and try again.')}
+  const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed.');return j.result;
+}
+async function decrypt(url){
+  const r=await fetch('../skill-rating/'+url,{cache:'no-cache'});if(!r.ok)throw new Error('File not found.');
+  const b=new Uint8Array(await r.arrayBuffer());
+  return crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},KEY,b.slice(12));
+}
+async function unlock(keyB64,name){
+  KEY=await crypto.subtle.importKey('raw',b64(keyB64),'AES-GCM',false,['decrypt']);
+  P=JSON.parse(new TextDecoder().decode(await decrypt('d.bin')));
+  P.forEach(p=>{p.k=norm(p.n);p.ik=p.i.replace(/^0+/,'')});
+  cards=new Map(P.map(p=>[p.i,card(p)]));
+  WHO=name||'';try{SEL=JSON.parse(sessionStorage.getItem('knpl-cmp')||'[]').filter(i=>P.some(p=>p.i===i)).slice(0,4)}catch(e){SEL=[]}
+  syncSel();
+  gate.hidden=true;app.hidden=false;render();
+}
+function inr(v){return '₹'+v.toLocaleString('en-IN')}
+function card(p){
+  const el=document.createElement('article');el.className='card'+(p.f?' n5':'');
+  const ph=document.createElement('div');ph.className='ph';
+  if(p.p){const im=document.createElement('img');im.alt='';im.loading='lazy';im.src='data:image/jpeg;base64,'+p.p;ph.appendChild(im)}
+  const info=document.createElement('div');info.className='info';
+  const rid=document.createElement('div');rid.className='rid';rid.textContent='KNPL7-'+p.i;
+  const nm=document.createElement('div');nm.className='nm';nm.textContent=p.n;
+  const row=document.createElement('div');row.className='row';
+  const sr=document.createElement('span');sr.className='sr';sr.textContent=String(p.s);const sm=document.createElement('small');sm.textContent='/ 100';sr.appendChild(sm);
+  const cat=document.createElement('span');cat.className='cat';cat.style.background=CC[p.c];cat.textContent=p.c;
+  row.append(sr,cat);
+  if(p.f){const t=document.createElement('span');t.className='n5t';t.textContent='NPL-5';row.appendChild(t)}
+  info.append(rid,nm,row);
+  const mo=document.createElement('div');mo.className='money';
+  [['Base Price',inr(p.bp),''],['Draft Price',inr(p.dp),'d'],['Draft Point',p.dt.toLocaleString('en-IN')+' Pts','d']].forEach(([l,v,c])=>{const d=document.createElement('div');if(c)d.className=c;const s=document.createElement('span');s.textContent=l;const b=document.createElement('b');b.textContent=v;d.append(s,b);mo.appendChild(d)});
+  info.appendChild(mo);
+  const pv=document.createElement('div');pv.className='prov';pv.textContent=p.f?'Final · includes NPL-5 matches':'Final Skill Rating';info.appendChild(pv);
+  if(p.d){
+    const act=document.createElement('div');act.className='act';
+    const b=document.createElement('button');b.className='dl';b.type='button';b.textContent='Download PDF';
+    const msg=document.createElement('span');msg.className='msg';
+    b.addEventListener('click',async()=>{
+      b.disabled=true;msg.textContent='Preparing…';
+      try{
+        const buf=await decrypt('p/'+p.i+'.bin');
+        const url=URL.createObjectURL(new Blob([buf],{type:'application/pdf'}));
+        const a=document.createElement('a');a.href=url;a.download='KNPL7-'+p.i+'-Skill-Rating.pdf';document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),60000);msg.textContent='Downloaded';
+      }catch(e){msg.textContent='Could not download. Please try again.'}
+      finally{b.disabled=false}
+    });
+    act.append(b,cmpBtn(p),msg);info.appendChild(act);
+  }else{
+    const n=document.createElement('div');n.className='nod';n.textContent='No CricHeroes match data mapped yet, so there is no walkthrough.';info.appendChild(n)
+  }
+  el.append(ph,info);return el;
+}
+function render(){
+  const v=q.value.trim();
+  const base=v.replace(/knpl\s*-?\s*7/ig,' ');
+  const nameQ=norm(base.replace(/\d/g,''));const num=base.replace(/\D/g,'').replace(/^0+/,'');
+  const n=nameQ||num;
+  let L=P;
+  if(n){L=P.filter(p=>(nameQ&&p.k.includes(nameQ))||(num&&p.ik===num))}
+  grid.replaceChildren(...L.map(p=>cards.get(p.i)));
+  if(!L.length){const e=document.createElement('div');e.className='empty';e.textContent='No player matches "'+v+'". Check the spelling or try the Reg ID number.';grid.appendChild(e)}
+  count.textContent=n?(L.length+' of '+P.length+' players'):('All '+P.length+' registered players, by Reg ID');
+}
+
+/* ---------- Compare players ---------- */
+let SEL=[],WHO='';const MAXC=4;const byId=id=>P.find(p=>p.i===id);
+const PARTS=[['P','Performance',.55],['W','Win Impact',.15],['Aw','Awards',.10],['C','Consistency',.10],['E','Experience',.10]];
+const f1=v=>(Math.round(v*10)/10).toFixed(1);
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function cmpBtn(p){const l=el('label','addc');const c=el('input');c.type='checkbox';c.dataset.id=p.i;l.append(c,document.createTextNode('Add to compare'));
+  c.addEventListener('change',()=>toggleSel(p.i,c.checked));return l}
+function toggleSel(id,on){const k=SEL.indexOf(id);if(on===undefined)on=k<0;if(!on&&k>=0)SEL.splice(k,1);else if(on&&k<0&&SEL.length<MAXC)SEL.push(id);syncSel()}
+function syncSel(){
+  try{sessionStorage.setItem('knpl-cmp',JSON.stringify(SEL))}catch(e){}
+  const full=SEL.length>=MAXC;
+  document.querySelectorAll('label.addc input').forEach(c=>{const on=SEL.includes(c.dataset.id);c.checked=on;c.disabled=!on&&full;
+    const l=c.parentElement;l.classList.toggle('on',on);l.classList.toggle('off',c.disabled);l.title=c.disabled?'You can compare up to 4 players at a time':'';
+    const cd=l.closest('.card');if(cd)cd.classList.toggle('sel',on)});
+  const ch=$('chips');ch.replaceChildren();
+  SEL.forEach(i=>{const p=byId(i);const c=el('span','chip',p.i+' · '+p.n+' · '+p.s);const b=el('button','','×');b.type='button';b.setAttribute('aria-label','Remove '+p.n);b.addEventListener('click',()=>toggleSel(i,false));c.appendChild(b);ch.appendChild(c)});
+  $('cbt').textContent=!SEL.length?'Tick “Add to compare” on 2 to 4 player cards, then generate the report.':SEL.length<2?'1 selected. Tick one more player.':SEL.length+' of '+MAXC+' selected'+(full?' (maximum).':'.');
+  $('cgo').disabled=SEL.length<2;$('cclr').hidden=!SEL.length;$('cmsg').textContent='';
+}
+$('cclr').addEventListener('click',()=>{SEL=[];syncSel()});
+$('cgo').addEventListener('click',()=>{if(SEL.length>=2)combinedReport(SEL.map(byId),false,$('cgo'),$('cmsg'))});
+function keyDiffs(L){
+  const out=[];const X=L.filter(p=>p.x);if(X.length<2)return out;
+  const s=[...X].sort((a,b)=>b.s-a.s);
+  out.push(s[0].n+' has the highest Skill Rating ('+s[0].s+'), '+(s[0].s-s[1].s)+' ahead of '+s[1].n+' ('+s[1].s+').');
+  const gaps=PARTS.map(([k,n,w])=>{const o=[...X].sort((a,b)=>b.x[k]-a.x[k]);return{n,k,w,lead:o[0],next:o[1],g:(o[0].x[k]-o[1].x[k])*w}}).sort((a,b)=>b.g-a.g);
+  gaps.forEach(g=>{if(g.g<0.05){const t=X.filter(p=>Math.abs(p.x[g.k]-g.lead.x[g.k])<0.05/g.w);out.push(g.n+': '+t.map(p=>p.n).join(' and ')+' are level ('+f1(g.lead.x[g.k])+').')}else out.push(g.n+': '+g.lead.n+' leads by '+f1(g.g)+' rating points ('+f1(g.lead.x[g.k])+' vs '+f1(g.next.x[g.k])+' for '+g.next.n+').')});
+  return out;
+}
+let PDFLIB=null;
+function loadPdfLib(){if(PDFLIB)return PDFLIB;PDFLIB=new Promise((res,rej)=>{const s=document.createElement('script');s.src='../skill-rating/pdf-lib.min.js';s.onload=()=>res(window.PDFLib);s.onerror=()=>{PDFLIB=null;rej(new Error('lib'))};document.head.appendChild(s)});return PDFLIB}
+const asc=s=>String(s).replace(/₹/g,'Rs ').replace(/[–—]/g,'-').replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/×/g,'x').replace(/÷/g,'/').replace(/✓/g,'').replace(/·/g,'|').replace(/[^\x20-\x7e]/g,'');
+let REPJS=null;
+function loadRep(){if(REPJS)return REPJS;REPJS=new Promise((res,rej)=>{const s=document.createElement('script');s.src='../skill-rating/rep.js?v=3';s.onload=()=>res(window.KNPLReport);s.onerror=()=>{REPJS=null;rej(new Error('rep'))};document.head.appendChild(s)});return REPJS}
+async function combinedReport(L,inc,btn,msg){
+  btn.disabled=true;msg.textContent='Preparing the report…';
+  try{
+    const [PL,REP]=await Promise.all([loadPdfLib(),loadRep()]);
+    let logo=null;try{logo=await (await fetch('../skill-rating/logo.png')).arrayBuffer()}catch(e){}
+    const players=[];for(const p of L){msg.textContent='Reading '+p.n+'’s matches…';const det=JSON.parse(new TextDecoder().decode(await decrypt('m/'+p.i+'.bin')));players.push({...p,det})}
+    msg.textContent='Building the PDF…';
+    const date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    let bytes=await REP({PDFLib:PL,players,logo,who:WHO,date,keyDiffs:keyDiffs(L)});
+    if(inc){const doc=await PL.PDFDocument.load(bytes);for(const p of L){if(!p.d)continue;msg.textContent='Adding '+p.n+'’s statement…';
+      const src=await PL.PDFDocument.load(await decrypt('p/'+p.i+'.bin'));(await doc.copyPages(src,src.getPageIndices())).forEach(x=>doc.addPage(x))}bytes=await doc.save()}
+    const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+    const a=document.createElement('a');a.href=url;a.download='KNPL7-Skill-Rating-Comparison-'+L.map(p=>p.i).join('-')+'.pdf';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);msg.textContent='Downloaded';
+  }catch(e){console.error(e);msg.textContent='Could not build the report. Please check your connection and try again.'}
+  finally{btn.disabled=false}
+}
+q.addEventListener('input',render);
+const KEY_B64='zlMUEcdJHeP80zwzbCDRGCSiDyzqyAaow36RHnO0T/c=';
+(async()=>{try{await unlock(KEY_B64,'')}catch(e){console.error(e);gmsg.className='gmsg err';gmsg.textContent='Could not load the Skill Ratings. Please refresh the page.'}})();
+</script>
+</body></html>
