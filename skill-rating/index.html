@@ -222,6 +222,8 @@ const grid=$('grid'),q=$('q'),count=$('count'),gate=$('gate'),app=$('app'),gmsg=
 let KEY=null,P=[],cards=new Map();
 const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+function logDl(type,list){try{const via=/[?&]id=/.test(location.search)?'Personal link':'Page';
+  fetch(API_URL,{method:'POST',mode:'no-cors',keepalive:true,body:JSON.stringify({fn:'skillLog',args:[type,list.map(p=>'KNPL7-'+p.i).join(', '),list.map(p=>p.n).join(', '),via,location.pathname]})}).catch(()=>{})}catch(_){}}
 async function api(fn,...args){
   let r;try{r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'})}catch(_){throw new Error('Could not reach the KNPL server. Check your internet connection and try again.')}
   const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed.');return j.result;
@@ -267,7 +269,7 @@ function card(p){
       try{
         const buf=await decrypt('p/'+p.i+'.bin');
         const url=URL.createObjectURL(new Blob([buf],{type:'application/pdf'}));
-        const a=document.createElement('a');a.href=url;a.download='KNPL7-'+p.i+'-Skill-Rating.pdf';document.body.appendChild(a);a.click();a.remove();
+        const a=document.createElement('a');a.href=url;a.download='KNPL7-'+p.i+'-Skill-Rating.pdf';document.body.appendChild(a);a.click();a.remove();logDl('Statement',[p]);
         setTimeout(()=>URL.revokeObjectURL(url),60000);msg.textContent='Downloaded';
       }catch(e){msg.textContent='Could not download. Please try again.'}
       finally{b.disabled=false}
@@ -336,7 +338,7 @@ async function combinedReport(L,inc,btn,msg){
     if(inc){const doc=await PL.PDFDocument.load(bytes);for(const p of L){if(!p.d)continue;msg.textContent='Adding '+p.n+'’s statement…';
       const src=await PL.PDFDocument.load(await decrypt('p/'+p.i+'.bin'));(await doc.copyPages(src,src.getPageIndices())).forEach(x=>doc.addPage(x))}bytes=await doc.save()}
     const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
-    const a=document.createElement('a');a.href=url;a.download='KNPL7-Skill-Rating-Comparison-'+L.map(p=>p.i).join('-')+'.pdf';document.body.appendChild(a);a.click();a.remove();
+    const a=document.createElement('a');a.href=url;a.download='KNPL7-Skill-Rating-Comparison-'+L.map(p=>p.i).join('-')+'.pdf';document.body.appendChild(a);a.click();a.remove();logDl('Comparison report',L);
     setTimeout(()=>URL.revokeObjectURL(url),60000);msg.textContent='Downloaded';
   }catch(e){console.error(e);msg.textContent='Could not build the report. Please check your connection and try again.'}
   finally{btn.disabled=false}
