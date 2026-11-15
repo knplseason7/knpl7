@@ -2,8 +2,8 @@
    No player data lives in this file: it is passed in from the unlocked page. */
 (function(){
 'use strict';
-const ALLW={KNPL4:.70,KNPL5:.85,KNPL6:1,SPL6:.70,SPL7:.85,SPL8:1,CBL4:.70,CBL5:.85,CBL6:1,NPL3:.85,NPL4:1,YPL14:.70,YPL15:.85,YPL16:1};
-const MU=1.3289703617415451,REFP=3.3343340625,REFW=0.5211337513061651,REFA=170.11750000000004;
+const ALLW={KNPL4:.70,KNPL5:.85,KNPL6:1,SPL6:.70,SPL7:.85,SPL8:1,CBL4:.70,CBL5:.85,CBL6:1,NPL3:.70,NPL4:.85,NPL5:1,YPL14:.70,YPL15:.85,YPL16:1};
+const MU=1.3289703617415451,REFP=3.3960882943360553,REFW=0.5024321705426357,REFA=158.795;
 const BANDS=[['Conqueror Vanguard','85–100'],['Conqueror Core','75–84'],['Dominator Apex','63–74'],['Dominator Core','50–62'],['Rising Star Elite','25–49'],['Rising Star Core','0–24']];
 const BAND=Object.fromEntries(BANDS);
 const SL=k=>k.replace(/(\D+)(\d+)/,'$1-$2');
@@ -69,14 +69,14 @@ window.KNPLReport=async function(o){
     if(logo){pg.drawCircle({x:M+18,y:H-HEADH/2,size:18,color:WH});pg.drawImage(logo,{x:M+3,y:H-HEADH/2-15,width:30,height:30});lx=M+44}
     txt('KNPL-7 · TECHNICAL & EVALUATION TEAM',lx,H-19,7.2,B,C('#f6b26b'));
     const x2=txt('Skill Rating – ',lx,H-38,15.5,B,WH);txt('Detailed comparison',x2,H-38,15.5,B,OR);
-    const r1='STRICTLY CONFIDENTIAL',r2='Core Committee & Franchise Owners';
+    const r1='FINAL SKILL RATING',r2='After NPL-5';
     txt(r1,W-M-tw(r1,7,B),H-16,7,B,PEACH);txt(r2,W-M-tw(r2,7,B),H-26,7,B,PEACH);
     y=TOP;
   }
   function footers(){
     const nm=P.map(p=>p.n+' ('+p.i+')');const who=nm.length>1?nm.slice(0,-1).join(', ')+' and '+nm[nm.length-1]:nm[0];
-    const l1=who+' side by side. Provisional – recalculated after NPL-5 for all players.';
-    const l2='Generated '+o.date+(o.who?' · '+o.who:'')+' · Do not share outside the Core Committee and Franchise Owners.';
+    const l1=who+' side by side. Final Skill Rating (after NPL-5).';
+    const l2='Generated '+o.date+(o.who?' · '+o.who:'')+' · Source: CricHeroes match data.';
     const rt='Krishnadas – 99862 18725 · Team KNPL';
     pages.forEach((p,i)=>{pg=p;
       p.drawRectangle({x:0,y:0,width:W,height:FOOTH,color:NAVY});
@@ -110,7 +110,7 @@ window.KNPLReport=async function(o){
     pg.drawRectangle({x:M,y:y-h,width:W-2*M,height:h,color:NAVY,borderRadius:5});let yy=y-4.5;L.forEach(l=>{yy-=l.h;drawRichLine(l,M+8,yy+l.h*.3,sz,WH)});y-=h+7}
   function note(segs,sz=7.8){const L=wrapRich(segs,sz,W-2*M);const h=L.reduce((a,l)=>a+l.h,0);need(h);let yy=y;L.forEach(l=>{yy-=l.h;drawRichLine(l,M,yy+l.h*.3,sz,GREY)});y-=h+6}
   function wtab(){
-    const rows=[['Season weight','KNPL','SPL','CBL','YPL','NPL'],['1.00 latest','KNPL-6','SPL-8','CBL-6','YPL-16','NPL-4'],['0.85 previous','KNPL-5','SPL-7','CBL-5','YPL-15','NPL-3'],['0.70 one before','KNPL-4','SPL-6','CBL-4','YPL-14','–']];
+    const rows=[['Season weight','KNPL','SPL','CBL','YPL','NPL'],['1.00 latest','KNPL-6','SPL-8','CBL-6','YPL-16','NPL-5'],['0.85 previous','KNPL-5','SPL-7','CBL-5','YPL-15','NPL-4'],['0.70 one before','KNPL-4','SPL-6','CBL-4','YPL-14','NPL-3']];
     const rh=12.5,h=rh*4;need(h+4);const cw=[1.6,1,1,1,1,1];const tot=cw.reduce((a,b)=>a+b);const u=(W-2*M)/tot;
     rows.forEach((r,i)=>{const yy=y-rh*(i+1);if(!i)pg.drawRectangle({x:M,y:yy,width:W-2*M,height:rh,color:WTH});
       else pg.drawLine({start:{x:M,y:yy},end:{x:W-M,y:yy},thickness:.6,color:LINE});
@@ -187,8 +187,8 @@ window.KNPLReport=async function(o){
   secHead('1','Performance','55% of Skill Rating','#16386b');
   twoBoxes([{t:'Average CricHeroes MVP points per match (batting + bowling + fielding), with recent seasons counting more.'}],
     [{t:'The most direct measure of what a player brings to every match. An average, not a total, so playing more matches alone does not raise it.'}]);
-  fx([{t:'Weighted MVP = Σ (season MVP × season weight)  ·  Weighted matches = Σ (season matches × season weight)  ·  Adjusted average = (Weighted MVP + 8 × 1.329) ÷ (Weighted matches + 8)  ·  Score = Adjusted average ÷ 3.334 × 100'}]);
-  note([{t:'Fair start:',b:1},{t:' 8 matches at the league average (1.329 MVP per match) are added for every player so a few unusual matches cannot give an extreme average. '},{t:'Reference 3.334',b:1},{t:' = mean of the top 16 adjusted averages × 1.05 (reaching it = 100).'}]);
+  fx([{t:'Weighted MVP = Σ (season MVP × season weight)  ·  Weighted matches = Σ (season matches × season weight)  ·  Adjusted average = (Weighted MVP + 8 × 1.329) ÷ (Weighted matches + 8)  ·  Score = Adjusted average ÷ 3.396 × 100'}]);
+  note([{t:'Fair start:',b:1},{t:' 8 matches at the league average (1.329 MVP per match) are added for every player so a few unusual matches cannot give an extreme average. '},{t:'Reference 3.396',b:1},{t:' = mean of the top 16 adjusted averages × 1.05 (reaching it = 100).'}]);
   wtab();note([{t:'Mat. = matches · Wt = season weight · Wtd = weighted (value × weight)'}],7.2);
   sbs(p=>{const x=p.x;const rows=p.S.map(s=>[SL(s.k),s.n,f(s.mvp),f(s.w),f(s.mvp*s.w),f(s.n*s.w)]);
     return [...tableItems(['Season','Mat.','MVP','Wt','Wtd MVP','Wtd Mat.'],[1.3,.8,1,.8,1.1,1.1],['l','r','r','r','r','r'],rows,['Total',x.m,f(p.raw),'','*'+f(x.ws),'*'+f(x.wm)],IW),
@@ -196,30 +196,30 @@ window.KNPLReport=async function(o){
         [{t:'Fair start: + 8 matches × 1.329 = '},{t:'10.63',b:1},{t:' MVP points and '},{t:'8',b:1},{t:' matches'}],
         [{t:'Adjusted average = ('+f(x.ws)+' + 10.63) ÷ ('+f(x.wm)+' + 8)'}],
         [{t:'= '+f(x.ws+8*MU)+' ÷ '+f(x.wm+8)+' = '},{t:f(x.adj,3),b:1}],
-        [{t:'Score = '+f(x.adj,3)+' ÷ 3.334 × 100 = '},pill(f(x.P)),...capNote(x.adj,REFP)]],IW)]});
+        [{t:'Score = '+f(x.adj,3)+' ÷ 3.396 × 100 = '},pill(f(x.P)),...capNote(x.adj,REFP)]],IW)]});
 
   /* ---------- 2 Win Impact ---------- */
   secHead('2','Win Impact','15% of Skill Rating','#c96a10',true);
   twoBoxes([{t:'Matches where his team '},{t:'won',b:1},{t:' and he was among '},{t:"his team's top 2 MVP scorers",b:1},{t:' in that match (a match-winning contribution).'}],
     [{t:'Cricket is about winning. It rewards contributions that decide results, not numbers in a losing cause. Counted on actual matches (no season weight).'}]);
-  fx([{t:'Score = (Match-winning contributions ÷ Matches played) ÷ 0.521 × 100  (maximum 100)'}]);
-  note([{t:'Reference 0.521',b:1},{t:" = a little above the best players' rate (reaching it = 100). The match-by-match record at the end shows each ✔."}]);
+  fx([{t:'Score = (Match-winning contributions ÷ Matches played) ÷ 0.502 × 100  (maximum 100)'}]);
+  note([{t:'Reference 0.502',b:1},{t:" = a little above the best players' rate (reaching it = 100). The match-by-match record at the end shows each ✔."}]);
   sbs(p=>{const x=p.x;const rate=x.mwc/x.m;
     return [...tableItems(['Season','Matches','Team won','Match-winning contributions'],[1.2,1,1,1.6],['l','r','r','r'],p.S.map(s=>[SL(s.k),s.n,s.won,s.mwc]),['Total',x.m,p.S.reduce((a,s)=>a+s.won,0),'*'+x.mwc],IW),
-      ...stepItems([[{t:'Rate = '+x.mwc+' ÷ '+x.m+' = '},{t:f(rate,3),b:1}],[{t:'Score = '+f(rate,3)+' ÷ 0.521 × 100 = '},pill(f(x.W)),...capNote(rate,REFW)]],IW)]});
+      ...stepItems([[{t:'Rate = '+x.mwc+' ÷ '+x.m+' = '},{t:f(rate,3),b:1}],[{t:'Score = '+f(rate,3)+' ÷ 0.502 × 100 = '},pill(f(x.W)),...capNote(rate,REFW)]],IW)]});
 
   /* ---------- 3 Awards ---------- */
   secHead('3','Awards','10% of Skill Rating','#1d7a44',true);
-  twoBoxes([{t:"Player of the Match awards and the tournament's Heroes tab awards on CricHeroes, each × its season weight."}],
+  twoBoxes([{t:"Player of the Match awards and the tournament awards (Player of the Tournament, Best Batter, Best Bowler), each × its season weight."}],
     [{t:'An independent judgement by the tournament that captures big-match moments numbers may miss. Kept at 10% so it adds recognition without outweighing performance.'}]);
-  fx([{t:'Score = (Weighted PoM points + Weighted Heroes points) ÷ 170.1 × 100  (maximum 100)'}]);
-  note([{t:'PoM:',b:1},{t:' 5 points; 8 in knockout rounds whose name contains "Final" (pre-quarter, quarter, semi, final). '},{t:'Heroes:',b:1},{t:' Player of the Tournament 15 · Orange/Purple Cap 12 · Best Batter/Bowler 10 · Best WK/Fielder/Most Catches 8 · Emerging/Captain/Most 4s/6s/Dots 5 · others 3. '},{t:'Reference 170.1',b:1},{t:' = a little above the top award totals.'}]);
+  fx([{t:'Score = (Weighted PoM points + Weighted tournament award points) ÷ 158.8 × 100  (maximum 100)'}]);
+  note([{t:'PoM:',b:1},{t:' 5 points; 8 in knockout rounds whose name contains "Final" (pre-quarter, quarter, semi, final). '},{t:'Tournament awards:',b:1},{t:' Player of the Tournament 15 · Best Batter 12 · Best Bowler 12 (same for every tournament; where not published, the leaderboard leader in MVP / runs / wickets). '},{t:'Reference 158.8',b:1},{t:' = a little above the top award totals.'}]);
   sbs(p=>{const x=p.x;let tp=0;const pr=[];p.S.forEach(s=>s.pom.forEach(r=>{const pts=/Final/.test(r)?8:5;tp+=pts*s.w;pr.push([SL(s.k),r,pts,f(s.w),f(pts*s.w)])}));
     const hr=p.det.her.map(([k,a,pts])=>[SL(k),a.replace(' (Most Runs)','').replace(' (Most Wickets)','').replace(' in Tournament',''),pts,f(ALLW[k]),f(pts*ALLW[k])]);
     const tot=x.awP+x.awH;
     return [...tableItems(['Season','PoM round','Pts','Wt','Wtd'],[1.1,1.8,.6,.7,.8],['l','l','r','r','r'],pr.length?pr:[['–','No PoM','','','0.00']],['PoM total','','','','*'+f(x.awP)],IW),
-      ...tableItems(['Season','Heroes award','Pts','Wt','Wtd'],[1.1,1.8,.6,.7,.8],['l','l','r','r','r'],hr.length?hr:[['–','No Heroes award','','','0.00']],['Heroes total','','','','*'+f(x.awH)],IW),
-      ...stepItems([[{t:'Award points = '+f(x.awP)+' (PoM) + '+f(x.awH)+' (Heroes) = '},{t:f(tot),b:1}],[{t:'Score = '+f(tot)+' ÷ 170.1 × 100 = '},pill(f(x.Aw)),...capNote(tot,REFA)]],IW)]});
+      ...tableItems(['Season','Tournament award','Pts','Wt','Wtd'],[1.1,1.8,.6,.7,.8],['l','l','r','r','r'],hr.length?hr:[['–','No tournament award','','','0.00']],['Awards total','','','','*'+f(x.awH)],IW),
+      ...stepItems([[{t:'Award points = '+f(x.awP)+' (PoM) + '+f(x.awH)+' (tournament awards) = '},{t:f(tot),b:1}],[{t:'Score = '+f(tot)+' ÷ 158.8 × 100 = '},pill(f(x.Aw)),...capNote(tot,REFA)]],IW)]});
 
   /* ---------- 4 Consistency + 5 Experience ---------- */
   secHead('4','Consistency','10% of Skill Rating','#6a3d9a',true);
@@ -263,7 +263,7 @@ window.KNPLReport=async function(o){
     columns([[{t:'name',p:{...p,n:p.n+'  ·  '+p.x.m+' matches'}},...it]],W-2*M,0);
   });
   footers();
-  doc.setTitle('KNPL-7 Skill Rating – Detailed comparison');doc.setAuthor('Team KNPL – Technical & Evaluation Team');doc.setSubject('Strictly confidential – '+P.map(p=>'KNPL7-'+p.i).join(', '));
+  doc.setTitle('KNPL-7 Skill Rating – Detailed comparison');doc.setAuthor('Team KNPL – Technical & Evaluation Team');doc.setSubject('KNPL-7 Skill Rating comparison – '+P.map(p=>'KNPL7-'+p.i).join(', '));
   return doc.save();
 };
 })();
