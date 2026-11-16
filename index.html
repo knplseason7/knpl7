@@ -1359,6 +1359,7 @@ try { if (window.google && google.script && google.script.url) google.script.url
 
 /* ---------- auction join ---------- */
 let qTimer, pick = null;
+$('q').addEventListener('focus', () => { netInfo(); }, {once:true});
 $('q').addEventListener('input', e => {
   clearTimeout(qTimer);
   const q = e.target.value.toUpperCase().trim();
@@ -1392,18 +1393,36 @@ $('results').addEventListener('click', e => {
       <button type="button" class="ghost" id="vBtn">Check status</button>
     </div>
     <p class="msg" id="m-l4"></p>
+    <p class="hint" style="margin:0">Only the player himself should continue. Every check and submission is recorded with IP address, approximate location and device. · ഈ പേജിലെ ഓരോ ശ്രമവും IP address, സ്ഥലം, device സഹിതം രേഖപ്പെടുത്തുന്നു.</p>
     <div id="vOut" style="display:grid;gap:12px"></div>`;
   $('l4').addEventListener('input', ev => ev.target.value = ev.target.value.replace(/\D/g, ''));
   $('vBtn').onclick = verify;
   $('l4').focus();
 });
 
+let NETP = null;
+function netInfo(){
+  if (!NETP) NETP = (async () => {
+    const ua = navigator.userAgent.slice(0, 180);
+    try {
+      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 4000);
+      const j = await fetch('https://ipapi.co/json/', {signal: ctl.signal}).then(r => r.json());
+      if (j && j.ip) return {ip: j.ip, city: j.city || '', region: j.region || '', country: j.country_name || '', org: j.org || '', ua};
+    } catch(_) {}
+    try {
+      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 4000);
+      const j = await fetch('https://api.ipify.org?format=json', {signal: ctl.signal}).then(r => r.json());
+      return {ip: j.ip || '', ua};
+    } catch(_) { return {ip: 'unavailable', ua}; }
+  })();
+  return NETP;
+}
 async function verify(){
   const l4 = $('l4').value; $('m-l4').textContent = '';
   if (!/^\d{4}$/.test(l4)){ $('m-l4').textContent = 'Enter the last 4 digits of the WhatsApp number you registered with.'; return; }
   $('vBtn').disabled = true;
   try {
-    const r = await api('verifyPlayer', pick.id, l4);
+    const r = await api('verifyPlayer', pick.id, l4, await netInfo());
     const out = $('vOut');
     if (r.joined){ out.innerHTML = lockedCard(r, r.availability, r.preferredTeam, 'You have joined the KNPL-7 Mega Auction. These choices are locked.'); return; }
     if (r.status === 'Approved'){
@@ -1608,13 +1627,14 @@ function renderJoin(out, r, l4){
         <dt>${r.owner ? 'Your team' : 'Preferred team'}</dt><dd>${esc(team)}${TEAMOWN(team) ? ' (owner: ' + esc(TEAMOWN(team)) + ')' : ''}</dd>
         <dt>Registration fee</dt><dd>${r.owner ? 'Waived (franchise owner)' : 'Receipt attached (' + esc(receipt.name) + ')'}</dd></dl>
         <button type="button" class="primary" id="jBtn">Confirm and join KNPL-7 Mega Auction</button>
+        <p class="hint" style="margin:6px 0 0">For security, your IP address, approximate location and device are recorded with this submission. · സുരക്ഷയ്ക്കായി നിങ്ങളുടെ IP address, ഏകദേശ സ്ഥലം, device എന്നിവ രേഖപ്പെടുത്തുന്നു.</p>
         <p class="msg" id="m-join"></p>
       </div>`;
     $('review').scrollIntoView({behavior:'smooth', block:'center'});
     $('jBtn').onclick = async () => {
       $('jBtn').disabled = true; $('jBtn').textContent = 'Joining…';
       try {
-        const res = await api('joinAuction', pick.id, l4, {days, team, receipt: r.owner ? null : receipt, consents:{availability:true, draft:true, honour:true, final:true}});
+        const res = await api('joinAuction', pick.id, l4, {days, team, receipt: r.owner ? null : receipt, meta: await netInfo(), consents:{availability:true, draft:true, honour:true, final:true}});
         out.innerHTML = lockedCard(r, res.availability, res.preferredTeam, `${pick.name} has joined the KNPL-7 Mega Auction. These choices are now locked.`);
         const pill = document.querySelector(`.pl[data-id="${CSS.escape(pick.id)}"] .pill`); if (pill){ pill.className = 'pill Joined'; pill.textContent = 'In auction pool'; }
       } catch(err){ $('m-join').textContent = err.message; $('jBtn').disabled = false; $('jBtn').textContent = 'Confirm and join KNPL-7 Mega Auction'; }
