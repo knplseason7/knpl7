@@ -77,6 +77,24 @@ table.cat-t{border-collapse:collapse;width:100%;min-width:520px;background:var(-
 .n5t{background:var(--teal-soft);color:var(--teal);border:1px solid var(--teal);font:700 12px/1 var(--display);letter-spacing:.06em;padding:4px 7px;border-radius:5px}
 .n5note{font-size:12.5px;color:var(--teal);font-weight:600}
 .act{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:center}
+.p2bar{display:grid;gap:10px;margin:0 0 18px;padding:16px;border-radius:14px;border:2px solid #1f8a5b;background:#e8f6ee;color:#0f3d26}
+.p2bar h3{margin:0;font:800 22px var(--display,inherit)}
+.p2nums{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;font-size:15px}
+.p2nums b{font:800 34px/1 var(--display,inherit);color:#1f8a5b}
+.p2track{height:16px;border-radius:99px;background:#cfe9da;overflow:hidden}
+.p2fill{height:100%;background:linear-gradient(90deg,#1f8a5b,#34b37a);border-radius:99px;transition:width .6s}
+.p2row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.p2go{display:inline-block;padding:10px 16px;border-radius:10px;background:#1f8a5b;color:#fff;font-weight:800;text-decoration:none}
+.p2go:hover{background:#176b46}
+.p2f{font:700 13px var(--body,inherit);padding:7px 12px;border-radius:99px;border:2px solid #1f8a5b;background:#fff;color:#0f3d26;cursor:pointer}
+.p2f[aria-pressed="true"]{background:#1f8a5b;color:#fff}
+.p2at{font-size:12px;color:#3d6b52}
+.card.p2done{box-shadow:inset 6px 0 0 #1f8a5b;background:linear-gradient(90deg,#e8f6ee,transparent 60%)}
+.p2b{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font:800 13px var(--body,inherit);padding:5px 10px;border-radius:99px}
+.p2b.ok{background:#1f8a5b;color:#fff}
+.p2b.todo{background:#fff;color:#1f6b46;border:2px solid #1f8a5b;text-decoration:none}
+.p2b.todo:hover{background:#e8f6ee}
+@media (prefers-color-scheme:dark){.p2bar{background:#0f2a1c;color:#d7f2e2;border-color:#34b37a}.p2bar h3,.p2nums{color:#d7f2e2}.p2track{background:#1e4a33}.p2f{background:#0f2a1c;color:#d7f2e2}.card.p2done{background:linear-gradient(90deg,#123323,transparent 60%)}.p2b.todo{background:transparent;color:#7fe0ad}.p2at{color:#9fd3b6}}
 .me{outline:4px solid var(--saffron);outline-offset:3px}.mehint{grid-column:1/-1;font:700 13px var(--body);color:var(--saffron);margin-bottom:6px}button.dl{font:700 14px var(--body);background:var(--navy);color:#fff;border:0;border-radius:9px;padding:9px 13px;cursor:pointer}
 button.dl:hover{background:var(--saffron)}
 button.dl:focus-visible,a.op:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
@@ -145,6 +163,21 @@ label.addc.off{opacity:.5;cursor:not-allowed}
   <section id="gate" class="gate" aria-live="polite"><h2>Loading the Skill Ratings…</h2><p id="gmsg" class="gmsg">Please wait a moment.</p></section>
   <div id="app" hidden>
   
+  <section class="p2bar" id="p2bar" hidden aria-live="polite">
+    <h3>Phase 2 registration · Live status</h3>
+    <div class="p2nums"><b id="p2n">0</b><span>of <span id="p2t">250</span> players have completed Phase 2</span><span id="p2pc"></span></div>
+    <div class="p2track" role="progressbar" aria-label="Phase 2 completed" aria-valuemin="0" aria-valuemax="100" id="p2tr"><div class="p2fill" id="p2fill" style="width:0"></div></div>
+    <div class="p2row">
+      <a class="p2go" href="https://knplseason7.github.io/knpl7/?tab=auction" target="_blank" rel="noopener">Complete your Phase 2 registration →</a>
+      <span>Last date: <b>20-11-2026, 11:30 PM</b></span>
+    </div>
+    <div class="p2row" role="group" aria-label="Show players">
+      <button type="button" class="p2f" data-f="all" aria-pressed="true">All players</button>
+      <button type="button" class="p2f" data-f="done" aria-pressed="false">✓ Completed</button>
+      <button type="button" class="p2f" data-f="todo" aria-pressed="false">Not yet completed</button>
+      <span class="p2at" id="p2at"></span>
+    </div>
+  </section>
   <div class="notice" role="note"><span class="tag">FINAL</span><div><b>Final KNPL Skill Ratings, after NPL-5.</b> Every registered player's rating now includes all matches of the 15 qualifying tournaments, NPL-5 included (players with NPL-5 matches carry a teal NPL-5 badge). Check your matches on page 2 of your statement and report anything missing to the KNPL committee.</div></div>
 
   <ol class="howto">
@@ -222,6 +255,25 @@ const grid=$('grid'),q=$('q'),count=$('count'),gate=$('gate'),app=$('app'),gmsg=
 let KEY=null,P=[],cards=new Map();
 const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let P2=null,P2F='all';
+const P2LINK='https://knplseason7.github.io/knpl7/?tab=auction';
+function p2apply(){
+  if(!P2||!P.length)return;
+  let done=0;
+  P.forEach(p=>{const c=cards.get(p.i);if(!c)return;const ok=P2.has(p.ik);if(ok)done++;c.classList.toggle('p2done',ok);
+    const slot=c.querySelector('.p2slot');if(!slot)return;slot.replaceChildren();
+    if(ok){const b=document.createElement('span');b.className='p2b ok';b.textContent='✓ Phase 2 completed';slot.appendChild(b)}
+    else{const a=document.createElement('a');a.className='p2b todo';a.href=P2LINK;a.target='_blank';a.rel='noopener';a.textContent='Complete Phase 2 →';slot.appendChild(a)}});
+  const pc=P.length?Math.round(done*1000/P.length)/10:0;
+  $('p2n').textContent=done;$('p2t').textContent=P.length;$('p2pc').textContent='('+pc+'%)';
+  $('p2fill').style.width=pc+'%';$('p2tr').setAttribute('aria-valuenow',pc);
+  $('p2bar').hidden=false;
+}
+async function p2load(){
+  try{const r=await api('phase2Status');P2=new Set((r.joined||[]).map(x=>String(x).replace(/\D/g,'').replace(/^7?0*/,'').replace(/^0+/,'')));
+    $('p2at').textContent='Updated '+(r.at||'')+' · refreshes every 2 minutes';p2apply();if(P2F!=='all')render();}catch(e){}
+}
+document.addEventListener('click',e=>{const b=e.target.closest('.p2f');if(!b)return;P2F=b.dataset.f;document.querySelectorAll('.p2f').forEach(x=>x.setAttribute('aria-pressed',x===b));render()});
 function logDl(type,list){try{const via=/[?&]id=/.test(location.search)?'Personal link':'Page';
   fetch(API_URL,{method:'POST',mode:'no-cors',keepalive:true,body:JSON.stringify({fn:'skillLog',args:[type,list.map(p=>'KNPL7-'+p.i).join(', '),list.map(p=>p.n).join(', '),via,location.pathname]})}).catch(()=>{})}catch(_){}}
 async function api(fn,...args){
@@ -260,6 +312,7 @@ function card(p){
   [['Base Price',inr(p.bp),''],['Draft Price',inr(p.dp),'d'],['Draft Point',p.dt.toLocaleString('en-IN')+' Pts','d']].forEach(([l,v,c])=>{const d=document.createElement('div');if(c)d.className=c;const s=document.createElement('span');s.textContent=l;const b=document.createElement('b');b.textContent=v;d.append(s,b);mo.appendChild(d)});
   info.appendChild(mo);
   const pv=document.createElement('div');pv.className='prov';pv.textContent=p.f?'Final · includes NPL-5 matches':'Final Skill Rating';info.appendChild(pv);
+  const p2=document.createElement('div');p2.className='p2slot';info.appendChild(p2);
   if(p.d){
     const act=document.createElement('div');act.className='act';
     const b=document.createElement('button');b.className='dl';b.type='button';b.textContent='Download PDF';
@@ -287,9 +340,10 @@ function render(){
   const n=nameQ||num;
   let L=P;
   if(n){L=P.filter(p=>(nameQ&&p.k.includes(nameQ))||(num&&p.ik===num))}
+  if(P2&&P2F!=='all')L=L.filter(p=>P2F==='done'?P2.has(p.ik):!P2.has(p.ik));
   grid.replaceChildren(...L.map(p=>cards.get(p.i)));
   if(!L.length){const e=document.createElement('div');e.className='empty';e.textContent='No player matches "'+v+'". Check the spelling or try the Reg ID number.';grid.appendChild(e)}
-  count.textContent=n?(L.length+' of '+P.length+' players'):('All '+P.length+' registered players, by Reg ID');
+  count.textContent=(n||(P2&&P2F!=='all'))?(L.length+' of '+P.length+' players'):('All '+P.length+' registered players, by Reg ID');
 }
 
 /* ---------- Compare players ---------- */
@@ -345,7 +399,7 @@ async function combinedReport(L,inc,btn,msg){
 }
 q.addEventListener('input',render);
 const KEY_B64='zlMUEcdJHeP80zwzbCDRGCSiDyzqyAaow36RHnO0T/c=';
-(async()=>{try{await unlock(KEY_B64,'');
+(async()=>{try{await unlock(KEY_B64,'');p2load();setInterval(p2load,120000);
   const pid=(new URLSearchParams(location.search).get('id')||'').replace(/\D/g,'').replace(/^0+/,'');
   const me=pid&&P.find(p=>p.ik===pid);
   if(me){q.value=me.i;render();const c=cards.get(me.i);c.classList.add('me');
