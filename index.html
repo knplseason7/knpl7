@@ -1393,7 +1393,6 @@ $('results').addEventListener('click', e => {
       <button type="button" class="ghost" id="vBtn">Check status</button>
     </div>
     <p class="msg" id="m-l4"></p>
-    <p class="hint" style="margin:0">Only the player himself should continue. Every check and submission is recorded with IP address, approximate location and device. · ഈ പേജിലെ ഓരോ ശ്രമവും IP address, സ്ഥലം, device സഹിതം രേഖപ്പെടുത്തുന്നു.</p>
     <div id="vOut" style="display:grid;gap:12px"></div>`;
   $('l4').addEventListener('input', ev => ev.target.value = ev.target.value.replace(/\D/g, ''));
   $('vBtn').onclick = verify;
@@ -1627,7 +1626,6 @@ function renderJoin(out, r, l4){
         <dt>${r.owner ? 'Your team' : 'Preferred team'}</dt><dd>${esc(team)}${TEAMOWN(team) ? ' (owner: ' + esc(TEAMOWN(team)) + ')' : ''}</dd>
         <dt>Registration fee</dt><dd>${r.owner ? 'Waived (franchise owner)' : 'Receipt attached (' + esc(receipt.name) + ')'}</dd></dl>
         <button type="button" class="primary" id="jBtn">Confirm and join KNPL-7 Mega Auction</button>
-        <p class="hint" style="margin:6px 0 0">For security, your IP address, approximate location and device are recorded with this submission. · സുരക്ഷയ്ക്കായി നിങ്ങളുടെ IP address, ഏകദേശ സ്ഥലം, device എന്നിവ രേഖപ്പെടുത്തുന്നു.</p>
         <p class="msg" id="m-join"></p>
       </div>`;
     $('review').scrollIntoView({behavior:'smooth', block:'center'});
