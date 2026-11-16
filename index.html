@@ -113,6 +113,8 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .tb-x{width:56px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--sunk)}
 .tb b{font-family:var(--display);font-size:15px;line-height:1.15;text-transform:uppercase}
 .tb small{font-size:12px;color:var(--muted);line-height:1.2}
+.tb .newt{position:absolute;top:6px;left:6px;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:99px;background:var(--band);color:var(--on-band)}
+.tb .aka{font-size:11px;font-style:italic;color:var(--muted);margin-top:-2px}
 .tb .former{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 6px;border-radius:99px;background:var(--ok-bg,#dff3e7);color:var(--ok,#1f7a4a)}
 .tb.any{grid-column:1/-1;min-height:0;padding:14px}
 .tb.sel{border:3px solid var(--gold);background:var(--gold-soft);box-shadow:0 0 0 2px var(--gold)}
@@ -764,7 +766,7 @@ const MOCKSRV = (() => {
 })();
 const MOCK = (() => {
   const wait = v => new Promise(r => setTimeout(() => r(v), 500));
-  const TEAMS = ['KOMBANS OF PATALEEPUTHRA','MADHURA MAVERICKS','MIGHTY MIDHILAS','KALINGA ADHIPANS','VARAHAS OF VIJAYANAGARA','KAALIYANZ OF DWARAKA','GUARDIANS OF KAMBOJA','AYODHYA WARRIORS','JAGUARS OF JHANSI','GANDHARA GIANTS','DEVILS OF CHITHRAKOOT','KURUKSHETRA YODHAS','VAMOS VRINDAVAN','KNIGHTS OF KANCHI','SPARTANS OF NALANDA','PANCHAALA PANTHERS'];
+  const TEAMS = ['KOMBANS OF PATALEEPUTHRA','MADHURA MAVERICKS','MIGHTY MITHILAS','KALINGA UNITED','VARAHAS OF VIJAYANAGARA','KAALIYANZ OF DWARAKA','GUARDIANS OF KAMBOJA','AYODHYA WARRIORS','JAGUARS OF JHANSI','GANDHARA GIANTS','DEVILS OF CHITHRAKOOT','KURUKSHETRA YODHAS','VAMOS VRINDAVAN','KNIGHTS OF KANCHI','SPARTANS OF NALANDA','PANCHAALA PANTHERS'];
   const DAYS = ['11 Feb 2027','12 Feb 2027','13 Feb 2027','14 Feb 2027'];
   const people = [
     {regId:'KNPL7-0001', name:'SAMPLE PLAYER APPROVED', district:'Ernakulam', status:'Approved', category:'Dominator Apex', skillRating:'72', joined:false, last4:'1234'},
@@ -1459,12 +1461,14 @@ async function teamAckHtml(t, r, myId){
   Object.entries(r.knpl || {}).forEach(([s, tm]) => { if (teamKey(tm) === k) played[s] = 1; });
   const ss = Object.keys(played).sort();
   const seasons = ss.length > 1 ? ss.slice(0, -1).join(', ') + ' and ' + ss[ss.length - 1] : ss[0];
-  const hist = ss.length
+  const hist = o.isNew
+    ? `<div class="tack-hist">${esc(t)} is a <b>new team</b> in KNPL-7. · ${esc(t)} KNPL-7-ലെ <b>പുതിയ ടീം</b> ആണ്.</div>`
+    : ss.length
     ? `<div class="tack-hist yes">✓ You played for ${esc(t)} in ${seasons}. · നിങ്ങൾ ${ss.join(', ')} ${ss.length > 1 ? 'സീസണുകളിൽ' : 'സീസണിൽ'} ഈ ടീമിനായി കളിച്ചിട്ടുണ്ട്.</div>`
     : `<div class="tack-hist">You have not played for ${esc(t)} in KNPL-4, KNPL-5 or KNPL-6. · KNPL-4, 5, 6 സീസണുകളിൽ നിങ്ങൾ ഈ ടീമിനായി കളിച്ചിട്ടില്ല.</div>`;
   const own = o.owner ? esc(o.owner) : '';
   return `<div class="tack">
-    <div class="tack-top">${o.logo ? `<img src="${o.logo}" alt="${esc(t)} logo" style="object-fit:contain;border:0;background:transparent">` : ''}${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="Photo of ${own}">` : '<span class="noimg"></span>'}<div><small>${esc(t)}</small><small>Team owner</small><b>${own || '–'}</b></div></div>
+    <div class="tack-top">${o.logo ? `<img src="${o.logo}" alt="${esc(t)} logo" style="object-fit:contain;border:0;background:transparent">` : ''}${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="Photo of ${own}">` : '<span class="noimg"></span>'}<div><small>${esc(t)}${o.aka ? ' · ' + esc(o.aka) : ''}${o.isNew ? ' · New team in KNPL-7' : ''}</small><small>Team owner</small><b>${own || '–'}</b></div></div>
     ${hist}
     <p>You have selected <b>${esc(t)}</b>${own ? ` (owner: <b>${own}</b>)` : ''} as your preferred team. By this, you give <b>${esc(t)}</b> the privilege to take you into their team through the <b>Draft</b>. This cannot be changed later.</p>
     ${ml(`നിങ്ങൾ <b>${esc(t)}</b>${own ? ` (ഉടമ: <b>${own}</b>)` : ''} നിങ്ങളുടെ preferred team ആയി തിരഞ്ഞെടുത്തിരിക്കുന്നു. ഇതിലൂടെ, <b>Draft</b> വഴി നിങ്ങളെ അവരുടെ ടീമിലേക്ക് എടുക്കാനുള്ള അവകാശം <b>${esc(t)}</b>-ന് നിങ്ങൾ നൽകുന്നു. ഈ തീരുമാനം പിന്നീട് മാറ്റാൻ കഴിയില്ല.`)}
@@ -1568,7 +1572,7 @@ function renderJoin(out, r, l4){
     const card = (t, sel) => {
       if (t === r.anyTeam) return `<button type="button" class="tb any${sel ? ' sel' : ''}" data-team="${esc(t)}"><b>Any Team</b><small>Any KNPL-7 team may draft me · ഏത് ടീമിനും എന്നെ draft ചെയ്യാം</small></button>`;
       const o = TI.teams[teamKey(t)] || {}, former = [...Object.values(TI.hist[myId] || {}), ...Object.values(r.knpl || {})].some(x => teamKey(x) === teamKey(t));
-      return `<button type="button" class="tb${sel ? ' sel' : ''}" data-team="${esc(t)}" aria-pressed="${sel}">${former ? '<span class="former">Former team</span>' : ''}${o.logo ? `<img class="tl" src="${o.logo}" alt="${esc(t)} logo">` : ''}<b>${esc(t)}</b><span class="ow">${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="">` : '<span class="noimg"></span>'}<small>Owner<br>${esc(o.owner || '–')}</small></span></button>`;
+      return `<button type="button" class="tb${sel ? ' sel' : ''}" data-team="${esc(t)}" aria-pressed="${sel}">${o.isNew ? '<span class="newt">NEW TEAM</span>' : ''}${former ? '<span class="former">Former team</span>' : ''}${o.logo ? `<img class="tl" src="${o.logo}" alt="${esc(t)} logo">` : ''}<b>${esc(t)}</b>${o.aka ? `<span class="aka">(${esc(o.aka)})</span>` : ''}${o.isNew ? '<span class="aka">New team in KNPL-7</span>' : ''}<span class="ow">${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="">` : '<span class="noimg"></span>'}<small>Owner<br>${esc(o.owner || '–')}</small></span></button>`;
     };
     $('tGrid').innerHTML = r.teams.map(t => card(t, false)).join('') + card(r.anyTeam, false);
     const choose = t => {
