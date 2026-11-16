@@ -1451,8 +1451,8 @@ async function teamAckHtml(t, r, myId){
       <label class="check"><input type="checkbox" id="k2"><span>I confirm · ഞാൻ സ്ഥിരീകരിക്കുന്നു</span></label></div>`;
   }
   if (t === r.anyTeam){
-    return `<div class="tack"><p>You have selected <b>Any Team</b>. By this, you give <b>every KNPL-7 team</b> the privilege to take you into their team through the Draft. This cannot be changed later.</p>
-      ${ml(`നിങ്ങൾ <b>Any Team</b> തിരഞ്ഞെടുത്തിരിക്കുന്നു. ഇതിലൂടെ, KNPL-7-ലെ <b>ഏത് ടീമിനും</b> Draft വഴി നിങ്ങളെ അവരുടെ ടീമിലേക്ക് എടുക്കാനുള്ള അവകാശം നിങ്ങൾ നൽകുന്നു. ഈ തീരുമാനം പിന്നീട് മാറ്റാൻ കഴിയില്ല.`)}
+    return `<div class="tack"><p>You have selected <b>Any Team</b>. This means <b>no team can draft you</b>. You will go <b>directly to the auction pool</b>, and any team can bid for you in the auction. This cannot be changed later.</p>
+      ${ml(`നിങ്ങൾ <b>Any Team</b> തിരഞ്ഞെടുത്തിരിക്കുന്നു. അതിനാൽ <b>ഒരു ടീമിനും നിങ്ങളെ draft ചെയ്യാൻ കഴിയില്ല</b>. നിങ്ങൾ <b>നേരിട്ട് auction pool-ലേക്ക്</b> പോകും; auction-ൽ ഏത് ടീമിനും നിങ്ങൾക്കായി bid ചെയ്യാം. ഈ തീരുമാനം പിന്നീട് മാറ്റാൻ കഴിയില്ല.`)}
       <label class="check"><input type="checkbox" id="k2"><span>I agree · ഞാൻ സമ്മതിക്കുന്നു</span></label></div>`;
   }
   const k = teamKey(t), o = TI.teams[k] || {};
@@ -1494,6 +1494,7 @@ function renderJoin(out, r, l4){
     <div class="f" id="w-team">
       ${r.owner ? `<span class="lbl">Your KNPL-7 team</span>` : `<span class="lbl req" id="teamLbl">Preferred team for KNPL-7</span>
       <p class="hint" style="margin:0">Tap one team. Check the team name and owner carefully. · ടീമിന്റെ പേരും ഉടമയെയും ശ്രദ്ധിച്ച് ഒരു ടീം തിരഞ്ഞെടുക്കുക.</p>
+      <p class="hint" style="margin:0"><b>A team</b> = only that team may draft you. <b>Any Team</b> = no team can draft you; you go directly to the auction pool. · <b>ടീം</b> തിരഞ്ഞെടുത്താൽ ആ ടീമിന് മാത്രം draft ചെയ്യാം. <b>Any Team</b> തിരഞ്ഞെടുത്താൽ draft ഇല്ല; നേരിട്ട് auction pool-ലേക്ക്.</p>
       <input type="hidden" id="pTeam" value="">
       <div class="tgrid" id="tGrid" role="group" aria-labelledby="teamLbl">Loading teams…</div>
       <div class="tpick" id="tPick" hidden></div>
@@ -1570,7 +1571,7 @@ function renderJoin(out, r, l4){
   if ($('tGrid')) (async () => {
     await loadTI();
     const card = (t, sel) => {
-      if (t === r.anyTeam) return `<button type="button" class="tb any${sel ? ' sel' : ''}" data-team="${esc(t)}"><b>Any Team</b><small>Any KNPL-7 team may draft me · ഏത് ടീമിനും എന്നെ draft ചെയ്യാം</small></button>`;
+      if (t === r.anyTeam) return `<button type="button" class="tb any${sel ? ' sel' : ''}" data-team="${esc(t)}"><b>Any Team</b><small>No team can draft me. I go directly to the <b>auction pool</b>. · ഒരു ടീമിനും എന്നെ draft ചെയ്യാൻ കഴിയില്ല; ഞാൻ നേരിട്ട് <b>auction pool</b>-ലേക്ക് പോകും.</small></button>`;
       const o = TI.teams[teamKey(t)] || {}, former = [...Object.values(TI.hist[myId] || {}), ...Object.values(r.knpl || {})].some(x => teamKey(x) === teamKey(t));
       return `<button type="button" class="tb${sel ? ' sel' : ''}" data-team="${esc(t)}" aria-pressed="${sel}">${o.isNew ? '<span class="newt">NEW TEAM</span>' : ''}${former ? '<span class="former">Former team</span>' : ''}${o.logo ? `<img class="tl" src="${o.logo}" alt="${esc(t)} logo">` : ''}<b>${esc(t)}</b>${o.aka ? `<span class="aka">(${esc(o.aka)})</span>` : ''}${o.isNew ? '<span class="aka">New team in KNPL-7</span>' : ''}<span class="ow">${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="">` : '<span class="noimg"></span>'}<small>Owner<br>${esc(o.owner || '–')}</small></span></button>`;
     };
