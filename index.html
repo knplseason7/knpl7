@@ -101,6 +101,16 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .opt small{color:var(--muted);font-size:13px}
 .opt-legacy{border-style:dashed;border-color:var(--gold)}
 .opt-legacy .ml{font-weight:600}
+.tack{display:grid;gap:10px;margin-top:10px;padding:14px;border-radius:12px;border:2px solid var(--gold);background:var(--gold-soft)}
+.tack-top{display:flex;gap:14px;align-items:center}
+.tack-top img,.tack-top .noimg{width:64px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--gold);background:var(--surface);flex:none}
+.tack-top b{display:block;font-family:var(--display);font-size:22px;line-height:1.1}
+.tack-top small{display:block;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tack-hist{font-size:14px;font-weight:600;padding:8px 10px;border-radius:8px;background:var(--surface)}
+.tack-hist.yes{color:var(--ok,#1f7a4a)}
+.tack p{margin:0;font-size:14.5px;line-height:1.5}
+.tack .ml{font-size:14px;color:var(--ink)}
+.tack .check{font-weight:700}
 .legacy{padding:12px 14px;border-radius:10px;background:var(--gold-soft);border:1px solid var(--gold)}
 .legacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
 .qrbtn{position:relative;display:inline-flex;align-items:center;justify-content:center}
@@ -741,6 +751,8 @@ const MOCK = (() => {
   const DAYS = ['11 Feb 2027','12 Feb 2027','13 Feb 2027','14 Feb 2027'];
   const people = [
     {regId:'KNPL7-0001', name:'SAMPLE PLAYER APPROVED', district:'Ernakulam', status:'Approved', category:'Dominator Apex', skillRating:'72', joined:false, last4:'1234'},
+    {regId:'KNPL7-0170', name:'SAMPLE PLAYER KRITHARTH', district:'Kannur', status:'Approved', category:'Dominator Core', skillRating:'62', joined:false, last4:'1234'},
+    {regId:'KNPL7-0029', name:'SAMPLE OWNER', district:'Ernakulam', status:'Approved', category:'Dominator Core', skillRating:'52', joined:false, last4:'1234', owner:'MADHURA MAVERICKS'},
     {regId:'KNPL7-0004', name:'SAMPLE PLAYER GRADING', district:'Palakkad', status:'Approved', category:'', joined:false, last4:'1234'},
     {regId:'KNPL7-0002', name:'SAMPLE PLAYER PENDING', district:'Thrissur', status:'Pending', joined:false, last4:'1234'},
     {regId:'KNPL7-0003', name:'SAMPLE PLAYER REJECTED', district:'Kottayam', status:'Rejected', joined:false, last4:'1234', remarks:'CBL-5 profile ID does not match the team squad.'}
@@ -752,7 +764,7 @@ const MOCK = (() => {
     checkCode: (pc, ph, code) => MOCKSRV.checkCode(ph, code),
     submitRegistration: d => MOCKSRV.submit(d),
     searchPlayers: q => wait(people.filter(p => q.toUpperCase().split(/\s+/).every(t => p.name.includes(t))).map(p => ({regId:p.regId, name:p.name, district:p.district, status:p.status, joined:p.joined, photoId:''}))),
-    verifyPlayer: (id, l4) => { const p = people.find(x => x.regId === id); return l4 !== p.last4 ? Promise.reject(new Error('The last 4 digits do not match the WhatsApp number on this registration.')) : wait({name:p.name, status:p.status, remarks:p.remarks||'', category:p.category||'', skillRating:p.skillRating||'', joined:p.joined, availability:p.availability||'', preferredTeam:p.preferredTeam||'', open:true, teams:TEAMS, anyTeam:'Any Team', days:DAYS, feeAmount:1000, feePayTo:'UPI ID: 339980003460298@cnrb'}); },
+    verifyPlayer: (id, l4) => { const p = people.find(x => x.regId === id); return l4 !== p.last4 ? Promise.reject(new Error('The last 4 digits do not match the WhatsApp number on this registration.')) : wait({owner:p.owner||'', knpl:p.knpl||{}, name:p.name, status:p.status, remarks:p.remarks||'', category:p.category||'', skillRating:p.skillRating||'', joined:p.joined, availability:p.availability||'', preferredTeam:p.preferredTeam||'', open:true, teams:TEAMS, anyTeam:'Any Team', days:DAYS, feeAmount:1000, feePayTo:'UPI ID: 339980003460298@cnrb'}); },
     joinAuction: (id, l4, c) => { const p = people.find(x => x.regId === id); if (p.joined) return Promise.reject(new Error('You have already joined the auction. Your choices are locked.')); p.joined = true; p.availability = c.days.length === 4 ? 'All days (11-14 Feb 2027)' : c.days.join(', '); p.preferredTeam = c.team; return wait({ok:true, name:p.name, regId:p.regId, availability:p.availability, preferredTeam:p.preferredTeam}); }
   };
 })();
@@ -1404,6 +1416,43 @@ function ord(d){ // '11 Feb 2027' -> '11th Feb 2027'
   const n = parseInt(d, 10), s = (n % 100 >= 11 && n % 100 <= 13) ? 'th' : ({1:'st',2:'nd',3:'rd'}[n % 10] || 'th');
   return d.replace(/^\d+/, n + s);
 }
+let TI = null, TIP = null;
+function loadTI(){ if (TI) return Promise.resolve(TI); if (!TIP) TIP = fetch('p2/teaminfo.json', {cache:'no-cache'}).then(x => x.json()).then(j => (TI = j)).catch(() => (TI = {teams:{}, hist:{}})); return TIP; }
+loadTI();
+function teamKey(s){ return String(s || '').toLowerCase().replace(/[^a-z]/g, '').replace(/kpl$/, '').replace('kaaliyanz', 'kaliyanz').replace('midhilas', 'mithilas').replace('kalingaadhipans', 'kalingaunited'); }
+function TEAMOWN(t){ const o = TI && TI.teams[teamKey(t)]; return o ? o.owner : ''; }
+async function teamAckHtml(t, r, myId){
+  await loadTI();
+  const ml = s => `<p class="ml">${s}</p>`;
+  if (r.owner){
+    return `<div class="tack"><div class="tack-top">${TI.teams[teamKey(t)] && TI.teams[teamKey(t)].photo ? `<img src="data:image/jpeg;base64,${TI.teams[teamKey(t)].photo}" alt="">` : '<span class="noimg"></span>'}<div><small>Franchise owner</small><b>${esc(t)}</b></div></div>
+      <p>You are the franchise owner of <b>${esc(t)}</b>, so you are part of your own team's squad. No team choice is needed.</p>
+      ${ml(`നിങ്ങൾ <b>${esc(t)}</b> ടീമിന്റെ ഫ്രാഞ്ചൈസി ഉടമയാണ്. അതിനാൽ നിങ്ങൾ സ്വന്തം ടീമിന്റെ ഭാഗമാണ്. ടീം തിരഞ്ഞെടുക്കേണ്ടതില്ല.`)}
+      <label class="check"><input type="checkbox" id="k2"><span>I confirm · ഞാൻ സ്ഥിരീകരിക്കുന്നു</span></label></div>`;
+  }
+  if (t === r.anyTeam){
+    return `<div class="tack"><p>You have selected <b>Any Team</b>. By this, you give <b>every KNPL-7 team</b> the privilege to take you into their team through the Draft. This cannot be changed later.</p>
+      ${ml(`നിങ്ങൾ <b>Any Team</b> തിരഞ്ഞെടുത്തിരിക്കുന്നു. ഇതിലൂടെ, KNPL-7-ലെ <b>ഏത് ടീമിനും</b> Draft വഴി നിങ്ങളെ അവരുടെ ടീമിലേക്ക് എടുക്കാനുള്ള അവകാശം നിങ്ങൾ നൽകുന്നു. ഈ തീരുമാനം പിന്നീട് മാറ്റാൻ കഴിയില്ല.`)}
+      <label class="check"><input type="checkbox" id="k2"><span>I agree · ഞാൻ സമ്മതിക്കുന്നു</span></label></div>`;
+  }
+  const k = teamKey(t), o = TI.teams[k] || {};
+  const played = {};
+  Object.entries(TI.hist[myId] || {}).forEach(([s, tm]) => { if (teamKey(tm) === k) played[s] = 1; });
+  Object.entries(r.knpl || {}).forEach(([s, tm]) => { if (teamKey(tm) === k) played[s] = 1; });
+  const ss = Object.keys(played).sort();
+  const seasons = ss.length > 1 ? ss.slice(0, -1).join(', ') + ' and ' + ss[ss.length - 1] : ss[0];
+  const hist = ss.length
+    ? `<div class="tack-hist yes">✓ You played for ${esc(t)} in ${seasons}. · നിങ്ങൾ ${ss.join(', ')} ${ss.length > 1 ? 'സീസണുകളിൽ' : 'സീസണിൽ'} ഈ ടീമിനായി കളിച്ചിട്ടുണ്ട്.</div>`
+    : `<div class="tack-hist">You have not played for ${esc(t)} in KNPL-4, KNPL-5 or KNPL-6. · KNPL-4, 5, 6 സീസണുകളിൽ നിങ്ങൾ ഈ ടീമിനായി കളിച്ചിട്ടില്ല.</div>`;
+  const own = o.owner ? esc(o.owner) : '';
+  return `<div class="tack">
+    <div class="tack-top">${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="Photo of ${own}">` : '<span class="noimg"></span>'}<div><small>Team owner</small><b>${own || '–'}</b><small>${esc(t)}</small></div></div>
+    ${hist}
+    <p>You have selected <b>${esc(t)}</b>${own ? ` (owner: <b>${own}</b>)` : ''} as your preferred team. By this, you give <b>${esc(t)}</b> the privilege to take you into their team through the <b>Draft</b>. This cannot be changed later.</p>
+    ${ml(`നിങ്ങൾ <b>${esc(t)}</b>${own ? ` (ഉടമ: <b>${own}</b>)` : ''} നിങ്ങളുടെ preferred team ആയി തിരഞ്ഞെടുത്തിരിക്കുന്നു. ഇതിലൂടെ, <b>Draft</b> വഴി നിങ്ങളെ അവരുടെ ടീമിലേക്ക് എടുക്കാനുള്ള അവകാശം <b>${esc(t)}</b>-ന് നിങ്ങൾ നൽകുന്നു. ഈ തീരുമാനം പിന്നീട് മാറ്റാൻ കഴിയില്ല.`)}
+    <label class="check"><input type="checkbox" id="k2"><span>I agree · ഞാൻ സമ്മതിക്കുന്നു</span></label>
+  </div>`;
+}
 function renderJoin(out, r, l4){
   out.innerHTML = `
     ${catCard(r)}
@@ -1421,12 +1470,13 @@ function renderJoin(out, r, l4){
       <p class="msg" id="m-days"></p>
     </div>
     <div class="f" id="w-team">
-      <label for="pTeam" class="req">Preferred team for KNPL-7</label>
+      ${r.owner ? `<span class="lbl">Your KNPL-7 team</span>` : `<label for="pTeam" class="req">Preferred team for KNPL-7</label>
       <select id="pTeam"><option value="">Select one team</option><option>${esc(r.anyTeam)}</option>${r.teams.map(t => `<option>${esc(t)}</option>`).join('')}</select>
-      <p class="hint" id="teamNote">Choosing a team gives that team your consent to draft you. As per the auction rule, a team can draft up to 3 players including the owner.</p>
+      <p class="hint" id="teamNote">As per the auction rule, a team can draft up to 3 players including the owner.</p>`}
+      <div id="teamAck"></div>
       <p class="msg" id="m-team"></p>
     </div>
-    <div class="f" id="w-receipt">
+    ${r.owner ? `<div class="f" id="w-receipt"><div class="qual ok"><span><b>Registration fee waived.</b> As a franchise owner you have already paid the ownership fee, so no registration fee is needed.<br>ഫ്രാഞ്ചൈസി ഉടമ എന്ന നിലയിൽ നിങ്ങൾ ownership fee അടച്ചിട്ടുള്ളതിനാൽ registration fee ആവശ്യമില്ല.</span></div><p class="msg" id="m-receipt"></p></div>` : `<div class="f" id="w-receipt">
       <span class="lbl req">Registration fee payment receipt</span>
       <div class="fee"><div class="fee-txt"><span>Registration fee</span><b>₹${Number(r.feeAmount).toLocaleString('en-IN')}</b><small>Pay to ${esc(r.feePayTo)}</small><a class="ghost upi-btn" href="upi://pay?pa=339980003460298@cnrb&amp;pn=ONE%20ORGANIZATION%20FOR%20NAMBOODIRIS%20EVOLUT&amp;mc=8398&amp;tr=1234567887654321&amp;am=0&amp;mam=0&amp;cu=INR&amp;refUrl=http://npci.org/upi/schema/">Pay with a UPI app</a></div><img class="upi-qr" alt="UPI QR code for the registration fee" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtwAAALcAQAAAAD80lrEAAAFnUlEQVR42u2dS47kOAxEg4PZyzfI+x+rbiCfgLPQj6TdvStggHxGIeFyOt9CiwBFUkFz/dp1/6NfvIADBw4cOHDgwIEDBw4cOHDgwP/XcNvXNf+Nn+P5+NMd/jWbP79eIKw5cOBfDJe7u7uaxxs19y5J41PSeDIfjqufm/GwQLyz5sCBA1eIN5bsdNlnaciP2cen2ozQ5eMzjLmOBGUIaw4c+NfC/30PZm6TZPFmRS82X7h0m0vWXJI1t9ZZc+DAgf9dWzQVo29VMUm3SVLrW15sf7XFhzUHDhx4hu/MydzX3Kbb1HzcnFTMbWpul1ZSZQpRgbDmwIEDl1YKZdR9RtDy8X0zUyujHjSUpPmpHO1SUYSw5sCBsyfKOxq/bf5pRi++XtifIw8z3hn3b9si1hw4cFGDniXmdgrQ8Z248YkP909GCcnjRQ0aOHC05U1qplzstpau2vrSTnPL/naqE9oCHDja4r61ogQwJyZZadsZnPTUBjOFRecTbQEOHG2JWjEjkNCCuzc+sfP2VIh2L65O3IK2AAeOtpwG/rDlOcHJSqRIqnmY5qX6fJ6wJwIOHG2Jh4NiMjY0ruxIJp4nShndkqUhbgEOHG3ZQrHTsL2eRkwHGENVaDfDnExL3CihLcCBoy0h0xJrQFt29hVL0vGFl7QM2gIcOHuifhpuo6PCrhlFs4USrhx5qUzWHDhwtEUpPul5ixS3Qp6zKznZwp4IOHDgpVkuRiypoSW0rOzUblGemJlBW4ADBx7PE7nk97UOCl26L82zRZff80Si35dat3E4el3nbvyENQcOHHiOW2IdOYYuuwwdw5h6qihkY8i3AAeOtsSGllP3UUybKJaE0pMe+lty5z/aAhw42vLSLxeyLvWUYik3h+aWU2BCW4ADB16k5sfiIcThOLfHhRyf7SFBIznTNR3qhpfUMYxizYEDp3dO8aDQ6Z3rtaElubX02p17+u6IW4ADR1seh51Tm25M85Z6dPO/HpRmzYEDB64xfmhuZ5rvbc406I5+ucum23/MrrONSt65rDlw4KK/RYqet+veWh9jRIZlrsKUIu0Wl2H7H7+9L9YcOHD2RMl3Ludbzq4nV4LSO/FII/kW4MCBF3g0rrzt7IykOZJ1lITc56yiWCHK/TAhr8uaAwdOf0t2mXt2zcUE79Nfl7gFOHDgf6oTeQ080glEJauW4tlS/OvQFuDA0ZbisVDSKdHVPza9VNNLT8+pQQMHjra8+LfkgSBFVbKTf3WoSz51aAtw4GhL3s7EvriTWtEjZ5vfOREOcQtw4GhLyKi8iEbz5/DE1ymKcVAacQtw4GjL03cuBSEt2+GGSWdHVaLs4GkJHDjw51nF5unsYT6WGC1z08izOGU+TThizYEDJ9+SZyY+fbn14s6doxSld9AW4MDFeSJZ68cRdxjnSjaOCDW3dVbIh4PuurfmNk8VXWqu+/JlvcuaAwdO3FKijjhl/jXNUv0W8kEk+nKBAwde/Vvi6Gf35FH5mNaaUisemv8b+RbgwIG/nIMuoUgUjTSw9XkcoORq0BbgwNkTlQmJb25yz1pSmdYap0WjLcCBoy2pHS5/Ve1cSv1IqTZN3AIcOPD3GSI5YVvmhhSfqNKmW2MbtAU4cOCS7esKBnSjvhwmtE7PqOFjeck+foyktpvuSd2w5sCB69v9cld/i0m2Njhj7nPc7Xh4c3vnWvw2zIlmzYEDR1vmyPjWZ1PcuA/Ckjy6JV9G3L5UyIKb9+rEY82BAwd+rrEt8h+bmZZ7TlScGZg1aTFe0QYzfMWaAwcueufSfHlPjnO1SNSrnqTDjPTOAQcOPPvlxvba7CCXDypGt5Y/WOaiLcCBoy2prSVPdk6dLVJxv8xVoWc/HmsOHPjXws1/j32z5sCBAwcOHDhw4MCBAwcOHDjwL4T/B6YVI7gsDKQcAAAAAElFTkSuQmCC"></div>
       <div class="photo">
@@ -1437,10 +1487,9 @@ function renderJoin(out, r, l4){
         </div>
       </div>
       <p class="msg" id="m-receipt"></p>
-    </div>
+    </div>`}
     <fieldset class="fs" id="w-cons"><legend class="req">Consent</legend>
       <label class="check"><input type="checkbox" id="k1"><span>I understand that I cannot play on any date I have not marked as available, even if I become available on that date later.</span></label>
-      <label class="check"><input type="checkbox" id="k2"><span id="k2t">I give my consent to my preferred team to draft me to their team.</span></label>
       <label class="check"><input type="checkbox" id="k3"><span>I accept the KNPL “Word of Honour” commitment: I will honour my availability for every match I have agreed to play.</span></label>
       <label class="check"><input type="checkbox" id="k4"><span>I understand that once I join the auction, my availability and team choice <b>cannot be changed under any circumstances</b>.</span></label>
       <p class="msg" id="m-cons"></p>
@@ -1449,7 +1498,14 @@ function renderJoin(out, r, l4){
     <div id="review"></div>`;
 
   let receipt = null;
-  $('receipt').addEventListener('change', async e => {
+  const myId = 'KNPL7-' + String(pick.id).replace(/\D/g, '').slice(-4);
+  const showAck = async t => {
+    const box = $('teamAck'); if (!box) return;
+    if (!t){ box.innerHTML = ''; return; }
+    box.innerHTML = await teamAckHtml(t, r, myId);
+  };
+  if (r.owner) showAck(r.owner);
+  if ($('receipt')) $('receipt').addEventListener('change', async e => {
     const f = e.target.files[0]; $('m-receipt').textContent = ''; receipt = null;
     if (!f) return;
     try {
@@ -1486,22 +1542,18 @@ function renderJoin(out, r, l4){
   $('msDone').onclick = () => { openMs(false); $('msBtn').focus(); };
   document.addEventListener('click', e => { const ms = $('ms'); if (ms && !ms.contains(e.target)) openMs(false); });
   $('ms').addEventListener('keydown', e => { if (e.key === 'Escape'){ openMs(false); $('msBtn').focus(); } });
-  $('pTeam').onchange = e => {
-    const t = e.target.value;
-    $('k2t').textContent = !t ? 'I give my consent to my preferred team to draft me to their team.'
-      : t === r.anyTeam ? 'I give my consent to any KNPL-7 team to draft me to their team.'
-      : `I give my consent to ${t} to draft me to their team.`;
-  };
+  if ($('pTeam')) $('pTeam').onchange = e => { showAck(e.target.value); };
   out.addEventListener('change', () => { $('review').innerHTML = ''; });
 
   $('rvBtn').onclick = () => {
     ['days','team','cons','receipt'].forEach(k => $('m-' + k).textContent = '');
-    const days = $('dAll').checked ? r.days.slice() : dd.filter(x => x.checked).map(x => x.value), team = $('pTeam').value;
+    const days = $('dAll').checked ? r.days.slice() : dd.filter(x => x.checked).map(x => x.value), team = r.owner || $('pTeam').value;
     let bad = false;
     if (!days.length){ $('m-days').textContent = 'Select the days you are available.'; bad = true; }
     if (!team){ $('m-team').textContent = 'Select one preferred team, or Any Team.'; bad = true; }
-    if (!receipt){ $('m-receipt').textContent = `Upload your ₹${r.feeAmount} registration fee payment receipt. You cannot join without it.`; bad = true; }
-    if (!['k1','k2','k3','k4'].every(k => $(k).checked)){ $('m-cons').textContent = 'Tick all four to join the auction.'; bad = true; }
+    if (team && !($('k2') && $('k2').checked)){ $('m-team').textContent = 'Read the note under your team and tick "I agree" to continue. · ടീമിന് താഴെയുള്ള കുറിപ്പ് വായിച്ച് "I agree" ടിക്ക് ചെയ്യുക.'; bad = true; }
+    if (!r.owner && !receipt){ $('m-receipt').textContent = `Upload your ₹${r.feeAmount} registration fee payment receipt. You cannot join without it.`; bad = true; }
+    if (!['k1','k3','k4'].every(k => $(k).checked)){ $('m-cons').textContent = 'Tick all three to join the auction.'; bad = true; }
     if (bad) return;
     const notDays = r.days.filter(d => !days.includes(d));
     const availTxt = days.length === r.days.length ? 'All days (11–14 Feb 2027)' : days.join(', ');
@@ -1510,8 +1562,8 @@ function renderJoin(out, r, l4){
         <b>Check before you confirm. This cannot be changed.</b>
         <dl class="sum"><dt>Category</dt><dd>${esc(r.category)}</dd><dt>Available on</dt><dd>${esc(availTxt)}</dd>
         ${notDays.length ? `<dt>Not available on</dt><dd>${esc(notDays.join(', '))}: you will not play on these dates</dd>` : ''}
-        <dt>Preferred team</dt><dd>${esc(team)}</dd>
-        <dt>Fee receipt</dt><dd>Attached (${esc(receipt.name)})</dd></dl>
+        <dt>${r.owner ? 'Your team' : 'Preferred team'}</dt><dd>${esc(team)}${TEAMOWN(team) ? ' (owner: ' + esc(TEAMOWN(team)) + ')' : ''}</dd>
+        <dt>Registration fee</dt><dd>${r.owner ? 'Waived (franchise owner)' : 'Receipt attached (' + esc(receipt.name) + ')'}</dd></dl>
         <button type="button" class="primary" id="jBtn">Confirm and join KNPL-7 Mega Auction</button>
         <p class="msg" id="m-join"></p>
       </div>`;
@@ -1519,7 +1571,7 @@ function renderJoin(out, r, l4){
     $('jBtn').onclick = async () => {
       $('jBtn').disabled = true; $('jBtn').textContent = 'Joining…';
       try {
-        const res = await api('joinAuction', pick.id, l4, {days, team, receipt, consents:{availability:true, draft:true, honour:true, final:true}});
+        const res = await api('joinAuction', pick.id, l4, {days, team, receipt: r.owner ? null : receipt, consents:{availability:true, draft:true, honour:true, final:true}});
         out.innerHTML = lockedCard(r, res.availability, res.preferredTeam, `${pick.name} has joined the KNPL-7 Mega Auction. These choices are now locked.`);
         const pill = document.querySelector(`.pl[data-id="${CSS.escape(pick.id)}"] .pill`); if (pill){ pill.className = 'pill Joined'; pill.textContent = 'In auction pool'; }
       } catch(err){ $('m-join').textContent = err.message; $('jBtn').disabled = false; $('jBtn').textContent = 'Confirm and join KNPL-7 Mega Auction'; }
