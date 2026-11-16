@@ -101,6 +101,23 @@ input.caps{text-transform:uppercase;letter-spacing:.03em}
 .opt small{color:var(--muted);font-size:13px}
 .opt-legacy{border-style:dashed;border-color:var(--gold)}
 .opt-legacy .ml{font-weight:600}
+.tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:6px}
+@media (min-width:640px){.tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tb{display:grid;justify-items:center;gap:4px;text-align:center;padding:12px 8px 10px;border:2px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;font:inherit;color:inherit;min-height:150px;position:relative}
+.tb:hover{border-color:var(--gold)}
+.tb:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.tb .tl{width:64px;height:64px;object-fit:contain}
+.tb .ow{display:grid;gap:3px;justify-items:center;margin-top:4px;padding-top:6px;border-top:1px dashed var(--line);width:100%}
+.tb .ow small{word-break:break-word}
+.tb .ow img,.tb .ow .noimg{width:46px;height:58px;object-fit:cover;border-radius:5px;border:1px solid var(--line);background:var(--sunk)}
+.tb-x{width:56px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--sunk)}
+.tb b{font-family:var(--display);font-size:15px;line-height:1.15;text-transform:uppercase}
+.tb small{font-size:12px;color:var(--muted);line-height:1.2}
+.tb .former{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 6px;border-radius:99px;background:var(--ok-bg,#dff3e7);color:var(--ok,#1f7a4a)}
+.tb.any{grid-column:1/-1;min-height:0;padding:14px}
+.tb.sel{border:3px solid var(--gold);background:var(--gold-soft);box-shadow:0 0 0 2px var(--gold)}
+.tpick{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.tpick .tb{min-width:180px;cursor:default}
 .tack{display:grid;gap:10px;margin-top:10px;padding:14px;border-radius:12px;border:2px solid var(--gold);background:var(--gold-soft)}
 .tack-top{display:flex;gap:14px;align-items:center}
 .tack-top img,.tack-top .noimg{width:64px;height:80px;object-fit:cover;border-radius:8px;border:2px solid var(--gold);background:var(--surface);flex:none}
@@ -1425,7 +1442,8 @@ async function teamAckHtml(t, r, myId){
   await loadTI();
   const ml = s => `<p class="ml">${s}</p>`;
   if (r.owner){
-    return `<div class="tack"><div class="tack-top">${TI.teams[teamKey(t)] && TI.teams[teamKey(t)].photo ? `<img src="data:image/jpeg;base64,${TI.teams[teamKey(t)].photo}" alt="">` : '<span class="noimg"></span>'}<div><small>Franchise owner</small><b>${esc(t)}</b></div></div>
+    const lo = TI.teams[teamKey(t)] && TI.teams[teamKey(t)].logo;
+    return `<div class="tack"><div class="tack-top">${lo ? `<img src="${lo}" alt="" style="object-fit:contain;border:0;background:transparent">` : ''}${TI.teams[teamKey(t)] && TI.teams[teamKey(t)].photo ? `<img src="data:image/jpeg;base64,${TI.teams[teamKey(t)].photo}" alt="">` : '<span class="noimg"></span>'}<div><small>Franchise owner</small><b>${esc(t)}</b></div></div>
       <p>You are the franchise owner of <b>${esc(t)}</b>, so you are part of your own team's squad. No team choice is needed.</p>
       ${ml(`നിങ്ങൾ <b>${esc(t)}</b> ടീമിന്റെ ഫ്രാഞ്ചൈസി ഉടമയാണ്. അതിനാൽ നിങ്ങൾ സ്വന്തം ടീമിന്റെ ഭാഗമാണ്. ടീം തിരഞ്ഞെടുക്കേണ്ടതില്ല.`)}
       <label class="check"><input type="checkbox" id="k2"><span>I confirm · ഞാൻ സ്ഥിരീകരിക്കുന്നു</span></label></div>`;
@@ -1446,7 +1464,7 @@ async function teamAckHtml(t, r, myId){
     : `<div class="tack-hist">You have not played for ${esc(t)} in KNPL-4, KNPL-5 or KNPL-6. · KNPL-4, 5, 6 സീസണുകളിൽ നിങ്ങൾ ഈ ടീമിനായി കളിച്ചിട്ടില്ല.</div>`;
   const own = o.owner ? esc(o.owner) : '';
   return `<div class="tack">
-    <div class="tack-top">${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="Photo of ${own}">` : '<span class="noimg"></span>'}<div><small>Team owner</small><b>${own || '–'}</b><small>${esc(t)}</small></div></div>
+    <div class="tack-top">${o.logo ? `<img src="${o.logo}" alt="${esc(t)} logo" style="object-fit:contain;border:0;background:transparent">` : ''}${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="Photo of ${own}">` : '<span class="noimg"></span>'}<div><small>${esc(t)}</small><small>Team owner</small><b>${own || '–'}</b></div></div>
     ${hist}
     <p>You have selected <b>${esc(t)}</b>${own ? ` (owner: <b>${own}</b>)` : ''} as your preferred team. By this, you give <b>${esc(t)}</b> the privilege to take you into their team through the <b>Draft</b>. This cannot be changed later.</p>
     ${ml(`നിങ്ങൾ <b>${esc(t)}</b>${own ? ` (ഉടമ: <b>${own}</b>)` : ''} നിങ്ങളുടെ preferred team ആയി തിരഞ്ഞെടുത്തിരിക്കുന്നു. ഇതിലൂടെ, <b>Draft</b> വഴി നിങ്ങളെ അവരുടെ ടീമിലേക്ക് എടുക്കാനുള്ള അവകാശം <b>${esc(t)}</b>-ന് നിങ്ങൾ നൽകുന്നു. ഈ തീരുമാനം പിന്നീട് മാറ്റാൻ കഴിയില്ല.`)}
@@ -1470,8 +1488,11 @@ function renderJoin(out, r, l4){
       <p class="msg" id="m-days"></p>
     </div>
     <div class="f" id="w-team">
-      ${r.owner ? `<span class="lbl">Your KNPL-7 team</span>` : `<label for="pTeam" class="req">Preferred team for KNPL-7</label>
-      <select id="pTeam"><option value="">Select one team</option><option>${esc(r.anyTeam)}</option>${r.teams.map(t => `<option>${esc(t)}</option>`).join('')}</select>
+      ${r.owner ? `<span class="lbl">Your KNPL-7 team</span>` : `<span class="lbl req" id="teamLbl">Preferred team for KNPL-7</span>
+      <p class="hint" style="margin:0">Tap one team. Check the team name and owner carefully. · ടീമിന്റെ പേരും ഉടമയെയും ശ്രദ്ധിച്ച് ഒരു ടീം തിരഞ്ഞെടുക്കുക.</p>
+      <input type="hidden" id="pTeam" value="">
+      <div class="tgrid" id="tGrid" role="group" aria-labelledby="teamLbl">Loading teams…</div>
+      <div class="tpick" id="tPick" hidden></div>
       <p class="hint" id="teamNote">As per the auction rule, a team can draft up to 3 players including the owner.</p>`}
       <div id="teamAck"></div>
       <p class="msg" id="m-team"></p>
@@ -1542,7 +1563,24 @@ function renderJoin(out, r, l4){
   $('msDone').onclick = () => { openMs(false); $('msBtn').focus(); };
   document.addEventListener('click', e => { const ms = $('ms'); if (ms && !ms.contains(e.target)) openMs(false); });
   $('ms').addEventListener('keydown', e => { if (e.key === 'Escape'){ openMs(false); $('msBtn').focus(); } });
-  if ($('pTeam')) $('pTeam').onchange = e => { showAck(e.target.value); };
+  if ($('tGrid')) (async () => {
+    await loadTI();
+    const card = (t, sel) => {
+      if (t === r.anyTeam) return `<button type="button" class="tb any${sel ? ' sel' : ''}" data-team="${esc(t)}"><b>Any Team</b><small>Any KNPL-7 team may draft me · ഏത് ടീമിനും എന്നെ draft ചെയ്യാം</small></button>`;
+      const o = TI.teams[teamKey(t)] || {}, former = [...Object.values(TI.hist[myId] || {}), ...Object.values(r.knpl || {})].some(x => teamKey(x) === teamKey(t));
+      return `<button type="button" class="tb${sel ? ' sel' : ''}" data-team="${esc(t)}" aria-pressed="${sel}">${former ? '<span class="former">Former team</span>' : ''}${o.logo ? `<img class="tl" src="${o.logo}" alt="${esc(t)} logo">` : ''}<b>${esc(t)}</b><span class="ow">${o.photo ? `<img src="data:image/jpeg;base64,${o.photo}" alt="">` : '<span class="noimg"></span>'}<small>Owner<br>${esc(o.owner || '–')}</small></span></button>`;
+    };
+    $('tGrid').innerHTML = r.teams.map(t => card(t, false)).join('') + card(r.anyTeam, false);
+    const choose = t => {
+      $('pTeam').value = t; $('m-team').textContent = ''; $('review').innerHTML = '';
+      $('tGrid').hidden = true; $('tPick').hidden = false;
+      $('tPick').innerHTML = card(t, true).replace('<button type="button"', '<div').replace(/<\/button>$/, '</div>') + `<button type="button" class="ghost" id="tChange">Change team</button>`;
+      $('tChange').onclick = () => { $('pTeam').value = ''; $('tPick').hidden = true; $('tGrid').hidden = false; showAck(''); $('review').innerHTML = ''; $('tGrid').querySelector('.tb').focus(); };
+      showAck(t);
+      $('teamAck').scrollIntoView({behavior:'smooth', block:'nearest'});
+    };
+    $('tGrid').addEventListener('click', e => { const b = e.target.closest('.tb'); if (b) choose(b.dataset.team); });
+  })();
   out.addEventListener('change', () => { $('review').innerHTML = ''; });
 
   $('rvBtn').onclick = () => {
