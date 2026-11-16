@@ -1294,7 +1294,7 @@ $('copyId').addEventListener('click', () => {
 function selectText(n){ const r = document.createRange(); r.selectNodeContents(n); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
 
 /* ---------- tabs ---------- */
-const P2_OPEN = Date.UTC(2026, 10, 18, 3, 0, 0);   // 18-11-2026 08:30 IST: Phase 2 opens
+const P2_OPEN = Date.UTC(2026, 10, 16, 3, 0, 0);   // Phase 2 opened early: 16-11-2026 08:30 IST
 const P2_PAY = {gpay: '', acName: 'ONE (Organization For Namboodiris Evolution)', acNo: '120040460298', ifsc: 'CNRB0007457', bank: 'Canara Bank, Pattikkad'};   // fill to show on the Phase 2 page
 let p2Timer = null;
 function p2Pre(){ return Date.now() < P2_OPEN; }
