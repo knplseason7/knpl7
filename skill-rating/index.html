@@ -104,6 +104,11 @@ button.p2b.ok{border:0;cursor:pointer}button.p2b.ok:hover{background:#176b46}
 .p2c{margin-top:8px;padding:10px 12px;border-radius:12px;border:2px solid #1f8a5b;background:#fff;color:#0f3d26;font-size:14px;display:grid;gap:6px}
 .p2c b{font-weight:800}.p2c .tm{display:flex;align-items:center;gap:8px}.p2c img{width:34px;height:34px;object-fit:contain;border-radius:50%;background:#0b1a38}
 .p2c .lk{font-size:12px;color:#3d6b52}
+.tvbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 12px;border-radius:12px;background:#fff;border:1.5px dashed #1f8a5b;font-size:14px}
+.tvin{display:flex;gap:6px}.tvbar input{width:88px;padding:8px 10px;font:700 18px monospace;letter-spacing:4px;border:1.5px solid #1f8a5b;border-radius:8px;text-align:center}
+.tvbar button{padding:8px 14px;border-radius:8px;border:0;background:#0b1a38;color:#fff;font-weight:700;cursor:pointer}
+.tverr{color:#b71c1c;font-weight:700;font-size:13px}.p2c .mine{color:#0d7a43;font-weight:800}.p2c .other{color:#6b7280}
+@media (prefers-color-scheme:dark){.tvbar{background:#0f2a1c}.tvbar input{background:#08160f;color:#d7f2e2}.p2c .mine{color:#5fe0a0}.p2c .other{color:#9aa3ad}}
 @media (prefers-color-scheme:dark){.p2c{background:#0f2a1c;color:#d7f2e2}.p2c .lk{color:#9fd3b6}}
 @media (prefers-color-scheme:dark){.p2bar{background:#0f2a1c;color:#d7f2e2;border-color:#34b37a}.p2bar h3,.p2nums{color:#d7f2e2}.p2track{background:#1e4a33}.p2f{background:#0f2a1c;color:#d7f2e2}.card.p2done{background:linear-gradient(90deg,#123323,transparent 60%)}.p2at{color:#9fd3b6}}
 .me{outline:4px solid var(--saffron);outline-offset:3px}.mehint{grid-column:1/-1;font:700 13px var(--body);color:var(--saffron);margin-bottom:6px}button.dl{font:700 14px var(--body);background:var(--navy);color:#fff;border:0;border-radius:9px;padding:9px 13px;cursor:pointer}
@@ -187,6 +192,12 @@ label.addc.off{opacity:.5;cursor:not-allowed}
       <button type="button" class="p2f" data-f="todo" aria-pressed="false">Not yet completed</button>
       <span class="p2at" id="p2at"></span>
     </div>
+    <form class="tvbar" id="tvform" autocomplete="off">
+      <span class="tvlab" id="tvlab">🔒 Preferred teams are hidden. <b>Team owners:</b> enter your 4-digit Team View Code to see which players chose <b>your</b> team.</span>
+      <span class="tvin" id="tvin"><input id="tvcode" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="Code" aria-label="4-digit Team View Code"><button type="submit" id="tvgo">Unlock</button></span>
+      <button type="button" id="tvlock" hidden>Lock again</button>
+      <span class="tverr" id="tverr" role="alert"></span>
+    </form>
   </section>
   <div class="notice" role="note"><span class="tag">FINAL</span><div><b>Final KNPL Skill Ratings, after NPL-5.</b> Every registered player's rating now includes all matches of the 15 qualifying tournaments, NPL-5 included (players with NPL-5 matches carry a teal NPL-5 badge). Check your matches on page 2 of your statement and report anything missing to the KNPL committee.</div></div>
 
@@ -265,6 +276,7 @@ const grid=$('grid'),q=$('q'),count=$('count'),gate=$('gate'),app=$('app'),gmsg=
 let KEY=null,P=[],cards=new Map();
 const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+let TV=null;try{const t=JSON.parse(sessionStorage.getItem('knpl-tv')||'null');if(t&&t.team)TV={team:t.team,ids:new Set(t.ids)}}catch(_){}
 let P2CLOSE=Date.UTC(2026,10,20,18,0,0),P2=null,P2F='all',P2C=new Map(),P2OPEN=new Set();
 const P2LINK='https://knplseason7.github.io/knpl7/?tab=auction';
 function p2apply(){
@@ -292,11 +304,25 @@ document.addEventListener('click',e=>{const b=e.target.closest('button.p2b.ok');
   const c=P2C.get(b.dataset.ik),box=document.createElement('div');box.className='p2c';
   if(!c){box.textContent='Choices not available right now. Please check again in a few minutes.';}
   else{const av=document.createElement('div');av.innerHTML='<b>Availability:</b> ';av.append(c[0]||'—');
-    const tm=document.createElement('div');tm.className='tm';const any=/^any/i.test(c[1]);
-    if(c[1]&&!any){const im=document.createElement('img');im.alt='';im.loading='lazy';im.src='../p2/logos/'+tkey(c[1])+'.webp';im.onerror=()=>im.remove();tm.appendChild(im)}
-    const tx=document.createElement('span');tx.innerHTML='<b>Preferred team:</b> ';tx.append(c[1]||'—');if(any)tx.append(' (straight to auction pool)');tm.appendChild(tx);
+    const tm=document.createElement('div');tm.className='tm';const tx=document.createElement('span');tx.innerHTML='<b>Preferred team:</b> ';
+    if(!TV){tx.append('🔒 Hidden (team owners can unlock with their Team View Code)')}
+    else if(TV.ids.has('KNPL7-'+String(b.dataset.ik).padStart(4,'0'))){const im=document.createElement('img');im.alt='';im.loading='lazy';im.src='../p2/logos/'+tkey(TV.team)+'.webp';im.onerror=()=>im.remove();tm.appendChild(im);
+      const m=document.createElement('span');m.className='mine';m.textContent='✅ '+TV.team+' (your team)';tx.append(m)}
+    else{const o=document.createElement('span');o.className='other';o.textContent='Selected another team / Any Team';tx.append(o)}
+    tm.appendChild(tx);
     const lk=document.createElement('div');lk.className='lk';lk.textContent='🔒 Locked at Phase 2 — cannot be changed';box.append(av,tm,lk)}
   slot.appendChild(box);P2OPEN.add(b.dataset.ik);b.setAttribute('aria-expanded','true');b.textContent='✓ Phase 2 completed · Hide choices ▴'});
+function tvShow(){const L=$('tvlab');
+  if(TV){L.innerHTML='';L.append('🔓 Showing preferred team for ');const bb=document.createElement('b');bb.textContent=TV.team;L.append(bb,' · '+TV.ids.size+' player(s) chose your team. Open “View choices” on any completed player.');$('tvin').hidden=true;$('tvlock').hidden=false}
+  else{L.innerHTML='🔒 Preferred teams are hidden. <b>Team owners:</b> enter your 4-digit Team View Code to see which players chose <b>your</b> team.';$('tvin').hidden=false;$('tvlock').hidden=true}
+  document.querySelectorAll('.p2c').forEach(x=>x.remove());const ids=[...P2OPEN];P2OPEN.clear();ids.forEach(ik=>{const bt=document.querySelector('button.p2b.ok[data-ik="'+ik+'"]');if(bt)bt.click()})}
+$('tvform').addEventListener('submit',async e=>{e.preventDefault();const c=$('tvcode').value.trim();$('tverr').textContent='';
+  if(!/^\d{4}$/.test(c)){$('tverr').textContent='Enter the 4-digit code.';return}
+  $('tvgo').disabled=true;$('tvgo').textContent='Checking…';
+  try{const r=await api('teamView',c);TV={team:r.team,ids:new Set(r.ids||[])};try{sessionStorage.setItem('knpl-tv',JSON.stringify({team:r.team,ids:r.ids||[]}))}catch(_){};$('tvcode').value='';tvShow()}
+  catch(err){$('tverr').textContent=err.message}finally{$('tvgo').disabled=false;$('tvgo').textContent='Unlock'}});
+$('tvlock').addEventListener('click',()=>{TV=null;try{sessionStorage.removeItem('knpl-tv')}catch(_){};tvShow()});
+if(TV)tvShow();
 document.addEventListener('click',e=>{const b=e.target.closest('.p2f');if(!b)return;P2F=b.dataset.f;document.querySelectorAll('.p2f').forEach(x=>x.setAttribute('aria-pressed',x===b));render()});
 function logDl(type,list){try{const via=/[?&]id=/.test(location.search)?'Personal link':'Page';
   fetch(API_URL,{method:'POST',mode:'no-cors',keepalive:true,body:JSON.stringify({fn:'skillLog',args:[type,list.map(p=>'KNPL7-'+p.i).join(', '),list.map(p=>p.n).join(', '),via,location.pathname]})}).catch(()=>{})}catch(_){}}
