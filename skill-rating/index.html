@@ -265,7 +265,7 @@ const grid=$('grid'),q=$('q'),count=$('count'),gate=$('gate'),app=$('app'),gmsg=
 let KEY=null,P=[],cards=new Map();
 const norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,'');
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-let P2=null,P2F='all',P2C=new Map(),P2OPEN=new Set();
+let P2CLOSE=Date.UTC(2026,10,20,18,0,0),P2=null,P2F='all',P2C=new Map(),P2OPEN=new Set();
 const P2LINK='https://knplseason7.github.io/knpl7/?tab=auction';
 function p2apply(){
   if(!P2||!P.length)return;
@@ -273,16 +273,17 @@ function p2apply(){
   P.forEach(p=>{const c=cards.get(p.i);if(!c)return;const ok=P2.has(p.ik);if(ok)done++;c.classList.toggle('p2done',ok);
     const slot=c.querySelector('.p2slot');if(!slot)return;slot.replaceChildren();
     if(ok){const b=document.createElement('button');b.type='button';b.className='p2b ok';b.dataset.ik=p.ik;b.setAttribute('aria-expanded','false');b.textContent='✓ Phase 2 completed · View choices ▾';slot.appendChild(b);if(P2OPEN.has(p.ik))queueMicrotask(()=>b.click())}
+    else if(Date.now()>=P2CLOSE){const x=document.createElement('span');x.className='p2b';x.style.background='#6b7280';x.textContent='Phase 2 not completed';slot.appendChild(x)}
     else{const a=document.createElement('a');a.className='p2b todo';a.href=P2LINK;a.target='_blank';a.rel='noopener';a.textContent='👉 Complete Phase 2 registration';slot.appendChild(a)}});
   const pc=P.length?Math.round(done*1000/P.length)/10:0;
   $('p2n').textContent=done;$('p2t').textContent=P.length;$('p2pc').textContent='('+pc+'%)';
   $('p2fill').style.width=pc+'%';$('p2tr').setAttribute('aria-valuenow',pc);
   $('p2bar').hidden=false;
-  if(!document.getElementById('p2float')){const f=document.createElement('a');f.id='p2float';f.className='p2float';f.href=P2LINK;f.target='_blank';f.rel='noopener';f.textContent='👉 Complete Phase 2';document.body.appendChild(f);document.body.classList.add('p2on')}
+  if(!document.getElementById('p2float')&&Date.now()<P2CLOSE){const f=document.createElement('a');f.id='p2float';f.className='p2float';f.href=P2LINK;f.target='_blank';f.rel='noopener';f.textContent='👉 Complete Phase 2';document.body.appendChild(f);document.body.classList.add('p2on')}
 }
 async function p2load(){
   try{const r=await api('phase2Status');const k=x=>String(x).replace(/\D/g,'').replace(/^7?0*/,'').replace(/^0+/,'');P2=new Set((r.joined||[]).map(k));
-    P2C=new Map(Object.entries(r.choices||{}).map(([id,c])=>[k(id),c]));
+    P2C=new Map(Object.entries(r.choices||{}).map(([id,c])=>[k(id),c]));if(r.closesAt)P2CLOSE=r.closesAt;
     $('p2at').textContent='Updated '+(r.at||'')+' · refreshes every 2 minutes';p2apply();if(P2F!=='all')render();}catch(e){}
 }
 const tkey=t=>String(t||'').toLowerCase().replace(/[^a-z]/g,'').replace('kaaliyanz','kaliyanz').replace('midhilas','mithilas').replace('kalingaadhipans','kalingaunited');

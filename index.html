@@ -1329,6 +1329,8 @@ const P2_OPEN = Date.UTC(2026, 10, 16, 3, 0, 0);   // Phase 2 opened early: 16-1
 const P2_PAY = {gpay: '', acName: 'ONE (Organization For Namboodiris Evolution)', acNo: '120040460298', ifsc: 'CNRB0007457', bank: 'Canara Bank, Pattikkad'};   // fill to show on the Phase 2 page
 let p2Timer = null;
 function p2Pre(){ return Date.now() < P2_OPEN; }
+const P2_CLOSE = Date.UTC(2026, 10, 20, 18, 0, 0);  // Phase 2 closes 20-11-2026 11:30 PM IST (server enforces it too)
+function p2Over(){ return Date.now() >= P2_CLOSE; }
 function p2Tick(){
   let t = Math.max(0, P2_OPEN - Date.now());
   if (!t){ clearInterval(p2Timer); location.reload(); return; }
@@ -1426,7 +1428,9 @@ async function verify(){
     if (r.joined){ out.innerHTML = lockedCard(r, r.availability, r.preferredTeam, 'You have joined the KNPL-7 Mega Auction. These choices are locked.'); return; }
     if (r.status === 'Approved'){
       if (!r.category || r.skillRating === ''){ out.innerHTML = `<div class="qual no"><span>Your registration is approved. The committee is now grading skill ratings and categories. Check back once they are published.</span></div>`; return; }
-      if (!r.open){ out.innerHTML = catCard(r) + `<div class="qual no">Joining the auction pool is not open yet. Check back after the committee announces it.</div>`; return; }
+      if (!r.open){ out.innerHTML = catCard(r) + (r.closed || p2Over()
+        ? `<div class="qual no">Phase 2 registration closed on ${r.closeText || '20-11-2026, 11:30 PM'}.</div>`
+        : `<div class="qual no">Joining the auction pool is not open yet. Check back after the committee announces it.</div>`); return; }
       renderJoin(out, r, l4);
     } else if (r.status === 'Rejected'){
       out.innerHTML = `<div class="qual" style="background:var(--bad-bg);color:var(--bad)"><span>Your registration was not approved.${r.remarks ? ' Reason: ' + esc(r.remarks) : ''} Contact the KNPL committee if you think this is a mistake.</span></div>`;
@@ -1725,8 +1729,8 @@ function render(){
     const pill = $('sbState');
     if (mode === 'closed' && !p2Pre()) {          // Phase 1 over, Phase 2 (Join Mega Auction) running
       $('sbWin').textContent = 'KNPL-7 Phase 2 Registration';
-      pill.className = 'sb-pill live2';
-      pill.textContent = 'In progress';
+      pill.className = 'sb-pill' + (p2Over() ? ' closed' : ' live2');
+      pill.textContent = p2Over() ? 'Closed' : 'In progress';
     } else {
       $('sbWin').textContent = ST.window || 'KNPL-7 Registration';
       pill.className = 'sb-pill' + (mode === 'paused' ? ' paused' : mode === 'closed' ? ' closed' : '');
