@@ -99,6 +99,8 @@ tr.tot td{font-weight:800;background:var(--saffron-soft)}
 .meter .big{font:800 30px var(--display)}
 .meter .mb{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin:8px 0}.meter .mb i{display:block;height:100%;background:var(--saffron)}
 .meter dl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:0;font-size:14px}.meter dd{margin:0;font-weight:700;text-align:right}
+.vo{margin:12px 0 0;background:#fff4e5;border:2px solid #f28c28;border-radius:12px;padding:12px 16px;font-size:15px;line-height:1.5;color:var(--ink)}.vo b{color:#b4500a}
+.seas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 4px}.seas div{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center}.seas span{display:block;font-size:13px;color:var(--muted,#667);font-weight:700;letter-spacing:.04em}.seas b{display:block;font-size:22px;margin-top:4px}.seas small{display:block;font-size:12px;color:var(--muted,#667);margin-top:2px}
 .note{background:var(--teal-soft);border:1.5px solid var(--teal);border-radius:12px;padding:10px 14px;font-size:14px;margin-top:12px}
 .alert{background:var(--red-soft);border:1.5px solid var(--red);border-radius:12px;padding:10px 14px;font-size:14px;margin-top:12px;color:var(--ink)}
 .done{background:var(--ok-soft);border:2px solid var(--ok);border-radius:14px;padding:18px}
@@ -129,6 +131,7 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
 
 <div id="app" hidden>
   <div class="teambar"><span id="tlogo"></span><div class="sp"><span class="muted small">Logged in as</span><b id="tname"></b><span class="small muted" id="twin"></span></div><button class="btn ghost" type="button" id="out">Log out</button></div>
+  <div class="vo" id="vo" hidden></div>
   <ol class="steps" id="steps">
     <li data-s="1"><span>1</span>Draft rules</li><li data-s="2"><span>2</span>Owner consent</li><li data-s="3"><span>3</span>Select players</li><li data-s="4"><span>4</span>Review &amp; confirm</li><li data-s="5"><span>5</span>Submitted</li>
   </ol>
@@ -146,7 +149,7 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
           <div class="combo" id="combo-en"></div>
           Any smaller selection that fits one of these is also allowed. Conqueror – Dominator – Dominator, two Conquerors, or three Dominators are <b>not</b> allowed. In addition, at most <b>1 Dominator Apex</b> (auction Round 1 limit, drafted players included).</li>
         <li><b>Draft Point.</b> Each drafted player's Draft Point is deducted from your <b>1,00,000-point purse</b>. Draft Point = Base Point + Base Point × Skill Rating ÷ 100, rounded up.</li>
-        <li><b>Draft Price (draft fee, ₹).</b> Draft Price = Base Price + Base Price × Skill Rating ÷ 100. The <b>owner's draft fee is paid in full in year 1</b>. For the other drafted players the fee can be paid over 3 years – <b>50% in year 1, 25% in year 2, 25% in year 3</b>. If a drafted player is released and another team takes him, the remaining instalments pass to the new team; if he does not register again, the remaining instalments are cancelled.</li>
+        <li><b>Draft Price (draft fee, ₹).</b> Draft Price = Base Price + Base Price × Skill Rating ÷ 100. The <b>owner's draft fee is paid in full in year 1</b>. For the other drafted players the fee can be paid over 3 years – <b>50% in year 1 (KNPL-7), 25% in year 2 (KNPL-8), 25% in year 3 (KNPL-9)</b>. If a drafted player is released and another team takes him, the remaining instalments pass to the new team; if he does not register again, the remaining instalments are cancelled.</li>
         <li><b>Skill Rating cap.</b> Drafted players count towards the team's <b>Skill Rating cap of 560</b> for the 14-member squad, and towards the auction category limits (at most 6 Conqueror + Dominator in a squad).</li>
         <li><b>Mutual match.</b> A player drafted this way joins your team directly without open bidding.</li>
         <li><b>Deadline and finality.</b> Submit by <b id="dl-en">28 November 2026</b>. Once submitted, the draft is <b>final</b>; any change only through the KNPL Core Committee. Drafted players are removed from the auction pool.</li>
@@ -162,7 +165,7 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
           <div class="combo" id="combo-ml"></div>
           ഇവയിൽ ഒന്നിനുള്ളിൽ വരുന്ന ചെറിയ തിരഞ്ഞെടുപ്പുകളും അനുവദനീയം. Conqueror – Dominator – Dominator, രണ്ട് Conqueror, മൂന്ന് Dominator എന്നിവ <b>അനുവദനീയമല്ല</b>. കൂടാതെ <b>Dominator Apex പരമാവധി 1</b> (ലേലം Round 1 പരിധി, ഡ്രാഫ്റ്റ് ഉൾപ്പെടെ).</li>
         <li><b>Draft Point.</b> ഓരോ ഡ്രാഫ്റ്റ് കളിക്കാരന്റെയും Draft Point നിങ്ങളുടെ <b>1,00,000 പോയിന്റ് Purse-ൽ</b> നിന്ന് കുറയ്ക്കും. Draft Point = Base Point + Base Point × Skill Rating ÷ 100 (മുകളിലേക്ക് റൗണ്ട് ചെയ്യും).</li>
-        <li><b>Draft Price (ഡ്രാഫ്റ്റ് ഫീസ്, ₹).</b> Draft Price = Base Price + Base Price × Skill Rating ÷ 100. <b>ഉടമയുടെ ഡ്രാഫ്റ്റ് ഫീസ് ഒന്നാം വർഷം തന്നെ പൂർണ്ണമായി</b> അടയ്ക്കണം. മറ്റ് ഡ്രാഫ്റ്റ് കളിക്കാരുടെ ഫീസ് 3 വർഷ ഗഡുക്കളായി – <b>ഒന്നാം വർഷം 50%, രണ്ടാം വർഷം 25%, മൂന്നാം വർഷം 25%</b>. റിലീസ് ചെയ്യപ്പെട്ട കളിക്കാരനെ മറ്റൊരു ടീം എടുത്താൽ ബാക്കി ഗഡുക്കൾ പുതിയ ടീമിന്; അദ്ദേഹം വീണ്ടും രജിസ്റ്റർ ചെയ്തില്ലെങ്കിൽ ബാക്കി ഗഡുക്കൾ റദ്ദാകും.</li>
+        <li><b>Draft Price (ഡ്രാഫ്റ്റ് ഫീസ്, ₹).</b> Draft Price = Base Price + Base Price × Skill Rating ÷ 100. <b>ഉടമയുടെ ഡ്രാഫ്റ്റ് ഫീസ് ഒന്നാം വർഷം തന്നെ പൂർണ്ണമായി</b> അടയ്ക്കണം. മറ്റ് ഡ്രാഫ്റ്റ് കളിക്കാരുടെ ഫീസ് 3 വർഷ ഗഡുക്കളായി – <b>ഒന്നാം വർഷം (KNPL-7) 50%, രണ്ടാം വർഷം (KNPL-8) 25%, മൂന്നാം വർഷം (KNPL-9) 25%</b>. റിലീസ് ചെയ്യപ്പെട്ട കളിക്കാരനെ മറ്റൊരു ടീം എടുത്താൽ ബാക്കി ഗഡുക്കൾ പുതിയ ടീമിന്; അദ്ദേഹം വീണ്ടും രജിസ്റ്റർ ചെയ്തില്ലെങ്കിൽ ബാക്കി ഗഡുക്കൾ റദ്ദാകും.</li>
         <li><b>Skill Rating Cap.</b> ഡ്രാഫ്റ്റ് കളിക്കാർ 14 അംഗ squad-ന്റെ <b>560 Skill Rating Cap-ലും</b>, ലേല കാറ്റഗറി പരിധികളിലും (ഒരു squad-ൽ Conqueror + Dominator പരമാവധി 6) കണക്കാക്കും.</li>
         <li><b>Mutual Match.</b> ഇങ്ങനെ ഡ്രാഫ്റ്റ് ചെയ്യുന്ന കളിക്കാരൻ തുറന്ന ലേലം കൂടാതെ നേരിട്ട് നിങ്ങളുടെ ടീമിൽ ചേരും.</li>
         <li><b>സമയപരിധിയും അന്തിമതയും.</b> <b id="dl-ml">2026 നവംബർ 28</b>-നകം സമർപ്പിക്കണം. സമർപ്പിച്ചാൽ ഡ്രാഫ്റ്റ് <b>അന്തിമം</b>; മാറ്റം KNPL കോർ കമ്മിറ്റി വഴി മാത്രം. ഡ്രാഫ്റ്റ് ചെയ്ത കളിക്കാരെ ലേല പൂളിൽ നിന്ന് ഒഴിവാക്കും.</li>
@@ -205,9 +208,11 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
       <div class="meters" id="meters"></div>
       <h3>Draft fee payment schedule</h3>
       <div class="tw"><table id="feeT"></table></div>
+      <h3>Draft money to be paid</h3>
+      <div class="seas" id="seas"></div>
       <div id="revNote"></div>
       <label class="ack"><input type="checkbox" id="a-review"><span><b>I have checked the Draft Points used and the points balance, and the Skill Rating used and the Skill Rating cap balance</b>, shown above, and I understand they apply to my 14-member squad in the auction.<br><span class="ml small">മുകളിൽ കാണിച്ച ഉപയോഗിച്ച Draft Points, ബാക്കി പോയിന്റ്, ഉപയോഗിച്ച Skill Rating, ബാക്കി Skill Rating Cap എന്നിവ പരിശോധിച്ചു; ഇവ ലേലത്തിലെ 14 അംഗ squad-ന് ബാധകമാണെന്ന് മനസ്സിലാക്കുന്നു.</span></span></label>
-      <label class="ack"><input type="checkbox" id="a-fee"><span><b>I agree to pay the draft fees as per the schedule above</b> (owner 100% in year 1; other drafted players 50% / 25% / 25%).<br><span class="ml small">മുകളിലെ ഷെഡ്യൂൾ പ്രകാരം ഡ്രാഫ്റ്റ് ഫീസ് അടയ്ക്കാൻ സമ്മതിക്കുന്നു (ഉടമ ഒന്നാം വർഷം 100%; മറ്റുള്ളവർ 50% / 25% / 25%).</span></span></label>
+      <label class="ack"><input type="checkbox" id="a-fee"><span><b>I agree to pay the draft fees as per the schedule above</b> (owner 100% in KNPL-7; other drafted players 50% in KNPL-7, 25% in KNPL-8, 25% in KNPL-9).<br><span class="ml small">മുകളിലെ ഷെഡ്യൂൾ പ്രകാരം ഡ്രാഫ്റ്റ് ഫീസ് അടയ്ക്കാൻ സമ്മതിക്കുന്നു (ഉടമ KNPL-7-ൽ 100%; മറ്റുള്ളവർ KNPL-7-ൽ 50%, KNPL-8-ൽ 25%, KNPL-9-ൽ 25%).</span></span></label>
       <label class="ack"><input type="checkbox" id="a-final"><span><b>I understand that once submitted, this draft is final</b> and can be changed only through the KNPL Core Committee.<br><span class="ml small">സമർപ്പിച്ചാൽ ഈ ഡ്രാഫ്റ്റ് അന്തിമമാണെന്നും KNPL കോർ കമ്മിറ്റി വഴി മാത്രമേ മാറ്റാനാകൂ എന്നും മനസ്സിലാക്കുന്നു.</span></span></label>
       <div class="msg" id="smsg" role="status" aria-live="polite"></div>
       <div class="nav"><button class="btn ghost" type="button" data-go="3">Back</button><button class="btn or" type="button" id="n4" disabled>Submit draft</button></div>
@@ -278,6 +283,8 @@ async function start(code){
   $('tname').textContent=title(r.team);$('tname2').textContent=title(r.team);
   const w=r.window;$('twin').textContent=w.closed?' · Draft window closed':w.before?' · Draft opens '+fmtDate(w.opens):' · Submit by '+fmtDate(w.deadline);
   $('dl-en').textContent=fmtDate(w.deadline);$('dl-ml').textContent=fmtDate(w.deadline);
+  (r.eligible||[]).forEach(i=>{if(!P.has(i)&&r.info&&r.info[i]){const x=r.info[i],b=(r.base||{})[x.cat]||[0,0];const rp=v=>{const st=v<=2000?100:v<=8000?200:v<=10000?400:500;return Math.ceil(v/st-1e-9)*st};P.set(i,{i:i,n:x.name,c:x.cat,s:x.sr,bp:b[0],dp:Math.round(b[0]+b[0]*x.sr/100),dt:rp(b[1]+b[1]*x.sr/100)})}});
+  const vo=$('vo');vo.hidden=!w.before;if(w.before)vo.innerHTML='👁️ <b>VIEW ONLY</b> – the draft window opens on <b>'+fmtDate(w.opens)+'</b>. You can see the players who chose your team, their draft price and draft point, try combinations and see the draft fee for KNPL-7, KNPL-8 and KNPL-9. Submission opens at that time.<br><span class="ml small">ഇപ്പോൾ കാണാൻ മാത്രം. ഡ്രാഫ്റ്റ് സമർപ്പണം '+fmtDate(w.opens)+'-ന് തുറക്കും.</span>';
   SEL=[];
   if(r.submitted){showDone(r.submitted);return}
   go(1);
@@ -348,9 +355,10 @@ function renderReview(){
     const dl=el('dl');[['Total',unit==='pts'?pts(cap):String(cap)],['Used by draft',unit==='pts'?pts(used):String(used)],['Balance for the auction',unit==='pts'?pts(cap-used):String(cap-used)],[resLbl,unit==='pts'?pts(res):String(res)]].forEach(([a,b])=>{dl.append(el('dt',null,a),el('dd',null,b))});m.appendChild(dl);
     const ok=cap-used>=res;m.appendChild(el('div','small '+(ok?'':'why'),ok?'✓ Enough left to complete the squad of 14.':'✗ Not enough left to complete the squad.'));return m};
   M.append(meter('Points purse',t.pts,S.purse,'pts',resP,'Reserve for '+left+' more players (2,000 each)'),meter('Squad Skill Rating cap',t.sr,S.srCap,'sr',resS,'Reserve for '+left+' more players (~19 each)'));
-  const F=$('feeT');F.replaceChildren();const fh=el('tr');['Player','Payment rule','Year 1','Year 2','Year 3','Total'].forEach((x,i)=>fh.appendChild(el('th',i>1?'n':'',x)));F.appendChild(fh);
-  let y=[0,0,0];L.forEach((p,i)=>{const s=i===0?[1,0,0]:[.5,.25,.25];const v=s.map(f=>p.dp*f);y=y.map((a,k)=>a+v[k]);const r=el('tr');r.append(el('td',null,(i===0?'Owner · ':'')+p.n),el('td',null,i===0?'100% in year 1':'50% / 25% / 25%'),...v.map(x=>el('td','n',inr(x))),el('td','n',inr(p.dp)));F.appendChild(r)});
+  const F=$('feeT');F.replaceChildren();const fh=el('tr');['Player','Payment rule','KNPL-7','KNPL-8','KNPL-9','Total'].forEach((x,i)=>fh.appendChild(el('th',i>1?'n':'',x)));F.appendChild(fh);
+  let y=[0,0,0];L.forEach((p,i)=>{const s=i===0?[1,0,0]:[.5,.25,.25];const v=s.map(f=>p.dp*f);y=y.map((a,k)=>a+v[k]);const r=el('tr');r.append(el('td',null,(i===0?'Owner · ':'')+p.n),el('td',null,i===0?'100% in KNPL-7':'50% / 25% / 25%'),...v.map(x=>el('td','n',inr(x))),el('td','n',inr(p.dp)));F.appendChild(r)});
   const ft=el('tr','tot');ft.append(el('td',null,'Total'),el('td'),...y.map(x=>el('td','n',inr(x))),el('td','n',inr(t.fee)));F.appendChild(ft);
+  const SB=$('seas');SB.replaceChildren();['KNPL-7','KNPL-8','KNPL-9'].forEach((lb,k)=>{const d=el('div');d.append(el('span',null,lb),el('b',null,inr(y[k])),el('small',null,k===0?'Owner 100% + others 50%':'Others 25%'));SB.appendChild(d)});
   const n=$('revNote');n.replaceChildren();
   if(L.length===1)n.appendChild(el('div','note','You are submitting the owner only. Other players who chose your team will go to the auction.'));
   if(!S.window.open)n.appendChild(el('div','alert',S.window.before?'The draft window opens on '+fmtDate(S.window.opens)+'. You can review now and submit once it opens.':'The draft deadline has passed. Contact the KNPL committee.'));
@@ -368,7 +376,7 @@ function showDone(sub){
   d.appendChild(el('p',null,'Submission ID '+sub.id+' · '+sub.submittedOn));
   const ids=[S.ownerId,...sub.players];
   const g=el('div','grid');ids.forEach((id,i)=>{const p=P.get(id);if(p)g.appendChild(pcard(p,{owner:i===0}))});d.appendChild(g);
-  const t=el('div','meters');[['Draft Points used',pts(sub.pointsUsed)],['Points balance',pts(sub.pointsBalance)],['Skill Rating used',String(sub.srUsed)],['Skill Rating balance',String(sub.srBalance)],['Draft fee total',inr(sub.feeTotal)],['Year-1 draft fee',inr(sub.feeYear1)]].forEach(([a,b])=>{const m=el('div','meter');m.append(el('div','small muted',a),el('div','big',b));t.appendChild(m)});d.appendChild(t);
+  const t=el('div','meters');[['Draft Points used',pts(sub.pointsUsed)],['Points balance',pts(sub.pointsBalance)],['Skill Rating used',String(sub.srUsed)],['Skill Rating balance',String(sub.srBalance)],['Draft fee total',inr(sub.feeTotal)],['KNPL-7 draft fee',inr(Number(sub.feeYear1)||0)],['KNPL-8 draft fee',inr(Number(sub.feeYear2)||0)],['KNPL-9 draft fee',inr(Number(sub.feeYear3)||0)]].forEach(([a,b])=>{const m=el('div','meter');m.append(el('div','small muted',a),el('div','big',b));t.appendChild(m)});d.appendChild(t);
   d.appendChild(el('p','small muted','Your draft is final. For any change, contact the KNPL Core Committee. Queries: Krishnadas – 99862 18725.'));
   const pr=el('button','btn','Print / save confirmation');pr.type='button';pr.addEventListener('click',()=>window.print());d.appendChild(pr);
 }
