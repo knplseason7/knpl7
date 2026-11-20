@@ -1331,6 +1331,8 @@ let p2Timer = null;
 function p2Pre(){ return Date.now() < P2_OPEN; }
 const P2_CLOSE = Date.UTC(2026, 10, 20, 18, 0, 0);  // Phase 2 closes 20-11-2026 11:30 PM IST (server enforces it too)
 function p2Over(){ return Date.now() >= P2_CLOSE; }
+const P2_WL_CLOSE = Date.UTC(2026, 10, 22, 18, 0, 0);  // waiting-list Phase 2 closes 22-11-2026 11:30 PM IST
+function p2WL(){ return p2Over() && Date.now() < P2_WL_CLOSE; }
 function p2Tick(){
   let t = Math.max(0, P2_OPEN - Date.now());
   if (!t){ clearInterval(p2Timer); location.reload(); return; }
@@ -1729,8 +1731,8 @@ function render(){
     const pill = $('sbState');
     if (mode === 'closed' && !p2Pre()) {          // Phase 1 over, Phase 2 (Join Mega Auction) running
       $('sbWin').textContent = 'KNPL-7 Phase 2 Registration';
-      pill.className = 'sb-pill' + (p2Over() ? ' closed' : ' live2');
-      pill.textContent = p2Over() ? 'Closed' : 'In progress';
+      pill.className = 'sb-pill' + (p2WL() ? ' live2' : p2Over() ? ' closed' : ' live2');
+      pill.textContent = p2WL() ? 'Open for waiting list (till 22 Nov, 11:30 PM)' : p2Over() ? 'Closed' : 'In progress';
     } else {
       $('sbWin').textContent = ST.window || 'KNPL-7 Registration';
       pill.className = 'sb-pill' + (mode === 'paused' ? ' paused' : mode === 'closed' ? ' closed' : '');
