@@ -283,6 +283,7 @@ async function start(code){
   $('tname').textContent=title(r.team);$('tname2').textContent=title(r.team);
   const w=r.window;$('twin').textContent=w.closed?' · Draft window closed':w.before?' · Draft opens '+fmtDate(w.opens):' · Submit by '+fmtDate(w.deadline);
   $('dl-en').textContent=fmtDate(w.deadline);$('dl-ml').textContent=fmtDate(w.deadline);
+  {const n4=x=>String(x).replace(/^KNPL7-?/i,'').replace(/\D/g,'').slice(-4).padStart(4,'0');const own=n4(r.ownerId);const inf={};Object.keys(r.info||{}).forEach(k=>inf[n4(k)]=r.info[k]);r.info=inf;r.ownerId=own;r.eligible=[...new Set((r.eligible||[]).map(n4))].filter(i=>i!==own);S=r}
   (r.eligible||[]).forEach(i=>{if(!P.has(i)&&r.info&&r.info[i]){const x=r.info[i],b=(r.base||{})[x.cat]||[0,0];const rp=v=>{const st=v<=2000?100:v<=8000?200:v<=10000?400:500;return Math.ceil(v/st-1e-9)*st};P.set(i,{i:i,n:x.name,c:x.cat,s:x.sr,bp:b[0],dp:Math.round(b[0]+b[0]*x.sr/100),dt:rp(b[1]+b[1]*x.sr/100)})}});
   const vo=$('vo');vo.hidden=!w.before;if(w.before)vo.innerHTML='👁️ <b>VIEW ONLY</b> – the draft window opens on <b>'+fmtDate(w.opens)+'</b>. You can see the players who chose your team, their draft price and draft point, try combinations and see the draft fee for KNPL-7, KNPL-8 and KNPL-9. Submission opens at that time.<br><span class="ml small">ഇപ്പോൾ കാണാൻ മാത്രം. ഡ്രാഫ്റ്റ് സമർപ്പണം '+fmtDate(w.opens)+'-ന് തുറക്കും.</span>';
   SEL=[];
