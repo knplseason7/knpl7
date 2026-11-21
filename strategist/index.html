@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KNPL-7 Strategist Challenge</title>
+<meta property="og:title" content="KNPL-7 Strategist Challenge"><meta property="og:description" content="Know the rules. Own the auction. 30 quick questions for franchise owners.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@700;800&family=Public+Sans:wght@400;600;700;800&family=Noto+Sans+Malayalam:wght@400;600&display=swap">
+<style>
+:root{--navy:#0b1a38;--card:#fff;--ink:#0b1a38;--mut:#5b6b85;--line:#dfe5ef;--gold:#ffb366;--acc:#f28c28;--ok:#16a34a;--bad:#dc2626;--bg:#eef2f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Public Sans',Arial,sans-serif}
+.ml{font-family:'Noto Sans Malayalam','Public Sans',sans-serif}
+.hero{background:radial-gradient(circle at 50% 0%,#1d3a78,#0b1a38 70%);color:#fff;text-align:center;padding:26px 16px 30px}
+.hero img{width:78px;height:78px;border-radius:50%;box-shadow:0 0 0 4px rgba(242,140,40,.45)}
+.k{margin-top:10px;font:800 12px 'Public Sans';letter-spacing:3px;color:var(--gold)}
+h1{font:800 40px/1 'Saira Condensed',sans-serif;margin:6px 0 4px;letter-spacing:.5px}
+.tag{font-size:16px;color:#cfdcf5}.tag b{color:#fff}
+.cd{display:inline-flex;gap:8px;margin-top:14px}.cd div{background:rgba(255,255,255,.08);border:1px solid rgba(255,179,102,.4);border-radius:10px;padding:6px 10px;min-width:62px}
+.cd b{display:block;font:800 26px/1 'Saira Condensed'}.cd span{font-size:10px;letter-spacing:1.5px;color:#cfdcf5}
+.cl{font-size:13px;color:#cfdcf5;margin-top:6px}
+.w{max-width:820px;margin:-14px auto 40px;padding:0 14px}
+.box{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(11,26,56,.08);margin-bottom:14px}
+.login label{font-weight:700;display:block;margin-bottom:6px}.row{display:flex;gap:10px;flex-wrap:wrap}
+input[type=text]{flex:1;min-width:200px;font:600 17px 'Public Sans';padding:12px 14px;border:2px solid var(--line);border-radius:12px;text-transform:uppercase}
+.btn{font:800 16px 'Public Sans';border:0;border-radius:30px;padding:12px 22px;cursor:pointer;background:linear-gradient(90deg,#ff8a1f,#ffb366);color:#0b1a38}
+.btn.ghost{background:#eef2f8;color:var(--ink)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.err{color:var(--bad);font-weight:700;margin-top:10px}.mut{color:var(--mut);font-size:14px;line-height:1.5}
+.how{margin:12px 0 0;padding-left:18px;font-size:14.5px;line-height:1.6}
+.tb{display:flex;align-items:center;gap:12px}.tb img{width:48px;height:48px;border-radius:50%;background:#fff;object-fit:contain;border:2px solid var(--line)}
+.tb b{font-size:18px}
+.sticky{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0}
+.prog{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 1px 6px rgba(11,26,56,.08)}
+.bar{flex:1;height:8px;background:#e6ebf3;border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#4ade80);transition:width .3s}
+.q{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;border:2px solid transparent;box-shadow:0 1px 6px rgba(11,26,56,.06)}
+.q.done{border-color:#c7ecd4}
+.qn{font:800 12px 'Public Sans';color:var(--acc);letter-spacing:1px}
+.qe{font-weight:700;font-size:16.5px;margin:4px 0 2px;line-height:1.4}.qm{font-size:15px;color:#334;line-height:1.55}
+.opts{display:grid;gap:8px;margin-top:12px}
+.op{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;background:#fafbfd}
+.op input{margin-top:3px;width:18px;height:18px;accent-color:var(--acc)}
+.op.sel{border-color:var(--acc);background:#fff6ec}
+.op .oe{font-weight:600}.op .om{font-size:14px;color:var(--mut)}
+.sub{text-align:center;margin:20px 0}
+.cf{background:#fff6ec;border:2px solid var(--acc);border-radius:14px;padding:16px;text-align:center}
+.score{text-align:center}.ring{width:150px;height:150px;border-radius:50%;margin:6px auto 10px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.ring b{font:800 52px/1 'Saira Condensed'}.ring span{font-size:13px;color:var(--mut)}
+.band{font-size:17px;font-weight:700}.bandm{font-size:15px;color:#334;margin-top:4px}
+.secs{display:grid;gap:10px;margin-top:6px}.sec .t{display:flex;justify-content:space-between;font-weight:700;font-size:14.5px}.sec .t small{font-weight:400;color:var(--mut)}
+.sec .bar{height:10px;margin-top:5px}.sec .bar i.lo{background:linear-gradient(90deg,#f97316,#fb923c)}
+h2{font:800 22px 'Saira Condensed';margin:0 0 10px;letter-spacing:.3px}
+.fa{border-left:5px solid var(--acc);background:#fff8f0;border-radius:10px;padding:10px 12px;margin-bottom:10px}.fa b{display:block}.fa p{margin:4px 0;font-size:14.5px;line-height:1.55}
+.good{color:var(--ok);font-weight:700}
+.wq{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.ans{margin-top:8px;font-size:14.5px;line-height:1.5}.ans .y{color:var(--bad)}.ans .c{color:var(--ok)}
+.ex{margin-top:6px;background:#f3f6fb;border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.55}
+.ft{text-align:center;color:var(--mut);font-size:13px;margin-top:20px}
+@media(max-width:520px){h1{font-size:32px}.qe{font-size:15.5px}}
+</style></head><body>
+<div class="hero"><img src="../skill-rating/logo.png" alt="KNPL"><div class="k">KNPL-7 MEGA AUCTION · FOR FRANCHISE OWNERS</div><h1>STRATEGIST CHALLENGE</h1>
+<div class="tag"><b>Know the rules. Own the auction.</b></div><div class="tag ml">നിയമങ്ങൾ അറിയൂ, Auction-ൽ മുന്നേറൂ!</div>
+<div class="cd" id="cd"><div><b id="h">00</b><span>HRS</span></div><div><b id="m">00</b><span>MINS</span></div><div><b id="s">00</b><span>SECS</span></div></div>
+<div class="cl">Closes today, <b>21-11-2026, 7:00 PM</b> IST</div></div>
+<div class="w">
+<div class="box login" id="login">
+ <label for="code">Team code (same code as the Team Draft page)</label>
+ <div class="row"><input type="text" id="code" autocomplete="off" placeholder="KD7-XXXX-XXXXXX"><button class="btn" id="go">Start ▶</button></div>
+ <div class="err" id="lerr"></div>
+ <ul class="how"><li><b>30 quick questions</b> on the auction rules, draft and the Dynamic Ladder – about 10 minutes.</li><li>One submission per team. You will see your <b>score</b>, <b>focus areas</b> and the <b>correct answers with explanations</b> right after submitting.</li><li class="ml">30 ചോദ്യങ്ങൾ – ഏകദേശം 10 മിനിറ്റ്. ഒരു ടീമിന് ഒരു തവണ മാത്രം. Submit ചെയ്ത ഉടൻ score-ഉം, ശ്രദ്ധിക്കേണ്ട ഭാഗങ്ങളും, ശരിയുത്തരങ്ങളും വിശദീകരണവും കാണാം.</li></ul>
+</div>
+<div id="app" hidden>
+ <div class="box tb" id="tb"></div>
+ <div id="quiz"></div>
+ <div id="res"></div>
+</div>
+<div class="ft">Queries: Krishnadas M N – 99862 18725 · TEAM KNPL</div>
+</div>
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
+const D={"Q": [{"id": 1, "s": "B", "en": "How many players are in a team's squad, including the owner and drafted players?", "ml": "ഉടമയും draft ചെയ്ത കളിക്കാരും ഉൾപ്പെടെ ഒരു ടീമിന്റെ squad-ൽ എത്ര കളിക്കാർ?", "o": ["12", "13", "14", "15"], "om": ["12", "13", "14", "15"]}, {"id": 2, "s": "B", "en": "What is the points purse given to each team?", "ml": "ഓരോ ടീമിനും ലഭിക്കുന്ന Points Purse എത്ര?", "o": ["50,000", "84,000", "1,00,000", "1,50,000"], "om": ["50,000", "84,000", "1,00,000", "1,50,000"]}, {"id": 3, "s": "B", "en": "What is the Skill Rating cap for the 14 players of a squad?", "ml": "14 കളിക്കാരുടെ ആകെ Skill Rating cap എത്ര?", "o": ["500", "560", "600", "No cap"], "om": ["500", "560", "600", "Cap ഇല്ല"]}, {"id": 4, "s": "B", "en": "When and where is the KNPL-7 Mega Auction?", "ml": "KNPL-7 Mega Auction എന്ന്, എവിടെ?", "o": ["12 Dec 2026, Chola Farm Resorts, Karukutty", "11 Feb 2027, Angamaly", "30 Nov 2026, online", "24 Nov 2026, Thrissur"], "om": ["2026 ഡിസംബർ 12, Chola Farm Resorts, Karukutty", "2027 ഫെബ്രുവരി 11, Angamaly", "2026 നവംബർ 30, online", "2026 നവംബർ 24, Thrissur"]}, {"id": 5, "s": "B", "en": "How many player categories are there?", "ml": "കളിക്കാരുടെ എത്ര Category-കൾ ഉണ്ട്?", "o": ["3", "4", "6", "8"], "om": ["3", "4", "6", "8"]}, {"id": 6, "s": "B", "en": "Which is the highest category?", "ml": "ഏറ്റവും ഉയർന്ന Category ഏത്?", "o": ["Dominator Apex", "Conqueror Vanguard", "Conqueror Core", "Rising Star Elite"], "om": ["Dominator Apex", "Conqueror Vanguard", "Conqueror Core", "Rising Star Elite"]}, {"id": 7, "s": "B", "en": "The Skill Rating is calculated from…", "ml": "Skill Rating കണക്കാക്കുന്നത് എന്തിൽ നിന്നാണ്?", "o": ["Owners' votes", "Committee opinion", "CricHeroes data of KNPL and qualifying leagues (last 3 seasons)", "Player's age"], "om": ["ഉടമകളുടെ വോട്ട്", "Committee-യുടെ അഭിപ്രായം", "KNPL-ന്റെയും Qualifying League-കളുടെയും കഴിഞ്ഞ 3 സീസണിലെ CricHeroes data", "കളിക്കാരന്റെ പ്രായം"]}, {"id": 8, "s": "B", "en": "When and where is KNPL Season 7 played?", "ml": "KNPL Season 7 എന്ന്, എവിടെ നടക്കും?", "o": ["12 Dec 2026, Karukutty", "11–14 Feb 2027, FISAT & Boundary Grounds, Angamaly", "1–4 Jan 2027, Thrissur", "20–23 Mar 2027, Kochi"], "om": ["2026 ഡിസംബർ 12, Karukutty", "2027 ഫെബ്രുവരി 11–14, FISAT & Boundary Grounds, Angamaly", "2027 ജനുവരി 1–4, Thrissur", "2027 മാർച്ച് 20–23, Kochi"]}, {"id": 9, "s": "B", "en": "In which matches can a player play?", "ml": "ഒരു കളിക്കാരന് ഏതൊക്കെ match-കളിൽ കളിക്കാം?", "o": ["Any match his team wants", "Only on the days he declared available in Phase 2", "Only knock-out matches", "Only the RSM match"], "om": ["ടീം ആഗ്രഹിക്കുന്ന ഏതു match-ലും", "Phase 2-ൽ available എന്ന് അറിയിച്ച ദിവസങ്ങളിൽ മാത്രം", "Knock-out match-കളിൽ മാത്രം", "RSM match-ൽ മാത്രം"]}, {"id": 10, "s": "D", "en": "How many players can a team draft, including the owner?", "ml": "ഉടമ ഉൾപ്പെടെ ഒരു ടീമിന് എത്ര കളിക്കാരെ draft ചെയ്യാം?", "o": ["2", "3", "4", "5"], "om": ["2", "3", "4", "5"]}, {"id": 11, "s": "D", "en": "Can a player who chose \"Any Team\" be drafted?", "ml": "\"Any Team\" തിരഞ്ഞെടുത്ത കളിക്കാരനെ draft ചെയ്യാമോ?", "o": ["Yes, by any team", "Only by his old team", "No, he goes straight to the auction pool", "Yes, by two teams"], "om": ["ഏത് ടീമിനും ചെയ്യാം", "പഴയ ടീമിന് മാത്രം", "ഇല്ല, നേരിട്ട് Auction Pool-ലേക്ക് പോകും", "രണ്ടു ടീമുകൾക്ക് ചെയ്യാം"]}, {"id": 12, "s": "D", "en": "The owner's draft fee is paid…", "ml": "ഉടമയുടെ Draft Fee അടയ്ക്കുന്നത്…", "o": ["100% in KNPL-7", "50/25/25 over three seasons", "Not paid", "After KNPL-9"], "om": ["KNPL-7-ൽ 100%", "മൂന്നു സീസണിലായി 50/25/25", "അടയ്ക്കേണ്ട", "KNPL-9 കഴിഞ്ഞ്"]}, {"id": 13, "s": "D", "en": "Other drafted players' draft fee is paid…", "ml": "മറ്റു draft കളിക്കാരുടെ Draft Fee അടയ്ക്കുന്നത്…", "o": ["100% in KNPL-7", "50% KNPL-7, 25% KNPL-8, 25% KNPL-9", "In 3 equal parts", "Only by the player"], "om": ["KNPL-7-ൽ 100%", "KNPL-7-ൽ 50%, KNPL-8-ൽ 25%, KNPL-9-ൽ 25%", "മൂന്നു തുല്യ ഗഡുക്കളായി", "കളിക്കാരൻ മാത്രം"]}, {"id": 14, "s": "D", "en": "The draft window closes on…", "ml": "Draft Window അവസാനിക്കുന്നത്…", "o": ["20 Nov 2026, 11:30 PM", "24 Nov 2026, 8:30 PM", "28 Nov 2026, 6:30 PM", "12 Dec 2026"], "om": ["2026 നവംബർ 20, രാത്രി 11:30", "2026 നവംബർ 24, രാത്രി 8:30", "2026 നവംബർ 28, വൈകിട്ട് 6:30", "2026 ഡിസംബർ 12"]}, {"id": 15, "s": "D", "en": "Which draft combination is NOT allowed?", "ml": "അനുവദനീയമല്ലാത്ത Draft Combination ഏത്?", "o": ["Conqueror – Dominator – Rising Star", "Dominator – Dominator – Rising Star", "Conqueror – Dominator – Dominator", "Rising Star – Rising Star – Rising Star"], "om": ["Conqueror – Dominator – Rising Star", "Dominator – Dominator – Rising Star", "Conqueror – Dominator – Dominator", "Rising Star – Rising Star – Rising Star"]}, {"id": 16, "s": "D", "en": "What does a team pay for a drafted player?", "ml": "Draft ചെയ്യുന്ന ഒരു കളിക്കാരന് ടീം നൽകേണ്ടത്…", "o": ["Only the Draft Price in rupees", "Only the Draft Point from the purse", "Both – Draft Point from the points purse and Draft Price in rupees", "Nothing"], "om": ["Draft Price (രൂപ) മാത്രം", "Points Purse-ൽ നിന്ന് Draft Point മാത്രം", "രണ്ടും – Points Purse-ൽ നിന്ന് Draft Point, രൂപയായി Draft Price", "ഒന്നും വേണ്ട"]}, {"id": 17, "s": "B", "en": "After the final auction pool is published, can a Skill Rating or category be changed?", "ml": "Final Auction Pool പ്രസിദ്ധീകരിച്ച ശേഷം Skill Rating-ഓ Category-യോ മാറ്റാൻ കഴിയുമോ?", "o": ["Yes, on request", "Yes, by the auctioneer on the day", "No, it is frozen until the next season's re-evaluation", "Only for drafted players"], "om": ["അപേക്ഷിച്ചാൽ മാറ്റാം", "Auction ദിവസം Auctioneer-ന് മാറ്റാം", "ഇല്ല, അടുത്ത സീസണിലെ Re-evaluation വരെ മാറ്റമില്ല", "Draft ചെയ്ത കളിക്കാർക്ക് മാത്രം"]}, {"id": 18, "s": "P", "en": "Which pool is called first in Round 1?", "ml": "Round 1-ൽ ആദ്യം വിളിക്കുന്ന Pool ഏത്?", "o": ["Rising Star Core", "Dominator Core", "Conquerors", "Random"], "om": ["Rising Star Core", "Dominator Core", "Conquerors", "Random"]}, {"id": 19, "s": "P", "en": "A player unsold in Round 1…", "ml": "Round 1-ൽ unsold ആയ കളിക്കാരൻ…", "o": ["Is out of KNPL-7", "Gets a second chance in Round 2", "Goes to his preferred team", "Is allotted by lot"], "om": ["KNPL-7-ൽ നിന്ന് പുറത്ത്", "Round 2-ൽ ഒരവസരം കൂടി ലഭിക്കും", "ഇഷ്ട ടീമിലേക്ക് പോകും", "നറുക്കിലൂടെ ടീമിന് നൽകും"]}, {"id": 20, "s": "P", "en": "If two teams can't raise their bid further, the tie is broken by…", "ml": "രണ്ടു ടീമുകൾക്കും bid ഉയർത്താൻ കഴിയാതെ വന്നാൽ Tie തീർക്കുന്നത്…", "o": ["Toss", "Auctioneer's choice", "Closed cash bid", "Player's choice"], "om": ["Toss", "Auctioneer-ന്റെ ഇഷ്ടം", "Closed Cash Bid", "കളിക്കാരന്റെ ഇഷ്ടം"]}, {"id": 21, "s": "P", "en": "Bidding is done on…", "ml": "Bidding നടക്കുന്നത്…", "o": ["Paper slips", "Super Player Auction Platform, one login per team", "WhatsApp", "Show of hands"], "om": ["പേപ്പർ സ്ലിപ്പിൽ", "Super Player Auction Platform-ൽ, ഒരു ടീമിന് ഒരു login", "WhatsApp-ൽ", "കൈ ഉയർത്തി"]}, {"id": 22, "s": "P", "en": "Maximum people at a team's auction table?", "ml": "ഒരു ടീമിന്റെ Auction Table-ൽ പരമാവധി എത്ര പേർ?", "o": ["1", "2", "3", "5"], "om": ["1", "2", "3", "5"]}, {"id": 23, "s": "P", "en": "The one-time +25 bonus can be used…", "ml": "ഒറ്റത്തവണ +25 Bonus ഉപയോഗിക്കാവുന്നത്…", "o": ["Every season", "Once in the cycle, on the squad cap or the retention cap", "Only in KNPL-9", "Not allowed"], "om": ["എല്ലാ സീസണിലും", "Cycle-ൽ ഒരിക്കൽ മാത്രം, Squad Cap-ലോ Retention Cap-ലോ", "KNPL-9-ൽ മാത്രം", "അനുവദനീയമല്ല"]}, {"id": 24, "s": "P", "en": "After KNPL-7, how many players must a team retain?", "ml": "KNPL-7 കഴിഞ്ഞ് ഒരു ടീം എത്ര കളിക്കാരെ നിലനിർത്തണം (Retain)?", "o": ["4", "Exactly 6, owner included", "8", "All 14"], "om": ["4", "ഉടമ ഉൾപ്പെടെ കൃത്യം 6", "8", "14 പേരെയും"]}, {"id": 25, "s": "L", "en": "How many teams in each group?", "ml": "ഓരോ Group-ലും എത്ര ടീമുകൾ?", "o": ["4", "8", "16", "6"], "om": ["4", "8", "16", "6"]}, {"id": 26, "s": "L", "en": "How many ladder rounds does each group play?", "ml": "ഓരോ Group-ഉം എത്ര Ladder Round കളിക്കും?", "o": ["3", "4", "5", "7"], "om": ["3", "4", "5", "7"]}, {"id": 27, "s": "L", "en": "How many teams from each group go to the quarter-finals?", "ml": "ഓരോ Group-ൽ നിന്നും എത്ര ടീമുകൾ Quarter-final-ലേക്ക്?", "o": ["2", "4", "6", "8"], "om": ["2", "4", "6", "8"]}, {"id": 28, "s": "L", "en": "In the crossover quarter-finals, A1 plays…", "ml": "Crossover Quarter-final-ൽ A1 കളിക്കുന്നത് ആരോട്?", "o": ["A2", "B1", "B4", "A4"], "om": ["A2", "B1", "B4", "A4"]}, {"id": 29, "s": "L", "en": "If a ladder match is tied…", "ml": "ഒരു Ladder Match Tie ആയാൽ…", "o": ["Points are shared", "It is replayed", "Super Over", "The higher-rated team wins"], "om": ["Points പങ്കിടും", "വീണ്ടും കളിക്കും", "Super Over", "ഉയർന്ന Rating ഉള്ള ടീം ജയിക്കും"]}, {"id": 30, "s": "L", "en": "Which match is Round 1 of the Dynamic Ladder?", "ml": "Dynamic Ladder-ന്റെ Round 1 ഏത് match?", "o": ["Final", "Rising Star Marque (RSM) match", "Quarter-final", "Practice match"], "om": ["Final", "Rising Star Marque (RSM) Match", "Quarter-final", "Practice Match"]}], "SEC": {"B": ["Auction basics & Skill Rating", "Auction അടിസ്ഥാനങ്ങളും Skill Rating-ഉം"], "D": ["The draft", "Draft"], "P": ["Auction procedure & retention", "Auction നടപടിക്രമവും Retention-ഉം"], "L": ["Dynamic Ladder & RSM", "Dynamic Ladder-ഉം RSM-ഉം"]}};
+const CLOSE=Date.UTC(2026,10,21,13,30,0);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let CODE='',TEAM='',ANS={},ORD=[];
+async function api(fn,args){const r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'});const j=await r.json();if(!j.ok)throw new Error(j.error||'Something went wrong. Please try again.');return j.result}
+function tick(){const t=Math.max(0,Math.floor((CLOSE-Date.now())/1000));$('h').textContent=String(Math.floor(t/3600)).padStart(2,'0');$('m').textContent=String(Math.floor(t%3600/60)).padStart(2,'0');$('s').textContent=String(t%60).padStart(2,'0')}
+tick();setInterval(tick,1000);
+function slug(t){return String(t).toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'')}
+function title(t){return String(t).toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()).replace(/ Of /g,' of ')}
+function rng(seed){let h=2166136261;for(const c of seed)h=Math.imul(h^c.charCodeAt(0),16777619);return()=>{h+=0x6D2B79F5;let t=h;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+$('go').onclick=login;$('code').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+async function login(){const c=$('code').value.trim();$('lerr').textContent='';if(!c){$('lerr').textContent='Enter your team code.';return}
+ $('go').disabled=true;$('go').textContent='Checking…';
+ try{const r=await api('rulesTestLogin',[c]);CODE=c;TEAM=r.team;$('login').hidden=true;$('app').hidden=false;
+  $('tb').innerHTML=`<img src="../draft/logos/${slug(TEAM)}.png" onerror="this.src='../skill-rating/logo.png'" alt=""><div><div class="mut">Logged in as</div><b>${esc(title(TEAM))}</b></div>`;
+  if(r.result){showResult(r.result,r.yourAnswers,r.submittedOn);return}
+  if(r.closed||Date.now()>CLOSE){$('quiz').innerHTML='<div class="box"><b>The Strategist Challenge closed at 7:00 PM on 21-11-2026.</b><p class="ml mut">Strategist Challenge 21-11-2026 വൈകിട്ട് 7:00-ന് അവസാനിച്ചു.</p></div>';return}
+  buildQuiz();
+ }catch(e){$('lerr').textContent=e.message}finally{$('go').disabled=false;$('go').textContent='Start ▶'}}
+function buildQuiz(){const r=rng(TEAM);ORD=shuffle(D.Q,r).map(q=>({q,perm:shuffle([0,1,2,3],r)}));
+ let h='<div class="sticky"><div class="prog"><b id="cnt">0 / 30</b><div class="bar"><i id="pb"></i></div></div></div>';
+ ORD.forEach((it,n)=>{const q=it.q;h+=`<div class="q" id="q${q.id}"><div class="qn">QUESTION ${n+1} OF 30</div><div class="qe">${esc(q.en)}</div><div class="qm ml">${esc(q.ml)}</div><div class="opts">`+
+  it.perm.map(k=>`<label class="op"><input type="radio" name="r${q.id}" value="${k}"><span><span class="oe">${esc(q.o[k])}</span>${q.om[k]!==q.o[k]?`<br><span class="om ml">${esc(q.om[k])}</span>`:''}</span></label>`).join('')+'</div></div>'});
+ h+='<div class="sub" id="subw"><button class="btn" id="sb" disabled>Submit answers</button><div class="mut" id="sbm">Answer all 30 questions to submit.</div></div>';
+ $('quiz').innerHTML=h;
+ document.querySelectorAll('.op input').forEach(inp=>inp.addEventListener('change',()=>{const id=inp.name.slice(1);ANS[id]=Number(inp.value);
+  inp.closest('.opts').querySelectorAll('.op').forEach(l=>l.classList.toggle('sel',l.contains(inp)));$('q'+id).classList.add('done');prog()}));
+ $('sb').onclick=confirmBox;}
+function prog(){const n=Object.keys(ANS).length;$('cnt').textContent=n+' / 30';$('pb').style.width=(n/30*100)+'%';$('sb').disabled=n<30;$('sbm').textContent=n<30?('Answer all 30 questions to submit ('+(30-n)+' left).'):'All answered – ready to submit.'}
+function confirmBox(){$('subw').innerHTML='<div class="cf"><b>Submit your answers?</b><p class="mut">Only one submission per team – it cannot be changed afterwards.<br><span class="ml">ഒരു ടീമിന് ഒരു തവണ മാത്രം; പിന്നീട് മാറ്റാൻ കഴിയില്ല.</span></p><div class="row" style="justify-content:center"><button class="btn ghost" id="no">Go back</button><button class="btn" id="yes">Yes, submit</button></div><div class="err" id="serr"></div></div>';
+ $('no').onclick=()=>{$('subw').innerHTML='<button class="btn" id="sb">Submit answers</button><div class="mut" id="sbm">All answered – ready to submit.</div>';$('sb').onclick=confirmBox};
+ $('yes').onclick=async()=>{$('yes').disabled=true;$('yes').textContent='Submitting…';
+  try{const r=await api('rulesTestSubmit',[CODE,ANS]);$('quiz').innerHTML='';showResult(r.result,r.yourAnswers,r.submittedOn);scrollTo({top:0,behavior:'smooth'})}
+  catch(e){$('serr').textContent=e.message;$('yes').disabled=false;$('yes').textContent='Yes, submit'}}}
+function showResult(R,YA,on){const pct=R.score/R.of,col=pct>=.9?'#16a34a':pct>=.73?'#2563eb':pct>=.5?'#f28c28':'#dc2626';
+ const QM={};D.Q.forEach(q=>QM[q.id]=q);
+ let h=`<div class="box score"><h2>Your result · നിങ്ങളുടെ ഫലം</h2><div class="ring" style="background:conic-gradient(${col} ${pct*360}deg,#e6ebf3 0)"><div style="background:#fff;width:118px;height:118px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="color:${col}">${R.score}</b><span>out of ${R.of}</span></div></div><div class="band">${esc(R.band)}</div><div class="bandm ml">${esc(R.bandMl)}</div>${on?`<div class="mut" style="margin-top:8px">Submitted ${esc(on)}</div>`:''}</div>`;
+ h+='<div class="box"><h2>Section-wise · ഭാഗം തിരിച്ച്</h2><div class="secs">'+Object.keys(D.SEC).map(k=>{const s=R.sec[k],p=s.got/s.of;return `<div class="sec"><div class="t"><span>${esc(D.SEC[k][0])} <small class="ml">· ${esc(D.SEC[k][1])}</small></span><span>${s.got}/${s.of}</span></div><div class="bar"><i class="${p<.8?'lo':''}" style="width:${p*100}%"></i></div></div>`}).join('')+'</div></div>';
+ h+='<div class="box"><h2>Where to improve · മെച്ചപ്പെടുത്തേണ്ടത്</h2>';
+ if(R.focus.length)h+=R.focus.map(f=>`<div class="fa"><b>${esc(f.en)} · <span class="ml">${esc(f.ml)}</span></b><p>${esc(f.tip)}</p><p class="ml">${esc(f.tipMl)}</p></div>`).join('');
+ else h+='<p class="good">Excellent – no weak area. You are well prepared! <span class="ml">ദുർബലമായ ഭാഗങ്ങളില്ല – നന്നായി തയ്യാറാണ്!</span></p>';
+ if(R.strong.length)h+=`<p class="mut">Strong areas: <b>${R.strong.map(s=>esc(s.en)).join(', ')}</b><br><span class="ml">ശക്തമായ ഭാഗങ്ങൾ: ${R.strong.map(s=>esc(s.ml)).join(', ')}</span></p>`;
+ h+='</div>';
+ if(R.wrong.length){h+=`<div class="box"><h2>Correct answers for the ${R.wrong.length} you missed · തെറ്റിയ ചോദ്യങ്ങളുടെ ശരിയുത്തരം</h2>`+R.wrong.map(w=>{const q=QM[w.id];return `<div class="wq"><div class="qe">${esc(q.en)}</div><div class="qm ml">${esc(q.ml)}</div><div class="ans"><div class="y">✗ Your answer: ${w.your>=0?esc(q.o[w.your])+(q.om[w.your]!==q.o[w.your]?' · <span class="ml">'+esc(q.om[w.your])+'</span>':''):'—'}</div><div class="c">✓ Correct answer: <b>${esc(q.o[w.correct])}</b>${q.om[w.correct]!==q.o[w.correct]?' · <span class="ml">'+esc(q.om[w.correct])+'</span>':''}</div></div><div class="ex">${esc(w.x)}<br><span class="ml">${esc(w.xm)}</span></div></div>`}).join('')+'</div>'}
+ else h+='<div class="box good">🎉 All 30 correct – full marks! · മുഴുവൻ മാർക്കും!</div>';
+ h+='<div class="box mut">Thank you for taking part. The Core Committee will use the overall results to focus the rules briefing meeting.<br><span class="ml">പങ്കെടുത്തതിന് നന്ദി. എല്ലാ ടീമുകളുടെയും ഫലം അനുസരിച്ച് rules briefing meeting-ൽ ശ്രദ്ധിക്കേണ്ട ഭാഗങ്ങൾ Core Committee തീരുമാനിക്കും.</span></div>';
+ $('res').innerHTML=h}
+</script></body></html>
