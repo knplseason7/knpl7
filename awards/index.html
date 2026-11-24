@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KNPL FlexCard · Scan it. Snap it. Flex it.</title>
+<meta name="description" content="KNPL-7 FlexCard: turn your award into a pro-style poster with real match stats, your selfie and a pro tip.">
+<meta name="theme-color" content="#070c22">
+<meta property="og:title" content="KNPL FlexCard">
+<meta property="og:description" content="Scan it. Snap it. Flex it. Your KNPL-7 award poster in 60 seconds.">
+<link rel="icon" href="knpl.png">
+<style>
+@font-face{font-family:Inter;src:url(fonts/Inter-Regular.woff) format('woff');font-weight:400;font-display:swap}
+@font-face{font-family:Inter;src:url(fonts/Inter-SemiBold.woff) format('woff');font-weight:600;font-display:swap}
+@font-face{font-family:Inter;src:url(fonts/Inter-Bold.woff) format('woff');font-weight:800;font-display:swap}
+@font-face{font-family:Cinzel;src:url(fonts/Cinzel.woff) format('woff');font-weight:700;font-display:swap}
+@font-face{font-family:Corm;src:url(fonts/CormItalic.woff) format('woff');font-style:italic;font-display:swap}
+:root{--bg:#070c22;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.12);--mut:#a9b5d9;--cy:#36e0ff;--gd:#ffd35a;--pk:#ff4fa8;--or:#ff9f1c;--gr:#7cff8a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:#fff;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:
+ radial-gradient(600px 420px at 100% 0%,rgba(255,79,168,.22),transparent 65%),
+ radial-gradient(560px 420px at 0% 10%,rgba(54,224,255,.18),transparent 65%),
+ radial-gradient(700px 500px at 50% 110%,rgba(255,196,0,.16),transparent 65%),var(--bg);background-attachment:fixed}
+.wrap{max-width:520px;margin:0 auto;padding:18px 18px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:44px;height:44px;border-radius:50%;background:#fff;padding:2px}
+.brand b{display:block;font-size:12px;letter-spacing:.14em}
+.brand span{font-size:11px;color:var(--mut)}
+.pill{font:800 11px Inter;letter-spacing:.14em;padding:7px 12px;border-radius:30px;background:linear-gradient(90deg,var(--pk),var(--or));white-space:nowrap}
+.hero{margin:26px 0 18px}
+.kick{font:800 12px Inter;letter-spacing:.3em;color:var(--cy)}
+h1{font:800 68px/1 Inter;letter-spacing:-.045em;margin-top:6px;background:linear-gradient(95deg,#fff 10%,var(--gd) 45%,#ff7ab8 85%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font:800 22px Inter;margin-top:6px}.tag i{font-style:normal;color:var(--gd)}
+.sub{color:#c9d3f0;font-size:15px;line-height:1.5;margin-top:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:16px;backdrop-filter:blur(8px)}
+.card h2{font:800 19px Inter;margin-bottom:4px}
+.card p.h{color:var(--mut);font-size:13.5px;line-height:1.45;margin-bottom:12px}
+label.f{display:block;font:600 12px Inter;letter-spacing:.08em;color:var(--mut);margin:12px 0 6px;text-transform:uppercase}
+input[type=text],input[type=tel]{width:100%;font:600 18px Inter;color:#fff;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:14px;padding:14px 14px;outline:none;letter-spacing:.04em}
+input:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(54,224,255,.2)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:16px;padding:16px;margin-top:16px;font:800 17px Inter;color:#0a1030;cursor:pointer;
+ background:linear-gradient(90deg,var(--gd),var(--or));box-shadow:0 10px 30px rgba(255,159,28,.3)}
+.btn.alt{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line);box-shadow:none}
+.btn.pk{background:linear-gradient(90deg,var(--pk),#b84dff);color:#fff;box-shadow:0 10px 30px rgba(255,79,168,.35)}
+.btn:disabled{opacity:.55}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.err{color:#ff8a8a;font-size:14px;margin-top:10px;min-height:1px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px}
+.steps div{text-align:center;font-size:10.5px;color:var(--mut);line-height:1.3}
+.steps div b{display:grid;place-items:center;width:34px;height:34px;margin:0 auto 5px;border-radius:11px;font-size:16px;background:rgba(255,255,255,.08)}
+.aw{display:flex;align-items:center;gap:14px;padding:16px;border-radius:18px;margin-top:10px;cursor:pointer;
+ background:linear-gradient(150deg,rgba(255,211,90,.16),rgba(255,211,90,.03));border:1px solid rgba(255,211,90,.4)}
+.aw .ic{font-size:30px}.aw b{display:block;font:800 17px Inter}.aw span{font-size:13px;color:#c9d3f0}
+.aw .go{margin-left:auto;font-size:22px;color:var(--gd)}
+.mcard{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:center}
+.mcard .t{flex:1}.mcard img{width:58px;height:58px;border-radius:50%;background:#fff;object-fit:cover}
+.mcard .t b{display:block;font-size:13px;margin-top:6px;line-height:1.25}
+.mcard .vs{font:800 14px Inter;color:var(--mut)}
+.res{text-align:center;margin-top:12px;font:700 15px Inter;color:var(--gr)}
+.meta{text-align:center;font-size:12.5px;color:var(--mut);margin-top:4px}
+.chlink{display:block;text-align:center;margin-top:10px;color:var(--cy);font:600 14px Inter;text-decoration:none}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.tile{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
+.tile b{display:block;font:800 22px Inter;background:linear-gradient(#fff,var(--gd));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tile span{font-size:10.5px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase}
+.ins{list-style:none;margin-top:12px}
+.ins li{padding:9px 0 9px 28px;position:relative;font-size:14.5px;line-height:1.4;border-top:1px dashed rgba(255,255,255,.1)}
+.ins li:first-child{border-top:0}
+.ins li:before{content:"⚡";position:absolute;left:0;top:8px}
+.tipbox{margin-top:12px;border-radius:14px;padding:12px 14px;background:rgba(124,255,138,.08);border:1px solid rgba(124,255,138,.3);font-size:14px;line-height:1.45}
+.tipbox b{color:var(--gr);font-size:11px;letter-spacing:.16em;display:block;margin-bottom:3px}
+.quote{text-align:center;font:italic 22px Corm,serif;color:var(--gd);margin-top:12px}
+.selfie{display:flex;gap:14px;align-items:center}
+.selfie .ph{flex:none;width:88px;height:88px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.08);border:2px solid var(--gd);display:grid;place-items:center;font-size:34px}
+.selfie .ph img{width:100%;height:100%;object-fit:cover}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.small{font-size:12.5px;color:var(--mut);line-height:1.45;margin-top:8px}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;color:#c9d3f0;line-height:1.4}
+.consent input{margin-top:2px;width:18px;height:18px;accent-color:var(--gd)}
+.seg{display:flex;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:14px;padding:4px;margin-top:4px}
+.seg button{flex:1;border:0;background:none;color:var(--mut);font:700 14px Inter;padding:10px;border-radius:10px;cursor:pointer}
+.seg button.on{background:rgba(255,255,255,.12);color:#fff}
+.stage{margin-top:14px;display:flex;justify-content:center}
+#poster{width:100%;max-width:420px;height:auto;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 1px var(--line);touch-action:none;cursor:grab}
+.adj{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--mut)}
+.adj input{flex:1;accent-color:var(--gd)}
+.back{background:none;border:0;color:var(--mut);font:600 14px Inter;margin-top:14px;cursor:pointer}
+.hide{display:none!important}
+.demo{margin-top:12px;font-size:12.5px;color:#0a1030;background:var(--gd);border-radius:12px;padding:9px 12px;line-height:1.4}
+.spin{width:22px;height:22px;border:3px solid rgba(10,16,48,.25);border-top-color:#0a1030;border-radius:50%;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.qr{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;cursor:pointer;border:1px solid transparent;margin-top:6px;background:rgba(0,0,0,.22)}
+.qr:hover,.qr:focus{border-color:var(--gd)}
+.qr img{width:44px;height:56px;border-radius:10px;object-fit:cover;background:#222}
+.qr b{display:block;font-size:15px}.qr span{font-size:12.5px;color:var(--mut)}
+.qr .n{margin-left:auto;font:800 13px Inter;color:#0a1030;background:var(--gd);border-radius:10px;padding:5px 9px;white-space:nowrap}
+.qr .n.z{background:rgba(255,255,255,.1);color:var(--mut)}
+.grp{font:800 12px Inter;letter-spacing:.18em;color:var(--cy);margin:18px 0 2px}
+.lgsel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.lgsel button{border:1px solid var(--line);background:rgba(255,255,255,.06);color:#dfe6fb;font:700 13px Inter;padding:9px 13px;border-radius:20px;cursor:pointer}
+.lgsel button.on{background:linear-gradient(90deg,var(--gd),var(--or));color:#0a1030;border-color:transparent}
+footer{text-align:center;color:var(--mut);font-size:12px;margin-top:30px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><img src="knpl.png" alt="KNPL"><div><b>KNPL-7</b><span>Making the Impossible a Reality</span></div></div>
+  <div class="pill">⚡ FLEXCARD</div>
+</header>
+
+<!-- STEP 1: sign in -->
+<section id="s1">
+  <div class="hero">
+    <div class="kick">KNPL-7 AWARDS</div>
+    <h1>FlexCard</h1>
+    <div class="tag">Scan it. Snap it. <i>Flex it.</i> 🔥</div>
+    <p class="sub">Won an award? Get your own pro-style poster with real match stats, your selfie and a pro tip. Story-ready in 60 seconds.</p>
+    <div class="steps"><div><b>📲</b>Scan</div><div><b>🏆</b>Pick award</div><div><b>📊</b>Stats</div><div><b>🤳</b>Selfie</div><div><b>🚀</b>Flex</div></div>
+  </div>
+  <div class="card">
+    <h2>Find yourself 🔍</h2>
+    <p class="h">Your Player of the Match and tournament awards from KNPL-4, 5, 6 and the qualifying leagues (YPL, CBL, NPL, SPL) are ready to flex now. Search your name or KNPL Reg ID.</p>
+    <input type="text" id="q" placeholder="Type your name or Reg ID" autocomplete="off">
+    <div id="qres"></div>
+    <div class="err" id="eq"></div>
+  </div>
+  <div class="card" id="k7card">
+    <h2>KNPL-7 awards 🏆 <span style="font:700 11px Inter;letter-spacing:.12em;color:#0a1030;background:var(--gr);padding:4px 8px;border-radius:8px;vertical-align:middle" id="k7tag">FROM 11 FEB 2027</span></h2>
+    <p class="h">Won an award at KNPL-7? Scan the QR on your memento, or enter your KNPL Reg ID and the last 4 digits of your registered mobile number.</p>
+    <div id="k7form">
+    <label class="f" for="reg">KNPL Reg ID</label>
+    <input type="text" id="reg" placeholder="e.g. KNPL7-0123" autocomplete="off" autocapitalize="characters">
+    <label class="f" for="pin">Mobile – last 4 digits</label>
+    <input type="tel" id="pin" placeholder="••••" maxlength="4" inputmode="numeric">
+    <button class="btn" id="go">Let's go 🚀</button>
+    <div class="err" id="e1"></div>
+    <div class="demo hide" id="demoNote"><b>Preview:</b> KNPL-7 awards go live during the season. To see the KNPL-7 designs with sample data, use Reg ID <b>DEMO-0007</b> and digits <b>0007</b>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 2: pick award -->
+<section id="s2" class="hide">
+  <div class="hero" style="margin-bottom:6px">
+    <div class="kick">YOUR AWARDS</div>
+    <h2 style="font:800 30px Inter;margin-top:6px" id="hi">Hey!</h2>
+    <p class="sub">Tap an award to build your FlexCard.</p>
+  </div>
+  <div id="awList"></div>
+  <button class="back" data-back="s1">← Not you? Start again</button>
+</section>
+
+<!-- STEP 3: match, insights, selfie -->
+<section id="s3" class="hide">
+  <div class="hero" style="margin-bottom:0">
+    <div class="kick" id="s3k">PLAYER OF THE MATCH</div>
+    <h2 style="font:800 28px Inter;margin-top:6px" id="s3t">Your performance</h2>
+  </div>
+  <div class="card" id="matchCard"></div>
+  <div class="card">
+    <h2>📊 Your numbers</h2>
+    <div class="tiles" id="tiles"></div>
+    <ul class="ins" id="ins"></ul>
+    <div class="tipbox" id="tip"></div>
+    <div class="quote" id="quote"></div>
+  </div>
+  <div class="card">
+    <h2>🤳 Drop a selfie with the trophy</h2>
+    <p class="h">No selfie? No stress. We'll use your registration pic.</p>
+    <div class="selfie">
+      <div class="ph" id="phPrev">🙂</div>
+      <div style="flex:1">
+        <label class="btn pk filebtn" style="margin-top:0">📸 Add selfie<input type="file" id="selfie" accept="image/*"></label>
+        <button class="btn alt hide" id="useReg" style="margin-top:8px">Use registration pic</button>
+      </div>
+    </div>
+    <label class="consent hide" id="consentRow"><input type="checkbox" id="consent"><span>KNPL can also keep this selfie for the KNPL-7 media album.</span></label>
+  </div>
+  <button class="btn" id="make">✨ Create my FlexCard</button>
+  <button class="back" data-back="s2">← Back to my awards</button>
+</section>
+
+<!-- STEP 4: poster -->
+<section id="s4" class="hide">
+  <div class="hero" style="margin-bottom:0">
+    <div class="kick">READY TO FLEX</div>
+    <h2 style="font:800 28px Inter;margin-top:6px">Your FlexCard 🔥</h2>
+  </div>
+  <div class="seg" id="fmt"><button data-f="story" class="on">Status / Story</button><button data-f="feed">Feed post</button></div>
+  <div class="stage"><canvas id="poster"></canvas></div>
+  <div class="adj" id="adjRow"><span>🔍 Zoom</span><input type="range" id="zoom" min="1" max="2.6" step="0.01" value="1"><span>Drag pic to move</span></div>
+  <div class="row">
+    <button class="btn pk" id="share">🚀 Share</button>
+    <button class="btn alt" id="dl">⬇️ Download</button>
+  </div>
+  <p class="small" style="text-align:center">Tip: download both sizes – Story for WhatsApp Status & Insta Stories, Feed for posts.</p>
+  <button class="back" data-back="s3">← Change selfie or details</button>
+</section>
+
+<footer>KNPL FlexCard · Kerala Namboodiris Premier League<br>Stats from the official CricHeroes scorecards</footer>
+</div>
+
+<script>
+/* ======================= CONFIG ======================= */
+/* Apps Script web app URL (Deploy → Manage deployments → Web app URL). Leave empty to run in preview mode. */
+const API_URL = '';
+const TOURNAMENT_URL = '';            // CricHeroes KNPL-7 tournament page (optional, shown for season awards)
+const DEMO = !API_URL || /[?&]demo\b/.test(location.search);
+/* KNPL-4/5/6 + qualifying-league data: the published Skill Rating files (same files as the Skill Rating page). */
+const SR_DIR = '../skill-rating/';
+const SR_KEY = 'zlMUEcdJHeP80zwzbCDRGCSiDyzqyAaow36RHnO0T/c=';
+const LEAGUE = {KNPL:'Kerala Namboodiris Premier League', YPL:'YPL', CBL:'Central Bigbash League', NPL:'NPL', SPL:'SPL'};
+const SL = k => k.replace(/(\D+)(\d+)/, '$1-$2');
+
+/* ======================= helpers ======================= */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => String(s || '').toLowerCase().replace(/\(.*?\)|†|\*/g, '').replace(/[^a-z0-9]/g, '');
+const balls = o => { const s = String(o || '0').split('.'); return (+s[0] || 0) * 6 + (+s[1] || 0); };
+const ovs = b => Math.floor(b / 6) + (b % 6 ? '.' + (b % 6) : '');
+const r1 = x => (Math.round(x * 10) / 10).toFixed(1);
+const pick = (arr, seed) => arr && arr.length ? arr[Math.abs(seed) % arr.length] : '';
+const hash = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return h; };
+const ICON = {'Player of the Match': '🏅', 'Player of the Tournament': '👑', 'Best Batter': '🏏', 'Best Bowler': '🎯'};
+const TEAM_LOGO = t => '../p2/logos/' + norm(t) + '.webp';
+
+function show(id){ ['s1','s2','s3','s4'].forEach(s => $(s).classList.toggle('hide', s !== id)); scrollTo({top:0, behavior:'smooth'}); }
+document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => show(b.dataset.back));
+function busy(btn, on, label){ if (on){ btn.dataset.l = btn.innerHTML; btn.innerHTML = '<span class="spin"></span>'; btn.disabled = true; } else { btn.innerHTML = label || btn.dataset.l; btn.disabled = false; } }
+function loadImg(src){ return new Promise(res => { if (!src) return res(null); const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
+
+/* ======================= backend ======================= */
+async function api(fn, ...args){
+  if (DEMO) { await new Promise(r => setTimeout(r, 450)); return MOCK[fn](...args); }
+  let res;
+  try { res = await fetch(API_URL, {method:'POST', body: JSON.stringify({fn, args}), redirect:'follow'}); }
+  catch(_) { throw new Error('Could not reach the KNPL server. Check your internet and try again.'); }
+  let j; try { j = await res.json(); } catch(_) { throw new Error('The KNPL server did not respond properly. Please try again in a minute.'); }
+  if (!j.ok) throw new Error(j.error || 'Something went wrong. Please try again.');
+  return j.result;
+}
+
+/* ======================= tips & quotes (fallback library; the Sheet's Tips/Quotes tabs override) ======================= */
+const TIPS = {
+  bat_big: ['Big knock! Next level: rotate strike early so you are still there for the last 4 overs.', 'You set the platform. Keep a mental target for every 2 overs and pace the innings.'],
+  bat_fast: ['Explosive! Pick 2 bowlers to target each game and play the rest on merit.', 'Power is your weapon. Add the quick single into the gap to keep the field spread.'],
+  bat_anchor: ['Great anchor role. Look for one boundary option per over to lift the strike rate.'],
+  bowl_wkts: ['Wicket-taker! Plan your next over around the batter\'s favourite scoring zone.', 'Attack the stumps: in short games, bowled and LBW win you matches.'],
+  bowl_econ: ['Tight spell! Mix in a slower ball every over to keep batters guessing.', 'Dots win games. Keep hitting the top of off stump with the field set for it.'],
+  pom: ['Match winner! Write down what worked today: your plan, your shot, your ball. Repeat it at KNPL-7.', 'Big-match player! Keep your pre-match routine the same, so the big moments feel normal.', 'PoM form! Now add one new skill before KNPL-7: a new shot or a new variation.'],
+  allround: ['Two-way impact! Keep both skills sharp: 15 minutes of nets for each, every session.'],
+  season_bat: ['A season of runs! Review your dismissals and fix the one that repeats.'],
+  season_bowl: ['Season-long wicket-taker. Keep notes on every batter\'s weak zone.'],
+  season_all: ['Consistent all season. Recovery and fitness keep the form going.']
+};
+const QUOTES = ['Pressure is a privilege.', 'Hard work beats talent when talent doesn\'t work hard.', 'Champions keep playing until they get it right.',
+  'Make the impossible a reality.', 'One ball at a time.', 'Dream big. Play bigger.', 'Form is temporary, class is permanent.', 'Earned, not given.'];
+
+/* ======================= stats & insights ======================= */
+function isMe(name, keys){ const n = norm(name); return n && keys.some(k => k && (n === k || (k.length > 5 && (n.indexOf(k) === 0 || k.indexOf(n) === 0)))); }
+
+function matchView(d){
+  const sc = d.scorecard || {innings: []}, keys = d.me || [];
+  let bat = null, batInn = null, bowl = null, bowlInn = null;
+  sc.innings.forEach(inn => {
+    inn.batting.forEach(b => { if (!bat && isMe(b.name, keys)) { bat = b; batInn = inn; } });
+    inn.bowling.forEach(b => { if (!bowl && isMe(b.name, keys)) { bowl = b; bowlInn = inn; } });
+  });
+  const allBat = sc.innings.flatMap(i => i.batting), allBowl = sc.innings.flatMap(i => i.bowling);
+  const mR = allBat.reduce((a, b) => a + b.r, 0), mB = allBat.reduce((a, b) => a + b.b, 0);
+  const tiles = [], ins = [];
+  let big, cat;
+  const bb = bowl ? balls(bowl.o) : 0, econ = bb ? bowl.r / bb * 6 : 0;
+  const batStrong = bat && (bat.r >= 20 || (bat.r >= 12 && bat.b && bat.r / bat.b >= 2));
+  const bowlStrong = bowl && (bowl.w >= 2 || (bowl.w >= 1 && econ < 7));
+  if (bat) {
+    const sr = bat.b ? bat.r / bat.b * 100 : 0, teamR = batInn.batting.reduce((a, b) => a + b.r, 0);
+    tiles.push([bat.r + (bat.out ? '' : '*'), 'Runs'], [bat.b, 'Balls'], [r1(sr), 'Strike rate']);
+    if (bat.f || bat.s) tiles.push([bat.f + ' / ' + bat.s, '4s / 6s']);
+    if (allBat.every(b => b.r <= bat.r) && bat.r > 0) ins.push('Top scorer of the match');
+    else if (batInn.batting.every(b => b.r <= bat.r) && bat.r > 0) ins.push('Top scorer for the team');
+    if (teamR) ins.push(Math.round(bat.r / teamR * 100) + '% of the team\'s batting runs');
+    const avgSR = mB ? mR / mB * 100 : 0;
+    if (bat.b >= 5 && avgSR && sr > avgSR + 5) ins.push('Strike rate +' + Math.round(sr - avgSR) + ' above the match average (' + Math.round(avgSR) + ')');
+    const bnd = bat.f * 4 + bat.s * 6; if (bnd && bat.r) ins.push(bnd + ' of ' + bat.r + ' runs in boundaries');
+    if (!bat.out && bat.r >= 10) ins.push('Unbeaten till the end');
+    cat = sr >= 170 ? 'bat_fast' : bat.r >= 30 ? 'bat_big' : 'bat_anchor';
+  }
+  if (bowl) {
+    tiles.push([bowl.w + '/' + bowl.r, 'Bowling'], [bowl.o, 'Overs'], [r1(econ), 'Economy']);
+    if (bowl.dots) tiles.push([bowl.dots, 'Dot balls']);
+    const bestW = Math.max(...allBowl.map(b => b.w));
+    if (bowl.w && bowl.w === bestW && allBowl.filter(b => b.w === bestW).every(b => b.r >= bowl.r)) ins.push('Best bowling figures of the match');
+    const mE = allBowl.reduce((a, b) => a + b.r, 0) / Math.max(1, allBowl.reduce((a, b) => a + balls(b.o), 0)) * 6;
+    if (bb >= 6 && econ < mE - 0.5) ins.push('Economy ' + r1(econ) + ' vs match average ' + r1(mE));
+    if (bowl.dots >= 4) ins.push(bowl.dots + ' dot balls (' + Math.round(bowl.dots / Math.max(1, bb) * 100) + '% of balls bowled)');
+    if (bowl.m) ins.push(bowl.m + ' maiden over' + (bowl.m > 1 ? 's' : ''));
+    if (!cat || (bowlStrong && !batStrong)) cat = bowl.w >= 2 ? 'bowl_wkts' : 'bowl_econ';
+  }
+  if (batStrong && bowlStrong) cat = 'allround';
+  const won = d.match && d.match.result && d.player && norm(d.match.result).indexOf(norm(d.player.team)) === 0;
+  if (won) ins.unshift('Match-winning performance');
+  if (bat && (!bowlStrong || batStrong)) {
+    big = {main: bat.r + (bat.out ? '' : '*'), sfx: '(' + bat.b + ')', line: 'SR ' + r1(bat.b ? bat.r / bat.b * 100 : 0) + '  ·  4s ' + bat.f + '  ·  6s ' + bat.s,
+      line2: bowl && bowl.w ? 'Bowling ' + bowl.w + '/' + bowl.r + ' (' + bowl.o + ' ov)' : ''};
+  } else if (bowl) {
+    big = {main: bowl.w + '/' + bowl.r, sfx: '(' + bowl.o + ' ov)', line: 'Econ ' + r1(econ) + (bowl.dots ? '  ·  Dots ' + bowl.dots : '') + (bowl.m ? '  ·  Maidens ' + bowl.m : ''),
+      line2: bat ? 'Batting ' + bat.r + (bat.out ? '' : '*') + ' (' + bat.b + ')' : ''};
+  } else {
+    big = {main: '★', sfx: '', line: 'Player of the Match', line2: ''};
+    ins.push('Scorecard details will appear once the match data is in');
+  }
+  return {tiles, ins: ins.slice(0, 4), big, cat: cat || 'allround', found: !!(bat || bowl)};
+}
+
+function seasonView(d){
+  const keys = d.me || [], type = d.type, per = {};
+  (d.season || []).forEach(m => m.scorecard.innings.forEach(inn => {
+    inn.batting.forEach(b => { const k = norm(b.name), p = per[k] = per[k] || newP(b.name); p.inn++; p.r += b.r; p.b += b.b; p.f += b.f; p.s += b.s; if (!b.out) p.no++;
+      if (b.r > p.hs || (b.r === p.hs && !b.out)) { p.hs = b.r; p.hsNo = !b.out; } if (b.r >= 50) p.h50++; if (b.r >= 25) p.c25++; p.m.add(m.match.no); });
+    inn.bowling.forEach(b => { const k = norm(b.name), p = per[k] = per[k] || newP(b.name); p.w += b.w; p.bb += balls(b.o); p.rc += b.r; p.dots += b.dots || 0; p.spells++;
+      if (b.w > p.bw || (b.w === p.bw && b.r < p.br)) { p.bw = b.w; p.br = b.r; } p.m.add(m.match.no); });
+  }));
+  function newP(n){ return {name:n, inn:0, r:0, b:0, f:0, s:0, no:0, hs:0, hsNo:false, h50:0, c25:0, w:0, bb:0, rc:0, dots:0, spells:0, bw:-1, br:999, m:new Set()}; }
+  const meK = Object.keys(per).find(k => isMe(per[k].name, keys));
+  const me = meK ? per[meK] : newP('');
+  const list = Object.values(per);
+  const rank = (f) => 1 + list.filter(p => f(p) > f(me)).length;
+  const runsRank = rank(p => p.r), wRank = rank(p => p.w);
+  const sr = me.b ? me.r / me.b * 100 : 0, avg = (me.inn - me.no) ? me.r / (me.inn - me.no) : me.r, econ = me.bb ? me.rc / me.bb * 6 : 0;
+  const tiles = [], ins = [];
+  let big, cat;
+  const batT = () => { tiles.push([me.r, 'Runs'], [r1(sr), 'Strike rate'], [me.hs + (me.hsNo ? '*' : ''), 'Highest']); tiles.push([r1(avg), 'Average'], [me.f + ' / ' + me.s, '4s / 6s'], [me.m.size, 'Matches']); };
+  const bowlT = () => { tiles.push([me.w, 'Wickets'], [r1(econ), 'Economy'], [me.bw >= 0 ? me.bw + '/' + me.br : '–', 'Best']); tiles.push([ovs(me.bb), 'Overs'], [me.dots, 'Dot balls'], [me.m.size, 'Matches']); };
+  if (type === 'Best Bowler') {
+    bowlT(); cat = 'season_bowl';
+    big = {main: String(me.w), sfx: 'WICKETS', line: 'Econ ' + r1(econ) + '  ·  Best ' + (me.bw >= 0 ? me.bw + '/' + me.br : '–') + '  ·  Dots ' + me.dots, line2: me.m.size + ' matches · KNPL-7'};
+    ins.push('#' + wRank + ' wicket-taker of KNPL-7');
+    if (me.bb) ins.push('A wicket every ' + r1(me.bb / Math.max(1, me.w)) + ' balls');
+    if (me.dots) ins.push(Math.round(me.dots / Math.max(1, me.bb) * 100) + '% dot balls across the season');
+  } else if (type === 'Best Batter') {
+    batT(); cat = 'season_bat';
+    big = {main: String(me.r), sfx: 'RUNS', line: 'Avg ' + r1(avg) + '  ·  SR ' + r1(sr) + '  ·  HS ' + me.hs + (me.hsNo ? '*' : ''), line2: me.m.size + ' matches · KNPL-7'};
+    ins.push('#' + runsRank + ' run-scorer of KNPL-7');
+    if (me.f + me.s) ins.push((me.f * 4 + me.s * 6) + ' runs in boundaries (' + me.f + ' fours, ' + me.s + ' sixes)');
+    if (me.inn) ins.push('25+ runs in ' + me.c25 + ' of ' + me.inn + ' innings');
+    if (me.h50) ins.push(me.h50 + ' half-centur' + (me.h50 > 1 ? 'ies' : 'y'));
+  } else {
+    tiles.push([me.r, 'Runs'], [r1(sr), 'Strike rate'], [me.w, 'Wickets'], [r1(econ), 'Economy'], [me.hs + (me.hsNo ? '*' : ''), 'Highest'], [me.m.size, 'Matches']);
+    cat = 'season_all';
+    big = {main: me.r + ' & ' + me.w, sfx: 'RUNS  ·  WKTS', line: 'SR ' + r1(sr) + '  ·  Econ ' + r1(econ) + '  ·  HS ' + me.hs + (me.hsNo ? '*' : ''), line2: me.m.size + ' matches · KNPL-7'};
+    ins.push('#' + runsRank + ' in runs and #' + wRank + ' in wickets');
+    if (me.inn) ins.push('25+ runs in ' + me.c25 + ' of ' + me.inn + ' innings');
+    if (me.w) ins.push('Best bowling ' + me.bw + '/' + me.br);
+  }
+  if (!meK) ins.unshift('Season numbers will appear once the scorecards are in');
+  return {tiles: tiles.slice(0, 6), ins: ins.slice(0, 4), big, cat, found: !!meK};
+}
+
+/* ======================= state & flow ======================= */
+const S = {reg:'', pin:'', who:null, awards:[], award:null, data:null, view:null, selfie:null, regPhoto:null, usingSelfie:false,
+  fmt:'story', zoom:1, ox:0, oy:0, tip:'', quote:'', imgs:{}};
+
+const qs = new URLSearchParams(location.search);
+if (DEMO) $('demoNote').classList.remove('hide');
+
+/* ----- qualifying leagues (live now, read from the Skill Rating files) ----- */
+const Q = {key:null, P:null, M:{}};
+const b64u = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+async function srDecrypt(f){
+  if (!Q.key) Q.key = await crypto.subtle.importKey('raw', b64u(SR_KEY), 'AES-GCM', false, ['decrypt']);
+  const r = await fetch(SR_DIR + f, {cache:'no-cache'}); if (!r.ok) throw new Error('Data not found.');
+  const b = new Uint8Array(await r.arrayBuffer());
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM', iv:b.slice(0, 12)}, Q.key, b.slice(12))));
+}
+async function loadP(){
+  if (Q.P) return Q.P;
+  $('qres').innerHTML = '<p class="small">Loading players…</p>';
+  Q.P = await srDecrypt('d.bin');
+  Q.P.forEach(p => { p.k = norm(p.n); p.aw = (p.x && (p.x.pom || 0)) + ((p.x && p.x.A) || []).length; });
+  $('qres').innerHTML = '';
+  return Q.P;
+}
+function qSearch(){
+  const t = $('q').value.trim(), k = norm(t), d = t.replace(/\D/g, '').replace(/^0+/, '');
+  if (!Q.P || t.length < 2) { $('qres').innerHTML = ''; return; }
+  const hits = Q.P.filter(p => (k && p.k.includes(k)) || (d && p.i.replace(/^0+/, '') === d) || norm('knpl7' + p.i) === k).slice(0, 8);
+  $('qres').innerHTML = hits.length ? hits.map(p => `<div class="qr" tabindex="0" data-i="${p.i}"><img src="data:image/jpeg;base64,${p.p}" alt=""><div><b>${esc(p.n)}</b><span>KNPL7-${p.i}</span></div>
+    <div class="n ${p.aw ? '' : 'z'}">${p.aw ? '🏆 ' + p.aw : 'No awards yet'}</div></div>`).join('') : '<p class="small">No player found. Try another spelling or your Reg ID.</p>';
+  $('qres').querySelectorAll('.qr').forEach(el => el.onclick = el.onkeydown = e => { if (!e.key || e.key === 'Enter') openPlayer(el.dataset.i); });
+}
+$('q').addEventListener('focus', () => loadP().catch(e => $('eq').textContent = 'Could not load players. Please refresh the page.'), {once:true});
+$('q').addEventListener('input', async () => { await loadP(); qSearch(); });
+
+async function openPlayer(id){
+  $('eq').textContent = '';
+  try {
+    const P = await loadP(), p = P.find(x => x.i === id);
+    const m = Q.M[id] = Q.M[id] || await srDecrypt('m/' + id + '.bin');
+    const aws = [];
+    (m.her || []).forEach(h => aws.push({src:'q', id:'h' + aws.length, type:h[1], lg:h[0]}));
+    m.L.forEach((r, i) => { if (r[6]) aws.push({src:'q', id:'m' + i, type:'Player of the Match', lg:r[0], row:i}); });
+    Object.assign(S, {reg:'KNPL7-' + id, pin:'', who:{regId:'KNPL7-' + id, name:p.n, team:''}, awards:aws, qp:p, qm:m});
+    try { history.replaceState(null, '', '?id=' + id); } catch(_) {}
+    $('hi').textContent = 'Hey ' + p.n.split(' ')[0] + ' 👋';
+    if (!aws.length) {
+      $('awList').innerHTML = `<div class="card"><h2>Your FlexCard moment is coming 💪</h2><p class="h" style="margin:6px 0 0">No Player of the Match or tournament award in KNPL-4/5/6 or the qualifying leagues yet. KNPL-7 is your stage: win one and flex it here!</p></div>`;
+    } else {
+      const order = ['Player of the Tournament', 'Best Batter', 'Best Bowler'];
+      const LORD = ['KNPL', 'YPL', 'CBL', 'NPL', 'SPL'];
+      const lgs = [...new Set(aws.map(a => a.lg))].sort((a, b) => { const la = a.replace(/\d+/, ''), lb = b.replace(/\d+/, '');
+        return LORD.indexOf(la) - LORD.indexOf(lb) || parseInt(b.replace(/\D/g, '')) - parseInt(a.replace(/\D/g, '')); });
+      const row = a => { const r = a.row != null ? m.L[a.row] : null;
+        return `<div class="aw" data-id="${a.id}"><div class="ic">${ICON[a.type] || '🏆'}</div><div><b>${esc(a.type)}</b>
+        <span>${esc(SL(a.lg))}${r ? ' · ' + esc(r[1]) + ' · vs ' + esc(r[2]) : ' · tournament award'}</span></div><div class="go">›</div></div>`; };
+      const list = sel => {
+        const A = aws.filter(a => sel === 'all' || a.lg === sel);
+        const tour = A.filter(a => a.type !== 'Player of the Match').sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+        const pom = A.filter(a => a.type === 'Player of the Match');
+        $('awItems').innerHTML = (tour.length ? '<div class="grp">TOURNAMENT AWARDS</div>' + tour.map(row).join('') : '') +
+          (pom.length ? `<div class="grp">PLAYER OF THE MATCH · ${pom.length}</div>` + pom.slice().reverse().map(row).join('') : '');
+        $('awItems').querySelectorAll('.aw').forEach(el => el.onclick = () => openQ(aws.find(a => a.id === el.dataset.id)));
+        $('lgSel').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.lg === sel));
+      };
+      $('awList').innerHTML = `<div class="grp">SELECT TOURNAMENT</div><div class="lgsel" id="lgSel"><button data-lg="all">All · ${aws.length}</button>` +
+        lgs.map(l => `<button data-lg="${l}">${esc(SL(l))} · ${aws.filter(a => a.lg === l).length}</button>`).join('') + `</div><div id="awItems"></div>`;
+      $('lgSel').querySelectorAll('button').forEach(b => b.onclick = () => list(b.dataset.lg));
+      list('all');
+    }
+    show('s2');
+  } catch(e) { $('eq').textContent = 'Could not open this player. Please try again.'; }
+}
+
+async function openQ(a){
+  const p = S.qp, m = S.qm, L = m.L;
+  const pomAll = L.filter(r => r[6]).length;
+  const d = {type:a.type, src:'q', player:{name:p.n, team:''}, lg:a.lg};
+  if (a.row != null) {
+    const r = L[a.row], idx = L.filter((x, i) => x[6] && i <= a.row).length;
+    d.q = {league:a.lg, round:r[1], opp:r[2], won:r[3] === 'W', mvp:r[4], rank:r[5], nth:idx, total:pomAll};
+  } else {
+    const ss = L.filter(r => r[0] === a.lg);
+    d.q = {league:a.lg, n:ss.length, wins:ss.filter(r => r[3] === 'W').length, mvp:ss.reduce((t, r) => t + (r[4] || 0), 0),
+      poms:ss.filter(r => r[6]).length, top:ss.filter(r => r[5] === 1).length, ko:ss.filter(r => !/^League$|^Super League$/.test(r[1])).length,
+      other:(m.her || []).filter(h => h[0] === a.lg && h[1] !== a.type).map(h => h[1])};
+  }
+  S.award = {type:a.type, matchNo:a.row != null ? SL(a.lg) + '-' + (a.row + 1) : SL(a.lg)}; S.data = d;
+  S.view = qView(d);
+  const seed = hash(S.reg + a.type + a.id);
+  S.tip = pick(TIPS[S.view.cat] || TIPS.allround, seed); S.quote = pick(QUOTES, seed >> 3);
+  S.regPhoto = await loadImg('data:image/jpeg;base64,' + p.p);
+  S.selfie = null; S.usingSelfie = false; S.zoom = 1; S.ox = S.oy = 0; $('zoom').value = 1;
+  S.imgs.sponsor = null; S.imgs.ta = S.imgs.tb = null;
+  renderS3(); show('s3');
+}
+
+function qView(d){
+  const q = d.q, f2 = v => (v == null ? '–' : (Math.round(v * 100) / 100).toFixed(2)), tiles = [], ins = [];
+  let big, cat;
+  if (d.type === 'Player of the Match') {
+    tiles.push([f2(q.mvp), 'MVP points'], [q.rank === 1 ? '#1' : (q.rank ? '#' + q.rank : '–'), 'Team MVP rank'], [q.won ? 'WON' : 'LOST', 'Result']);
+    tiles.push([SL(q.league), 'League'], [q.round, 'Stage'], [q.nth + ' of ' + q.total, 'Career PoM']);
+    if (q.won) ins.push('Match-winning performance');
+    if (q.rank === 1) ins.push('Top MVP of his team in this match');
+    if (!/^League$|^Super League$/.test(q.round)) ins.push('Big-stage hero: ' + q.round);
+    ins.push('Player of the Match award no. ' + q.nth + ' of ' + q.total);
+    big = {main: f2(q.mvp), sfx: 'MVP PTS', line: SL(q.league) + '  ·  ' + q.round + '  ·  vs ' + q.opp, line2: q.won ? 'Team won the match' : ''};
+    cat = 'pom';
+  } else {
+    tiles.push([q.n, 'Matches'], [q.wins, 'Team wins'], [f2(q.mvp), 'MVP points'], [q.poms, 'PoM awards'], [q.top, 'Team-top MVP'], [q.n ? f2(q.mvp / q.n) : '–', 'MVP / match']);
+    ins.push(d.type + ' of ' + SL(q.league));
+    if (q.other.length) ins.push('Also ' + q.other.join(' & '));
+    if (q.poms) ins.push(q.poms + ' Player of the Match award' + (q.poms > 1 ? 's' : '') + ' in ' + SL(q.league));
+    if (q.n) ins.push('Team won ' + q.wins + ' of ' + q.n + ' matches he played');
+    big = {main: f2(q.mvp), sfx: 'MVP PTS', line: q.n + ' matches  ·  ' + q.poms + ' PoM  ·  ' + q.wins + ' wins', line2: SL(q.league) + ' season'};
+    cat = d.type === 'Best Batter' ? 'season_bat' : d.type === 'Best Bowler' ? 'season_bowl' : 'season_all';
+  }
+  return {tiles, ins: ins.slice(0, 4), big, cat, found: true};
+}
+if (qs.get('id')) { const id = qs.get('id').replace(/\D/g, '').padStart(4, '0'); if (/^\d{4}$/.test(id)) loadP().then(() => openPlayer(id)).catch(() => {}); }
+
+
+
+$('go').onclick = async () => {
+  const reg = $('reg').value.trim().toUpperCase(), pin = $('pin').value.replace(/\D/g, '');
+  $('e1').textContent = '';
+  if (!reg) return $('e1').textContent = 'Please enter your KNPL Reg ID.';
+  if (pin.length !== 4) return $('e1').textContent = 'Please enter the last 4 digits of your mobile number.';
+  busy($('go'), true);
+  try {
+    const r = await api('lookup', reg, pin);
+    Object.assign(S, {reg, pin, who: r.player, awards: r.awards});
+    $('hi').textContent = 'Hey ' + r.player.name.split(' ')[0] + ' 👋';
+    $('awList').innerHTML = r.awards.map((a, i) => `<div class="aw" data-i="${i}"><div class="ic">${ICON[a.type] || '🏆'}</div><div><b>${esc(a.type)}</b>
+      <span>${a.match ? 'Match ' + esc(a.match.no) + ' · ' + esc(a.match.teamA) + ' vs ' + esc(a.match.teamB) : 'KNPL-7 season award'}</span></div><div class="go">›</div></div>`).join('');
+    $('awList').querySelectorAll('.aw').forEach(el => el.onclick = () => openAward(+el.dataset.i, el));
+    show('s2');
+  } catch(e) { $('e1').textContent = e.message; }
+  busy($('go'), false);
+};
+$('pin').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').click(); });
+
+async function openAward(i, el){
+  const a = S.awards[i];
+  el.style.opacity = .6;
+  try {
+    const d = await api('card', S.reg, S.pin, a.id);
+    d.player = d.player || S.who;
+    S.award = a; S.data = d;
+    S.view = d.type === 'Player of the Match' ? matchView(d) : seasonView(d);
+    const tips = Object.assign({}, TIPS, d.tips || {}), quotes = (d.quotes && d.quotes.length) ? d.quotes : QUOTES;
+    const seed = hash(S.reg + d.type + (a.matchNo || ''));
+    S.tip = pick(tips[S.view.cat] || tips.allround, seed);
+    S.quote = pick(quotes, seed >> 3);
+    S.regPhoto = await loadImg(d.photo);
+    S.selfie = null; S.usingSelfie = false; S.zoom = 1; S.ox = S.oy = 0; $('zoom').value = 1;
+    S.imgs.sponsor = d.sponsor && d.sponsor.logo ? await loadImg(d.sponsor.logo) : null;
+    if (d.match) { S.imgs.ta = await loadImg(TEAM_LOGO(d.match.teamA)); S.imgs.tb = await loadImg(TEAM_LOGO(d.match.teamB)); }
+    renderS3();
+    show('s3');
+  } catch(e) { alert(e.message); }
+  el.style.opacity = 1;
+}
+
+function renderS3(){
+  const d = S.data, v = S.view;
+  $('s3k').textContent = d.type.toUpperCase();
+  $('s3t').textContent = d.match ? 'Match ' + d.match.no + ' highlights' : 'Your KNPL-7 season';
+  if (d.src === 'q') {
+    const q = d.q;
+    $('s3t').textContent = SL(q.league) + (q.round ? ' · ' + q.round : ' season');
+    $('matchCard').innerHTML = q.round ? `<div class="mcard"><div class="t" style="font-size:40px">${ICON[d.type]}</div></div>
+      <div class="res" style="${q.won ? '' : 'color:var(--mut)'}">${q.won ? 'Team won' : 'Team lost'} vs ${esc(q.opp)}</div><div class="meta">${esc(SL(q.league))} · ${esc(q.round)}</div>`
+      : `<div class="mcard"><div class="t" style="font-size:44px">${ICON[d.type] || '🏆'}</div></div><div class="res" style="color:var(--gd)">${esc(d.type)} · ${esc(SL(q.league))}</div>
+      <div class="meta">${q.n} matches played that season</div>`;
+  } else if (d.match) {
+    const m = d.match, lg = (img, t) => img ? `<img src="${img.src}" alt="">` : `<img alt="" style="visibility:hidden">`;
+    $('matchCard').innerHTML = `<div class="mcard"><div class="t">${lg(S.imgs.ta)}<b>${esc(m.teamA)}</b></div><div class="vs">VS</div><div class="t">${lg(S.imgs.tb)}<b>${esc(m.teamB)}</b></div></div>
+      ${m.result ? `<div class="res">${esc(m.result)}</div>` : ''}<div class="meta">KNPL-7 · Match ${esc(m.no)}${m.date ? ' · ' + esc(m.date) : ''}</div>
+      ${m.link ? `<a class="chlink" href="${esc(m.link)}" target="_blank" rel="noopener">View full scorecard on CricHeroes ↗</a>` : ''}`;
+  } else {
+    $('matchCard').innerHTML = `<div class="mcard"><div class="t" style="font-size:44px">${ICON[d.type] || '🏆'}</div></div><div class="res" style="color:var(--gd)">${esc(d.type)} · KNPL-7</div>
+      <div class="meta">Across ${(d.season || []).length} matches of KNPL-7</div>${TOURNAMENT_URL ? `<a class="chlink" href="${TOURNAMENT_URL}" target="_blank" rel="noopener">View KNPL-7 on CricHeroes ↗</a>` : ''}`;
+  }
+  $('tiles').innerHTML = v.tiles.map(t => `<div class="tile"><b>${esc(t[0])}</b><span>${esc(t[1])}</span></div>`).join('');
+  $('ins').innerHTML = v.ins.map(x => `<li>${esc(x)}</li>`).join('');
+  $('tip').innerHTML = `<b>PRO TIP</b>${esc(S.tip)}`;
+  $('quote').textContent = '“' + S.quote + '”';
+  setPrev();
+}
+function setPrev(){
+  const img = S.usingSelfie ? S.selfie : S.regPhoto;
+  $('phPrev').innerHTML = img ? `<img src="${img.src}" alt="">` : '🙂';
+  $('useReg').classList.toggle('hide', !(S.usingSelfie && S.regPhoto));
+  $('consentRow').classList.toggle('hide', !S.usingSelfie);
+}
+
+$('selfie').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const url = URL.createObjectURL(f), img = await loadImg(url);
+  if (!img) return alert('Could not open this photo. Please try another one.');
+  const c = document.createElement('canvas'), k = Math.min(1, 1400 / Math.max(img.width, img.height));
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  S.selfie = await loadImg(c.toDataURL('image/jpeg', 0.9));
+  S.usingSelfie = true; S.zoom = 1; S.ox = S.oy = 0; $('zoom').value = 1;
+  URL.revokeObjectURL(url); setPrev();
+};
+$('useReg').onclick = () => { S.usingSelfie = false; S.zoom = 1; S.ox = S.oy = 0; $('zoom').value = 1; setPrev(); };
+
+$('make').onclick = async () => {
+  await document.fonts.ready;
+  await Promise.all(['800 40px Inter','600 40px Inter','400 40px Inter','700 40px Cinzel','italic 40px Corm'].map(f => document.fonts.load(f)));
+  S.imgs.logo = S.imgs.logo || await loadImg('knpl.png');
+  draw(); show('s4');
+  if (!DEMO && S.usingSelfie && $('consent').checked && !S.saved) {
+    S.saved = true;
+    const c = document.createElement('canvas'), im = S.selfie, k = Math.min(1, 1000 / Math.max(im.width, im.height));
+    c.width = im.width * k; c.height = im.height * k; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    api('saveSelfie', S.reg, S.pin, S.data.type, c.toDataURL('image/jpeg', 0.85)).catch(() => {});
+  }
+};
+$('fmt').querySelectorAll('button').forEach(b => b.onclick = () => {
+  $('fmt').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); S.fmt = b.dataset.f; draw();
+});
+$('zoom').oninput = e => { S.zoom = +e.target.value; draw(); };
+
+/* drag to reposition the picture */
+(() => {
+  const cv = $('poster'); let drag = null;
+  cv.addEventListener('pointerdown', e => { drag = {x: e.clientX, y: e.clientY, ox: S.ox, oy: S.oy}; cv.setPointerCapture(e.pointerId); cv.style.cursor = 'grabbing'; });
+  cv.addEventListener('pointermove', e => { if (!drag) return; const k = cv.width / cv.getBoundingClientRect().width;
+    S.ox = drag.ox + (e.clientX - drag.x) * k; S.oy = drag.oy + (e.clientY - drag.y) * k; draw(); });
+  const end = () => { drag = null; cv.style.cursor = 'grab'; };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+})();
+
+/* ======================= poster renderer ======================= */
+const LAY = {
+  story: {W:1080, H:1920, logo:[540,118,62], kick:228, title:318, tsize:80, mline:392, rline:438, ph:[540,770,288], name:1150, team:1202, big:1338, bsize:150, line:1408, line2:1452, chips:1496, chipRows:2, nChips:4, tip:[80,1628,920,140], tipLines:2, tfs:27, quote:1832, foot:1890},
+  feed:  {W:1080, H:1350, logo:[540,78,46], kick:160, title:228, tsize:64, mline:282, rline:320, ph:[540,520,165], name:784, team:824, big:920, bsize:100, line:970, line2:1004, chips:1028, chipRows:1, nChips:2, tip:[80,1094,920,136], tipLines:2, tfs:23, quote:1280, foot:1334}
+};
+function draw(){
+  const L = LAY[S.fmt], cv = $('poster'), x = cv.getContext('2d'), d = S.data, v = S.view;
+  cv.width = L.W; cv.height = L.H;
+  const W = L.W, H = L.H, cx = W / 2;
+  /* background */
+  let g = x.createLinearGradient(0, 0, W * .4, H); g.addColorStop(0, '#0c1236'); g.addColorStop(.55, '#070c22'); g.addColorStop(1, '#150b31');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const glow = (gx, gy, r, c) => { const rg = x.createRadialGradient(gx, gy, 0, gx, gy, r); rg.addColorStop(0, c); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(0, 0, W, H); };
+  glow(W * .05, H * .08, W * .75, 'rgba(54,224,255,.20)');
+  glow(W * .98, H * .35, W * .8, 'rgba(255,79,168,.22)');
+  glow(cx, L.ph[1], L.ph[2] * 1.9, 'rgba(255,196,0,.30)');
+  glow(cx, H * 1.02, W * .8, 'rgba(255,159,28,.18)');
+  x.save(); x.strokeStyle = 'rgba(255,255,255,.035)'; x.lineWidth = 1;
+  for (let i = 0; i < W; i += 54) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, H); x.stroke(); }
+  for (let j = 0; j < H; j += 54) { x.beginPath(); x.moveTo(0, j); x.lineTo(W, j); x.stroke(); }
+  x.restore();
+  /* light rays behind the photo */
+  x.save(); x.translate(cx, L.ph[1]); x.globalAlpha = .07; x.fillStyle = '#ffd35a';
+  for (let a = 0; a < 24; a++) { x.rotate(Math.PI / 12); x.beginPath(); x.moveTo(0, 0); x.lineTo(-22, -W); x.lineTo(22, -W); x.fill(); }
+  x.restore();
+  /* sparkles */
+  const rnd = mulberry(hash(S.reg + d.type)); x.fillStyle = '#fff';
+  for (let i = 0; i < 40; i++) { x.globalAlpha = .15 + rnd() * .5; x.beginPath(); x.arc(rnd() * W, rnd() * H, rnd() * 2.2 + .5, 0, 7); x.fill(); }
+  x.globalAlpha = 1;
+  /* header */
+  const [lx, ly, lr] = L.logo;
+  x.save(); x.beginPath(); x.arc(lx, ly, lr, 0, 7); x.fillStyle = '#fff'; x.shadowColor = 'rgba(255,211,90,.5)'; x.shadowBlur = 30; x.fill(); x.restore();
+  if (S.imgs.logo) { x.save(); x.beginPath(); x.arc(lx, ly, lr - 4, 0, 7); x.clip(); x.drawImage(S.imgs.logo, lx - lr + 4, ly - lr + 4, (lr - 4) * 2, (lr - 4) * 2); x.restore(); }
+  text(x, d.src === 'q' ? 'ROAD TO KNPL-7  ·  FLEXCARD' : 'KNPL-7  ·  FLEXCARD', cx, L.kick, '800 26px Inter', '#ffd35a', 'center', 8);
+  const tg = x.createLinearGradient(0, L.title - L.tsize, 0, L.title); tg.addColorStop(0, '#ffffff'); tg.addColorStop(1, '#ffd35a');
+  fit(x, d.type.toUpperCase(), cx, L.title, 700, L.tsize, 'Cinzel', tg, W - 100);
+  if (d.src === 'q') {
+    const q = d.q;
+    text(x, q.round ? SL(q.league) + '  ·  ' + q.round + '  ·  vs ' + q.opp : SL(q.league) + '  ·  TOURNAMENT AWARD', cx, L.mline, '600 28px Inter', '#c9d3f0', 'center', q.round ? 0 : 4, W - 120);
+    text(x, q.round ? (q.won ? 'Team won the match' : 'Stood tall in a tough game') : q.n + ' matches  ·  ' + q.wins + ' wins', cx, L.rline, '800 28px Inter', '#7cff8a', 'center', 0, W - 120);
+  } else if (d.match) {
+    text(x, 'Match ' + d.match.no + '  ·  ' + d.match.teamA + '  vs  ' + d.match.teamB, cx, L.mline, '600 28px Inter', '#c9d3f0', 'center', 0, W - 120);
+    if (d.match.result) text(x, d.match.result, cx, L.rline, '800 28px Inter', '#7cff8a', 'center', 0, W - 120);
+  } else {
+    text(x, 'KNPL-7 SEASON AWARD', cx, L.mline, '600 28px Inter', '#c9d3f0', 'center', 6);
+    if (d.season) text(x, (d.season.length) + ' matches  ·  11–14 Feb 2027', cx, L.rline, '800 26px Inter', '#7cff8a', 'center');
+  }
+  /* photo */
+  const [px, py, pr] = L.ph;
+  const rim = x.createLinearGradient(px - pr, py - pr, px + pr, py + pr); rim.addColorStop(0, '#ffd35a'); rim.addColorStop(.5, '#ff9f1c'); rim.addColorStop(1, '#ff4fa8');
+  x.save(); x.shadowColor = 'rgba(255,170,60,.65)'; x.shadowBlur = 60; x.beginPath(); x.arc(px, py, pr + 14, 0, 7); x.fillStyle = rim; x.fill(); x.restore();
+  x.beginPath(); x.arc(px, py, pr + 4, 0, 7); x.fillStyle = '#070c22'; x.fill();
+  x.save(); x.beginPath(); x.arc(px, py, pr, 0, 7); x.clip();
+  const img = S.usingSelfie ? S.selfie : S.regPhoto;
+  if (img) {
+    const s = Math.max(pr * 2 / img.width, pr * 2 / img.height) * S.zoom, w = img.width * s, h = img.height * s;
+    x.drawImage(img, px - w / 2 + S.ox, py - h / 2 + S.oy, w, h);
+  } else silhouette(x, px, py, pr);
+  x.restore();
+  $('adjRow').classList.toggle('hide', !img);
+  /* ribbon with icon */
+  const badge = d.src === 'q' ? SL(d.q.league) + ' ' + ({'Player of the Match':'POTM', 'Player of the Tournament':'POTT', 'Best Batter':'BEST BATTER', 'Best Bowler':'BEST BOWLER'}[d.type] || '') : {'Player of the Match':'POTM', 'Player of the Tournament':'POTT', 'Best Batter':'BEST BATTER', 'Best Bowler':'BEST BOWLER'}[d.type] || 'AWARD';
+  x.font = '800 24px Inter'; const bw = x.measureText(badge).width + 70;
+  rr(x, cx - bw / 2, py + pr - 10, bw, 52, 26); const bg2 = x.createLinearGradient(cx - bw / 2, 0, cx + bw / 2, 0); bg2.addColorStop(0, '#ff4fa8'); bg2.addColorStop(1, '#ff9f1c'); x.fillStyle = bg2; x.fill();
+  text(x, '★ ' + badge + ' ★', cx, py + pr + 25, '800 24px Inter', '#fff', 'center', 3);
+  /* name */
+  fit(x, (d.player.name || '').toUpperCase(), cx, L.name, 800, S.fmt === 'story' ? 66 : 54, 'Inter', '#ffffff', W - 120);
+  text(x, (d.player.team || (d.src === 'q' ? 'Road to KNPL-7' : '')).toUpperCase(), cx, L.team, '600 28px Inter', '#36e0ff', 'center', 7);
+  /* big stat */
+  const b = v.big;
+  x.font = '800 ' + L.bsize + 'px Inter'; const mw = x.measureText(b.main).width;
+  x.font = '700 ' + Math.round(L.bsize * .3) + 'px Inter'; const sw = b.sfx ? x.measureText(b.sfx).width + 18 : 0;
+  const bx = cx - (mw + sw) / 2;
+  const bgr = x.createLinearGradient(0, L.big - L.bsize * .8, 0, L.big); bgr.addColorStop(0, '#ffffff'); bgr.addColorStop(1, '#ffd35a');
+  x.save(); x.shadowColor = 'rgba(255,190,60,.45)'; x.shadowBlur = 30;
+  text(x, b.main, bx, L.big, '800 ' + L.bsize + 'px Inter', bgr, 'left'); x.restore();
+  if (b.sfx) text(x, b.sfx, bx + mw + 18, L.big - 8, '700 ' + Math.round(L.bsize * .3) + 'px Inter', '#c9d3f0', 'left', 2);
+  text(x, b.line, cx, L.line, '600 32px Inter', '#ffffff', 'center', 0, W - 100);
+  if (b.line2) text(x, b.line2, cx, L.line2, '400 28px Inter', '#c9d3f0', 'center', 0, W - 100);
+  /* chips */
+  chips(x, v.ins.slice(0, L.nChips), cx, L.chips, W - 110, L.chipRows);
+  /* tip */
+  const [tx, ty, tw, th] = L.tip;
+  rr(x, tx, ty, tw, th, 26); x.fillStyle = 'rgba(255,255,255,.07)'; x.fill(); x.strokeStyle = 'rgba(124,255,138,.35)'; x.lineWidth = 2; x.stroke();
+  text(x, 'PRO TIP', tx + 30, ty + 42, '800 21px Inter', '#7cff8a', 'left', 5);
+  wrap(x, S.tip, tx + 30, ty + 80, tw - 60, L.tfs + 8, '400 ' + L.tfs + 'px Inter', '#e4eafc', L.tipLines);
+  text(x, '“' + S.quote + '”', cx, L.quote, 'italic ' + (L.H > 1500 ? 44 : 36) + 'px Corm', '#ffd35a', 'center', 0, W - 120);
+  /* footer */
+  const fy = L.foot;
+  if (S.imgs.sponsor) {
+    text(x, 'AWARD SPONSOR', 70, fy - 20, '600 16px Inter', '#8f9cc4', 'left', 4);
+    const sh = 54, sw2 = S.imgs.sponsor.width * sh / S.imgs.sponsor.height;
+    rr(x, 260, fy - 58, sw2 + 20, sh + 16, 10); x.fillStyle = '#fff'; x.fill(); x.drawImage(S.imgs.sponsor, 270, fy - 50, sw2, sh);
+  } else if (d.sponsor && d.sponsor.name) text(x, 'AWARD SPONSOR  ·  ' + d.sponsor.name.toUpperCase(), 70, fy - 20, '600 18px Inter', '#c9d3f0', 'left', 3);
+  else text(x, 'MAKING THE IMPOSSIBLE A REALITY', 70, fy - 20, '600 18px Inter', '#8f9cc4', 'left', 4);
+  text(x, '#KNPL7  #FlexCard', W - 70, fy - 20, '800 22px Inter', '#ff7ab8', 'right', 2);
+}
+function text(x, s, X, Y, font, fill, align, ls, maxW){
+  x.font = font; x.fillStyle = fill; x.textAlign = align || 'left'; x.textBaseline = 'alphabetic';
+  if ('letterSpacing' in x) x.letterSpacing = (ls || 0) + 'px';
+  if (maxW) { let f = parseFloat(font.match(/(\d+)px/)[1]); while (x.measureText(s).width > maxW && f > 12) { f -= 1; x.font = font.replace(/\d+px/, f + 'px'); } }
+  x.fillText(s, X, Y); if ('letterSpacing' in x) x.letterSpacing = '0px';
+}
+function fit(x, s, X, Y, wgt, size, fam, fill, maxW){ let f = size; x.font = wgt + ' ' + f + 'px ' + fam; while (x.measureText(s).width > maxW && f > 20) { f -= 2; x.font = wgt + ' ' + f + 'px ' + fam; } text(x, s, X, Y, x.font, fill, 'center'); }
+function rr(x, X, Y, w, h, r){ x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+function wrap(x, s, X, Y, maxW, lh, font, fill, maxLines){
+  x.font = font; const words = String(s).split(' '); let line = '', n = 0, lines = [];
+  words.forEach(w => { const t = line ? line + ' ' + w : w; if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; });
+  lines.push(line);
+  if (lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] = lines[maxLines - 1].replace(/\s*\S+$/, '') + '…'; }
+  lines.forEach((l, i) => text(x, l, X, Y + i * lh, font, fill, 'left'));
+}
+function chips(x, items, cx, y, maxW, maxRows){
+  const font = '600 25px Inter', pad = 22, gap = 12, h = 50; x.font = font;
+  const ws = items.map(s => x.measureText(s).width + pad * 2 + 30);
+  const rows = []; let cur = [], w = 0;
+  items.forEach((s, i) => { if (w + ws[i] > maxW && cur.length) { rows.push(cur); cur = []; w = 0; } cur.push(i); w += ws[i] + gap; });
+  if (cur.length) rows.push(cur);
+  rows.slice(0, maxRows || 2).forEach((r, ri) => {
+    const tw = r.reduce((a, i) => a + ws[i], 0) + gap * (r.length - 1); let X = cx - tw / 2; const Y = y + ri * (h + 12);
+    r.forEach(i => {
+      const gold = i === 0; rr(x, X, Y, ws[i], h, 25);
+      x.fillStyle = gold ? 'rgba(255,211,90,.16)' : 'rgba(54,224,255,.12)'; x.fill();
+      x.strokeStyle = gold ? 'rgba(255,211,90,.6)' : 'rgba(54,224,255,.5)'; x.lineWidth = 2; x.stroke();
+      text(x, '✦', X + pad, Y + 34, '800 22px Inter', gold ? '#ffd35a' : '#36e0ff', 'left');
+      text(x, items[i], X + pad + 30, Y + 34, font, '#ffffff', 'left');
+      X += ws[i] + gap;
+    });
+  });
+}
+function silhouette(x, cx, cy, r){
+  const g = x.createLinearGradient(0, cy - r, 0, cy + r); g.addColorStop(0, '#2a2f5e'); g.addColorStop(1, '#10132b');
+  x.fillStyle = g; x.fillRect(cx - r, cy - r, r * 2, r * 2);
+  const sg = x.createLinearGradient(0, cy - r * .5, 0, cy + r); sg.addColorStop(0, 'rgba(255,211,90,.38)'); sg.addColorStop(1, 'rgba(255,159,28,.12)'); x.fillStyle = sg;
+  x.beginPath(); x.arc(cx, cy - r * .2, r * .3, 0, 7); x.fill();
+  x.beginPath(); x.ellipse(cx, cy + r * .82, r * .66, r * .62, 0, Math.PI, 0); x.fill();
+}
+function mulberry(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ======================= share / download ======================= */
+function fileName(){ return 'KNPL7-FlexCard-' + S.data.type.replace(/\s+/g, '') + (S.award.matchNo ? '-M' + S.award.matchNo : '') + '-' + S.fmt + '.png'; }
+function blob(){ return new Promise(r => $('poster').toBlob(r, 'image/png')); }
+$('dl').onclick = async () => { const b = await blob(), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileName(); a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+$('share').onclick = async () => {
+  const b = await blob(), f = new File([b], fileName(), {type: 'image/png'});
+  const txt = '🏆 ' + S.data.type + ' – KNPL-7! ' + (S.data.match ? 'Match ' + S.data.match.no + ' · ' : '') + '#KNPL7 #FlexCard 🔥';
+  if (navigator.canShare && navigator.canShare({files: [f]})) { try { await navigator.share({files: [f], text: txt}); } catch(_) {} }
+  else $('dl').click();
+};
+
+/* ======================= preview-mode sample data ======================= */
+const MOCK = (() => {
+  const P = {regId:'DEMO-0007', name:'Arjun Namboodiri', team:'Madhura Mavericks'};
+  const bat = (n, r, b, f, s, out) => ({name:n, r, b, f, s, out: out !== false});
+  const bowl = (n, o, m, r, w, d) => ({name:n, o, m, r, w, dots:d});
+  const M = no => ({no, date: '1' + (1 + Math.floor((no - 1) / 6)) + ' Feb 2027'});
+  const m12 = {match: Object.assign(M(12), {teamA:'Madhura Mavericks', teamB:'Gandhara Giants', result:'Madhura Mavericks won by 23 runs', link:'https://cricheroes.com'}),
+    scorecard: {innings: [
+      {team:'Madhura Mavericks', batting:[bat('Arjun Namboodiri',62,31,5,4,false), bat('Hari Narayanan',18,15,2,0), bat('Vishnu Nambiar',11,12,1,0), bat('Sreeram K',9,8,1,0), bat('Anoop V',7,6,0,0,false)],
+        bowling:[bowl('Kiran G','2',0,22,1,3), bowl('Rahul P','2',0,28,0,2), bowl('Manu S','2',0,31,1,1), bowl('Deepak N','2',0,26,1,2)]},
+      {team:'Gandhara Giants', batting:[bat('Kiran G',34,24,3,1), bat('Rahul P',22,18,2,0), bat('Manu S',14,12,1,0), bat('Deepak N',8,9,0,0), bat('Sooraj T',6,7,0,0,false)],
+        bowling:[bowl('Hari Narayanan','2',0,17,2,5), bowl('Arjun Namboodiri','2',0,18,1,4), bowl('Vishnu Nambiar','2',0,21,1,3), bowl('Sreeram K','2',0,28,1,2)]}]}};
+  const mk = (no, a, b, res, my, me2) => ({match: Object.assign(M(no), {teamA:a, teamB:b, result:res}), scorecard:{innings:[
+    {team:a, batting:[bat('Arjun Namboodiri', my[0], my[1], my[2], my[3], my[4]), bat('Hari Narayanan',21,17,2,0), bat('Kiran G',15,14,1,0)], bowling:[bowl('Manu S','2',0,20,1,3), bowl('Rahul P','2',0,24,2,2)]},
+    {team:b, batting:[bat('Kiran G',28,22,2,1), bat('Manu S',19,16,1,1), bat('Rahul P',12,11,1,0)], bowling:[bowl('Arjun Namboodiri','2',0,me2[0],me2[1],me2[2]), bowl('Hari Narayanan','2',0,19,1,4)]}]}});
+  const season = [m12, mk(3,'Madhura Mavericks','Kalinga United','Madhura Mavericks won by 5 wickets',[41,26,4,2,true],[16,2,5]),
+    mk(7,'Madhura Mavericks','Mighty Mithilas','Mighty Mithilas won by 9 runs',[27,19,2,1,true],[22,0,3]),
+    mk(18,'Madhura Mavericks','Knights of Kanchi','Madhura Mavericks won by 31 runs',[55,30,6,2,true],[14,3,6]),
+    mk(24,'Madhura Mavericks','Ayodhya Warriors','Madhura Mavericks won by 4 wickets',[38,24,3,2,false],[19,1,4])];
+  const AW = [{id:1, type:'Player of the Match', matchNo:'12', match:m12.match}, {id:2, type:'Player of the Tournament', matchNo:'', match:null},
+    {id:3, type:'Best Batter', matchNo:'', match:null}, {id:4, type:'Best Bowler', matchNo:'', match:null}];
+  return {
+    lookup(reg, pin){ if (reg !== 'DEMO-0007' || pin !== '0007') throw new Error('Preview mode: use Reg ID DEMO-0007 and digits 0007.'); return {player:P, awards:AW}; },
+    card(reg, pin, id){ const a = AW.find(x => x.id === id); const base = {type:a.type, player:P, photo:'', sponsor:{name:'Your Sponsor'}, tips:{}, quotes:[], me:[norm(P.name)]};
+      return a.match ? Object.assign(base, {match:m12.match, scorecard:m12.scorecard}) : Object.assign(base, {season}); },
+    saveSelfie(){ return true; }
+  };
+})();
+</script>
+</body>
+</html>
