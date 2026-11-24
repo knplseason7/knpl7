@@ -28,6 +28,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .brand img{width:44px;height:44px;border-radius:50%;background:#fff;padding:2px}
 .brand b{display:block;font-size:12px;letter-spacing:.14em}
 .brand span{font-size:11px;color:var(--mut)}
+.home{border:1px solid var(--line);background:rgba(255,255,255,.08);color:#fff;font:700 12px Inter;letter-spacing:.06em;padding:7px 12px;border-radius:30px;cursor:pointer;white-space:nowrap}
+.home:hover{border-color:var(--gd)}
+.brand{cursor:pointer}
 .pill{font:800 11px Inter;letter-spacing:.14em;padding:7px 12px;border-radius:30px;background:linear-gradient(90deg,var(--pk),var(--or));white-space:nowrap}
 .hero{margin:26px 0 18px}
 .kick{font:800 12px Inter;letter-spacing:.3em;color:var(--cy)}
@@ -102,6 +105,7 @@ input:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(54,224,255,.2)}
 .lgsel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .lgsel button{border:1px solid var(--line);background:rgba(255,255,255,.06);color:#dfe6fb;font:700 13px Inter;padding:9px 13px;border-radius:20px;cursor:pointer}
 .lgsel button.on{background:linear-gradient(90deg,var(--gd),var(--or));color:#0a1030;border-color:transparent}
+@media(max-width:430px){.brand span{display:none}}
 footer{text-align:center;color:var(--mut);font-size:12px;margin-top:30px;line-height:1.6}
 </style>
 </head>
@@ -109,7 +113,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;margin-top:30px;line-he
 <div class="wrap">
 <header>
   <div class="brand"><img src="knpl.png" alt="KNPL"><div><b>KNPL-7</b><span>Making the Impossible a Reality</span></div></div>
-  <div class="pill">⚡ FLEXCARD</div>
+  <div style="display:flex;gap:8px;align-items:center"><button class="home hide" id="homeBtn" aria-label="Home">🏠 Home</button><div class="pill">⚡ FLEXCARD</div></div>
 </header>
 
 <!-- STEP 1: sign in -->
@@ -228,8 +232,10 @@ const hash = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCo
 const ICON = {'Player of the Match': '🏅', 'Player of the Tournament': '👑', 'Best Batter': '🏏', 'Best Bowler': '🎯'};
 const TEAM_LOGO = t => '../p2/logos/' + norm(t) + '.webp';
 
-function show(id){ ['s1','s2','s3','s4'].forEach(s => $(s).classList.toggle('hide', s !== id)); scrollTo({top:0, behavior:'smooth'}); }
-document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => show(b.dataset.back));
+function show(id){ ['s1','s2','s3','s4'].forEach(s => $(s).classList.toggle('hide', s !== id)); $('homeBtn').classList.toggle('hide', id === 's1'); scrollTo({top:0, behavior:'smooth'}); }
+function goHome(){ try { history.replaceState(null, '', location.pathname); } catch(_) {} if ($('q')) { $('q').value = ''; $('qres').innerHTML = ''; } show('s1'); }
+document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => b.dataset.back === 's1' ? goHome() : show(b.dataset.back));
+$('homeBtn').onclick = goHome; document.querySelector('.brand').onclick = goHome;
 function busy(btn, on, label){ if (on){ btn.dataset.l = btn.innerHTML; btn.innerHTML = '<span class="spin"></span>'; btn.disabled = true; } else { btn.innerHTML = label || btn.dataset.l; btn.disabled = false; } }
 function loadImg(src){ return new Promise(res => { if (!src) return res(null); const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
 
