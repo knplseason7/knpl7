@@ -597,10 +597,15 @@ $('make').onclick = async () => {
   draw(); show('s4');
   if (!DEMO && S.usingSelfie && $('consent').checked && !S.saved) {
     S.saved = true;
-    /* small file for Drive: max 640 px, JPEG quality 0.7 (about 40–70 KB) */
-    const c = document.createElement('canvas'), im = S.selfie, k = Math.min(1, 640 / Math.max(im.width, im.height));
-    c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-    api('saveSelfie', S.reg, S.pin, S.data.type, c.toDataURL('image/jpeg', 0.7)).catch(() => {});
+    /* compress before saving to Drive: 640 px, then lower quality / size until about 80 KB (never blocks the player) */
+    let url = '';
+    for (const [px, q] of [[640, .7], [640, .6], [560, .55], [480, .5], [400, .45]]) {
+      const c = document.createElement('canvas'), im = S.selfie, k = Math.min(1, px / Math.max(im.width, im.height));
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      url = c.toDataURL('image/jpeg', q);
+      if (url.length * 0.75 <= 80 * 1024) break;
+    }
+    api('saveSelfie', S.reg, S.pin, S.data.type, url).catch(() => {});
   }
 };
 $('fmt').querySelectorAll('button').forEach(b => b.onclick = () => {
