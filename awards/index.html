@@ -442,6 +442,7 @@ async function askVerify(id){
   $('svPin').value = ''; $('svErr').textContent = '';
   $('svGo').onclick = async () => {
     const pin = $('svPin').value.replace(/\D/g, '');
+    $('svErr').textContent = '';
     if (pin.length !== 4) { $('svErr').textContent = 'Please enter 4 digits.'; return; }
     busy($('svGo'), true);
     try {
@@ -542,7 +543,7 @@ function qView(d){
   }
   return {tiles, ins: ins.slice(0, 4), big, cat, found: true};
 }
-if (qs.get('id')) { const id = qs.get('id').replace(/\D/g, '').padStart(4, '0'); if (/^\d{4}$/.test(id)) loadP().then(() => openPlayer(id)).catch(() => {}); }
+if (qs.get('id')) { const id = qs.get('id').replace(/\D/g, '').padStart(4, '0'); if (/^\d{4}$/.test(id)) $('eq').textContent = 'Opening your awards…'; if (/^\d{4}$/.test(id)) loadP().then(() => openPlayer(id)).catch(() => {}); }
 
 
 
