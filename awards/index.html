@@ -127,7 +127,7 @@ footer{text-align:center;color:var(--mut);font-size:12px;margin-top:30px;line-he
   </div>
   <div class="card">
     <h2>Find yourself 🔍</h2>
-    <p class="h">Your Player of the Match and tournament awards from KNPL-4, 5, 6 and the qualifying leagues (YPL, CBL, NPL, SPL) are ready to flex now. Search your name or KNPL Reg ID.</p>
+    <p class="h">Your Player of the Match and tournament awards from KNPL-4, 5, 6 and the qualifying leagues (YPL, CBL, NPL, SPL) are ready to flex now. Search your name or KNPL Reg ID, then confirm with the last 4 digits of your registered WhatsApp number.</p>
     <input type="text" id="q" placeholder="Type your name or Reg ID" autocomplete="off">
     <div id="qres"></div>
     <div class="err" id="eq"></div>
@@ -145,6 +145,24 @@ footer{text-align:center;color:var(--mut);font-size:12px;margin-top:30px;line-he
     <div class="demo hide" id="demoNote"><b>Preview:</b> KNPL-7 awards go live during the season. To see the KNPL-7 designs with sample data, use Reg ID <b>DEMO-0007</b> and digits <b>0007</b>.</div>
     </div>
   </div>
+</section>
+
+<!-- STEP 1b: confirm it's you -->
+<section id="sv" class="hide">
+  <div class="hero" style="margin-bottom:6px">
+    <div class="kick">CONFIRM IT'S YOU</div>
+    <h2 style="font:800 30px Inter;margin-top:6px" id="svHi">Hey!</h2>
+    <p class="sub">To keep every FlexCard genuine, enter the <b>last 4 digits of the WhatsApp number</b> you registered for KNPL-7.</p>
+  </div>
+  <div class="card">
+    <div class="qr" style="cursor:default;margin-top:0" id="svWho"></div>
+    <label class="f" for="svPin">WhatsApp number – last 4 digits</label>
+    <input type="tel" id="svPin" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off">
+    <button class="btn" id="svGo">Unlock my awards 🔓</button>
+    <div class="err" id="svErr"></div>
+    <p class="small">Changed your number? Contact the KNPL Core Committee: 99862 18725.</p>
+  </div>
+  <button class="back" data-back="s1">← Not you? Search again</button>
 </section>
 
 <!-- STEP 2: pick award -->
@@ -244,7 +262,7 @@ const hash = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCo
 const ICON = {'Player of the Match': '🏅', 'Player of the Tournament': '👑', 'Best Batter': '🏏', 'Best Bowler': '🎯'};
 const TEAM_LOGO = t => '../p2/logos/' + norm(t) + '.webp';
 
-function show(id){ ['s1','s2','s3','s4'].forEach(s => $(s).classList.toggle('hide', s !== id)); $('homeBtn').classList.toggle('hide', id === 's1'); scrollTo({top:0, behavior:'smooth'}); }
+function show(id){ ['s1','sv','s2','s3','s4'].forEach(s => $(s).classList.toggle('hide', s !== id)); $('homeBtn').classList.toggle('hide', id === 's1'); scrollTo({top:0, behavior:'smooth'}); }
 function goHome(){ try { history.replaceState(null, '', location.pathname); } catch(_) {} if ($('q')) { $('q').value = ''; $('qres').innerHTML = ''; } show('s1'); }
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => b.dataset.back === 's1' ? goHome() : show(b.dataset.back));
 $('homeBtn').onclick = goHome; document.querySelector('.brand').onclick = goHome;
@@ -414,8 +432,33 @@ function qSearch(){
 $('q').addEventListener('focus', () => loadP().catch(e => $('eq').textContent = 'Could not load players. Please refresh the page.'), {once:true});
 $('q').addEventListener('input', async () => { await loadP(); qSearch(); });
 
+const VERIFY_URL = 'https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';   // KNPL registration server (fn flexVerify)
+function isVerified(id){ try { return sessionStorage.getItem('flexOK_' + id) === '1'; } catch(_) { return false; } }
+async function askVerify(id){
+  const P = await loadP(), p = P.find(x => x.i === id);
+  if (!p) { $('eq').textContent = 'Player not found.'; return; }
+  $('svHi').textContent = 'Hey ' + p.n.split(' ')[0] + ' 👋';
+  $('svWho').innerHTML = `<img src="data:image/jpeg;base64,${p.p}" alt=""><div><b>${esc(p.n)}</b><span>KNPL7-${p.i}</span></div>`;
+  $('svPin').value = ''; $('svErr').textContent = '';
+  $('svGo').onclick = async () => {
+    const pin = $('svPin').value.replace(/\D/g, '');
+    if (pin.length !== 4) { $('svErr').textContent = 'Please enter 4 digits.'; return; }
+    busy($('svGo'), true);
+    try {
+      const r = await fetch(VERIFY_URL, {method:'POST', body: JSON.stringify({fn:'flexVerify', args:['KNPL7-' + id, pin]}), redirect:'follow'});
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'Could not verify. Please try again.');
+      try { sessionStorage.setItem('flexOK_' + id, '1'); } catch(_) {}
+      busy($('svGo'), false); openPlayer(id);
+    } catch(e) { busy($('svGo'), false); $('svErr').textContent = /fetch|network/i.test(e.message) ? 'Could not reach the KNPL server. Check your internet and try again.' : e.message; }
+  };
+  $('svPin').onkeydown = e => { if (e.key === 'Enter') $('svGo').click(); };
+  try { history.replaceState(null, '', '?id=' + id); } catch(_) {}
+  show('sv'); setTimeout(() => $('svPin').focus(), 300);
+}
 async function openPlayer(id){
   $('eq').textContent = '';
+  if (!isVerified(id)) return askVerify(id);
   try {
     const P = await loadP(), p = P.find(x => x.i === id);
     const m = Q.M[id] = Q.M[id] || await srDecrypt('m/' + id + '.bin');
