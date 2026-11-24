@@ -218,6 +218,18 @@ const DEMO = !API_URL || /[?&]demo\b/.test(location.search);
 const SR_DIR = '../skill-rating/';
 const SR_KEY = 'zlMUEcdJHeP80zwzbCDRGCSiDyzqyAaow36RHnO0T/c=';
 const LEAGUE = {KNPL:'Kerala Namboodiris Premier League', YPL:'YPL', CBL:'Central Bigbash League', NPL:'NPL', SPL:'SPL'};
+/* Usage log: the same KNPL server that records Skill Rating downloads (fn skillLog). */
+const LOG_URL = 'https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
+function logUse(action){
+  try {
+    const d = S.data; if (!d || (DEMO && d.src !== 'q')) return;
+    const what = 'FlexCard ' + action + ' (' + (S.fmt === 'story' ? 'Story' : 'Feed') + ')';
+    const detail = (d.src === 'q' ? SL(d.q.league) + (d.q.round ? ' ' + d.q.round + ' vs ' + d.q.opp : '') : 'KNPL-7' + (d.match ? ' Match ' + d.match.no : '')) +
+      ' · ' + d.type + ' · ' + (S.usingSelfie ? 'Selfie' : 'Registration pic');
+    fetch(LOG_URL, {method:'POST', mode:'no-cors', keepalive:true, body: JSON.stringify({fn:'skillLog',
+      args:[what, S.reg || '', (d.player && d.player.name) || '', /[?&]id=/.test(location.search) ? 'Personal link' : 'Page', '/knpl7/awards/ · ' + detail]})}).catch(() => {});
+  } catch(_) {}
+}
 const SL = k => k.replace(/(\D+)(\d+)/, '$1-$2');
 
 /* ======================= helpers ======================= */
@@ -747,11 +759,11 @@ function mulberry(a){ return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Mat
 /* ======================= share / download ======================= */
 function fileName(){ return 'KNPL7-FlexCard-' + S.data.type.replace(/\s+/g, '') + (S.award.matchNo ? '-M' + S.award.matchNo : '') + '-' + S.fmt + '.png'; }
 function blob(){ return new Promise(r => $('poster').toBlob(r, 'image/png')); }
-$('dl').onclick = async () => { const b = await blob(), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileName(); a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+$('dl').onclick = async () => { const b = await blob(), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileName(); a.click(); logUse('Download'); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
 $('share').onclick = async () => {
   const b = await blob(), f = new File([b], fileName(), {type: 'image/png'});
   const txt = '🏆 ' + S.data.type + ' – KNPL-7! ' + (S.data.match ? 'Match ' + S.data.match.no + ' · ' : '') + '#KNPL7 #FlexCard 🔥';
-  if (navigator.canShare && navigator.canShare({files: [f]})) { try { await navigator.share({files: [f], text: txt}); } catch(_) {} }
+  if (navigator.canShare && navigator.canShare({files: [f]})) { try { await navigator.share({files: [f], text: txt}); logUse('Share'); } catch(_) {} }
   else $('dl').click();
 };
 
