@@ -99,6 +99,7 @@ tr.tot td{font-weight:800;background:var(--saffron-soft)}
 .meter .big{font:800 30px var(--display)}
 .meter .mb{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin:8px 0}.meter .mb i{display:block;height:100%;background:var(--saffron)}
 .meter dl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:0;font-size:14px}.meter dd{margin:0;font-weight:700;text-align:right}
+.imp{margin:12px 0 0;background:#fdecea;border:2px solid #c0392b;border-left:8px solid #c0392b;border-radius:12px;padding:12px 16px;font-size:15px;line-height:1.55;color:var(--ink)}.imp .h{font-weight:800;color:#c0392b;letter-spacing:.5px;margin-bottom:4px}.imp p{margin:4px 0}.imp .ml{display:block;font-size:14px}
 .vo{margin:12px 0 0;background:#fff4e5;border:2px solid #f28c28;border-radius:12px;padding:12px 16px;font-size:15px;line-height:1.5;color:var(--ink)}.vo b{color:#b4500a}
 .seas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 4px}.seas div{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center}.seas span{display:block;font-size:13px;color:var(--muted,#667);font-weight:700;letter-spacing:.04em}.seas b{display:block;font-size:22px;margin-top:4px}.seas small{display:block;font-size:12px;color:var(--muted,#667);margin-top:2px}
 .note{background:var(--teal-soft);border:1.5px solid var(--teal);border-radius:12px;padding:10px 14px;font-size:14px;margin-top:12px}
@@ -132,6 +133,7 @@ footer{color:var(--muted);font-size:13px;padding-block:0 28px}
 <div id="app" hidden>
   <div class="teambar"><span id="tlogo"></span><div class="sp"><span class="muted small">Logged in as</span><b id="tname"></b><span class="small muted" id="twin"></span></div><button class="btn ghost" type="button" id="out">Log out</button></div>
   <div class="vo" id="vo" hidden></div>
+  <div class="imp" id="imp" hidden></div>
   <ol class="steps" id="steps">
     <li data-s="1"><span>1</span>Draft rules</li><li data-s="2"><span>2</span>Owner consent</li><li data-s="3"><span>3</span>Select players</li><li data-s="4"><span>4</span>Review &amp; confirm</li><li data-s="5"><span>5</span>Submitted</li>
   </ol>
@@ -286,6 +288,10 @@ async function start(code){
   {const n4=x=>String(x).replace(/^KNPL7-?/i,'').replace(/\D/g,'').slice(-4).padStart(4,'0');const own=n4(r.ownerId);const inf={};Object.keys(r.info||{}).forEach(k=>inf[n4(k)]=r.info[k]);r.info=inf;r.ownerId=own;r.eligible=[...new Set((r.eligible||[]).map(n4))].filter(i=>i!==own);S=r}
   (r.eligible||[]).forEach(i=>{if(!P.has(i)&&r.info&&r.info[i]){const x=r.info[i],b=(r.base||{})[x.cat]||[0,0];const rp=v=>{const st=v<=2000?100:v<=8000?200:v<=10000?400:500;return Math.ceil(v/st-1e-9)*st};P.set(i,{i:i,n:x.name,c:x.cat,s:x.sr,bp:b[0],dp:Math.round(b[0]+b[0]*x.sr/100),dt:rp(b[1]+b[1]*x.sr/100)})}});
   const vo=$('vo');vo.hidden=!w.before;if(w.before)vo.innerHTML='👁️ <b>VIEW ONLY</b> – the draft window opens on <b>'+fmtDate(w.opens)+'</b>. You can see the players who chose your team, their draft price and draft point, try combinations and see the draft fee for KNPL-7, KNPL-8 and KNPL-9. Submission opens at that time.<br><span class="ml small">ഇപ്പോൾ കാണാൻ മാത്രം. ഡ്രാഫ്റ്റ് സമർപ്പണം '+fmtDate(w.opens)+'-ന് തുറക്കും.</span>';
+  {const im=$('imp');im.hidden=!!r.submitted||w.closed;
+   im.innerHTML='<div class="h">⚠️ IMPORTANT · പ്രധാനം</div>'
+   +(w.before?'<p>🔄 <b>After 8:30 pm, refresh this page or log in again</b> to submit your draft.<span class="ml">രാത്രി 8:30-ന് ശേഷം page refresh ചെയ്യുക / വീണ്ടും login ചെയ്യുക.</span></p>':'')
+   +'<p>🔒 <b>Each team can submit its draft only once. It cannot be changed after submission.</b><span class="ml">ഒരു ടീമിന് ഒരിക്കൽ മാത്രമേ Draft സമർപ്പിക്കാൻ കഴിയൂ. സമർപ്പിച്ച ശേഷം മാറ്റാൻ കഴിയില്ല.</span></p>';}
   SEL=[];
   if(r.submitted){showDone(r.submitted);return}
   go(1);
