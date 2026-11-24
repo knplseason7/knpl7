@@ -196,7 +196,8 @@ footer{text-align:center;color:var(--mut);font-size:12px;margin-top:30px;line-he
     <div class="selfie">
       <div class="ph" id="phPrev">🙂</div>
       <div style="flex:1">
-        <label class="btn pk filebtn" style="margin-top:0">📸 Add selfie<input type="file" id="selfie" accept="image/*"></label>
+        <label class="btn pk filebtn" style="margin-top:0">🤳 Take a selfie<input type="file" id="selfie" accept="image/*" capture="user"></label>
+        <label class="btn alt filebtn" style="margin-top:8px;padding:12px;font-size:15px">🖼️ Choose from gallery<input type="file" id="selfieG" accept="image/*"></label>
         <button class="btn alt hide" id="useReg" style="margin-top:8px">Use registration pic</button>
       </div>
     </div>
@@ -621,7 +622,7 @@ function setPrev(){
   $('consentRow').classList.toggle('hide', !S.usingSelfie);
 }
 
-$('selfie').onchange = async e => {
+const onPick = async e => {
   const f = e.target.files[0]; if (!f) return;
   const url = URL.createObjectURL(f), img = await loadImg(url);
   if (!img) return alert('Could not open this photo. Please try another one.');
@@ -630,8 +631,9 @@ $('selfie').onchange = async e => {
   c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
   S.selfie = await loadImg(c.toDataURL('image/jpeg', 0.9));
   S.usingSelfie = true; S.zoom = 1; S.ox = S.oy = 0; $('zoom').value = 1;
-  URL.revokeObjectURL(url); setPrev();
+  URL.revokeObjectURL(url); setPrev(); e.target.value = '';
 };
+$('selfie').onchange = onPick; $('selfieG').onchange = onPick;
 $('useReg').onclick = () => { S.usingSelfie = false; S.zoom = 1; S.ox = S.oy = 0; $('zoom').value = 1; setPrev(); };
 
 $('make').onclick = async () => {
