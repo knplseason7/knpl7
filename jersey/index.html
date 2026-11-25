@@ -51,6 +51,16 @@ label.drop input{position:absolute;opacity:0;width:1px;height:1px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:600px){.row2{grid-template-columns:1fr}}
 .bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:10px}.bar div{height:100%;width:0;background:var(--saffron);transition:width .3s}
+.first{background:#fff8dc;border:2px solid #e0a800;border-left:8px solid #e0a800;border-radius:12px;padding:12px 16px;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.first{background:#2a2410}}
+.first b.h{display:block;font:800 20px/1.1 var(--display);letter-spacing:.03em;margin-bottom:4px}
+.sub h2 .cnt{color:var(--saffron)}
+.tl{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.tl li{display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;background:var(--bg)}
+.tl li .n{font:800 18px var(--display);color:var(--saffron);width:24px;text-align:center;flex:none}
+.tl li img{width:34px;height:34px;object-fit:contain;flex:none;background:#fff;border-radius:6px}
+.tl li b{display:block;font-size:14px;line-height:1.2}.tl li span{font-size:12px;color:var(--muted)}
+.prog{height:10px;background:var(--line);border-radius:10px;overflow:hidden;margin-top:6px}.prog div{height:100%;background:var(--ok)}
 footer{color:var(--muted);font-size:13px;padding:10px 16px 30px;text-align:center}
 </style></head>
 <body>
@@ -61,6 +71,9 @@ footer{color:var(--muted);font-size:13px;padding:10px 16px 30px;text-align:cente
 </div></header>
 
 <main class="wrap">
+<div class="first" role="note"><b class="h">⏱ Submit early – first come, first preferred</b>
+  Every team's jersey must look different, so teams can be identified easily on the ground. If two designs look identical or very similar, <b>Choice 1 will be approved for the team that submitted this form first</b>; the other team gets its Choice 2.
+  <div class="ml small" style="margin-top:6px">എല്ലാ ടീമുകളുടെയും ജേഴ്സി വ്യത്യസ്തമായിരിക്കണം. രണ്ട് ഡിസൈനുകൾ ഒരുപോലെ തോന്നിയാൽ, ആദ്യം ഫോം സമർപ്പിച്ച ടീമിന് Choice 1 അനുവദിക്കും; മറ്റേ ടീമിന് Choice 2. അതിനാൽ എത്രയും വേഗം സമർപ്പിക്കുക.</div></div>
 <section id="gate" class="card gate">
   <h2>Log in</h2>
   <p class="muted">Use your <b>team code</b> – the same code you use for the Team Draft page.<br><span class="ml small">Team Draft page-ൽ ഉപയോഗിക്കുന്ന അതേ Team Code ഉപയോഗിക്കുക.</span></p>
@@ -69,10 +82,15 @@ footer{color:var(--muted);font-size:13px;padding:10px 16px 30px;text-align:cente
   <div style="margin-top:12px"><button class="btn or" id="go" type="button">Log in</button></div>
   <div class="msg err" id="gmsg" role="alert"></div>
 </section>
+<section id="subs" class="card sub"><h2>Designs submitted: <span class="cnt" id="scount">–</span></h2>
+  <div class="prog"><div id="sprog" style="width:0"></div></div>
+  <p class="muted small" id="snone" style="margin:8px 0 0">Loading…</p>
+  <ul class="tl" id="slist"></ul></section>
 
 <section id="app" hidden>
   <div class="teambar"><span id="tlogo"></span><div class="sp"><span class="muted small">Logged in as</span><b id="tname"></b><span class="small muted" id="tdl"></span></div><button class="btn ghost" type="button" id="out">Log out</button></div>
   <div id="status" class="status" hidden></div>
+  <div id="note2"></div>
   <div class="info">
     <b>What to upload</b>
     <ul>
@@ -132,7 +150,7 @@ async function login(){
 }
 function show(r){
   S=r;MAXMB=r.maxMb||10;$('mx').textContent=MAXMB;
-  $('gate').hidden=true;$('app').hidden=false;
+  $('gate').hidden=true;$('app').hidden=false;$('note2').replaceChildren(document.querySelector('.first'));document.querySelector('main').appendChild($('subs'));
   $('tname').textContent=title(r.team);
   const im=document.createElement('img');im.className='tlogo';im.alt=title(r.team)+' logo';im.src='../draft/logos/'+slug(r.team)+'.png';im.onerror=()=>im.remove();$('tlogo').replaceChildren(im);
   $('tdl').textContent=r.window&&r.window.deadline?'Last date: '+r.window.deadline:'';
@@ -144,7 +162,7 @@ function show(r){
   const st=$('status');st.hidden=false;
   if(r.window&&r.window.closed){st.className='status no';st.textContent='Submission has closed. Your saved designs are shown below.';lock(true)}
   else if(s&&s.locked){st.className='status no';st.textContent='Your designs are locked by the KNPL committee. Contact the committee for any change.';lock(true)}
-  else if(s){st.className='status ok';st.textContent='✔ Submitted on '+s.first+(s.updates>1?' · last updated '+s.last:'')+'. You can still replace files and submit again.'}
+  else if(s){st.className='status ok';st.textContent='✔ Submitted on '+s.first+(s.order?' – your team is No. '+s.order+' in the submission order':'')+(s.updates>1?' · last updated '+s.last:'')+'. You can still replace files and submit again.'}
   else{st.className='status no';st.textContent='Not submitted yet. Upload all three files and submit.'}
 }
 function lock(on){document.querySelectorAll('#app input,#app textarea').forEach(x=>x.disabled=on);$('save').disabled=on}
@@ -180,11 +198,22 @@ async function save(){
       contactName:$('cn').value.trim(),contactMobile:$('cm').value});
     fill.style.width='100%';
     for(const k in FILES){delete FILES[k];const el=document.querySelector('.slot[data-slot="'+k+'"]');el.querySelector('input[type=file]').value='';el.querySelector('.dt span').textContent='Uploaded ✔'}
-    S.saved=r.saved;show(S);
+    S.saved=r.saved;show(S);loadSubs();
     m.className='msg ok';m.textContent='✔ Jersey designs submitted. Thank you! / ജേഴ്സി ഡിസൈനുകൾ സമർപ്പിച്ചു.';
   }catch(e){m.className='msg err';m.textContent=e.message}
   finally{$('save').disabled=false;setTimeout(()=>{bar.hidden=true;fill.style.width='0'},1500)}
 }
+
+async function loadSubs(){try{const r=await api('jerseyStatus');
+  $('scount').textContent=r.count+' of '+r.total;$('sprog').style.width=Math.round(r.count/r.total*100)+'%';
+  const ul=$('slist');ul.replaceChildren();
+  $('snone').textContent=r.count?'In order of submission:':'No team has submitted yet – be the first!';
+  r.teams.forEach((t,i)=>{const li=document.createElement('li');const n=document.createElement('span');n.className='n';n.textContent=i+1;
+    const im=document.createElement('img');im.alt='';im.src='../draft/logos/'+slug(t.team)+'.png';im.onerror=()=>im.style.visibility='hidden';
+    const d=document.createElement('div');const b=document.createElement('b');b.textContent=title(t.team);const sp=document.createElement('span');sp.textContent=t.at;d.append(b,sp);
+    li.append(n,im,d);ul.appendChild(li)})}
+  catch(e){$('snone').textContent='Could not load the list right now.'}}
+loadSubs();
 $('go').addEventListener('click',login);$('code').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 $('save').addEventListener('click',save);
 $('out').addEventListener('click',()=>{try{sessionStorage.removeItem('knpl_jc')}catch(e){}location.reload()});
