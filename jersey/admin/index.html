@@ -83,7 +83,7 @@ input[type=password],select{width:100%;font:600 16px var(--body);color:var(--ink
 <header><div class="wrap">
   <img class="hlogo" src="../../skill-rating/logo.png" alt="KNPL logo">
   <div><div class="kick">KNPL-7 · Committee only</div><h1>Jersey Designs – Admin</h1>
-  <div class="tagline">Add each team's Choice 1 &amp; Choice 2 in the order received on WhatsApp.</div></div>
+  <div class="tagline">Add each team's Choice 1 &amp; Choice 2 and mark the order received on WhatsApp.</div></div>
 </div></header>
 
 <main class="wrap">
@@ -105,8 +105,9 @@ input[type=password],select{width:100%;font:600 16px var(--body);color:var(--ink
     <h2>Team</h2>
     <select id="team" aria-label="Team"></select>
     <div class="selt" id="selt" hidden><img id="slogo" alt=""><div><b id="sname"></b><div class="small muted" id="sstate"></div></div></div>
-    <label class="fl" for="rec">Received on WhatsApp (optional)</label>
-    <input type="text" id="rec" maxlength="60" placeholder="e.g. 25 Nov, 3:10 PM">
+    <label class="fl" for="no">Received order No.</label>
+    <select id="no" aria-label="Received order number"></select>
+    <p class="muted small" style="margin:6px 0 0">1 = first team whose designs reached you on WhatsApp, 2 = second, and so on.</p>
   </div>
 
   <div class="card slot" data-slot="c1"><h2><span>1</span>Choice 1</h2>
@@ -128,7 +129,7 @@ input[type=password],select{width:100%;font:600 16px var(--body);color:var(--ink
     <div class="prog"><div id="sprog" style="width:0"></div></div>
     <p class="muted small" id="snone" style="margin:8px 0 0">Loading…</p>
     <ul class="tl" id="slist"></ul>
-    <p class="muted small" style="margin:10px 0 0">To correct a team already entered, choose it in the Team list, add only the file(s) to replace and Save – its number stays the same.</p></section>
+    <p class="muted small" style="margin:10px 0 0">To correct a team already entered, choose it in the Team list – add only the file(s) to replace, or change its number – then tap Update.</p></section>
 
   <div class="card howto"><h2>Share straight from WhatsApp</h2>
     <ol>
@@ -181,14 +182,22 @@ function render(r){
     li.append(n,im,d);li.onclick=()=>{sel.value=t.team;teamChanged();window.scrollTo({top:0,behavior:'smooth'})};ul.appendChild(li)});
   teamChanged();
 }
+function fillNo(t){
+  const sel=$('no'),taken={};TEAMS.forEach(x=>{if(x.saved&&x!==t)taken[x.saved.order]=x.team});
+  sel.replaceChildren();let first=0;
+  for(let i=1;i<=TEAMS.length;i++){const o=new Option(taken[i]?('No. '+i+' – '+title(taken[i])):('No. '+i),i);if(taken[i])o.disabled=true;else if(!first)first=i;sel.add(o)}
+  sel.value=t&&t.saved?t.saved.order:first;return Number(sel.value)}
+function banner(){const k=$('team').value,t=TEAMS.find(x=>x.team===k),n=$('no').value;
+  $('nno').textContent=n;if(!t){$('nt').textContent='Select the team';$('ns').textContent='It will be saved as No. '+n;$('save').textContent='Save';return}
+  $('nt').textContent=title(t.team);
+  if(t.saved){$('ns').textContent=(Number(n)===t.saved.order?'Entered as No. '+n+' – files you add replace the old ones':'Will change from No. '+t.saved.order+' to No. '+n);$('save').textContent='Update '+title(t.team)}
+  else{$('ns').textContent='Will be saved as No. '+n;$('save').textContent='Save as No. '+n}}
 function teamChanged(){
-  const k=$('team').value,t=TEAMS.find(x=>x.team===k),nextNo=TEAMS.filter(x=>x.saved).length+1;
-  if(!t){$('selt').hidden=true;$('nno').textContent=nextNo;$('nt').textContent='Select the next team';$('ns').textContent='It will be saved as No. '+nextNo+' in the order';$('save').textContent='Save';return}
-  $('selt').hidden=false;$('sname').textContent=title(t.team);$('slogo').src='../../draft/logos/'+slug(t.team)+'.png';
-  if(t.saved){$('nno').textContent=t.saved.order;$('nt').textContent=title(t.team);$('ns').textContent='Already entered as No. '+t.saved.order+' – files you add will replace the old ones';
-    $('sstate').textContent='Entered '+(t.saved.at||'')+' · Choice 1 ✔ · Choice 2 ✔'+(t.saved.logo?' · Logo ✔':'');$('save').textContent='Replace files for '+title(t.team)}
-  else{$('nno').textContent=nextNo;$('nt').textContent=title(t.team);$('ns').textContent='Will be saved as No. '+nextNo+' in the order';$('sstate').textContent='Not entered yet';$('save').textContent='Save as No. '+nextNo}
-}
+  const k=$('team').value,t=TEAMS.find(x=>x.team===k);fillNo(t);
+  $('selt').hidden=!t;
+  if(t){$('sname').textContent=title(t.team);$('slogo').src='../../draft/logos/'+slug(t.team)+'.png';
+    $('sstate').textContent=t.saved?('Entered as No. '+t.saved.order+' · Choice 1 ✔ · Choice 2 ✔'+(t.saved.logo?' · Logo ✔':'')):'Not entered yet'}
+  banner()}
 function setFile(slot,f){
   const el=document.querySelector('.slot[data-slot="'+slot+'"]'),pv=el.querySelector('.pv'),dt=el.querySelector('.dt');
   if(!f){delete FILES[slot];pv.textContent='?';dt.querySelector('b').textContent='Choose file';dt.querySelector('span').textContent=slot==='logo'?'Only if the team sent one':'Tap → Gallery / Files → WhatsApp Images';el.querySelector('input').value='';return}
@@ -207,16 +216,17 @@ async function save(){
   const k=$('team').value,t=TEAMS.find(x=>x.team===k);
   if(!t){m.className='msg err';m.textContent='Select the team.';return}
   if(!t.saved&&(!FILES.c1||!FILES.c2)){m.className='msg err';m.textContent='Add both Choice 1 and Choice 2.';return}
-  if(t.saved&&!Object.keys(FILES).length&&!$('note').value.trim()){m.className='msg err';m.textContent='Add the file(s) to replace.';return}
-  if(t.saved&&!confirm('Replace the saved file(s) for '+title(k)+'? Its number (No. '+t.saved.order+') stays the same.'))return;
+  const no=Number($('no').value);
+  if(t.saved&&!Object.keys(FILES).length&&!$('note').value.trim()&&no===t.saved.order){m.className='msg err';m.textContent='Nothing to change – add a file or choose a different number.';return}
+  if(t.saved&&!confirm('Update '+title(k)+'?'+(no!==t.saved.order?' Number changes from No. '+t.saved.order+' to No. '+no+'.':'')+(Object.keys(FILES).length?' The file(s) you added replace the old ones.':'')))return;
   const todo=Object.keys(FILES),steps=todo.length+1;let n=0;const bar=$('bar'),fill=bar.firstElementChild;bar.hidden=false;fill.style.width='4%';$('save').disabled=true;
   try{const ids={};
     for(const s of todo){m.textContent='Uploading '+(s==='logo'?'logo':'Choice '+s[1])+'…';const f=FILES[s];
       ids[s]=(await api('jerseyAdminUpload',PIN,k,s,{name:f.name,mime:f.type,data:await b64(f)})).id;n++;fill.style.width=Math.round(n/steps*100)+'%'}
     m.textContent='Saving…';
-    const r=await api('jerseyAdminSave',PIN,{team:k,c1:{id:ids.c1||''},c2:{id:ids.c2||''},logo:{id:ids.logo||''},received:$('rec').value.trim(),note:$('note').value.trim()});
+    const r=await api('jerseyAdminSave',PIN,{team:k,c1:{id:ids.c1||''},c2:{id:ids.c2||''},logo:{id:ids.logo||''},no:no,note:$('note').value.trim()});
     fill.style.width='100%';m.className='msg ok';m.textContent='✔ Saved: '+title(k)+' – No. '+r.saved.order;
-    ['c1','c2','logo'].forEach(s=>setFile(s,null));$('rec').value='';$('note').value='';$('team').value='';
+    ['c1','c2','logo'].forEach(s=>setFile(s,null));$('note').value='';$('team').value='';
     render(await api('jerseyAdmin',PIN));
   }catch(e){m.className='msg err';m.textContent=e.message}
   finally{$('save').disabled=false;setTimeout(()=>{bar.hidden=true;fill.style.width='0'},1500)}
@@ -239,7 +249,7 @@ $('inst').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(()=>{});
 
 $('go').onclick=open_;$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')open_()});
-$('team').onchange=teamChanged;$('save').onclick=save;
+$('team').onchange=teamChanged;$('no').onchange=banner;$('save').onclick=save;
 $('out').onclick=()=>{store.set('');location.reload()};
 takeShared();
 const saved=store.get();if(saved){$('pin').value=saved;open_()}
