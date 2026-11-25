@@ -272,22 +272,98 @@ function renderDone(){
 }
 function imgFor(c){return c===1?'a/'+pad(T.no)+'-c'+T.approved+'.jpg':'a/'+pad(T.no)+'-s.jpg'}
 
+/* ---------- Colour check for new designs (runs in the browser; committee still verifies) ---------- */
+function hex2rgb(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+function rgb2lab(r,g,b){const f=c=>{c/=255;return c>0.04045?Math.pow((c+0.055)/1.055,2.4):c/12.92};r=f(r);g=f(g);b=f(b);
+  let x=(r*0.4124+g*0.3576+b*0.1805)/0.95047,y=(r*0.2126+g*0.7152+b*0.0722),z=(r*0.0193+g*0.1192+b*0.9505)/1.08883;
+  const t=v=>v>0.008856?Math.cbrt(v):7.787*v+16/116;x=t(x);y=t(y);z=t(z);return [116*y-16,500*(x-y),200*(y-z)]}
+function dE(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])}
+function dW(a,b){return Math.hypot((a[0]-b[0])*0.5,a[1]-b[1],a[2]-b[2])}  // lightness weighted down: photos have light and shade
+function toHex(c){return '#'+c.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase()}
+function loadImg(f){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('Could not read the image.'));i.src=URL.createObjectURL(f)})}
+async function analyseColours(file){
+  const img=await loadImg(file);const S0=160,sc=Math.min(1,S0/Math.max(img.naturalWidth,img.naturalHeight));
+  const w=Math.max(1,Math.round(img.naturalWidth*sc)),h=Math.max(1,Math.round(img.naturalHeight*sc));
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(img,0,0,w,h);
+  const d=cx.getImageData(0,0,w,h).data;const N=w*h;const lab=new Array(N),rgb=new Array(N);
+  for(let i=0;i<N;i++){const r=d[i*4],g=d[i*4+1],b=d[i*4+2];rgb[i]=[r,g,b];lab[i]=d[i*4+3]<40?null:rgb2lab(r,g,b)}
+  // remove the backdrop: flood fill from the image border through similar colours
+  const bsm=[];for(let x=0;x<w;x+=3){bsm.push(lab[x],lab[(h-1)*w+x])}for(let y=0;y<h;y+=3){bsm.push(lab[y*w],lab[y*w+w-1])}
+  const bs=bsm.filter(Boolean);const nearB=L=>{let m=1e9;for(const b of bs){const d=dE(L,b);if(d<m)m=d}return m};
+  const bg=new Uint8Array(N);const q=[];
+  for(let x=0;x<w;x++){q.push(x,(h-1)*w+x)}for(let y=0;y<h;y++){q.push(y*w,y*w+w-1)}
+  q.forEach(i=>bg[i]=1);
+  while(q.length){const i=q.pop();const x=i%w,y=(i/w)|0;
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;const j=ny*w+nx;if(bg[j])continue;
+      if(!lab[j]||!lab[i]||(dE(lab[i],lab[j])<3.2&&nearB(lab[j])<12)){bg[j]=1;q.push(j)}}}
+  const px=[];for(let i=0;i<N;i++)if(!bg[i]&&lab[i])px.push(i);
+  if(px.length<N*0.05)return null;
+  // k-means (k=5) in Lab
+  const K=5;let cen=[];for(let k=0;k<K;k++)cen.push(lab[px[Math.floor((k+0.5)*px.length/K)]].slice());
+  let asg=new Int32Array(px.length);
+  for(let it=0;it<12;it++){const sum=cen.map(()=>[0,0,0,0]);
+    px.forEach((i,n)=>{let best=0,bd=1e9;for(let k=0;k<K;k++){const dd=dW(lab[i],cen[k]);if(dd<bd){bd=dd;best=k}}asg[n]=best;const s=sum[best];s[0]+=lab[i][0];s[1]+=lab[i][1];s[2]+=lab[i][2];s[3]++});
+    cen=cen.map((c,k)=>sum[k][3]?[sum[k][0]/sum[k][3],sum[k][1]/sum[k][3],sum[k][2]/sum[k][3]]:c)}
+  const cl=cen.map((c,k)=>({lab:c,rgb:[0,0,0],n:0}));
+  px.forEach((i,n)=>{const c=cl[asg[n]];c.n++;c.rgb[0]+=rgb[i][0];c.rgb[1]+=rgb[i][1];c.rgb[2]+=rgb[i][2]});
+  // merge near-identical clusters
+  const out=[];cl.filter(c=>c.n).sort((a,b)=>b.n-a.n).forEach(c=>{c.rgb=c.rgb.map(v=>v/c.n);const m=out.find(o=>dW(o.lab,c.lab)<14);if(m){const t=m.n+c.n;m.lab=m.lab.map((v,i)=>(v*m.n+c.lab[i]*c.n)/t);m.rgb=m.rgb.map((v,i)=>(v*m.n+c.rgb[i]*c.n)/t);m.n=t}else out.push(c)});
+  out.forEach(c=>c.share=c.n/px.length);return out.sort((a,b)=>b.n-a.n);
+}
+function colourVerdict(cl){
+  const own=T.pal.map(([n,h])=>({n,lab:rgb2lab(...hex2rgb(h))}));
+  const others=Object.values(TD).filter(t=>t.no!==T.no).map(t=>({team:t.name,n:t.pal[0][0],h:t.pal[0][1],lab:rgb2lab(...hex2rgb(t.pal[0][1]))}));
+  const main=cl[0];const bodyIdx=T.no===15?[0,1]:[0];const body=own.filter((o,i)=>bodyIdx.includes(i));const ownBest=body.map(o=>({o,d:dW(main.lab,o.lab)})).sort((a,b)=>a.d-b.d)[0];const dOwnMain=ownBest.d;
+  const clash=others.map(o=>({o,d:dW(main.lab,o.lab)})).sort((a,b)=>a.d-b.d)[0];
+  const usesOwn=own.map(o=>Math.min(...cl.filter(c=>c.share>0.04).map(c=>dW(c.lab,o.lab)))<25);
+  const matchMain=ownBest.d<28;
+  const conflict=clash.d<24&&clash.d<ownBest.d-3;
+  return {main,ownBest,clash,usesOwn,matchMain,conflict,ok:matchMain&&!conflict};
+}
+function renderCheck(box,cl){
+  box.replaceChildren();
+  if(!cl){box.appendChild(bi('Colour check could not read this image clearly. The committee will check the colours.','ഈ ചിത്രത്തിലെ നിറങ്ങൾ വ്യക്തമായി പരിശോധിക്കാൻ കഴിഞ്ഞില്ല. കമ്മിറ്റി നിറങ്ങൾ പരിശോധിക്കും.','div'));box.className='status no';return null}
+  const v=colourVerdict(cl);
+  box.className='status '+(v.ok?'ok':'no');
+  box.appendChild(bi(v.ok?'✔ Colour check passed':'⚠ Colour check: please review','✔ നിറ പരിശോധന വിജയിച്ചു','b'));
+  if(!v.ok)box.lastChild.lastChild.textContent='⚠ നിറ പരിശോധന: ദയവായി പരിശോധിക്കുക';
+  const p=el('div','pal');cl.filter(c=>c.share>0.04).slice(0,4).forEach(c=>{const d=el('div');const sw=el('span');sw.style.background=toHex(c.rgb);const t=el('div');t.append(el('b',null,Math.round(c.share*100)+'%'),el('div','small muted',toHex(c.rgb)));d.append(sw,t);p.appendChild(d)});box.appendChild(p);
+  const lines=[];
+  lines.push(v.matchMain?['Main body colour matches your recommended '+v.ownBest.o.n+'.','പ്രധാന ബോഡി നിറം നിർദ്ദേശിച്ച '+v.ownBest.o.n+'-മായി യോജിക്കുന്നു.']
+                        :['Main body colour should be '+T.pal[0][0]+' (your recommended main colour).','പ്രധാന ബോഡി നിറം '+T.pal[0][0]+' ആയിരിക്കണം (നിർദ്ദേശിച്ച പ്രധാന നിറം).']);
+  lines.push(v.conflict?['Main colour looks like '+v.clash.o.team+' ('+v.clash.o.n+'). This may clash on the ground.','പ്രധാന നിറം '+v.clash.o.team+' ('+v.clash.o.n+')-നോട് സാമ്യമുള്ളതാണ്. ഗ്രൗണ്ടിൽ ആശയക്കുഴപ്പമുണ്ടാകാം.']
+                       :['No clash found with the main colours of the other 15 teams.','മറ്റ് 15 ടീമുകളുടെ പ്രധാന നിറങ്ങളുമായി സാമ്യം കണ്ടെത്തിയില്ല.']);
+  const u=el('ul');lines.forEach(([e,m])=>{const li=el('li');li.append(el('span','l-en',e),el('span','l-ml',m));u.appendChild(li)});box.appendChild(u);
+  box.appendChild(bi('This is an automatic check of the picture. The committee will make the final decision.','ഇത് ചിത്രത്തിന്റെ ഓട്ടോമാറ്റിക് പരിശോധനയാണ്. അന്തിമ തീരുമാനം കമ്മിറ്റിയുടേതാണ്.','div'));box.lastChild.className='small muted';
+  return v;
+}
+
+function chkNote(v){if(!v)return '[Auto colour check: not done (PDF/SVG or unreadable)]';
+  return '[Auto colour check: '+(v.ok?'PASSED':'REVIEW')+' · main '+toHex(v.main.rgb)+' '+Math.round(v.main.share*100)+'% · closest own: '+v.ownBest.o.n+' (dE '+Math.round(v.ownBest.d)+') · closest other team: '+v.clash.o.team+' '+v.clash.o.n+' (dE '+Math.round(v.clash.d)+')]'}
 function renderNew(){
   const s=S.saved,d=$('done');const c=el('div','card');c.appendChild(el('h2',null,'Upload your new design'));
   if(s.n1){c.appendChild(el('div','status ok','✔ New design received on '+s.newAt+'. The committee will review it.'));d.appendChild(c);return}
   if(S.window&&S.window.closed){c.appendChild(el('div','status no','The last date ('+DEADLINE+') has passed.'));d.appendChild(c);return}
   const up=bi('Upload by '+DEADLINE+'. Front and back in one image or PDF; a second file is optional. You can upload only once.','28 നവംബർ 2026, രാത്രി 10:30-നകം അപ്‌ലോഡ് ചെയ്യുക. മുൻവശവും പിൻവശവും ഒരു ചിത്രമായോ PDF ആയോ; രണ്ടാമത്തെ ഫയൽ ആവശ്യമെങ്കിൽ മാത്രം. ഒരിക്കൽ മാത്രമേ അപ്‌ലോഡ് ചെയ്യാൻ കഴിയൂ.','p');up.className='muted';c.appendChild(up);
   pal(c);
+  let CHK=null,chkBox=null,ackWrap=null;
   [['n1','New design (front and back) *'],['n2','Second file (optional)']].forEach(([k,lab])=>{
     c.appendChild(el('label','fl',lab));const dr=el('label','drop');const inp=el('input');inp.type='file';inp.accept=TYPES.join(',');const pv=el('div','pv','?');const dt=el('div','dt');dt.append(el('b',null,'Choose file'),el('span',null,'JPG, PNG, WEBP, SVG or PDF · up to 10 MB'));dr.append(inp,pv,dt);c.appendChild(dr);
     inp.onchange=()=>{const f=inp.files[0];if(!f)return;if(!TYPES.includes(f.type)){alert('Only JPG, PNG, WEBP, SVG or PDF files.');inp.value='';return}if(f.size>10485760){alert('File larger than 10 MB.');inp.value='';return}
-      NF[k]=f;if(f.type.startsWith('image/')){const i=el('img');i.src=URL.createObjectURL(f);pv.replaceChildren(i)}else pv.textContent='PDF';dt.querySelector('b').textContent=f.name}});
+      NF[k]=f;if(f.type.startsWith('image/')){const i=el('img');i.src=URL.createObjectURL(f);pv.replaceChildren(i)}else pv.textContent='PDF';dt.querySelector('b').textContent=f.name;
+      if(k==='n1'){CHK=null;chkBox.hidden=false;ackWrap.hidden=true;$('nack').checked=false;
+        if(f.type.startsWith('image/')&&f.type!=='image/svg+xml'){chkBox.className='status';chkBox.replaceChildren(bi('Checking colours…','നിറങ്ങൾ പരിശോധിക്കുന്നു…'));
+          analyseColours(f).then(cl=>{CHK=renderCheck(chkBox,cl);ackWrap.hidden=!!(CHK&&CHK.ok)}).catch(()=>{CHK=renderCheck(chkBox,null);ackWrap.hidden=false})}
+        else{CHK=null;chkBox.className='status no';chkBox.replaceChildren(bi('Colour check works on JPG, PNG or WEBP pictures. For a PDF, the committee will check the colours.','JPG, PNG, WEBP ചിത്രങ്ങൾക്ക് മാത്രമാണ് നിറ പരിശോധന. PDF ആണെങ്കിൽ കമ്മിറ്റി നിറങ്ങൾ പരിശോധിക്കും.'));ackWrap.hidden=false}}};
+      if(k==='n1'){chkBox=el('div','status');chkBox.hidden=true;c.appendChild(chkBox);
+        ackWrap=el('label','ack');ackWrap.hidden=true;const cb=el('input');cb.type='checkbox';cb.id='nack';const sp=el('span');sp.innerHTML=biH('We have checked our design against the recommended colours. We understand the committee may ask for changes if it clashes with another team.','നിർദ്ദേശിച്ച നിറങ്ങളുമായി ഞങ്ങളുടെ ഡിസൈൻ പരിശോധിച്ചു. മറ്റൊരു ടീമുമായി സാമ്യമുണ്ടെങ്കിൽ കമ്മിറ്റി മാറ്റങ്ങൾ ആവശ്യപ്പെടാമെന്ന് ഞങ്ങൾ മനസ്സിലാക്കുന്നു.');ackWrap.append(cb,sp);c.appendChild(ackWrap)}});
   c.appendChild(el('label','fl','Note for the committee (optional)'));const ta=el('textarea');ta.id='nnote';ta.maxLength=500;c.appendChild(ta);
   const b=el('button','btn or','Submit new design (final)');b.type='button';b.style.cssText='margin-top:12px;width:100%';const m=el('div','msg');c.append(b,m);
   b.onclick=async()=>{m.className='msg';if(!NF.n1){m.className='msg err';m.textContent='Choose your new design file.';return}
+    if(!(CHK&&CHK.ok)&&!$('nack').checked){m.className='msg err';m.textContent='Please review the colour check and tick the confirmation.';return}
     if(!confirm('Submit your new design? You can upload only once.'))return;b.disabled=true;
     try{const ids={};for(const k of ['n1','n2'])if(NF[k]){m.textContent='Uploading '+(k==='n1'?'design':'second file')+'…';ids[k]=(await api('jerseyNewDesignUpload',CODE,k,{name:NF[k].name,mime:NF[k].type,data:await b64(NF[k])})).id}
-      m.textContent='Saving…';const r=await api('jerseyNewDesignSave',CODE,{n1:{id:ids.n1},n2:{id:ids.n2||''},note:ta.value.trim()});S.saved=r.saved;renderDone()}
+      m.textContent='Saving…';const r=await api('jerseyNewDesignSave',CODE,{n1:{id:ids.n1},n2:{id:ids.n2||''},note:(chkNote(CHK)+' '+ta.value.trim()).trim().slice(0,500)});S.saved=r.saved;renderDone()}
     catch(e){m.className='msg err';m.textContent=e.message;b.disabled=false}};
   d.appendChild(c);
 }
