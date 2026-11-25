@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>KNPL-7 Jersey Designs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f3f5fa;--surface:#fff;--ink:#13213f;--muted:#5b6784;--line:#d9dfec;--navy:#0b1a38;--saffron:#e07a1f;--saffron-soft:#fff3e6;
+  --red:#c0392b;--red-soft:#fdeceb;--ok:#1f8a5b;--ok-soft:#e5f5ec;--focus:#e07a1f;
+  --display:"Saira Condensed","Arial Narrow",Arial,sans-serif;--body:"Public Sans","Noto Sans Malayalam",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1426;--surface:#142039;--ink:#e7ecf7;--muted:#9aa7c4;--line:#26355a;--navy:#08101f;--saffron:#f2933c;--saffron-soft:#2a2116;--red:#ff7a6b;--red-soft:#3a1d1a;--ok:#4cc38a;--ok-soft:#12301f}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--navy);color:#fff;border-bottom:4px solid var(--saffron)}
+header .wrap{padding-block:20px 18px;display:flex;gap:16px;align-items:center}
+.hlogo{width:58px;height:58px;border-radius:50%;background:#fff;flex:none;object-fit:contain}
+.kick{font:700 13px/1 var(--display);letter-spacing:.22em;color:#ffb366;text-transform:uppercase}
+h1{font:800 clamp(30px,5.4vw,46px)/1 var(--display);margin:4px 0 0}
+.tagline{color:#c9d3ea;font-size:14px;margin-top:4px}
+main{padding-block:20px 40px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+h2{font:800 26px/1.1 var(--display);margin:0 0 6px}
+.muted{color:var(--muted)}.small{font-size:13px}.ml{font-family:"Noto Sans Malayalam",var(--body);line-height:1.7}
+label.fl{display:block;font:700 14px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
+input[type=text],input[type=tel],textarea{width:100%;font:600 16px var(--body);color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:11px 13px}
+#code{font-size:20px;letter-spacing:.06em;text-transform:uppercase}
+textarea{min-height:70px;resize:vertical;font-weight:500;font-size:15px}
+input:focus-visible,textarea:focus-visible,button:focus-visible,label.drop:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.btn{font:700 16px var(--body);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:13px 20px;cursor:pointer}
+.btn.or{background:var(--saffron)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.msg{min-height:22px;font-weight:600;margin-top:10px}.msg.err{color:var(--red)}.msg.ok{color:var(--ok)}
+.gate{max-width:520px}
+.teambar{display:flex;gap:14px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px}
+.tlogo{width:64px;height:64px;border-radius:12px;object-fit:contain;flex:none;background:#fff}
+.teambar b{font:800 24px/1.05 var(--display);text-transform:uppercase;display:block}.teambar .sp{flex:1;min-width:0}
+.info{background:var(--saffron-soft);border:1.5px solid var(--saffron);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.info ul{margin:4px 0 0;padding-left:20px}.info li{margin:3px 0}
+.status{border-radius:12px;padding:10px 14px;margin-bottom:14px;font-weight:600}
+.status.ok{background:var(--ok-soft);border:1.5px solid var(--ok)}.status.no{background:var(--red-soft);border:1.5px solid var(--red)}
+.slot h2 span{display:inline-block;background:var(--navy);color:#ffc94a;border-radius:8px;padding:0 9px;margin-right:6px}
+.req{color:var(--red)}
+label.drop{display:flex;gap:14px;align-items:center;border:2px dashed var(--line);border-radius:12px;padding:14px;cursor:pointer;background:var(--bg)}
+label.drop:hover{border-color:var(--saffron)}
+label.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.pv{width:110px;height:110px;border-radius:10px;background:var(--surface);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden;font:800 22px var(--display);color:var(--muted)}
+.pv img{width:100%;height:100%;object-fit:contain}
+.dt b{display:block;font-size:15px}.dt span{font-size:13px;color:var(--muted);word-break:break-all}
+.saved{font-size:13px;margin-top:8px;color:var(--ok);font-weight:600}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:600px){.row2{grid-template-columns:1fr}}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-top:10px}.bar div{height:100%;width:0;background:var(--saffron);transition:width .3s}
+footer{color:var(--muted);font-size:13px;padding:10px 16px 30px;text-align:center}
+</style></head>
+<body>
+<header><div class="wrap">
+  <img class="hlogo" src="../skill-rating/logo.png" alt="KNPL logo">
+  <div><div class="kick">KNPL-7 · Franchises only</div><h1>Team Jersey Designs</h1>
+  <div class="tagline">Upload your two jersey design choices and your team logo.</div></div>
+</div></header>
+
+<main class="wrap">
+<section id="gate" class="card gate">
+  <h2>Log in</h2>
+  <p class="muted">Use your <b>team code</b> – the same code you use for the Team Draft page.<br><span class="ml small">Team Draft page-ൽ ഉപയോഗിക്കുന്ന അതേ Team Code ഉപയോഗിക്കുക.</span></p>
+  <label class="fl" for="code">Team code</label>
+  <input type="text" id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KD7-XXXX-XXXXXX">
+  <div style="margin-top:12px"><button class="btn or" id="go" type="button">Log in</button></div>
+  <div class="msg err" id="gmsg" role="alert"></div>
+</section>
+
+<section id="app" hidden>
+  <div class="teambar"><span id="tlogo"></span><div class="sp"><span class="muted small">Logged in as</span><b id="tname"></b><span class="small muted" id="tdl"></span></div><button class="btn ghost" type="button" id="out">Log out</button></div>
+  <div id="status" class="status" hidden></div>
+  <div class="info">
+    <b>What to upload</b>
+    <ul>
+      <li><b>Choice 1</b> and <b>Choice 2</b> – your jersey design, front and back in one image or PDF. The committee will approve one, so give two different options.</li>
+      <li><b>Team logo</b> – the best quality you have: transparent PNG, SVG or PDF preferred.</li>
+      <li>JPG, PNG, WEBP, SVG or PDF · up to <b id="mx">10</b> MB each. You can replace a file and submit again until the committee locks your designs.</li>
+    </ul>
+    <div class="ml small" style="margin-top:6px">ജേഴ്സി ഡിസൈൻ Choice 1, Choice 2 (മുൻവശവും പിൻവശവും ഒരു ചിത്രം/PDF ആയി), ടീം ലോഗോ (ഏറ്റവും നല്ല ക്വാളിറ്റിയിൽ) എന്നിവ upload ചെയ്യുക.</div>
+  </div>
+
+  <div class="card slot" data-slot="c1"><h2><span>1</span>Choice 1 – Jersey Design <span class="req" style="background:none;color:var(--red);padding:0">*</span></h2>
+    <label class="drop"><input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"><div class="pv">?</div><div class="dt"><b>Choose file</b><span>Tap to upload your first choice</span></div></label>
+    <div class="saved" hidden></div>
+    <label class="fl">Notes (colours, collar, sleeves, sponsor placement)</label><textarea maxlength="500" class="note" placeholder="e.g. Navy body, gold sleeves, white collar"></textarea></div>
+
+  <div class="card slot" data-slot="c2"><h2><span>2</span>Choice 2 – Jersey Design <span class="req" style="background:none;color:var(--red);padding:0">*</span></h2>
+    <label class="drop"><input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"><div class="pv">?</div><div class="dt"><b>Choose file</b><span>Tap to upload your second choice</span></div></label>
+    <div class="saved" hidden></div>
+    <label class="fl">Notes (colours, collar, sleeves, sponsor placement)</label><textarea maxlength="500" class="note" placeholder="e.g. Maroon body, black side panels"></textarea></div>
+
+  <div class="card slot" data-slot="logo"><h2><span>3</span>Team Logo <span class="req" style="background:none;color:var(--red);padding:0">*</span></h2>
+    <label class="drop"><input type="file" accept="image/png,image/svg+xml,application/pdf,image/jpeg,image/webp"><div class="pv">?</div><div class="dt"><b>Choose file</b><span>Transparent PNG, SVG or PDF preferred</span></div></label>
+    <div class="saved" hidden></div>
+    <label class="fl">Notes (optional)</label><textarea maxlength="500" class="note" placeholder="e.g. Use the gold version on dark jerseys"></textarea></div>
+
+  <div class="card"><h2>Contact for jersey queries</h2>
+    <div class="row2"><div><label class="fl" for="cn">Name <span class="req">*</span></label><input type="text" id="cn" maxlength="80"></div>
+    <div><label class="fl" for="cm">Mobile <span class="req">*</span></label><input type="tel" id="cm" inputmode="numeric" maxlength="14" placeholder="10-digit mobile"></div></div>
+  </div>
+
+  <div class="card">
+    <button class="btn or" type="button" id="save">Submit jersey designs</button>
+    <div class="bar" id="bar" hidden><div></div></div>
+    <div class="msg" id="smsg" role="status"></div>
+  </div>
+</section>
+</main>
+<footer>KNPL-7 Jersey Designs · Queries: Krishnadas – 99862 18725 · Team KNPL</footer>
+
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
+const $=id=>document.getElementById(id);
+const TYPES=['image/jpeg','image/png','image/webp','image/svg+xml','application/pdf'];
+let CODE='',S=null,MAXMB=10;const FILES={};
+const slug=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const title=t=>t.toLowerCase().replace(/\b[a-z]/g,m=>m.toUpperCase()).replace(/\bOf\b/g,'of');
+async function api(fn,...args){let r;try{r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'})}catch(_){throw new Error('Could not reach the KNPL server. Check your internet connection and try again.')}
+  const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed.');return j.result}
+function b64(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=()=>rej(new Error('Could not read the file.'));fr.readAsDataURL(file)})}
+
+async function login(){
+  const c=$('code').value.trim();$('gmsg').textContent='';if(!c){$('gmsg').textContent='Enter your team code.';return}
+  $('go').disabled=true;$('go').textContent='Checking…';
+  try{const r=await api('jerseyLogin',c);CODE=c;try{sessionStorage.setItem('knpl_jc',c)}catch(e){}show(r)}
+  catch(e){$('gmsg').textContent=e.message}
+  finally{$('go').disabled=false;$('go').textContent='Log in'}
+}
+function show(r){
+  S=r;MAXMB=r.maxMb||10;$('mx').textContent=MAXMB;
+  $('gate').hidden=true;$('app').hidden=false;
+  $('tname').textContent=title(r.team);
+  const im=document.createElement('img');im.className='tlogo';im.alt=title(r.team)+' logo';im.src='../draft/logos/'+slug(r.team)+'.png';im.onerror=()=>im.remove();$('tlogo').replaceChildren(im);
+  $('tdl').textContent=r.window&&r.window.deadline?'Last date: '+r.window.deadline:'';
+  const s=r.saved;
+  document.querySelectorAll('.slot').forEach(el=>{const k=el.dataset.slot,sv=el.querySelector('.saved');
+    if(s&&s[k]){sv.hidden=false;sv.textContent='✔ Saved: '+s[k].name+' – choose a new file only if you want to replace it.'}else sv.hidden=true;
+    el.querySelector('.note').value=s?(s[k==='logo'?'logoNote':k+'Note']||''):''});
+  $('cn').value=s?s.contactName:'';$('cm').value=s?s.contactMobile:'';
+  const st=$('status');st.hidden=false;
+  if(r.window&&r.window.closed){st.className='status no';st.textContent='Submission has closed. Your saved designs are shown below.';lock(true)}
+  else if(s&&s.locked){st.className='status no';st.textContent='Your designs are locked by the KNPL committee. Contact the committee for any change.';lock(true)}
+  else if(s){st.className='status ok';st.textContent='✔ Submitted on '+s.first+(s.updates>1?' · last updated '+s.last:'')+'. You can still replace files and submit again.'}
+  else{st.className='status no';st.textContent='Not submitted yet. Upload all three files and submit.'}
+}
+function lock(on){document.querySelectorAll('#app input,#app textarea').forEach(x=>x.disabled=on);$('save').disabled=on}
+
+document.querySelectorAll('.slot').forEach(el=>{
+  const inp=el.querySelector('input[type=file]'),pv=el.querySelector('.pv'),dt=el.querySelector('.dt');
+  inp.addEventListener('change',()=>{const f=inp.files[0];if(!f)return;
+    if(!TYPES.includes(f.type)){alert('Only JPG, PNG, WEBP, SVG or PDF files can be uploaded.');inp.value='';return}
+    if(f.size>MAXMB*1048576){alert('This file is larger than '+MAXMB+' MB. Please upload a smaller file.');inp.value='';return}
+    FILES[el.dataset.slot]=f;
+    if(f.type.startsWith('image/')){const i=document.createElement('img');i.src=URL.createObjectURL(f);i.alt='Preview';pv.replaceChildren(i)}else pv.textContent='PDF';
+    dt.querySelector('b').textContent=f.name;dt.querySelector('span').textContent=(f.size/1048576).toFixed(1)+' MB · ready to upload';
+  });
+});
+
+async function save(){
+  const m=$('smsg');m.className='msg';m.textContent='';
+  const s=S&&S.saved;
+  for(const [k,lab] of [['c1','Choice 1 jersey design'],['c2','Choice 2 jersey design'],['logo','team logo']]) if(!FILES[k]&&!(s&&s[k])){m.className='msg err';m.textContent='Upload your '+lab+'.';return}
+  if(!$('cn').value.trim()){m.className='msg err';m.textContent='Enter the contact name.';return}
+  if($('cm').value.replace(/\D/g,'').length<10){m.className='msg err';m.textContent='Enter a valid 10-digit mobile number.';return}
+  const todo=Object.keys(FILES),steps=todo.length+1;let done=0;
+  const bar=$('bar'),fill=bar.firstElementChild;bar.hidden=false;fill.style.width='3%';
+  $('save').disabled=true;
+  try{
+    const ids={};
+    for(const k of todo){m.textContent='Uploading '+(k==='logo'?'team logo':'Choice '+k[1])+'…';
+      const f=FILES[k];ids[k]=(await api('jerseyUpload',CODE,k,{name:f.name,mime:f.type,data:await b64(f)})).id;
+      done++;fill.style.width=Math.round(done/steps*100)+'%'}
+    m.textContent='Saving…';
+    const note=k=>document.querySelector('.slot[data-slot="'+k+'"] .note').value.trim();
+    const r=await api('jerseySave',CODE,{c1:{id:ids.c1||'',note:note('c1')},c2:{id:ids.c2||'',note:note('c2')},logo:{id:ids.logo||'',note:note('logo')},
+      contactName:$('cn').value.trim(),contactMobile:$('cm').value});
+    fill.style.width='100%';
+    for(const k in FILES){delete FILES[k];const el=document.querySelector('.slot[data-slot="'+k+'"]');el.querySelector('input[type=file]').value='';el.querySelector('.dt span').textContent='Uploaded ✔'}
+    S.saved=r.saved;show(S);
+    m.className='msg ok';m.textContent='✔ Jersey designs submitted. Thank you! / ജേഴ്സി ഡിസൈനുകൾ സമർപ്പിച്ചു.';
+  }catch(e){m.className='msg err';m.textContent=e.message}
+  finally{$('save').disabled=false;setTimeout(()=>{bar.hidden=true;fill.style.width='0'},1500)}
+}
+$('go').addEventListener('click',login);$('code').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+$('save').addEventListener('click',save);
+$('out').addEventListener('click',()=>{try{sessionStorage.removeItem('knpl_jc')}catch(e){}location.reload()});
+try{const c=sessionStorage.getItem('knpl_jc');if(c){$('code').value=c;login()}}catch(e){}
+</script>
+</body></html>
