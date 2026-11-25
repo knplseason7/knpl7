@@ -1,0 +1,24 @@
+{
+  "name": "KNPL-7 Jersey Admin",
+  "short_name": "KNPL Jersey",
+  "id": "/knpl7/jersey/admin/",
+  "start_url": "/knpl7/jersey/admin/",
+  "scope": "/knpl7/jersey/admin/",
+  "display": "standalone",
+  "background_color": "#0b1a38",
+  "theme_color": "#0b1a38",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ],
+  "share_target": {
+    "action": "/knpl7/jersey/admin/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "files": [{"name": "files", "accept": ["image/*", "application/pdf", ".jpg", ".jpeg", ".png", ".webp", ".pdf"]}]
+    }
+  }
+}

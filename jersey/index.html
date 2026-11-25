@@ -73,10 +73,13 @@ footer{color:var(--muted);font-size:13px;padding:10px 16px 30px;text-align:cente
 </div></header>
 
 <main class="wrap">
-<div class="first" role="note"><b class="h">⏱ Submit early – first come, first preferred</b>
+<div class="first" role="note" id="wa" hidden><b class="h">📲 Send your designs on WhatsApp</b>
+  Send your <b>Choice 1</b> and <b>Choice 2</b> jersey designs (and team logo) to the KNPL committee on WhatsApp. They are entered here <b>in the order received</b>. If two designs look identical or very similar, <b>Choice 1 will be approved for the team whose designs were received first</b>; the other team gets its Choice 2.
+  <div class="ml small" style="margin-top:6px">നിങ്ങളുടെ Choice 1, Choice 2 ജേഴ്സി ഡിസൈനുകൾ (ടീം ലോഗോയും) KNPL കമ്മിറ്റിക്ക് WhatsApp-ൽ അയക്കുക. ലഭിച്ച ക്രമത്തിലാണ് ഇവിടെ ചേർക്കുന്നത്. രണ്ട് ഡിസൈനുകൾ ഒരുപോലെ തോന്നിയാൽ, ആദ്യം അയച്ച ടീമിന് Choice 1 അനുവദിക്കും; മറ്റേ ടീമിന് Choice 2.</div></div>
+<div class="first" role="note" id="fc" hidden><b class="h">⏱ Submit early – first come, first preferred</b>
   Every team's jersey must look different, so teams can be identified easily on the ground. If two designs look identical or very similar, <b>Choice 1 will be approved for the team that submitted this form first</b>; the other team gets its Choice 2.
   <div class="ml small" style="margin-top:6px">എല്ലാ ടീമുകളുടെയും ജേഴ്സി വ്യത്യസ്തമായിരിക്കണം. രണ്ട് ഡിസൈനുകൾ ഒരുപോലെ തോന്നിയാൽ, ആദ്യം ഫോം സമർപ്പിച്ച ടീമിന് Choice 1 അനുവദിക്കും; മറ്റേ ടീമിന് Choice 2. അതിനാൽ എത്രയും വേഗം സമർപ്പിക്കുക.</div></div>
-<section id="gate" class="card gate">
+<section id="gate" class="card gate" hidden>
   <h2>Log in</h2>
   <p class="muted">Use your <b>team code</b> – the same code you use for the Team Draft page.<br><span class="ml small">Team Draft page-ൽ ഉപയോഗിക്കുന്ന അതേ Team Code ഉപയോഗിക്കുക.</span></p>
   <label class="fl" for="code">Team code</label>
@@ -154,7 +157,7 @@ async function login(){
 }
 function show(r){
   S=r;MAXMB=r.maxMb||10;$('mx').textContent=MAXMB;
-  $('gate').hidden=true;$('app').hidden=false;$('note2').replaceChildren(document.querySelector('.first'));document.querySelector('main').appendChild($('subs'));
+  $('gate').hidden=true;$('app').hidden=false;$('note2').replaceChildren($('fc'));document.querySelector('main').appendChild($('subs'));
   $('tname').textContent=title(r.team);
   const im=document.createElement('img');im.className='tlogo';im.alt=title(r.team)+' logo';im.src='../draft/logos/'+slug(r.team)+'.png';im.onerror=()=>im.remove();$('tlogo').replaceChildren(im);
   $('tdl').textContent=r.window&&r.window.deadline?'Last date: '+r.window.deadline:'';
@@ -211,9 +214,10 @@ async function save(){
 }
 
 async function loadSubs(){try{const r=await api('jerseyStatus');
+  const team=r.teamUpload!==false;$('wa').hidden=team;$('fc').hidden=!team;if(!team){document.querySelector('#subs h2').firstChild.textContent='Designs received: ';$('gate').hidden=true;$('app').hidden=true;document.querySelector('.tagline').textContent='Jersey designs received from each franchise, in order.';document.querySelector('.kick').textContent='KNPL-7 · Franchises'}else if($('app').hidden)$('gate').hidden=false;
   $('scount').textContent=r.count+' of '+r.total;$('sprog').style.width=Math.round(r.count/r.total*100)+'%';
   const ul=$('slist');ul.replaceChildren();
-  $('snone').textContent=r.count?'In order of submission:':'No team has submitted yet – be the first!';
+  $('snone').textContent=r.count?(team?'In order of submission:':'In order received:'):(team?'No team has submitted yet – be the first!':'None received yet.');
   r.teams.forEach((t,i)=>{const li=document.createElement('li');const n=document.createElement('span');n.className='n';n.textContent=i+1;
     const im=document.createElement('img');im.alt='';im.src='../draft/logos/'+slug(t.team)+'.png';im.onerror=()=>im.style.visibility='hidden';
     const d=document.createElement('div');const b=document.createElement('b');b.textContent=title(t.team);const sp=document.createElement('span');sp.textContent=t.at;d.append(b,sp);
