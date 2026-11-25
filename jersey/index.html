@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>KNPL-7 Jersey Designs</title>
+<title>KNPL-7 Jersey Approval</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <style>
 :root{--bg:#f3f5fa;--surface:#fff;--ink:#13213f;--muted:#5b6784;--line:#d9dfec;--navy:#0b1a38;--saffron:#e07a1f;--saffron-soft:#fff3e6;
   --red:#c0392b;--red-soft:#fdeceb;--ok:#1f8a5b;--ok-soft:#e5f5ec;--focus:#e07a1f;
@@ -64,22 +65,48 @@ label.drop input{position:absolute;opacity:0;width:1px;height:1px}
 .sum{display:grid;gap:8px;margin-top:6px}.sum div{border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--bg)}.sum b{display:block}
 .prog{height:10px;background:var(--line);border-radius:10px;overflow:hidden;margin-top:6px}.prog div{height:100%;background:var(--ok)}
 footer{color:var(--muted);font-size:13px;padding:10px 16px 30px;text-align:center}
+
+.sec{font:800 13px var(--display);letter-spacing:.18em;text-transform:uppercase;color:var(--saffron);margin:18px 0 8px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.dgrid{grid-template-columns:1fr}}
+.dcard{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:14px;overflow:hidden}
+.dcard img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#eef0f4}
+.dcard .cap{padding:10px 12px;font-size:14px}.dcard .cap b{display:block;font:800 17px/1.1 var(--display);text-transform:uppercase}
+.dcard.ok{border-color:var(--ok)}.dcard.no{border-color:var(--red)}
+.badge{position:absolute;top:10px;left:10px;font:800 14px var(--display);letter-spacing:.08em;color:#fff;border-radius:20px;padding:4px 12px;z-index:2}
+.badge.ok{background:var(--ok)}.badge.no{background:var(--red)}
+.xmark{position:absolute;left:0;right:0;top:0;aspect-ratio:4/3;pointer-events:none;z-index:1}
+.xmark:before,.xmark:after{content:"";position:absolute;left:50%;top:50%;width:92%;height:10px;background:rgba(192,57,43,.88);border-radius:6px;transform-origin:center}
+.xmark:before{transform:translate(-50%,-50%) rotate(37deg)}.xmark:after{transform:translate(-50%,-50%) rotate(-37deg)}
+.sug img{aspect-ratio:auto}
+.lift{background:var(--saffron-soft);border-left:5px solid var(--saffron);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:14.5px}
+.opt{display:block;border:2px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;background:var(--surface);cursor:pointer}
+.opt:has(input:checked){border-color:var(--saffron);box-shadow:0 0 0 3px var(--saffron-soft)}
+.opt.dis{opacity:.55;cursor:not-allowed}
+.opt .hd{display:flex;gap:12px;align-items:flex-start}.opt .hd input{width:22px;height:22px;flex:none;margin-top:3px;accent-color:var(--saffron)}
+.opt .hd b{font:800 19px/1.15 var(--display);text-transform:uppercase;display:block}
+.opt .more{margin:12px 0 0 34px;display:none}.opt:has(input:checked) .more{display:block}
+.opt ul{margin:6px 0;padding-left:20px}.opt li{margin:3px 0}
+.pal{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.pal>div{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--bg);font-size:13px}
+.pal>div>span{width:28px;height:28px;border-radius:7px;border:1px solid rgba(0,0,0,.25);flex:none}
+.warn{background:var(--red-soft);border:1.5px solid var(--red);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
+.rcpt{background:var(--ok-soft);border:2px solid var(--ok);border-radius:14px;padding:16px;margin-bottom:14px}
+.rcpt h2{color:var(--ok)}.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14.5px;margin:8px 0}.kv b{color:var(--muted);font-weight:600}
+a.btn{display:inline-block;text-decoration:none}
 </style></head>
 <body>
 <header><div class="wrap">
   <img class="hlogo" src="../skill-rating/logo.png" alt="KNPL logo">
-  <div><div class="kick">KNPL-7 · Franchises only</div><h1>Team Jersey Designs</h1>
-  <div class="tagline">Upload your two jersey design choices and your team logo.</div></div>
+  <div><div class="kick">KNPL-7 · Franchises only</div><h1>Team Jersey Approval</h1>
+  <div class="tagline">Review your jersey design and confirm your choice.</div></div>
 </div></header>
 
 <main class="wrap">
-<div class="first" role="note" id="wa" hidden><b class="h">📲 Send your designs on WhatsApp</b>
-  Send your <b>Choice 1</b> and <b>Choice 2</b> jersey designs (and team logo) to the KNPL committee on WhatsApp. They are entered here <b>in the order received</b>. If two designs look identical or very similar, <b>Choice 1 will be approved for the team whose designs were received first</b>; the other team gets its Choice 2.
-  <div class="ml small" style="margin-top:6px">നിങ്ങളുടെ Choice 1, Choice 2 ജേഴ്സി ഡിസൈനുകൾ (ടീം ലോഗോയും) KNPL കമ്മിറ്റിക്ക് WhatsApp-ൽ അയക്കുക. ലഭിച്ച ക്രമത്തിലാണ് ഇവിടെ ചേർക്കുന്നത്. രണ്ട് ഡിസൈനുകൾ ഒരുപോലെ തോന്നിയാൽ, ആദ്യം അയച്ച ടീമിന് Choice 1 അനുവദിക്കും; മറ്റേ ടീമിന് Choice 2.</div></div>
-<div class="first" role="note" id="fc" hidden><b class="h">⏱ Submit early – first come, first preferred</b>
-  Every team's jersey must look different, so teams can be identified easily on the ground. If two designs look identical or very similar, <b>Choice 1 will be approved for the team that submitted this form first</b>; the other team gets its Choice 2.
-  <div class="ml small" style="margin-top:6px">എല്ലാ ടീമുകളുടെയും ജേഴ്സി വ്യത്യസ്തമായിരിക്കണം. രണ്ട് ഡിസൈനുകൾ ഒരുപോലെ തോന്നിയാൽ, ആദ്യം ഫോം സമർപ്പിച്ച ടീമിന് Choice 1 അനുവദിക്കും; മറ്റേ ടീമിന് Choice 2. അതിനാൽ എത്രയും വേഗം സമർപ്പിക്കുക.</div></div>
-<section id="gate" class="card gate" hidden>
+<div class="first" role="note"><b class="h">Approve your team jersey by 28 Nov 2026, 10:30 PM</b>
+  Log in with your team code to see your original designs, the suggested design made to the KNPL-7 norms, and choose one option. You can submit only once.
+  <div class="ml small" style="margin-top:6px">നിങ്ങളുടെ ടീം കോഡ് ഉപയോഗിച്ച് ലോഗിൻ ചെയ്ത്, ഒറിജിനൽ ഡിസൈനുകളും KNPL-7 നിയമങ്ങൾ പ്രകാരമുള്ള നിർദ്ദേശിത ഡിസൈനും കണ്ട് ഒരു ഓപ്ഷൻ തിരഞ്ഞെടുക്കുക. ഒരിക്കൽ മാത്രമേ സമർപ്പിക്കാൻ കഴിയൂ. അവസാന തീയതി: 28 നവംബർ 2026, രാത്രി 10:30.</div></div>
+
+<section id="gate" class="card gate">
   <h2>Log in</h2>
   <p class="muted">Use your <b>team code</b> – the same code you use for the Team Draft page.<br><span class="ml small">Team Draft page-ൽ ഉപയോഗിക്കുന്ന അതേ Team Code ഉപയോഗിക്കുക.</span></p>
   <label class="fl" for="code">Team code</label>
@@ -87,63 +114,51 @@ footer{color:var(--muted);font-size:13px;padding:10px 16px 30px;text-align:cente
   <div style="margin-top:12px"><button class="btn or" id="go" type="button">Log in</button></div>
   <div class="msg err" id="gmsg" role="alert"></div>
 </section>
-<section id="subs" class="card sub"><h2>Designs submitted: <span class="cnt" id="scount">–</span></h2>
-  <div class="prog"><div id="sprog" style="width:0"></div></div>
-  <p class="muted small" id="snone" style="margin:8px 0 0">Loading…</p>
-  <ul class="tl" id="slist"></ul></section>
 
 <section id="app" hidden>
   <div class="teambar"><span id="tlogo"></span><div class="sp"><span class="muted small">Logged in as</span><b id="tname"></b><span class="small muted" id="tdl"></span></div><button class="btn ghost" type="button" id="out">Log out</button></div>
-  <div id="status" class="status" hidden></div>
-  <div id="note2"></div>
-  <div class="card" id="done" hidden><h2>Your submission</h2><div class="sum" id="sum"></div><p class="muted small" style="margin:10px 0 0">For any change, contact the KNPL committee.</p></div>
-  <div class="info">
-    <b>What to upload</b>
-    <ul>
-      <li><b>Choice 1</b> and <b>Choice 2</b> – your jersey design, front and back in one image or PDF. The committee will approve one, so give two different options.</li>
-      <li><b>Team logo</b> – the best quality you have: transparent PNG, SVG or PDF preferred.</li>
-      <li>JPG, PNG, WEBP, SVG or PDF · up to <b id="mx">10</b> MB each.</li><li><b>You can submit only once.</b> Check all three files before you press Submit – they cannot be changed afterwards.</li>
-    </ul>
-    <div class="ml small" style="margin-top:6px">ജേഴ്സി ഡിസൈൻ Choice 1, Choice 2 (മുൻവശവും പിൻവശവും ഒരു ചിത്രം/PDF ആയി), ടീം ലോഗോ (ഏറ്റവും നല്ല ക്വാളിറ്റിയിൽ) എന്നിവ upload ചെയ്യുക. <b>ഒരിക്കൽ മാത്രമേ സമർപ്പിക്കാൻ കഴിയൂ; സമർപ്പിച്ച ശേഷം മാറ്റാൻ കഴിയില്ല.</b></div>
-  </div>
-
-  <div class="card slot" data-slot="c1"><h2><span>1</span>Choice 1 – Jersey Design <span class="req" style="background:none;color:var(--red);padding:0">*</span></h2>
-    <label class="drop"><input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"><div class="pv">?</div><div class="dt"><b>Choose file</b><span>Tap to upload your first choice</span></div></label>
-    <div class="saved" hidden></div>
-    <label class="fl">Notes (colours, collar, sleeves, sponsor placement)</label><textarea maxlength="500" class="note" placeholder="e.g. Navy body, gold sleeves, white collar"></textarea></div>
-
-  <div class="card slot" data-slot="c2"><h2><span>2</span>Choice 2 – Jersey Design <span class="req" style="background:none;color:var(--red);padding:0">*</span></h2>
-    <label class="drop"><input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"><div class="pv">?</div><div class="dt"><b>Choose file</b><span>Tap to upload your second choice</span></div></label>
-    <div class="saved" hidden></div>
-    <label class="fl">Notes (colours, collar, sleeves, sponsor placement)</label><textarea maxlength="500" class="note" placeholder="e.g. Maroon body, black side panels"></textarea></div>
-
-  <div class="card slot" data-slot="logo"><h2><span>3</span>Team Logo <span class="req" style="background:none;color:var(--red);padding:0">*</span></h2>
-    <label class="drop"><input type="file" accept="image/png,image/svg+xml,application/pdf,image/jpeg,image/webp"><div class="pv">?</div><div class="dt"><b>Choose file</b><span>Transparent PNG, SVG or PDF preferred</span></div></label>
-    <div class="saved" hidden></div>
-    <label class="fl">Notes (optional)</label><textarea maxlength="500" class="note" placeholder="e.g. Use the gold version on dark jerseys"></textarea></div>
-
-  <div class="card" id="ccard"><h2>Contact for jersey queries</h2>
-    <div class="row2"><div><label class="fl" for="cn">Name <span class="req">*</span></label><input type="text" id="cn" maxlength="80"></div>
-    <div><label class="fl" for="cm">Mobile <span class="req">*</span></label><input type="tel" id="cm" inputmode="numeric" maxlength="14" placeholder="10-digit mobile"></div></div>
-  </div>
-
-  <div class="card" id="subcard">
-    <label class="ack"><input type="checkbox" id="fin"><span><b>I confirm these are our final jersey designs and team logo.</b> I understand the form can be submitted only once and cannot be changed afterwards.<br><span class="ml small">ഇവ ഞങ്ങളുടെ അന്തിമ ജേഴ്സി ഡിസൈനുകളും ടീം ലോഗോയുമാണ്. ഒരിക്കൽ മാത്രമേ സമർപ്പിക്കാൻ കഴിയൂ, പിന്നീട് മാറ്റാൻ കഴിയില്ല.</span></span></label>
-    <button class="btn or" type="button" id="save" style="margin-top:12px">Submit jersey designs (final)</button>
-    <div class="bar" id="bar" hidden><div></div></div>
-    <div class="msg" id="smsg" role="status"></div>
+  <div id="done"></div>
+  <div id="flow">
+    <div class="sec">1 · Your original designs</div>
+    <div class="dgrid" id="orig"></div>
+    <div class="sec">2 · Suggested design (KNPL-7 norms)</div>
+    <div class="dcard sug"><img id="simg" alt="Suggested design"><div class="cap"><b>Suggested design</b><span id="sline" class="small muted"></span></div></div>
+    <div class="lift" id="slift"></div>
+    <div class="sec">3 · Your decision</div>
+    <div id="opts"></div>
+    <div class="card" id="who">
+      <div class="row2"><div><label class="fl" for="cn">Your name <span class="req">*</span></label><input type="text" id="cn" maxlength="80"></div>
+      <div><label class="fl" for="cm">Mobile <span class="req">*</span></label><input type="tel" id="cm" inputmode="numeric" maxlength="14" placeholder="10-digit mobile"></div></div>
+      <button class="btn or" type="button" id="save" style="margin-top:14px;width:100%">Submit approval (final)</button>
+      <div class="msg" id="smsg" role="status"></div>
+      <p class="muted small" style="margin:6px 0 0">You can submit only once. For any change after submitting, contact the KNPL committee.</p>
+    </div>
   </div>
 </section>
+
+<section id="subs" class="card sub"><h2>Approvals received: <span class="cnt" id="scount">–</span></h2>
+  <div class="prog"><div id="sprog" style="width:0"></div></div>
+  <p class="muted small" id="snone" style="margin:8px 0 0">Loading…</p>
+  <ul class="tl" id="slist"></ul></section>
 </main>
-<footer>KNPL-7 Jersey Designs · Queries: Krishnadas – 99862 18725 · Team KNPL</footer>
+<footer>KNPL-7 Jersey Approval · Queries: Krishnadas – 99862 18725 · Team KNPL</footer>
 
 <script>
 const API_URL='https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
+const TD={"MADHURA MAVERICKS": {"no": 1, "name": "Madhura Mavericks", "approved": 1, "rej": {"2": "Not selected: Choice 1 approved."}, "fixes": ["Correct the spelling on the front: the mock-up reads \"MAVERICS\"; it must read \"MAVERICKS\".", "Remove the third-party mark on the back shoulder.", "Keep the sand panels large so the jersey stays clearly different from the blue jerseys of No. 12 and No. 16."], "lift": "Navy and sand now read as one bold, classic combination. The sand raglan sleeves and waist stripes frame the navy body, and the corrected MAVERICKS wordmark sits clean and confident across the chest. A kit that looks as sharp at the toss as it does in the team photo.", "pal": [["Navy", "#1C2B5A", "100 80 20 40"], ["Sand", "#D8BD8C", "10 20 45 0"]], "line": "Navy (#1C2B5A) & Sand (#D8BD8C)", "suggest": ""}, "PANCHAALA PANTHERS": {"no": 2, "name": "Panchaala Panthers", "approved": 1, "rej": {"2": "Not selected: Choice 1 approved."}, "fixes": ["Confirm the spelling in the logo: the logo reads \"PANCHALA\" and the team name is \"PANCHAALA\".", "Keep the panther face as background art below the team name, not across the logo area.", "Use a rich black (not a grey black) so the jersey reads black from a distance."], "lift": "Deep black with red raglan inserts is fierce and instantly recognisable. Moving the panther into a tonal print below the wordmark keeps the drama while the name and logos stay perfectly readable. This is a kit with presence.", "pal": [["Rich Black", "#141414", "60 40 40 100"], ["Red", "#D71920", "0 100 100 0"]], "line": "Rich Black (#141414) & Red (#D71920)", "suggest": ""}, "KOMBANS OF PATALEEPUTHRA": {"no": 3, "name": "Kombans of Pataleeputhra", "approved": 1, "rej": {"2": "Not selected: Choice 1 approved."}, "fixes": ["Confirm the spelling: the mock-up reads \"PADALLEEPUTHRA\"; the team name is \"PATALEEPUTHRA\".", "Supply the team logo in full colour and best quality; the mock-up shows a small \"KOMBANS CC\" mark.", "Keep the sleeve pattern to two colours (green and cream gold) so it prints cleanly."], "lift": "Bottle green with cream-gold geometry gives the Kombans a heritage, old-school class that no other team shares. The two-tone sleeve pattern is refined and prints cleanly. Understated, elegant and unmistakable.", "pal": [["Bottle Green", "#0F4D2E", "90 30 80 40"], ["Cream Gold", "#E6D29A", "5 15 45 0"]], "line": "Bottle Green (#0F4D2E) & Cream Gold (#E6D29A)", "suggest": ""}, "VARAHAS OF VIJAYANAGARA": {"no": 4, "name": "Varahas of Vijayanagara", "approved": 2, "rej": {"1": "Black and red clashes with No. 2 Panchaala Panthers."}, "fixes": ["Simplify the multicolour sleeve and yoke pattern to teal and navy only.", "Replace the glow on the boar with flat shading; glow does not print.", "Make the name band navy, as in the mock-up, and keep the body a clear yellow."], "lift": "The flat-shaded boar is bolder and cleaner than the glowing original, and it will print exactly as it looks. The navy name band frames VARAHAS OF VIJAYANAGARA like a royal banner, and the yellow body will light up the ground.", "pal": [["Yellow", "#FFD21F", "0 15 100 0"], ["Teal", "#13A3A0", "80 0 40 0"], ["Navy", "#1C2B5A", "100 80 20 40"]], "line": "Yellow (#FFD21F), Teal (#13A3A0) & Navy (#1C2B5A)", "suggest": ""}, "VAMOS VRINDAVAN": {"no": 5, "name": "Vamos Vrindavan", "approved": 2, "rej": {"1": "Yellow-green clashes with No. 4 (yellow) and No. 3 (green)."}, "fixes": ["Reduce the painted Vrindavan emblem on the chest to about half its size and move it below the team name.", "Keep the teal dark (petrol), clearly darker than No. 6 and No. 8.", "The small chest logo text in the mock-up is garbled; use the real team logo file.", "Change the zip collar to the standard polo collar."], "lift": "Petrol teal with maroon sleeves and gold lettering is regal and calm, true to Vrindavan. The emblem, now smaller and placed below the name, lets the wordmark lead while the peacock-feather tone adds quiet richness.", "pal": [["Petrol Teal", "#0F5563", "90 30 35 25"], ["Maroon", "#7A1630", "30 100 70 40"], ["Gold", "#D4A43A", "15 35 85 5"]], "line": "Petrol Teal (#0F5563), Maroon (#7A1630) & Gold (#D4A43A)", "suggest": ""}, "GUARDIANS OF KAMBOJA": {"no": 6, "name": "Guardians of Kamboja", "approved": 1, "rej": {"2": "Not selected: Choice 1 approved."}, "fixes": ["Keep the body pale (ice blue) so it stays different from No. 8 (bright aqua) and No. 5 (dark teal).", "Lettering and numbers in navy for contrast on the pale body."], "lift": "Pale ice blue with teal sleeves feels fresh, crisp and calm, and the navy lettering gives the best readability in the league. The subtle mountain silhouette tells the Kamboja story without adding noise.", "pal": [["Ice Blue", "#D6E6F0", "20 5 3 0"], ["Teal", "#137A8A", "85 20 30 5"], ["Navy", "#12305A", "100 80 20 40"]], "line": "Ice Blue (#D6E6F0), Teal (#137A8A) & Navy (#12305A)", "suggest": ""}, "KNIGHTS OF KANCHI": {"no": 7, "name": "Knights of Kanchi", "approved": 0, "rej": {"1": "Yellow clashes with No. 4 Varahas of Vijayanagara.", "2": "Yellow clashes with No. 4 Varahas of Vijayanagara."}, "fixes": ["Change the V-neck to the standard polo collar."], "lift": "Kanchipuram-silk magenta with gold is a signature no other team can claim. The tonal gopuram and elephant keep the Knights' heritage, and the gold sleeves make the kit glow with pride on the ground.", "pal": [["Kanchi Magenta", "#C4166C", "10 100 20 0"], ["Gold", "#D4A43A", "15 35 85 5"]], "line": "Kanchi Magenta (#C4166C) & Gold (#D4A43A)", "suggest": "Kanchi-silk magenta body with gold sleeves and border, keeping the temple tower, elephant and cuff border motifs. Magenta and gold recall Kanchipuram silk and no other team uses them."}, "SPARTANS OF NALANDA": {"no": 8, "name": "Spartans of Nalanda", "approved": 2, "rej": {"1": "Yellow clashes with No. 4 Varahas of Vijayanagara."}, "fixes": ["Keep the aqua bright and solid; approve it on a printed swatch because aqua prints duller than on screen.", "Remove the neck label shown in the mock-up."], "lift": "Bright aqua with navy is clean, modern and athletic. The simple diagonal flashes give speed without clutter, making this one of the easiest kits to spot from the boundary and on the live stream.", "pal": [["Aqua", "#19C2C9", "70 0 25 0"], ["Navy", "#1C2B5A", "100 80 20 40"]], "line": "Aqua (#19C2C9) & Navy (#1C2B5A)", "suggest": ""}, "KALINGA UNITED": {"no": 9, "name": "Kalinga United", "approved": 1, "rej": {"2": "Not selected: Choice 1 approved."}, "fixes": ["Correct the logo text: it reads \"UNITEID\".", "Make the gold lettering a flat gold with a navy outline; metallic shine does not print.", "Change the zip collar to the standard polo collar."], "lift": "Vermilion red, navy and gold give Kalinga United a royal, powerful look. The flat gold wordmark is bold and print-ready, and the navy-gold diagonal at the hem adds a finishing touch worthy of a champion side.", "pal": [["Vermilion Red", "#C8281E", "0 90 90 15"], ["Navy", "#1C2B5A", "100 80 20 40"], ["Gold", "#D4A43A", "15 35 85 5"]], "line": "Vermilion Red (#C8281E), Navy (#1C2B5A) & Gold (#D4A43A)", "suggest": ""}, "MIGHTY MITHILAS": {"no": 10, "name": "Mighty Mithilas", "approved": 1, "rej": {"2": "Not selected: Choice 1 approved."}, "fixes": ["Add more navy at the sides and sleeves so the jersey does not read as plain white from a distance.", "Avoid fades to white at the hem; they show sweat marks."], "lift": "As the league's only white jersey, Mighty Mithilas will stand out in every frame. Navy sleeves and the gold-and-navy sash add colour and energy, so the kit looks premium rather than plain.", "pal": [["Pure White", "#FFFFFF", "0 0 0 0"], ["Navy", "#1C2B5A", "100 80 20 40"], ["Gold", "#F5C211", "0 20 95 0"]], "line": "Pure White (#FFFFFF), Navy (#1C2B5A) & Gold (#F5C211)", "suggest": ""}, "KURUKSHETRA YODHAS": {"no": 11, "name": "Kurukshetra Yodhas", "approved": 0, "rej": {"1": "Black and red clashes with No. 2 Panchaala Panthers and No. 9 Kalinga United.", "2": "Black and red clashes with No. 2 Panchaala Panthers and No. 9 Kalinga United."}, "fixes": ["Remove \"EST. 2024\" and the cricket academy mark."], "lift": "Steel grey with crimson is a true warrior's armour, strong and disciplined. It gives the Yodhas an identity no other team shares, and the crimson lettering hits hard against the grey.", "pal": [["Steel Grey", "#8C9298", "45 35 32 5"], ["Crimson", "#9E1B24", "15 100 90 25"], ["Charcoal", "#1E1E1E", "0 0 0 90"]], "line": "Steel Grey (#8C9298), Crimson (#9E1B24) & Charcoal (#1E1E1E)", "suggest": "Steel grey body with crimson sleeves and stripes and a charcoal collar, keeping the Spartan helmet. Steel grey suits a warrior team and no other team uses it."}, "GANDHARA GIANTS": {"no": 12, "name": "Gandhara Giants", "approved": 1, "rej": {"2": "Not selected: Choice 1 approved (magenta prints duller than shown)."}, "fixes": ["Remove \"DIKA SPORTS\" from the back unless that is the appointed printer.", "Keep the body a bright royal blue, clearly lighter than No. 1 (navy)."], "lift": "Royal blue with orange flashes is full of energy and confidence. The bright blue body and white lettering make Gandhara Giants one of the most readable kits in the league.", "pal": [["Royal Blue", "#1565C0", "90 60 0 0"], ["Navy", "#1C2B5A", "100 80 20 40"], ["Orange", "#E86A17", "0 65 100 5"]], "line": "Royal Blue (#1565C0), Navy (#1C2B5A) & Orange (#E86A17)", "suggest": ""}, "JAGUARS OF JHANSI": {"no": 13, "name": "Jaguars of Jhansi", "approved": 0, "rej": {"1": "Navy and orange clashes with No. 12 Gandhara Giants and No. 1 (navy).", "2": "Navy and orange clashes with No. 12 Gandhara Giants and No. 1 (navy)."}, "fixes": ["Keep the tribal sleeve pattern, in navy on orange."], "lift": "Swapping to an orange body with navy turns the Jaguars into the boldest colour on the ground, true to the big cat itself. The navy sleeves and stripes keep it sharp and balanced.", "pal": [["Vibrant Orange", "#F26522", "0 70 100 0"], ["Navy", "#1C2B5A", "100 80 20 40"]], "line": "Vibrant Orange (#F26522) & Navy (#1C2B5A)", "suggest": "Swap the team's own colours: orange body with navy sleeves and patterns. Orange is a jaguar's own colour and no other team has an orange body."}, "AYODHYA WARRIORS": {"no": 14, "name": "Ayodhya Warriors", "approved": 0, "rej": {"1": "White clashes with No. 10 Mighty Mithilas.", "2": "Cream (near-white) clashes with No. 10 Mighty Mithilas."}, "fixes": ["Keep the temple pattern from Choice 1 as a tone-on-tone print on the maroon body.", "Change the zip collar to the standard polo collar."], "lift": "Maroon and gold give Ayodhya Warriors a royal, temple-like dignity. The gold sleeves and sweeping lower stripes add movement, and the kit will look magnificent in photos and on the stage.", "pal": [["Deep Maroon", "#6B1422", "30 100 80 45"], ["Antique Gold", "#D4A43A", "15 35 85 5"]], "line": "Deep Maroon (#6B1422) & Antique Gold (#D4A43A)", "suggest": "Maroon body with gold patterns and sleeves, taken from the maroon in Choice 2, for a royal temple look."}, "DEVILS OF CHITHRAKOOT": {"no": 15, "name": "Devils of Chithrakoot", "approved": 1, "rej": {"2": "White clashes with No. 10 Mighty Mithilas."}, "fixes": ["Choice 1 copies another brand's jersey: remove \"COOCH\", \"FEEL THE PASSION\" and \"No room for racism\", and redraw the artwork as the team's own.", "Keep a clear 50/50 black and white split so it does not read as black like No. 2.", "Make the gold lightning flat gold; glow does not print.", "Change the round neck to the standard polo collar."], "lift": "The black and white split is the most daring kit in KNPL-7, and it is now the team's own original artwork. Gold trims and the flat lightning add flair while staying fully printable.", "pal": [["White", "#FFFFFF", "0 0 0 0"], ["Black", "#141414", "60 40 40 100"], ["Crimson", "#C8102E", "0 100 80 10"], ["Gold", "#D4A43A", "15 35 85 5"]], "line": "Half-and-Half White & Black (#141414), Crimson (#C8102E) & Gold (#D4A43A)", "suggest": ""}, "KAALIYANZ OF DWARAKA": {"no": 16, "name": "Kaaliyanz of Dwaraka", "approved": 1, "rej": {"2": "White clashes with No. 10 Mighty Mithilas."}, "fixes": ["Confirm the spelling \"KAALIYANZ\"; the concept sheet reads \"KAALIYANS\".", "Change the V-neck to the standard polo collar.", "Approve the violet on a printed swatch; it prints duller than on screen."], "lift": "Midnight indigo with royal purple and gold is mystical and regal, perfect for the serpent of Dwaraka. The gold wordmark shines against the deep body, giving the Kaaliyanz a premium finish.", "pal": [["Midnight Indigo", "#1E1647", "100 100 25 45"], ["Royal Purple", "#5B2C83", "75 95 5 5"], ["Gold", "#D4A43A", "15 35 85 5"]], "line": "Midnight Indigo (#1E1647), Royal Purple (#5B2C83) & Gold (#D4A43A)", "suggest": ""}};
+const DEADLINE='28 Nov 2026, 10:30 PM';
+const STD=['Standard KNPL-7 rib-knit polo collar with 2-button placket and 3 mm gold tipping.',
+ 'KNPL logo (with its white circle) and team logo both 9 cm, level on the chest.',
+ 'Team name across the front in the KNPL-7 font; back number on top with the player name below.',
+ 'Sponsor areas on both sleeves and on the back below the player name.',
+ 'Colours set to fixed print (CMYK) values; glow, metallic and third-party marks removed.'];
 const $=id=>document.getElementById(id);
 const TYPES=['image/jpeg','image/png','image/webp','image/svg+xml','application/pdf'];
-let CODE='',S=null,MAXMB=10;const FILES={};
+let CODE='',S=null,T=null;const NF={};
 const slug=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const title=t=>t.toLowerCase().replace(/\b[a-z]/g,m=>m.toUpperCase()).replace(/\bOf\b/g,'of');
+const pad=n=>String(n).padStart(2,'0');
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
 async function api(fn,...args){let r;try{r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'})}catch(_){throw new Error('Could not reach the KNPL server. Check your internet connection and try again.')}
   const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed.');return j.result}
 function b64(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=()=>rej(new Error('Could not read the file.'));fr.readAsDataURL(file)})}
@@ -151,82 +166,147 @@ function b64(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.o
 async function login(){
   const c=$('code').value.trim();$('gmsg').textContent='';if(!c){$('gmsg').textContent='Enter your team code.';return}
   $('go').disabled=true;$('go').textContent='Checking…';
-  try{const r=await api('jerseyLogin',c);CODE=c;try{sessionStorage.setItem('knpl_jc',c)}catch(e){}show(r)}
+  try{const r=await api('jerseyApprovalLogin',c);CODE=c;try{sessionStorage.setItem('knpl_ja',c)}catch(e){}show(r)}
   catch(e){$('gmsg').textContent=e.message}
   finally{$('go').disabled=false;$('go').textContent='Log in'}
 }
 function show(r){
-  S=r;MAXMB=r.maxMb||10;$('mx').textContent=MAXMB;
-  $('gate').hidden=true;$('app').hidden=false;$('note2').replaceChildren($('fc'));document.querySelector('main').appendChild($('subs'));
-  $('tname').textContent=title(r.team);
-  const im=document.createElement('img');im.className='tlogo';im.alt=title(r.team)+' logo';im.src='../draft/logos/'+slug(r.team)+'.png';im.onerror=()=>im.remove();$('tlogo').replaceChildren(im);
-  $('tdl').textContent=r.window&&r.window.deadline?'Last date: '+r.window.deadline:'';
-  const s=r.saved;
-  const form=[...document.querySelectorAll('.slot')].concat([$('ccard'),$('subcard'),document.querySelector('.info')]);
-  form.forEach(x=>x.hidden=!!s);$('done').hidden=!s;
-  if(s){const sm=$('sum');sm.replaceChildren();
-    [['Choice 1 – Jersey Design',s.c1,s.c1Note],['Choice 2 – Jersey Design',s.c2,s.c2Note],['Team Logo',s.logo,s.logoNote],['Contact',{name:s.contactName+' · '+s.contactMobile},'']].forEach(([h,f,n])=>{
-      const d=document.createElement('div');const b=document.createElement('b');b.textContent=h;const sp=document.createElement('span');sp.className='small muted';sp.textContent=(f?f.name:'')+(n?' – '+n:'');d.append(b,sp);sm.appendChild(d)})}
-  const st=$('status');st.hidden=false;
-  if(s){}
-  else if(r.window&&r.window.closed){st.className='status no';st.textContent='Submission has closed.';lock(true)}
-  if(s){st.className='status ok';st.textContent='✔ Submitted on '+s.first+(s.order?' – your team is No. '+s.order+' in the submission order.':'.')}
-  else if(!(r.window&&r.window.closed)){st.className='status no';st.textContent='Not submitted yet. Upload all three files and submit – only once.'}
+  S=r;T=TD[r.team];if(!T){$('gmsg').textContent='Team not found. Contact the KNPL committee.';return}
+  $('gate').hidden=true;$('app').hidden=false;document.querySelector('.first').hidden=true;
+  $('tname').textContent=T.name;
+  const im=el('img','tlogo');im.alt=T.name+' logo';im.src='../draft/logos/'+slug(T.name)+'.png';im.onerror=()=>im.remove();$('tlogo').replaceChildren(im);
+  $('tdl').textContent='Last date: '+(r.window&&r.window.deadline||DEADLINE);
+  if(r.saved){$('flow').hidden=true;renderDone();return}
+  $('flow').hidden=false;$('done').replaceChildren();
+  if(r.window&&r.window.closed){$('flow').hidden=true;$('done').replaceChildren(el('div','status no','The approval window has closed. Contact the KNPL committee.'));return}
+  renderOrig();renderSug();renderOpts();
 }
-function lock(on){document.querySelectorAll('#app input,#app textarea').forEach(x=>x.disabled=on);$('save').disabled=on}
-
-document.querySelectorAll('.slot').forEach(el=>{
-  const inp=el.querySelector('input[type=file]'),pv=el.querySelector('.pv'),dt=el.querySelector('.dt');
-  inp.addEventListener('change',()=>{const f=inp.files[0];if(!f)return;
-    if(!TYPES.includes(f.type)){alert('Only JPG, PNG, WEBP, SVG or PDF files can be uploaded.');inp.value='';return}
-    if(f.size>MAXMB*1048576){alert('This file is larger than '+MAXMB+' MB. Please upload a smaller file.');inp.value='';return}
-    FILES[el.dataset.slot]=f;
-    if(f.type.startsWith('image/')){const i=document.createElement('img');i.src=URL.createObjectURL(f);i.alt='Preview';pv.replaceChildren(i)}else pv.textContent='PDF';
-    dt.querySelector('b').textContent=f.name;dt.querySelector('span').textContent=(f.size/1048576).toFixed(1)+' MB · ready to upload';
-  });
-});
+function renderOrig(){
+  const g=$('orig');g.replaceChildren();
+  [1,2].forEach(c=>{const ok=T.approved===c;const d=el('div','dcard '+(ok?'ok':'no'));
+    d.appendChild(el('span','badge '+(ok?'ok':'no'),ok?'✔ APPROVED':'✖ NOT APPROVED'));
+    const i=el('img');i.src='a/'+pad(T.no)+'-c'+c+'.jpg';i.alt='Choice '+c;d.appendChild(i);
+    if(!ok)d.appendChild(el('div','xmark'));
+    const cap=el('div','cap');cap.appendChild(el('b',null,'Choice '+c));cap.appendChild(el('span','small muted',ok?'Approved. The committee will refine it to the KNPL-7 norms.':(T.rej[c]||'Not approved.')));d.appendChild(cap);g.appendChild(d)});
+  if(!T.approved)g.parentNode.insertBefore(Object.assign(el('div','warn'),{textContent:'Both of your original designs clash with teams whose designs were received earlier, so neither can be approved. Please choose the suggested design or submit a new design.'}),g.nextSibling);
+}
+function renderSug(){$('simg').src='a/'+pad(T.no)+'-s.jpg';$('sline').textContent=T.line;
+  $('slift').replaceChildren(el('b',null,'How this design lifts your team: '),document.createTextNode(T.lift))}
+function opt(n,titleTxt,desc,disabled){
+  const l=el('label','opt'+(disabled?' dis':''));const hd=el('div','hd');const r=el('input');r.type='radio';r.name='ch';r.value=n;r.disabled=!!disabled;
+  const t=el('div');t.appendChild(el('b',null,n+'. '+titleTxt));t.appendChild(el('span','small muted',desc));hd.append(r,t);l.appendChild(hd);
+  const m=el('div','more');l.appendChild(m);return [l,m]}
+function ack(m,id,txt){const a=el('label','ack');const c=el('input');c.type='checkbox';c.id=id;const s=el('span');s.innerHTML=txt;a.append(c,s);m.appendChild(a)}
+function list(m,items){const u=el('ul');items.forEach(x=>u.appendChild(el('li',null,x)));m.appendChild(u)}
+function pal(m){const p=el('div','pal');T.pal.forEach(([n,h,c],i)=>{const d=el('div');const s=el('span');s.style.background=h;const t=el('div');t.appendChild(el('b',null,n));t.appendChild(el('div','small muted',['Main body','Sleeves / panels','Trims / lettering','Accent'][Math.min(i,3)]+' · '+h+' · CMYK '+c));d.append(s,t);p.appendChild(d)});m.appendChild(p)}
+function renderOpts(){
+  const o=$('opts');o.replaceChildren();
+  let [l1,m1]=opt(1,'Our approved original design',T.approved?'Choice '+T.approved+', refined by the committee to the KNPL-7 norms.':'Not available: both original designs clash with other teams.',!T.approved);
+  if(T.approved){m1.appendChild(el('b',null,'The committee will make these recommended changes:'));list(m1,STD.concat(T.fixes));
+    ack(m1,'a1','<b>We agree</b> that the KNPL committee may make the recommended changes listed above to our approved design and proceed with it.<br><span class="ml small">മുകളിൽ പറഞ്ഞ മാറ്റങ്ങൾ വരുത്തി ഞങ്ങളുടെ അംഗീകൃത ഡിസൈനുമായി മുന്നോട്ട് പോകാൻ കമ്മിറ്റിക്ക് ഞങ്ങൾ സമ്മതം നൽകുന്നു.</span>')}
+  o.appendChild(l1);
+  let [l2,m2]=opt(2,'The suggested design','The design shown in section 2, made to the KNPL-7 norms.');
+  ack(m2,'a2','<b>We approve the suggested design</b> and agree that the KNPL committee may proceed with it.<br><span class="ml small">നിർദ്ദേശിത ഡിസൈൻ ഞങ്ങൾ അംഗീകരിക്കുന്നു; കമ്മിറ്റിക്ക് മുന്നോട്ട് പോകാം.</span>');o.appendChild(l2);
+  let [l3,m3]=opt(3,'We will submit a new design','Upload it on this page by '+DEADLINE+'.');
+  m3.appendChild(el('b',null,'Use this colour combination so your jersey does not clash with any other team:'));pal(m3);
+  const a=el('a','btn ghost','⬇ Download design brief (PDF) for your designer');a.href='a/'+pad(T.no)+'-new-design-brief.pdf';a.target='_blank';a.rel='noopener';a.style.margin='6px 0 10px';m3.appendChild(a);
+  m3.appendChild(Object.assign(el('div','warn'),{innerHTML:'<b>Last date: '+DEADLINE+'.</b> If the new design is not received by then, the committee will go ahead with your approved design or the suggested design, as per the committee\'s convenience.<br><span class="ml small">ഈ സമയത്തിനകം പുതിയ ഡിസൈൻ ലഭിച്ചില്ലെങ്കിൽ, അംഗീകൃത ഡിസൈനോ നിർദ്ദേശിത ഡിസൈനോ കമ്മിറ്റിയുടെ സൗകര്യം അനുസരിച്ച് ഉപയോഗിക്കും.</span>'}));
+  ack(m3,'a3','<b>We will submit our new design by '+DEADLINE+'</b>, following the colours and norms above. If it is not received in time, the committee may proceed with our approved design or the suggested design.');
+  o.appendChild(l3);
+}
 
 async function save(){
   const m=$('smsg');m.className='msg';m.textContent='';
-  const s=S&&S.saved;
-  for(const [k,lab] of [['c1','Choice 1 jersey design'],['c2','Choice 2 jersey design'],['logo','team logo']]) if(!FILES[k]){m.className='msg err';m.textContent='Upload your '+lab+'.';return}
-  if(!$('cn').value.trim()){m.className='msg err';m.textContent='Enter the contact name.';return}
+  const ch=document.querySelector('input[name=ch]:checked');if(!ch){m.className='msg err';m.textContent='Choose one option.';return}
+  const n=Number(ch.value);if(!$('a'+n).checked){m.className='msg err';m.textContent='Please tick the acknowledgement under your option.';return}
+  if(!$('cn').value.trim()){m.className='msg err';m.textContent='Enter your name.';return}
   if($('cm').value.replace(/\D/g,'').length<10){m.className='msg err';m.textContent='Enter a valid 10-digit mobile number.';return}
-  if(!$('fin').checked){m.className='msg err';m.textContent='Please tick the confirmation that this is your final submission.';return}
-  const todo=Object.keys(FILES),steps=todo.length+1;let done=0;
-  const bar=$('bar'),fill=bar.firstElementChild;bar.hidden=false;fill.style.width='3%';
-  $('save').disabled=true;
-  try{
-    const ids={};
-    for(const k of todo){m.textContent='Uploading '+(k==='logo'?'team logo':'Choice '+k[1])+'…';
-      const f=FILES[k];ids[k]=(await api('jerseyUpload',CODE,k,{name:f.name,mime:f.type,data:await b64(f)})).id;
-      done++;fill.style.width=Math.round(done/steps*100)+'%'}
-    m.textContent='Saving…';
-    const note=k=>document.querySelector('.slot[data-slot="'+k+'"] .note').value.trim();
-    const r=await api('jerseySave',CODE,{c1:{id:ids.c1||'',note:note('c1')},c2:{id:ids.c2||'',note:note('c2')},logo:{id:ids.logo||'',note:note('logo')},
-      contactName:$('cn').value.trim(),contactMobile:$('cm').value,final:true});
-    fill.style.width='100%';
-    for(const k in FILES){delete FILES[k];const el=document.querySelector('.slot[data-slot="'+k+'"]');el.querySelector('input[type=file]').value='';el.querySelector('.dt span').textContent='Uploaded ✔'}
-    S.saved=r.saved;show(S);loadSubs();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }catch(e){m.className='msg err';m.textContent=e.message}
-  finally{$('save').disabled=false;setTimeout(()=>{bar.hidden=true;fill.style.width='0'},1500)}
+  if(!confirm('Submit option '+n+' for '+T.name+'? You can submit only once.'))return;
+  $('save').disabled=true;m.textContent='Submitting…';
+  try{const r=await api('jerseyApprovalSubmit',CODE,{choice:n,ack:true,name:$('cn').value.trim(),mobile:$('cm').value});
+    S.saved=r.saved;$('flow').hidden=true;renderDone();loadSubs();window.scrollTo({top:0,behavior:'smooth'})}
+  catch(e){m.className='msg err';m.textContent=e.message}
+  finally{$('save').disabled=false}
 }
 
-async function loadSubs(){try{const r=await api('jerseyStatus');
-  const team=r.teamUpload!==false;$('wa').hidden=team;$('fc').hidden=!team;if(!team){document.querySelector('#subs h2').firstChild.textContent='Designs received: ';$('gate').hidden=true;$('app').hidden=true;document.querySelector('.tagline').textContent='Jersey designs received from each franchise, in order.';document.querySelector('.kick').textContent='KNPL-7 · Franchises'}else if($('app').hidden)$('gate').hidden=false;
+function renderDone(){
+  const s=S.saved,d=$('done');d.replaceChildren();
+  const box=el('div','rcpt');box.appendChild(el('h2',null,'✔ Approval received'));
+  const kv=el('div','kv');[['Team',T.name],['Your choice',s.choice+'. '+s.choiceText],['Reference',s.ref],['Submitted on',s.at],['Approved by',s.by]].forEach(([k,v])=>{kv.appendChild(el('b',null,k));kv.appendChild(el('span',null,v))});box.appendChild(kv);
+  const img=el('img');img.src=imgFor(s.choice);img.alt='';img.style.cssText='width:100%;max-width:520px;border-radius:10px;display:block;margin:8px 0;background:#eef0f4';box.appendChild(img);
+  const b=el('button','btn or','⬇ Download confirmation (PDF)');b.type='button';b.onclick=()=>receipt();box.appendChild(b);
+  if(s.choice===3){const a=el('a','btn ghost','⬇ Design brief (PDF) for your designer');a.href='a/'+pad(T.no)+'-new-design-brief.pdf';a.target='_blank';a.style.marginLeft='8px';box.appendChild(a)}
+  d.appendChild(box);
+  if(s.choice===3)renderNew();
+}
+function imgFor(c){return c===1?'a/'+pad(T.no)+'-c'+T.approved+'.jpg':'a/'+pad(T.no)+'-s.jpg'}
+
+function renderNew(){
+  const s=S.saved,d=$('done');const c=el('div','card');c.appendChild(el('h2',null,'Upload your new design'));
+  if(s.n1){c.appendChild(el('div','status ok','✔ New design received on '+s.newAt+'. The committee will review it.'));d.appendChild(c);return}
+  if(S.window&&S.window.closed){c.appendChild(el('div','status no','The last date ('+DEADLINE+') has passed.'));d.appendChild(c);return}
+  c.appendChild(el('p','muted','Upload by '+DEADLINE+'. Front and back in one image or PDF; a second file is optional. You can upload only once.'));
+  pal(c);
+  [['n1','New design (front and back) *'],['n2','Second file (optional)']].forEach(([k,lab])=>{
+    c.appendChild(el('label','fl',lab));const dr=el('label','drop');const inp=el('input');inp.type='file';inp.accept=TYPES.join(',');const pv=el('div','pv','?');const dt=el('div','dt');dt.append(el('b',null,'Choose file'),el('span',null,'JPG, PNG, WEBP, SVG or PDF · up to 10 MB'));dr.append(inp,pv,dt);c.appendChild(dr);
+    inp.onchange=()=>{const f=inp.files[0];if(!f)return;if(!TYPES.includes(f.type)){alert('Only JPG, PNG, WEBP, SVG or PDF files.');inp.value='';return}if(f.size>10485760){alert('File larger than 10 MB.');inp.value='';return}
+      NF[k]=f;if(f.type.startsWith('image/')){const i=el('img');i.src=URL.createObjectURL(f);pv.replaceChildren(i)}else pv.textContent='PDF';dt.querySelector('b').textContent=f.name}});
+  c.appendChild(el('label','fl','Note for the committee (optional)'));const ta=el('textarea');ta.id='nnote';ta.maxLength=500;c.appendChild(ta);
+  const b=el('button','btn or','Submit new design (final)');b.type='button';b.style.cssText='margin-top:12px;width:100%';const m=el('div','msg');c.append(b,m);
+  b.onclick=async()=>{m.className='msg';if(!NF.n1){m.className='msg err';m.textContent='Choose your new design file.';return}
+    if(!confirm('Submit your new design? You can upload only once.'))return;b.disabled=true;
+    try{const ids={};for(const k of ['n1','n2'])if(NF[k]){m.textContent='Uploading '+(k==='n1'?'design':'second file')+'…';ids[k]=(await api('jerseyNewDesignUpload',CODE,k,{name:NF[k].name,mime:NF[k].type,data:await b64(NF[k])})).id}
+      m.textContent='Saving…';const r=await api('jerseyNewDesignSave',CODE,{n1:{id:ids.n1},n2:{id:ids.n2||''},note:ta.value.trim()});S.saved=r.saved;renderDone()}
+    catch(e){m.className='msg err';m.textContent=e.message;b.disabled=false}};
+  d.appendChild(c);
+}
+
+function dataUrl(src){return fetch(src).then(r=>r.blob()).then(b=>new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(b)}))}
+function imgSize(u){return new Promise(res=>{const i=new Image();i.onload=()=>res([i.naturalWidth,i.naturalHeight]);i.src=u})}
+function printReceipt(){
+  const s=S.saved;const w=window.open('','_blank');if(!w){alert('Please allow pop-ups to save the confirmation.');return}
+  const esc=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const img=new URL(imgFor(s.choice),location.href).href;
+  const ch=s.choice===1?'<h3>Recommended changes the committee will make</h3><ul>'+STD.concat(T.fixes).map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul>':'';
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>KNPL7 Jersey Approval - '+esc(T.name)+'</title><style>body{font-family:Arial,sans-serif;color:#13213f;margin:24px}h1{background:#0b1a38;color:#fff;padding:14px;margin:0 0 14px;font-size:22px}td{padding:4px 12px 4px 0;vertical-align:top}td:first-child{color:#5b6784;font-weight:bold}img{max-width:100%;max-height:380px;display:block;margin:10px auto}</style></head><body><h1>KNPL-7 Jersey Approval – Confirmation</h1><h2>'+esc(T.name)+'</h2><table><tr><td>Reference</td><td>'+esc(s.ref)+'</td></tr><tr><td>Submitted on</td><td>'+esc(s.at)+'</td></tr><tr><td>Approved by</td><td>'+esc(s.by)+' · '+esc(s.mobile)+'</td></tr><tr><td>Choice</td><td>'+esc(s.choice+'. '+s.choiceText)+'</td></tr></table>'+ch+'<img src="'+img+'"><p style="font-size:12px;color:#7a849c">Use your browser\'s Print → Save as PDF to keep this confirmation.</p></body></html>');
+  w.document.close();setTimeout(()=>w.print(),800);
+}
+async function receipt(){
+  if(!window.jspdf){printReceipt();return}
+  const s=S.saved;const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const W=210;let y=0;
+  doc.setFillColor(11,26,56);doc.rect(0,0,W,34,'F');doc.setFillColor(224,122,31);doc.rect(0,34,W,1.5,'F');
+  try{const lg=await dataUrl('../skill-rating/logo.png');doc.addImage(lg,'PNG',12,6,22,22)}catch(e){}
+  doc.setTextColor(255,179,102);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('KNPL-7  ·  SEASON 7',40,13);
+  doc.setTextColor(255,255,255);doc.setFontSize(19);doc.text('Jersey Approval – Confirmation',40,23);
+  doc.setTextColor(19,33,63);y=46;doc.setFontSize(15);doc.text(T.name,12,y);y+=8;
+  doc.setFontSize(10);const rows=[['Reference',s.ref],['Submitted on',s.at],['Approved by',s.by+'  ·  '+s.mobile],['Choice',s.choice+'. '+s.choiceText]];
+  rows.forEach(([k,v])=>{doc.setFont('helvetica','bold');doc.setTextColor(91,103,132);doc.text(k,12,y);doc.setFont('helvetica','normal');doc.setTextColor(19,33,63);const L=doc.splitTextToSize(String(v),140);doc.text(L,50,y);y+=6*L.length});
+  y+=2;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Acknowledgement',12,y);y+=5;doc.setFont('helvetica','normal');
+  const ackT={1:'We agree that the KNPL committee may make the recommended changes to our approved design and proceed with it.',2:'We approve the suggested design and agree that the KNPL committee may proceed with it.',3:'We will submit our new design by '+DEADLINE+', following the colours and norms given. If it is not received in time, the committee may proceed with our approved design or the suggested design.'}[s.choice];
+  let L=doc.splitTextToSize(ackT,186);doc.text(L,12,y);y+=5*L.length+3;
+  if(s.choice===1){doc.setFont('helvetica','bold');doc.text('Recommended changes the committee will make',12,y);y+=5;doc.setFont('helvetica','normal');doc.setFontSize(9);
+    STD.concat(T.fixes).forEach(f=>{const L=doc.splitTextToSize('•  '+f,184);doc.text(L,14,y);y+=4.3*L.length});y+=2;doc.setFontSize(10)}
+  if(s.choice===3){doc.setFont('helvetica','bold');doc.text('Colour combination to use',12,y);y+=4;
+    T.pal.forEach(([n,h,c],i)=>{const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);doc.setFillColor(r,g,b);doc.setDrawColor(150);doc.rect(12+i*47,y,8,8,'FD');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text(n,22+i*47,y+3.5);doc.setFont('helvetica','normal');doc.text(h+' · CMYK '+c,22+i*47,y+7.5)});y+=14;doc.setFontSize(10)}
+  const cap=s.choice===1?'Approved original design (Choice '+T.approved+'), to be refined to the KNPL-7 norms':s.choice===2?'Approved: suggested design':'Suggested design (reference, used if no new design is received)';
+  doc.setFont('helvetica','bold');doc.text(cap,12,y);y+=3;
+  try{const u=imgFor(s.choice);const d=await dataUrl(u);const [iw,ih]=await imgSize(d);let w=186,h=w*ih/iw;const maxH=280-y-14;if(h>maxH){h=maxH;w=h*iw/ih}doc.addImage(d,'JPEG',12+(186-w)/2,y,w,h);y+=h+4}catch(e){}
+  doc.setDrawColor(223,227,238);doc.line(12,285,198,285);doc.setFontSize(8);doc.setTextColor(122,132,156);
+  doc.text('KNPL-7 Jersey Approval · This confirmation was generated from the KNPL-7 jersey page · Queries: Krishnadas – 99862 18725',12,290);
+  doc.save('KNPL7-Jersey-Approval-'+slug(T.name)+'.pdf');
+}
+
+async function loadSubs(){try{const r=await api('jerseyApprovalStatus');
   $('scount').textContent=r.count+' of '+r.total;$('sprog').style.width=Math.round(r.count/r.total*100)+'%';
-  const ul=$('slist');ul.replaceChildren();
-  $('snone').textContent=r.count?(team?'In order of submission:':'In order received:'):(team?'No team has submitted yet – be the first!':'None received yet.');
-  r.teams.forEach((t,i)=>{const li=document.createElement('li');const n=document.createElement('span');n.className='n';n.textContent=t.no||i+1;
-    const im=document.createElement('img');im.alt='';im.src='../draft/logos/'+slug(t.team)+'.png';im.onerror=()=>im.style.visibility='hidden';
-    const d=document.createElement('div');const b=document.createElement('b');b.textContent=title(t.team);const sp=document.createElement('span');sp.textContent=team?t.at:'Received No. '+(t.no||i+1);d.append(b,sp);
-    li.append(n,im,d);ul.appendChild(li)})}
+  const ul=$('slist');ul.replaceChildren();$('snone').textContent=r.count?'Teams that have responded:':'No team has responded yet.';
+  r.teams.forEach((t,i)=>{const li=el('li');li.appendChild(el('span','n',i+1));const im=el('img');im.alt='';im.src='../draft/logos/'+slug(t.team)+'.png';im.onerror=()=>im.style.visibility='hidden';
+    const d=el('div');d.append(el('b',null,title(t.team)),el('span',null,t.at));li.append(im,d);ul.appendChild(li)})}
   catch(e){$('snone').textContent='Could not load the list right now.'}}
 loadSubs();
 $('go').addEventListener('click',login);$('code').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 $('save').addEventListener('click',save);
-$('out').addEventListener('click',()=>{try{sessionStorage.removeItem('knpl_jc')}catch(e){}location.reload()});
-try{const c=sessionStorage.getItem('knpl_jc');if(c){$('code').value=c;login()}}catch(e){}
+$('out').addEventListener('click',()=>{try{sessionStorage.removeItem('knpl_ja')}catch(e){}location.reload()});
+try{const c=sessionStorage.getItem('knpl_ja');if(c){$('code').value=c;login()}}catch(e){}
 </script>
 </body></html>
