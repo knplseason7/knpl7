@@ -155,3 +155,6 @@ body.ml .avt th{font:700 12px "Noto Sans Malayalam",var(--body);letter-spacing:0
 .lbn{font:800 15px var(--display);color:var(--muted);text-align:center}.lbt{font-weight:600;font-size:14px}.lbv{text-align:right;font:800 15px var(--display)}
 .lbbar{height:10px;background:var(--bg);border-radius:99px;overflow:hidden}.lbbar i{display:block;height:100%;background:var(--saffron)}
 @media (max-width:600px){.big2{font-size:30px}.lb li{grid-template-columns:22px 26px 1fr 76px}.lb .lbbar{grid-column:3/5;grid-row:2}}
+.ocr{margin-top:8px;border-radius:10px;padding:10px 12px;font-weight:600;font-size:14px;white-space:pre-line}
+.ocr.busy{background:var(--bg);color:var(--muted)}.ocr.good{background:var(--ok-soft);color:var(--ok)}
+.ocr.warn{background:var(--amber-soft);color:var(--amber)}.ocr.bad{background:var(--red-soft);color:var(--red);border:1.5px solid #e0312b}.ocr.muted{background:var(--bg);color:var(--muted)}

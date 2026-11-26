@@ -28,6 +28,14 @@ window.TX = {
  spoRule:['The caution deposit is refunded up to the confirmed sponsorship your team brings (max ₹15,000). A team jersey sponsorship counts as ₹2,600 (₹7,500 − 14 × ₹350).','ടീം കൊണ്ടുവരുന്ന ഉറപ്പായ Sponsorship വരെ (പരമാവധി ₹15,000) Caution Deposit തിരികെ ലഭിക്കും. Team Jersey Sponsorship ₹2,600 ആയി കണക്കാക്കും (₹7,500 − 14 × ₹350).'],
  spoFail:['Could not load the live sponsorship status. Try again later.','Live Sponsorship Status ലോഡ് ആയില്ല. പിന്നീട് ശ്രമിക്കുക.'],
  confirmed:['confirmed','ഉറപ്പായി'],underAppr:['under approval','Approval-ന്'],
+ ocrHint:['Upload first – the date and transaction number are filled in for you.','ആദ്യം Upload ചെയ്യുക – തീയതിയും Transaction Number-ഉം സ്വയം പൂരിപ്പിക്കും.'],
+ ocrReading:['🔍 Reading your receipt…','🔍 Receipt വായിക്കുന്നു…'],
+ ocrFilled:['✔ Filled from the receipt – please check: {f}','✔ Receipt-ൽ നിന്ന് പൂരിപ്പിച്ചു – ദയവായി പരിശോധിക്കുക: {f}'],
+ ocrNoTxn:['⚠ No transaction number found in this receipt. Please upload a screenshot or receipt that clearly shows the UPI Transaction ID / UTR number.','⚠ ഈ Receipt-ൽ Transaction Number കാണുന്നില്ല. UPI Transaction ID / UTR നമ്പർ വ്യക്തമായി കാണുന്ന Screenshot അല്ലെങ്കിൽ Receipt Upload ചെയ്യുക.'],
+ ocrAmt:['Amount on the receipt is {a}, but {b} is due for this item. Please check you chose the right item.','Receipt-ലെ തുക {a} ആണ്, ഈ ഇനത്തിന് {b} ആണ് അടയ്ക്കേണ്ടത്. ശരിയായ ഇനമാണോ തിരഞ്ഞെടുത്തതെന്ന് പരിശോധിക്കുക.'],
+ ocrFail:['The receipt could not be read automatically. Please type the details.','Receipt സ്വയം വായിക്കാനായില്ല. വിവരങ്ങൾ ടൈപ്പ് ചെയ്യുക.'],
+ ocrWait:['Please wait – the receipt is still being read.','ദയവായി കാത്തിരിക്കുക – Receipt വായിക്കുന്നു.'],
+ fTxn:['Transaction no.','Transaction No.'],fDt:['Date','തീയതി'],fMd:['Mode','രീതി'],
  notYet:['Not due yet','ഇപ്പോൾ ബാധകമല്ല'],
  howTitle:['How to pay','പണമടയ്ക്കേണ്ട വിധം'],
  nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
@@ -50,7 +58,7 @@ window.TX = {
  payTo:['Pay to:','പണമടയ്ക്കേണ്ടത്:'],
  utrTitle:['The transaction number must be visible','Transaction Number വ്യക്തമായി കാണണം'],
  utr1:['Upload the payment confirmation screen or bank receipt that shows the UPI Transaction ID / UTR number, the amount, the date and who it was paid to.','UPI Transaction ID / UTR നമ്പർ, തുക, തീയതി, ആർക്കാണ് അടച്ചത് എന്നിവ കാണുന്ന Payment Confirmation Screen അല്ലെങ്കിൽ Bank Receipt Upload ചെയ്യുക.'],
- utr2:['Type the same transaction number in the form. A receipt without a transaction number cannot be approved.','അതേ Transaction Number ഫോമിലും നൽകുക. Transaction Number ഇല്ലാത്ത Receipt Approve ചെയ്യാനാകില്ല.'],
+ utr2:['The page reads the transaction number and date from your receipt and fills them in. A receipt without a transaction number cannot be uploaded.','പേജ് നിങ്ങളുടെ Receipt-ൽ നിന്ന് Transaction Number-ഉം തീയതിയും വായിച്ച് സ്വയം പൂരിപ്പിക്കും. Transaction Number ഇല്ലാത്ത Receipt Upload ചെയ്യാനാകില്ല.'],
  utr3:['Photos are compressed automatically before upload and saved securely in KNPL\'s Drive.','ചിത്രങ്ങൾ Upload ചെയ്യുന്നതിന് മുമ്പ് സ്വയം Compress ചെയ്ത് KNPL Drive-ൽ സുരക്ഷിതമായി സൂക്ഷിക്കും.'],
  seeSample:['See a sample receipt','Sample Receipt കാണുക'],
  uploadAny:['Upload a receipt','Receipt Upload ചെയ്യുക'],
@@ -208,7 +216,7 @@ function openForm(code) {
   if (!list.length) { $('pmsg').className = 'msg'; $('pmsg').textContent = t('nothingDue'); return; }
   $('fitem').replaceChildren(...list.map(s => { const o = el('option', null, t(s.code) + ' – ' + inr(s.amount)); o.value = s.code; return o; }));
   if (code) $('fitem').value = code;
-  $('formcard').hidden = false; $('fmsg').textContent = ''; $('fack').checked = false; $('ffile').value = ''; $('futr').value = ''; $('fnote').value = '';
+  $('formcard').hidden = false; $('fmsg').textContent = ''; OCR.f = null; $('focr').hidden = true; $('fack').checked = false; $('ffile').value = ''; $('futr').value = ''; $('fnote').value = '';
   $('fdate').max = today(); $('fdate').value = today(); $('fpayer').value = S.owner.name || '';
   itemInfo(); document.body.classList.add('noscroll'); setTimeout(() => $('fitem').focus(), 50);
 }
@@ -223,6 +231,7 @@ async function sendForm() {
   if ($('fpayer').value.trim().length < 3) return m.textContent = t('vPayer');
   if (!f) return m.textContent = t('vFile');
   if (!$('fack').checked) return m.textContent = t('vAck');
+  const g1 = ocrGate('f'); if (g1) return m.textContent = g1;
   $('fsend').disabled = true; m.className = 'msg'; m.textContent = t('uploading');
   try {
     const file = await compressFile(f, S.maxMb);
@@ -318,6 +327,7 @@ async function sendRepl() {
   if ($('rmode').value !== S.modes[2] && $('rutr').value.replace(/\s/g, '').length < 6) return m.textContent = t('vUtr');
   if ($('rpayer').value.trim().length < 3) return m.textContent = t('vPayer');
   if (!f) return m.textContent = t('vFile');
+  const g2 = ocrGate('r'); if (g2) return m.textContent = g2;
   $('rsend').disabled = true; m.className = 'msg'; m.textContent = t('uploading');
   try {
     const file = await compressFile(f, S.maxMb);
@@ -431,13 +441,45 @@ function renderSpo() {
     a.append(el('b', null, x.sponsor), el('div', 'small muted', out ? t('shareOut', {t: title(x.to)}) : t('shareIn', {t: title(x.from)})));
     b.append(el('div', 'amt', (out ? '− ' : '+ ') + inr(x.amount))); li.append(a, b); ul.append(li); });
 }
+
+/* ---------- read the uploaded receipt and fill the form ---------- */
+const OCR = {};
+function ocrBox(k) { return $(k === 'f' ? 'focr' : 'rocr'); }
+function ocrShow(k, cls, html) { const b = ocrBox(k); b.hidden = false; b.className = 'ocr ' + cls; b.textContent = html; }
+async function readReceipt(k) {
+  const input = $(k === 'f' ? 'ffile' : 'rfile'), f = input.files[0];
+  const ids = k === 'f' ? {utr: 'futr', date: 'fdate', mode: 'fmode'} : {utr: 'rutr', date: 'rdate', mode: 'rmode'};
+  if (!f) { OCR[k] = null; ocrBox(k).hidden = true; return; }
+  if (!window.KNPLOCR) { OCR[k] = {state: 'fail'}; return; }
+  const tok = Symbol(); OCR[k] = {state: 'reading', tok: tok};
+  ocrShow(k, 'busy', t('ocrReading'));
+  const r = await KNPLOCR.read(f);
+  if (!OCR[k] || OCR[k].tok !== tok) return;                     // another file was chosen meanwhile
+  if (!r.ok) { OCR[k] = {state: 'fail'}; ocrShow(k, 'muted', t('ocrFail')); return; }
+  OCR[k] = {state: 'done', res: r};
+  if (!r.utr) { ocrShow(k, 'bad', t('ocrNoTxn')); return; }
+  const filled = [];
+  $(ids.utr).value = r.utr; filled.push(t('fTxn') + ' ' + r.utr);
+  if (r.date && r.date <= today()) { $(ids.date).value = r.date; filled.push(t('fDt') + ' ' + dmy(r.date)); }
+  if (r.mode && S.modes.indexOf(r.mode) >= 0) { $(ids.mode).value = r.mode; filled.push(t('fMd') + ' ' + r.mode); }
+  let msg = t('ocrFilled', {f: filled.join(' · ')});
+  const due = k === 'f' ? (S.schedule.find(x => x.code === $('fitem').value) || {}).amount : S.replFee;
+  if (r.amount && due && Math.abs(r.amount - due) >= 1) msg += '\n' + t('ocrAmt', {a: inr(r.amount), b: inr(due)});
+  ocrShow(k, r.amount && due && Math.abs(r.amount - due) >= 1 ? 'warn' : 'good', msg);
+}
+function ocrGate(k) {   // returns a message if the upload must not go ahead yet
+  const o = OCR[k];
+  if (o && o.state === 'reading') return t('ocrWait');
+  if (o && o.state === 'done' && !o.res.utr) return t('ocrNoTxn');
+  return '';
+}
 function tab(k) { ['pay', 'jer', 'rep', 'spo'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 $('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
 $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
-$('rout').onchange = fillIn; $('rsend').onclick = sendRepl;
+$('rout').onchange = fillIn; $('ffile').onchange = () => readReceipt('f'); $('rfile').onchange = () => readReceipt('r'); $('rsend').onclick = sendRepl;
 $('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo');
 $('spCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spLink').value); } catch (e) { $('spLink').select(); document.execCommand('copy'); } $('spCopy').textContent = t('copied'); setTimeout(() => $('spCopy').textContent = t('copy'), 1500); };
 $('spMsgCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spMsg').value); } catch (e) { $('spMsg').select(); document.execCommand('copy'); } $('spMsgCopy').textContent = t('copied'); setTimeout(() => $('spMsgCopy').textContent = t('shCopyMsg'), 1500); };
