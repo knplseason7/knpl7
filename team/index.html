@@ -12,7 +12,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=4">
+<link rel="stylesheet" href="desk.css?v=5">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="receipt.js?v=4" defer></script>
 <script src="common.js?v=4"></script>
@@ -36,6 +36,7 @@
     <button role="tab" id="tb-pay" aria-selected="true" data-t="tabPay"></button>
     <button role="tab" id="tb-jer" aria-selected="false" data-t="tabJer"></button>
     <button role="tab" id="tb-rep" aria-selected="false" data-t="tabRep"></button>
+    <button role="tab" id="tb-spo" aria-selected="false" data-t="tabSpo"></button>
   </div>
 
   <div id="pg-pay">
@@ -117,8 +118,24 @@
     </div>
     <div class="card"><h3 data-t="rList"></h3><ul class="hist" id="rhist"></ul></div>
   </div>
+
+  <div id="pg-spo" hidden>
+    <div class="card">
+      <h2 data-t="spoTitle"></h2>
+      <p class="muted" data-t="spoIntro"></p>
+      <div class="cats" id="cats"></div>
+    </div>
+    <div class="card" id="spomine">
+      <div class="cardhead"><h3 data-t="spoMine"></h3><span class="small muted" id="spolive"></span></div>
+      <div class="kpis" id="spokpi"></div>
+      <div class="meter"><i id="spobar"></i></div>
+      <p class="small muted" id="spodep"></p>
+      <ul class="hist" id="spolist"></ul>
+      <p class="small muted" data-t="spoRule"></p>
+    </div>
+  </div>
 </section>
 </main>
 <footer data-t="footer"></footer>
-<script src="desk.js?v=4"></script>
+<script src="desk.js?v=5"></script>
 </body></html>

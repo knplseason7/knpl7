@@ -124,3 +124,15 @@ body.noscroll{overflow:hidden}
 }
 /* committee page on phones */
 @media (max-width:640px){.pay{grid-template-columns:1fr!important}.pay>div:last-child{text-align:left!important}.act input{min-width:100%!important}}
+/* sponsorship tab */
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+.cat{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg)}
+.cat.open{border-color:var(--saffron);background:var(--saffron-soft)}
+.cathead{display:flex;justify-content:space-between;align-items:center;gap:8px}.cathead h3{margin:0}
+.cat .row{margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0}
+.kpi{background:var(--bg);border-radius:12px;padding:10px 12px}.kpi b{display:block;font:800 24px var(--display)}.kpi span{font-size:13px;color:var(--muted)}
+.meter{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--line)}.meter i{display:block;height:100%;background:var(--ok);width:0}
+.hist .amt{font:800 17px var(--display)}
+@media (max-width:820px){.cats{grid-template-columns:1fr}}
+@media (max-width:600px){.tabs{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:1fr 1fr 1fr}.kpi b{font-size:18px}.cat .row .btn{flex:1 1 100%}}

@@ -1,5 +1,19 @@
 /* KNPL-7 Team Desk – franchise page logic (uses common.js and receipt.js). */
 window.TX = {
+ tabSpo:['Sponsorship','Sponsorship'],
+ spoTitle:['Sponsorship','Sponsorship'],
+ spoIntro:['Bring sponsors for KNPL-7. Share your team\'s own sponsorship link – every sponsorship that comes through it is credited to your team.','KNPL-7-ന് Sponsors-നെ കൊണ്ടുവരിക. നിങ്ങളുടെ ടീമിന്റെ സ്വന്തം Sponsorship Link അയയ്ക്കുക – അതിലൂടെ വരുന്ന എല്ലാ Sponsorship-ഉം നിങ്ങളുടെ ടീമിന്റെ പേരിൽ കണക്കാക്കും.'],
+ catOpen:['Open now','ഇപ്പോൾ തുറന്നിരിക്കുന്നു'],catSoon:['Coming soon','ഉടൻ വരുന്നു'],
+ catOpenBtn:['Open sponsorship page','Sponsorship പേജ് തുറക്കുക'],catShare:['Share with a sponsor','Sponsor-ന് അയയ്ക്കുക'],catStatus:['Live status','Live Status'],
+ slotsOpen:['{n} slots open · worth {v}','{n} Slots ബാക്കി · {v} മൂല്യം'],
+ spoMine:['Your team\'s sponsorships','നിങ്ങളുടെ ടീമിന്റെ Sponsorships'],
+ kTotal:['Brought in','ആകെ കൊണ്ടുവന്നത്'],kConf:['Payment confirmed','Payment ഉറപ്പായത്'],kWait:['Under approval','Approval-ന് കാത്തിരിക്കുന്നു'],
+ depProg:['Counted for your caution deposit refund: {a} of {b}','Caution Deposit തിരികെ ലഭിക്കാൻ കണക്കാക്കിയത്: {b}-ൽ {a}'],
+ depFull:['Your full ₹15,000 caution deposit is covered. 20% of confirmed sponsorship above ₹15,000 comes back as Team Building Allowance: {a} so far.','₹15,000 Caution Deposit മുഴുവൻ തിരികെ ലഭിക്കും. ₹15,000-ന് മുകളിലുള്ള ഉറപ്പായ Sponsorship-ന്റെ 20% Team Building Allowance ആയി ലഭിക്കും: ഇതുവരെ {a}.'],
+ spoNone:['No sponsorships yet. Share your team link with families, businesses and well-wishers.','ഇതുവരെ Sponsorships ഇല്ല. കുടുംബങ്ങൾ, സ്ഥാപനങ്ങൾ, അഭ്യുദയകാംക്ഷികൾ എന്നിവർക്ക് ടീം Link അയയ്ക്കുക.'],
+ spoRule:['The caution deposit is refunded up to the confirmed sponsorship your team brings (max ₹15,000). A team jersey sponsorship counts as ₹2,600 (₹7,500 − 14 × ₹350).','ടീം കൊണ്ടുവരുന്ന ഉറപ്പായ Sponsorship വരെ (പരമാവധി ₹15,000) Caution Deposit തിരികെ ലഭിക്കും. Team Jersey Sponsorship ₹2,600 ആയി കണക്കാക്കും (₹7,500 − 14 × ₹350).'],
+ spoFail:['Could not load the live sponsorship status. Try again later.','Live Sponsorship Status ലോഡ് ആയില്ല. പിന്നീട് ശ്രമിക്കുക.'],
+ confirmed:['confirmed','ഉറപ്പായി'],underAppr:['under approval','Approval-ന്'],
  notYet:['Not due yet','ഇപ്പോൾ ബാധകമല്ല'],
  howTitle:['How to pay','പണമടയ്ക്കേണ്ട വിധം'],
  nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
@@ -119,7 +133,7 @@ function render() {
   $('tname').textContent = title(S.team); $('towner').textContent = 'Owner: ' + (S.owner.name || '') + ' · KNPL7-' + S.owner.id;
   $('payto').textContent = S.payTo;
   [$('fmode'), $('rmode')].forEach(s => { const v = s.value; s.replaceChildren(...S.modes.map(m => { const o = el('option', null, m); o.value = m; return o; })); if (v) s.value = v; });
-  renderNext(); renderSched(); renderHist(); renderJersey(); renderRepl();
+  renderNext(); renderSched(); renderHist(); renderJersey(); renderRepl(); if (!$('pg-spo').hidden) renderSpo();
   if (!$('formcard').hidden) itemInfo();
 }
 function renderNext() {
@@ -299,14 +313,85 @@ async function sendRepl() {
   } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
   finally { $('rsend').disabled = false; }
 }
-function tab(k) { ['pay', 'jer', 'rep'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); }
+
+/* ---------- sponsorship (categories open one by one) ---------- */
+const SPONSOR_CATS = [
+  {key: 'cover', name: 'Cover Drive', url: 'https://knplseason7.github.io/knpl7-cover-drive/', api: 'https://script.google.com/macros/s/AKfycbzhb0N02RyK_lLfsMxQCooY_BRN1MtGhnVCVc7Wn4w6RtdVdPc30k3QaJs4gzgSkEOF/exec',
+   desc: ['Trophies, awards, team jerseys and match-day sponsorships.', 'Trophies, Awards, Team Jersey, Match-day Sponsorships.']},
+  {key: 'flick', name: 'Flick', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']},
+  {key: 'straight', name: 'Straight Drive', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']}
+];
+const sNorm = x => String(x || '').toUpperCase().replace(/[^A-Z]/g, '').replace(/H/g, '').replace(/D/g, 'T');
+let SPO = null;
+function spoLink(c) { return c.url + '?team=' + encodeURIComponent(SPO_TEAM()); }
+const PORTAL_TEAMS = ['Devils Of Chitrakoot', 'Ayodhya Warriors', 'Spartans Of Nalanda', 'Mighty Mithilas', 'Kalinga United', 'Kurukshetra Yodhas', 'Jaguars Of Jhansi', 'Knights Of Kanchi',
+  'Kombans Of Pataleeputhra', 'Kaaliyanz Of Dwaraka', 'Madhura Mavericks', 'Panchaala Panthers', 'Gandhara Giants', 'Vamos Vrindavan', 'Guardians Of Kamboja', 'Varahas Of Vijayanagara'];
+function SPO_TEAM() { return PORTAL_TEAMS.find(n => sNorm(n) === sNorm(S.team)) || title(S.team); }
+function spoWa(c) {
+  return '🏏 *KNPL-7 Sponsorship – ' + c.name + '*\n\n' +
+    'Support KNPL Season 7 (11–14 Feb 2027, Angamaly). See the open sponsorship slots and sponsor in a few taps.\n' +
+    'KNPL Season 7-നെ (11–14 ഫെബ്രുവരി 2027, അങ്കമാലി) പിന്തുണയ്ക്കൂ. ബാക്കിയുള്ള Sponsorship Slots കണ്ട് എളുപ്പത്തിൽ Sponsor ചെയ്യാം.\n\n' +
+    '👉 ' + spoLink(c) + '\n\n– ' + title(S.team);
+}
+function renderCats() {
+  const box = $('cats'); box.replaceChildren();
+  SPONSOR_CATS.forEach(c => {
+    const open = !!c.url, d = el('div', 'cat' + (open ? ' open' : ''));
+    const h = el('div', 'cathead'); h.append(el('h3', null, c.name), el('span', 'pill ' + (open ? 'APPROVED' : 'none'), open ? t('catOpen') : t('catSoon'))); d.append(h);
+    d.append(el('p', 'small muted', c.desc[LANG === 'ml' ? 1 : 0]));
+    if (open) {
+      if (SPO && SPO[c.key]) { const st = SPO[c.key]; d.append(el('p', 'small', t('slotsOpen', {n: st.open, v: inr(st.openValue)}))); }
+      const r = el('div', 'row');
+      const a = el('a', 'btn or sm', t('catOpenBtn')); a.href = spoLink(c); a.target = '_blank'; a.rel = 'noopener';
+      const w = el('a', 'btn ok sm', t('catShare')); w.href = 'https://wa.me/?text=' + encodeURIComponent(spoWa(c)); w.target = '_blank'; w.rel = 'noopener';
+      const l = el('a', 'btn ghost sm', t('catStatus')); l.href = c.url + 'status.html?team=' + encodeURIComponent(SPO_TEAM()); l.target = '_blank'; l.rel = 'noopener';
+      r.append(a, w, l); d.append(r);
+    }
+    box.append(d);
+  });
+}
+async function loadSpo() {
+  SPO = SPO || {};
+  const mine = sNorm(S.team), all = [];
+  for (const c of SPONSOR_CATS.filter(x => x.api)) {
+    try {
+      const d = await (await fetch(c.api + '?action=status&t=' + Date.now())).json();
+      if (!d.ok) throw new Error(d.error);
+      let open = 0, openValue = 0;
+      d.items.forEach(i => {
+        open += Math.max(0, i.slots - i.taken); openValue += Math.max(0, i.slots - i.taken) * i.rate;
+        i.sponsors.forEach(s => { if (sNorm(s.team) === mine) all.push({cat: c.name, item: i.name, code: i.code, jersey: /jersey/i.test(i.name), sponsor: s.name, jerseyTeam: s.jerseyTeam, value: (s.qty || 1) * i.rate, confirmed: s.confirmed}); });
+      });
+      SPO[c.key] = {open: open, openValue: openValue};
+      $('spolive').textContent = 'Live · ' + new Date(d.updated).toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'});
+    } catch (e) { $('spolive').textContent = t('spoFail'); }
+  }
+  SPO.mine = all; renderSpo();
+}
+function renderSpo() {
+  renderCats();
+  if (!SPO || !SPO.mine) return;
+  const L = SPO.mine, tot = L.reduce((a, x) => a + x.value, 0), conf = L.filter(x => x.confirmed).reduce((a, x) => a + x.value, 0);
+  const counted = L.filter(x => x.confirmed).reduce((a, x) => a + (x.jersey ? 2600 : x.value), 0);
+  $('spokpi').innerHTML = '';
+  [[t('kTotal'), tot], [t('kConf'), conf], [t('kWait'), tot - conf]].forEach(([k, v]) => { const d = el('div', 'kpi'); d.append(el('b', null, inr(v)), el('span', null, k)); $('spokpi').append(d); });
+  $('spobar').style.width = Math.min(100, counted / 15000 * 100) + '%';
+  $('spodep').textContent = counted >= 15000 ? t('depFull', {a: inr(Math.round((counted - 15000) * 0.2))}) : t('depProg', {a: inr(counted), b: inr(15000)});
+  const ul = $('spolist'); ul.replaceChildren();
+  if (!L.length) ul.append(el('li', 'muted', t('spoNone')));
+  L.forEach(x => { const li = el('li'), a = el('div'), b = el('div', 'r');
+    a.append(el('b', null, x.sponsor), el('div', 'small muted', x.cat + ' · ' + x.item + (x.jerseyTeam ? ' · ' + x.jerseyTeam : '')));
+    b.append(el('div', 'amt', inr(x.value)), el('span', 'pill ' + (x.confirmed ? 'APPROVED' : 'PENDING'), x.confirmed ? t('confirmed') : t('underAppr')));
+    li.append(a, b); ul.append(li); });
+}
+function tab(k) { ['pay', 'jer', 'rep', 'spo'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); loadSpo(); } }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 $('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
 $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
 $('rout').onchange = fillIn; $('rsend').onclick = sendRepl;
-$('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep');
+$('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo');
 $('out').onclick = () => { try { sessionStorage.removeItem('knpl_td'); } catch (e) {} location.reload(); };
 applyStatic();
 (async () => {
