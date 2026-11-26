@@ -50,6 +50,21 @@ img{display:block}
 .gk{font:800 13px Inter;letter-spacing:5px;color:var(--g);text-transform:uppercase}
 .gbox h2{margin:0;font:900 clamp(36px,7.5vh,72px) "Barlow Condensed";line-height:.95;text-transform:uppercase;letter-spacing:1px}
 .gbox h2 span{background:linear-gradient(90deg,var(--g2),#12b886);-webkit-background-clip:text;background-clip:text;color:transparent}
+.when2{position:relative;margin:16px 0 2px;padding:18px 26px 16px;border-radius:20px;background:linear-gradient(180deg,#10285acc,#0a1a3ccc);border:1px solid #2a5aa8;box-shadow:0 14px 40px #0008,inset 0 1px 0 #ffffff14}
+.when2 .wk{position:absolute;left:50%;top:0;transform:translate(-50%,-50%);padding:5px 16px;border-radius:999px;background:var(--g);color:#04221a;font:900 clamp(14px,2vh,17px) "Barlow Condensed";letter-spacing:3px;text-transform:uppercase;white-space:nowrap;box-shadow:0 6px 18px #27d07e55}
+.wrow{display:flex;align-items:center;gap:22px;text-align:left}
+.wd{display:flex;flex-direction:column;align-items:center;line-height:1;min-width:86px}
+.wd b{font:900 clamp(52px,8.5vh,72px) "Barlow Condensed";background:linear-gradient(180deg,#fff,var(--g2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.wd span{font:800 clamp(14px,2vh,17px) "Barlow Condensed";letter-spacing:2.5px;color:var(--g2)}
+.wd small{font:600 11px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase;margin-top:4px}
+.wsep{align-self:stretch;width:0;border-left:2px dashed #2f5596}
+.wt{display:flex;flex-direction:column;gap:10px}
+.wt div{display:grid;grid-template-columns:24px auto;column-gap:8px;align-items:center}
+.wt em{font-style:normal;grid-row:span 2;font-size:18px}
+.wt b{font:800 clamp(20px,3vh,26px) "Barlow Condensed";letter-spacing:.8px;text-transform:uppercase;line-height:1}
+.wt span{font:600 12px Inter;color:var(--mut);letter-spacing:.5px}
+.wt b{white-space:nowrap}
+@media (max-width:460px){.when2{padding:16px 14px 12px}.wrow{gap:12px}.wd{min-width:64px}.wt b{font-size:clamp(17px,2.6vh,21px)}.wt div{grid-template-columns:18px auto;column-gap:6px}.wt em{font-size:14px}}
 .gstat{font:700 12px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
 .gstat.live{color:#fff;background:var(--live);padding:5px 12px;border-radius:999px;box-shadow:0 0 18px #ff3b4f88}
 .tune{position:relative;margin-top:6px;display:inline-flex;align-items:center;gap:14px;padding:clamp(14px,2.2vh,20px) clamp(34px,5vw,54px);border:0;border-radius:999px;cursor:pointer;
@@ -289,7 +304,15 @@ img{display:block}
     <div class="gmark"><img src="tenvox-logo.png" alt="TENVOX Sports"></div>
     <div class="gk">TENVOX BIDCAST</div>
     <h2>KNPL-7 <span>Mega Auction</span></h2>
-    <div class="gstat" id="gstat">Live · 12 Dec 2026 · 8:00 AM</div>
+    <div class="when2">
+      <div class="wk">Auction On</div>
+      <div class="wrow">
+        <div class="wd"><b>12</b><span>DEC 2026</span><small>Saturday</small></div>
+        <div class="wsep"></div>
+        <div class="wt"><div><em>⏱</em><b>8:00 AM</b><span>onwards</span></div><div><em>📍</em><b>Chola Farm Resorts</b><span>Karukutty</span></div></div>
+      </div>
+    </div>
+    <div class="gstat" id="gstat">Live coverage on TENVOX BIDCAST</div>
     <button class="tune" id="tuneIn" type="button"><span class="pl">▶</span><b>TUNE IN</b></button>
   </div>
 </div>
