@@ -53,6 +53,12 @@ const DESK='https://knplseason7.github.io/knpl7/team/';
 function ownerOf(team){return (D.teams.find(x=>x.team===team)||{}).owner||{}}
 function waText(p){
   const o=ownerOf(p.team),nm=o.name||'Owner',ref=p.utr?' · Ref '+p.utr:'';
+  if(p.type==='REPL'){const io=(p.replIn?p.replIn.name+' (KNPL7-'+p.replIn.id+')':''),ou=(p.replOut?p.replOut.name+' (KNPL7-'+p.replOut.id+')':'');
+    if(p.status==='APPROVED')return '🏏 *KNPL-7 | Season replacement approved* ✅\n\n'+
+      'Dear '+nm+', '+io+' replaces '+ou+' in your squad for KNPL-7.\n'+'പ്രിയ '+nm+', KNPL-7-ന് '+ou+'-ന് പകരം '+io+' നിങ്ങളുടെ Squad-ൽ ചേർന്നു.\n\n'+
+      'Both players get ₹500 of their registration fee back.\n'+'രണ്ട് കളിക്കാർക്കും Registration Fee-യിൽ നിന്ന് ₹500 വീതം തിരികെ ലഭിക്കും.\n\n'+
+      'Please ask '+(p.replIn?p.replIn.name:'the new player')+' to enter his jersey details using your team jersey link.\n'+'Team Jersey Link വഴി '+(p.replIn?p.replIn.name:'പുതിയ കളിക്കാരൻ')+' Jersey Details നൽകണം.\n\n👉 '+DESK+'\n\n– Team KNPL';
+    return '🏏 *KNPL-7 | Season replacement not approved*\n\n'+'Dear '+nm+', the request to replace '+ou+' with '+io+' could not be approved.\n'+'പ്രിയ '+nm+', '+ou+'-ന് പകരം '+io+' എന്ന അപേക്ഷ Approve ചെയ്യാനായില്ല.\n\n'+'Reason: '+p.remarks+'\n'+'കാരണം: '+p.remarks+'\n\n👉 '+DESK+'\n\n– Team KNPL';}
   if(p.status==='APPROVED')return '🏏 *KNPL-7 | Payment approved* ✅\n\n'+
     'Dear '+nm+', your payment of '+inr(p.amount)+' for '+p.kind+ref+' is approved.\n'+
     'പ്രിയ '+nm+', '+ML[p.type]+' – '+inr(p.amount)+ref+' Approve ചെയ്തു.\n\n'+
@@ -81,12 +87,12 @@ function renderPay(){
   if(!list.length)box.append(el('p','muted','Nothing here.'));
   list.forEach(p=>{
     const c=el('div','pay'),a=el('div'),b=el('div');b.style.textAlign='right';
-    a.append(el('b','t',title(p.team)),el('div',null,p.kind+' · '+inr(p.amount)));
-    a.append(el('div','d',p.mode+(p.utr?' · UTR '+p.utr:'')+' · paid '+dmy(p.paidOn)+' by '+p.payer+' · submitted '+p.at+' · '+p.id));
+    a.append(el('b','t',title(p.team)),el('div',null,p.type==='REPL'?p.kind+' · no payment · ₹500 refund to each player':p.kind+' · '+inr(p.amount)));
+    a.append(el('div','d',p.type==='REPL'?'Submitted '+p.at+' · '+p.id:p.mode+(p.utr?' · UTR '+p.utr:'')+' · paid '+dmy(p.paidOn)+' by '+p.payer+' · submitted '+p.at+' · '+p.id));
     if(p.type==='REPL')a.append(el('div','d','Replaced: '+(p.replOut?p.replOut.name+' (KNPL7-'+p.replOut.id+', SR '+p.replOut.sr+')':'-')+' → replacement: '+(p.replIn?p.replIn.name+' (KNPL7-'+p.replIn.id+', SR '+p.replIn.sr+')':'-')));
     if(p.note)a.append(el('div','d','Note: '+p.note));if(p.remarks)a.append(el('div','d','Remarks: '+p.remarks));
     if(p.proof){const l=el('a',null,'Open payment proof ↗');l.href=p.proof;l.target='_blank';l.rel='noopener';a.append(l)}
-    b.append(el('span','pill '+p.status,p.status==='APPROVED'?p.receiptNo:p.status));
+    b.append(el('span','pill '+p.status,p.status==='APPROVED'&&p.receiptNo?p.receiptNo:p.status));
     if(p.status!=='PENDING'){const w=el('button','btn ok sm','WhatsApp owner');w.style.cssText='display:block;margin:8px 0 0 auto';w.onclick=()=>waOpen(p);b.append(w)}
     if(p.status==='PENDING'){const act=el('div','act'),rm=el('input');rm.type='text';rm.placeholder='Reason (needed to reject)';
       const ok=el('button','btn ok sm','Approve'),no=el('button','btn no sm','Reject');ok.onclick=()=>decide(p.id,'APPROVED','',[ok,no]);no.onclick=()=>decide(p.id,'REJECTED',rm.value,[ok,no]);act.append(rm,ok,no);a.append(act)}
@@ -94,7 +100,7 @@ function renderPay(){
   });
 }
 async function decide(id,dec,rm,btns){
-  if(dec==='APPROVED'&&!confirm('Approve '+id+'? A receipt number will be issued and the team gets the receipt.'))return;
+  if(dec==='APPROVED'&&!confirm('Approve '+id+'?'+((D.payments.find(x=>x.id===id)||{}).type==='REPL'?' The replacement joins the squad for KNPL-7.':' A receipt number will be issued and the team gets the receipt.')))return;
   btns.forEach(b=>b.disabled=true);$('amsg').textContent='';
   try{D=await api('teamDeskAdminDecide',PIN,id,dec,rm);render();$('amsg').className='msg ok';$('amsg').textContent=id+' '+dec.toLowerCase()+'. Send the message below to the owner.';const p=D.payments.find(x=>x.id===id);if(p)waOpen(p)}catch(e){$('amsg').className='msg err';$('amsg').textContent=msgOf(e);btns.forEach(b=>b.disabled=false)}
 }

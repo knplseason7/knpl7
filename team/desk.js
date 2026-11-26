@@ -45,8 +45,9 @@ window.TX = {
  dsUpdated:['Updated {d}','{d}-ന് പുതുക്കി'],dsColours:['Colours: {c}','നിറങ്ങൾ: {c}'],
  rnTitle:['Please note','ശ്രദ്ധിക്കുക'],
  r6:['It is the team\'s responsibility to check that the season replacement player is available for the whole tournament before submitting the request.','അപേക്ഷ സമർപ്പിക്കുന്നതിന് മുമ്പ് Season Replacement കളിക്കാരൻ ടൂർണമെന്റ് മുഴുവൻ ലഭ്യമാണെന്ന് ഉറപ്പാക്കേണ്ടത് ടീമിന്റെ ഉത്തരവാദിത്തമാണ്.'],
- r7:['Players selected as season replacements: their registration fee will be reimbursed after deducting ₹500 as tournament fee.','Season Replacement ആയി തിരഞ്ഞെടുക്കപ്പെടുന്ന കളിക്കാർക്ക്: ₹500 Tournament Fee കുറച്ച് Registration Fee തിരികെ നൽകും.'],
+ r7:['Replaced player: ₹500 of his registration fee is reimbursed. Season replacement player: his registration fee is reimbursed after deducting ₹500 as tournament fee (₹500 back).','മാറ്റുന്ന കളിക്കാരന്: Registration Fee-യിൽ നിന്ന് ₹500 തിരികെ നൽകും. Season Replacement കളിക്കാരന്: ₹500 Tournament Fee കുറച്ച് Registration Fee തിരികെ നൽകും (₹500 തിരികെ).'],
  r8:['Players still in the unsold list after the season replacements are finalised (if any): the registration fee paid will be reimbursed.','Season Replacements അന്തിമമാക്കിയ ശേഷവും Unsold List-ൽ ഉള്ള കളിക്കാർക്ക് (ഉണ്ടെങ്കിൽ): അടച്ച Registration Fee തിരികെ നൽകും.'],
+ noPay:['No payment','പണമടയ്ക്കേണ്ടതില്ല'],refund2:['₹500 back to each player','ഓരോ കളിക്കാരനും ₹500 തിരികെ'],
  notYet:['Not due yet','ഇപ്പോൾ ബാധകമല്ല'],
  howTitle:['How to pay','പണമടയ്ക്കേണ്ട വിധം'],
  nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
@@ -119,12 +120,12 @@ window.TX = {
  r1:['Opens on 25 Jan 2027. Only for a player who cannot play the whole of KNPL-7.','25 ജനുവരി 2027-ന് തുറക്കും. KNPL-7 മുഴുവൻ കളിക്കാൻ കഴിയാത്ത കളിക്കാരന് മാത്രം.'],
  r2:['Choose the player being replaced from your squad and the replacement from the unsold list.','മാറ്റുന്ന കളിക്കാരനെ നിങ്ങളുടെ Squad-ൽ നിന്നും, പകരക്കാരനെ Unsold List-ൽ നിന്നും തിരഞ്ഞെടുക്കുക.'],
  r3:['The replacement\'s Skill Rating must be equal to or lower than the player replaced.','പകരക്കാരന്റെ Skill Rating, മാറ്റുന്ന കളിക്കാരന്റേതിന് തുല്യമോ കുറവോ ആകണം.'],
- r4:['Replacement fee ₹500 (50% of the replaced player\'s registration fee) is paid by the replacement player; KNPL gives it to the replaced player. Upload its receipt with the request.','Replacement Fee ₹500 (മാറ്റുന്ന കളിക്കാരന്റെ Registration Fee-യുടെ 50%) പകരക്കാരൻ അടയ്ക്കണം; KNPL അത് മാറ്റുന്ന കളിക്കാരന് നൽകും. അതിന്റെ Receipt അപേക്ഷയോടൊപ്പം Upload ചെയ്യുക.'],
+ r4:['No payment is needed. Both players have already paid the ₹1,000 registration fee; when the replacement is approved, the replaced player and the replacement player each get ₹500 back.','പ്രത്യേകം പണമടയ്ക്കേണ്ടതില്ല. രണ്ട് കളിക്കാരും ₹1,000 Registration Fee ഇതിനകം അടച്ചിട്ടുണ്ട്; Replacement Approve ആയാൽ മാറ്റുന്ന കളിക്കാരനും പകരക്കാരനും ₹500 വീതം തിരികെ ലഭിക്കും.'],
  r5:['Once the committee approves, the replacement joins your squad for KNPL-7 only.','കമ്മിറ്റി Approve ചെയ്താൽ, പകരക്കാരൻ KNPL-7-ന് മാത്രം നിങ്ങളുടെ Squad-ൽ ചേരും.'],
  repOpens:['Season replacement requests open on {d}.','Season Replacement അപേക്ഷ {d}-ന് തുറക്കും.'],
  rOut:['Player being replaced','മാറ്റുന്ന കളിക്കാരൻ'],rIn:['Replacement (unsold list)','പകരക്കാരൻ (Unsold List)'],choose:['Choose','തിരഞ്ഞെടുക്കുക'],chooseOutFirst:['Choose the player being replaced first','ആദ്യം മാറ്റുന്ന കളിക്കാരനെ തിരഞ്ഞെടുക്കുക'],
  rInfo:['{n} unsold player(s) with Skill Rating {s} or lower.','Skill Rating {s} അല്ലെങ്കിൽ കുറവുള്ള {n} Unsold കളിക്കാർ.'],
- rAgree:['I have checked that the replacement player is available for the whole tournament. I agree that he pays the ₹500 replacement fee, which KNPL gives to the replaced player, and that the replacement is for the whole of KNPL-7 only.','പകരക്കാരൻ ടൂർണമെന്റ് മുഴുവൻ ലഭ്യമാണെന്ന് ഞാൻ ഉറപ്പാക്കിയിട്ടുണ്ട്. അദ്ദേഹം ₹500 Replacement Fee അടയ്ക്കുമെന്നും, KNPL അത് മാറ്റുന്ന കളിക്കാരന് നൽകുമെന്നും, Replacement KNPL-7 മുഴുവനായി മാത്രമാണെന്നും ഞാൻ അംഗീകരിക്കുന്നു.'],
+ rAgree:['I have checked that the replacement player is available for the whole tournament. I understand the replacement is for the whole of KNPL-7 only, and that the replaced player and the replacement player each get ₹500 of their registration fee back.','പകരക്കാരൻ ടൂർണമെന്റ് മുഴുവൻ ലഭ്യമാണെന്ന് ഞാൻ ഉറപ്പാക്കിയിട്ടുണ്ട്. Replacement KNPL-7 മുഴുവനായി മാത്രമാണെന്നും, മാറ്റുന്ന കളിക്കാരനും പകരക്കാരനും Registration Fee-യിൽ നിന്ന് ₹500 വീതം തിരികെ ലഭിക്കുമെന്നും ഞാൻ മനസ്സിലാക്കുന്നു.'],
  rPayer:['Paid by (replacement player)','പണമടച്ചയാൾ (പകരക്കാരൻ)'],rSubmit:['Submit replacement request','Replacement അപേക്ഷ സമർപ്പിക്കുക'],
  vRepl:['Choose both players.','രണ്ട് കളിക്കാരെയും തിരഞ്ഞെടുക്കുക.'],vAgree:['Please agree to the replacement fee terms.','Replacement Fee നിബന്ധനകൾ അംഗീകരിക്കുക.'],
  rSent:['Request submitted. The committee will review it.','അപേക്ഷ സമർപ്പിച്ചു. കമ്മിറ്റി പരിശോധിക്കും.'],
@@ -135,7 +136,7 @@ window.TX = {
  CD3:['Sponsorship Caution Deposit – instalment 3 of 5','Sponsorship Caution Deposit – ഗഡു 3 / 5'],CD4:['Sponsorship Caution Deposit – instalment 4 of 5','Sponsorship Caution Deposit – ഗഡു 4 / 5'],
  CD5:['Sponsorship Caution Deposit – instalment 5 of 5','Sponsorship Caution Deposit – ഗഡു 5 / 5'],OWN1:['Ownership Fee – instalment 1 of 3 (KNPL-7)','Ownership Fee – ഗഡു 1 / 3 (KNPL-7)'],
  DR1:['Draft Fee KNPL-7 – instalment 1 of 2','Draft Fee KNPL-7 – ഗഡു 1 / 2'],DR2:['Draft Fee KNPL-7 – instalment 2 of 2','Draft Fee KNPL-7 – ഗഡു 2 / 2'],
- JER:['Team Jersey Fee (at actuals)','Team Jersey Fee (യഥാർത്ഥ ചെലവ്)'],REPL:['Season Replacement Fee','Season Replacement Fee']
+ JER:['Team Jersey Fee (at actuals)','Team Jersey Fee (യഥാർത്ഥ ചെലവ്)'],REPL:['Season replacement request','Season Replacement അപേക്ഷ']
 };
 const WA_MSG = (team, link) => '🏏 *KNPL-7 | ' + team + ' – Jersey Details*\n\n' +
   'Please open the link, select your name and enter your jersey size, sleeve, name and number.\n' +
@@ -165,7 +166,7 @@ function render() {
   if (!S) return;
   $('tname').textContent = title(S.team); $('towner').textContent = 'Owner: ' + (S.owner.name || '') + ' · KNPL7-' + S.owner.id;
   $('payto').textContent = S.payTo;
-  [$('fmode'), $('rmode')].forEach(s => { const v = s.value; s.replaceChildren(...S.modes.map(m => { const o = el('option', null, m); o.value = m; return o; })); if (v) s.value = v; });
+  [$('fmode')].forEach(s => { const v = s.value; s.replaceChildren(...S.modes.map(m => { const o = el('option', null, m); o.value = m; return o; })); if (v) s.value = v; });
   renderNext(); renderSched(); renderHist(); renderJersey(); renderRepl(); renderContacts(); if (!$('pg-jer').hidden) renderDesigns(); if (!$('pg-spo').hidden) renderSpo();
   if (!$('formcard').hidden) itemInfo();
 }
@@ -208,11 +209,12 @@ function renderSched() {
 function histItem(p) {
   const li = el('li'), a = el('div'), b = el('div', 'r');
   a.append(el('b', null, t(p.type)));
-  a.append(el('div', 'small muted', inr(p.amount) + ' · ' + p.mode + (p.utr ? ' · ' + t('ref') + ' ' + p.utr : '') + ' · ' + t('paidOn') + ' ' + dmy(p.paidOn) + ' · ' + p.id));
+  if (p.type === 'REPL') a.append(el('div', 'small muted', t('noPay') + ' · ' + t('refund2') + ' · ' + p.at + ' · ' + p.id));
+  else a.append(el('div', 'small muted', inr(p.amount) + ' · ' + p.mode + (p.utr ? ' · ' + t('ref') + ' ' + p.utr : '') + ' · ' + t('paidOn') + ' ' + dmy(p.paidOn) + ' · ' + p.id));
   if (p.type === 'REPL') a.append(el('div', 'small muted', (p.replOut ? p.replOut.name + ' → ' : '') + (p.replIn ? p.replIn.name + ' (KNPL7-' + p.replIn.id + ')' : '')));
   if (p.status === 'REJECTED' && p.remarks) a.append(el('div', 'rej', t('reason') + p.remarks));
-  b.append(el('span', 'pill ' + p.status, p.status === 'APPROVED' ? p.receiptNo : t('st' + p.status)));
-  if (p.status === 'APPROVED') { const d = el('button', 'btn ok sm', t('receipt')); d.style.cssText = 'margin-top:6px;display:block;margin-left:auto'; d.onclick = () => receipt(p); b.append(d); }
+  b.append(el('span', 'pill ' + p.status, p.status === 'APPROVED' && p.receiptNo ? p.receiptNo : t('st' + p.status)));
+  if (p.status === 'APPROVED' && p.type !== 'REPL') { const d = el('button', 'btn ok sm', t('receipt')); d.style.cssText = 'margin-top:6px;display:block;margin-left:auto'; d.onclick = () => receipt(p); b.append(d); }
   li.append(a, b); return li;
 }
 function renderHist() {
@@ -317,7 +319,6 @@ function renderRepl() {
     $('rout').replaceChildren(el('option', null, t('choose')), ...outs.map(p => { const o = el('option', null, p.name + ' (KNPL7-' + p.id + ' · SR ' + p.sr + ')'); o.value = p.id; return o; }));
     $('rout').options[0].value = ''; if (v) $('rout').value = v;
     fillIn();
-    $('rdate').max = today(); if (!$('rdate').value) $('rdate').value = today();
   }
   const ul = $('rhist'); ul.replaceChildren(); const l = S.payments.filter(p => p.type === 'REPL');
   if (!l.length) ul.append(el('li', 'muted', t('noRep'))); else l.slice().reverse().forEach(p => ul.append(histItem(p)));
@@ -331,35 +332,17 @@ function fillIn() {
   $('rinfo').textContent = t('rInfo', {n: list.length, s: out.sr});
 }
 async function sendRepl() {
-  const m = $('rmsg'); m.className = 'msg err'; m.textContent = ''; const f = $('rfile').files[0];
+  const m = $('rmsg'); m.className = 'msg err'; m.textContent = '';
   if (!$('rout').value || !$('rin').value) return m.textContent = t('vRepl');
   if (!$('ragree').checked) return m.textContent = t('vAgree');
-  if (!$('rdate').value) return m.textContent = t('vDate');
-  if ($('rmode').value !== S.modes[2] && $('rutr').value.replace(/\s/g, '').length < 6) return m.textContent = t('vUtr');
-  if ($('rpayer').value.trim().length < 3) return m.textContent = t('vPayer');
-  if (!f) return m.textContent = t('vFile');
-  const g2 = ocrGate('r'); if (g2) return m.textContent = g2;
-  $('rsend').disabled = true; m.className = 'msg'; m.textContent = t('uploading');
+  $('rsend').disabled = true; m.className = 'msg'; m.textContent = t('saving');
   try {
-    const file = await compressFile(f, S.maxMb);
-    S = await api('teamDeskPay', CODE, {type: 'REPL', agree: true, replOut: $('rout').value, replIn: $('rin').value, paidOn: $('rdate').value, mode: $('rmode').value, utr: $('rutr').value, payer: $('rpayer').value, file});
-    ['rutr', 'rpayer', 'rfile'].forEach(i => $(i).value = ''); $('ragree').checked = false; $('rout').value = ''; render();
+    S = await api('teamDeskReplRequest', CODE, {replOut: $('rout').value, replIn: $('rin').value, agree: true});
+    $('ragree').checked = false; $('rout').value = ''; render();
     m.className = 'msg ok'; m.textContent = t('rSent');
   } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
   finally { $('rsend').disabled = false; }
 }
-
-/* ---------- sponsorship (categories open one by one) ---------- */
-const SPONSOR_CATS = [
-  {key: 'cover', name: 'Cover Drive', url: 'https://knplseason7.github.io/knpl7-cover-drive/', api: 'https://script.google.com/macros/s/AKfycbzhb0N02RyK_lLfsMxQCooY_BRN1MtGhnVCVc7Wn4w6RtdVdPc30k3QaJs4gzgSkEOF/exec',
-   desc: ['Trophies, awards, team jerseys and match-day sponsorships.', 'Trophies, Awards, Team Jersey, Match-day Sponsorships.']},
-  {key: 'flick', name: 'Flick', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']},
-  {key: 'straight', name: 'Straight Drive', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']}
-];
-const PORTAL_TEAMS = ['Devils Of Chitrakoot', 'Ayodhya Warriors', 'Spartans Of Nalanda', 'Mighty Mithilas', 'Kalinga United', 'Kurukshetra Yodhas', 'Jaguars Of Jhansi', 'Knights Of Kanchi',
-  'Kombans Of Pataleeputhra', 'Kaaliyanz Of Dwaraka', 'Madhura Mavericks', 'Panchaala Panthers', 'Gandhara Giants', 'Vamos Vrindavan', 'Guardians Of Kamboja', 'Varahas Of Vijayanagara'];
-const sNorm = x => String(x || '').toUpperCase().replace(/[^A-Z]/g, '').replace(/H/g, '').replace(/D/g, 'T');
-let SPO = null;
 function SPO_TEAM() { return PORTAL_TEAMS.find(n => sNorm(n) === sNorm(S.team)) || title(S.team); }
 function keyOf(name) { return (S.sponsor.teams || []).find(k => sNorm(k) === sNorm(name)) || ''; }
 function openCat() { return SPONSOR_CATS.find(c => c.url); }
@@ -524,7 +507,7 @@ $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key 
 $('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
 $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
-$('rout').onchange = fillIn; $('ffile').onchange = () => readReceipt('f'); $('rfile').onchange = () => readReceipt('r'); $('rsend').onclick = sendRepl;
+$('rout').onchange = fillIn; $('ffile').onchange = () => readReceipt('f'); $('rsend').onclick = sendRepl;
 $('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo'); $('tb-help').onclick = () => tab('help');
 $('spCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spLink').value); } catch (e) { $('spLink').select(); document.execCommand('copy'); } $('spCopy').textContent = t('copied'); setTimeout(() => $('spCopy').textContent = t('copy'), 1500); };
 $('spMsgCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spMsg').value); } catch (e) { $('spMsg').select(); document.execCommand('copy'); } $('spMsgCopy').textContent = t('copied'); setTimeout(() => $('spMsgCopy').textContent = t('shCopyMsg'), 1500); };
