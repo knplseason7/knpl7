@@ -50,7 +50,7 @@ window.TX = {
  noPay:['No payment','പണമടയ്ക്കേണ്ടതില്ല'],refund2:['₹500 back to each player','ഓരോ കളിക്കാരനും ₹500 തിരികെ'],
  notYet:['Not due yet','ഇപ്പോൾ ബാധകമല്ല'],
  howTitle:['How to pay','പണമടയ്ക്കേണ്ട വിധം'],
- nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
+ nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],pendTitle:['Pending payments – pay in this order','അടയ്ക്കാനുള്ളവ – ഈ ക്രമത്തിൽ അടയ്ക്കുക'],pendSum:['{n} to pay · {a} in all','അടയ്ക്കാനുള്ളത് {n} · ആകെ {a}'],pendLate:['{n} past the due date','{n} എണ്ണത്തിന്റെ തീയതി കഴിഞ്ഞു'],pastDue:['Due date {d} passed – pay / upload the receipt now','അവസാന തീയതി {d} കഴിഞ്ഞു – ഉടൻ അടച്ച് Receipt Upload ചെയ്യുക'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
  nextLate:['{n} item(s) are past the due date. Upload them first.','{n} ഇനങ്ങളുടെ തീയതി കഴിഞ്ഞു. ആദ്യം അവ Upload ചെയ്യുക.'],
  allDone:['All payments due so far are uploaded. Thank you!','ഇതുവരെയുള്ള എല്ലാ പണമടയ്ക്കലുകളും Upload ചെയ്തു. നന്ദി!'],
  progress:['{a} of {t} approved · {w} waiting for approval','{t}-ൽ {a} Approved · {w} Approval കാത്തിരിക്കുന്നു'],
@@ -172,23 +172,42 @@ function render() {
 }
 function renderNext() {
   const box = $('nextcard'); box.replaceChildren();
-  const up = uploadable(), today0 = today();
-  const late = up.filter(x => x.due < today0), next = up.slice().sort((a, b) => a.due.localeCompare(b.due))[0];
+  const t0 = today(), byDue = (x, y) => x.due.localeCompare(y.due) || 0;
+  const open = S.schedule.filter(s => { const p = latest(s.code); return !p || p.status !== 'APPROVED'; }).slice().sort(byDue);
+  const toPay = open.filter(s => { const p = latest(s.code); return s.amount != null && (!p || p.status === 'REJECTED'); });
+  const late = toPay.filter(s => s.due < t0), sum = toPay.reduce((n, s) => n + Number(s.amount || 0), 0);
   const ap = S.payments.filter(p => p.type !== 'REPL' && p.status === 'APPROVED').length, wt = S.payments.filter(p => p.type !== 'REPL' && p.status === 'PENDING').length;
-  box.append(el('div', 'kick2', t('nextTitle')));
-  if (next) {
-    const r = el('div', 'nextrow'), a = el('div');
-    a.append(el('b', null, t(next.code)), el('div', 'nextamt', inr(next.amount)), el('div', 'small ' + (next.due < today0 ? 'late' : 'muted'), t('dueBy', {d: dmy(next.due)})));
-    const b = el('button', 'btn or', t('nextBtn')); b.onclick = () => openForm(next.code);
-    r.append(a, b); box.append(r);
-    if (late.length > 1) box.append(el('div', 'small late', t('nextLate', {n: late.length})));
-  } else box.append(el('b', null, t('allDone')));
+  box.append(el('div', 'kick2', t('pendTitle')));
+  if (!open.length) { box.append(el('b', null, t('allDone'))); }
+  else {
+    const sm = el('div', 'pqsum'); sm.append(el('span', null, t('pendSum', {n: toPay.length, a: inr(sum)})));
+    if (late.length) sm.append(el('span', 'late', ' · ' + t('pendLate', {n: late.length})));
+    box.append(sm);
+    const ol = el('ol', 'pq'); let first = true;
+    open.forEach((s, i) => {
+      const p = latest(s.code), li = el('li'), info = el('div', 'pqi'), act = el('div', 'pqa');
+      const can = s.amount != null && (!p || p.status === 'REJECTED'), isLate = can && s.due < t0;
+      if (can && first) { li.className = 'now'; first = false; }
+      if (isLate) li.classList.add('lt');
+      info.append(el('b', null, t(s.code)));
+      const meta = el('div', 'small ' + (isLate ? 'late' : 'muted'), (isLate ? t('pastDue', {d: dmy(s.due)}) : t('dueBy', {d: dmy(s.due)})));
+      info.append(meta);
+      if (s.amount == null) info.append(el('div', 'small muted', s.code === 'JER' ? t('jerWait') : t('drWait')));
+      if (p && p.status === 'REJECTED' && p.remarks) info.append(el('div', 'rej', t('reason') + p.remarks));
+      act.append(el('div', 'pqamt', s.amount != null ? inr(s.amount) : '–'));
+      if (can) { const bt = el('button', 'btn or sm', p ? t('uploadAgain') : t('upload')); bt.onclick = () => openForm(s.code); act.append(bt); }
+      else if (p && p.status === 'PENDING') act.append(el('span', 'pill PENDING', t('stPENDING')));
+      else act.append(el('span', 'pill none', t('notYet')));
+      li.append(el('span', 'pqn', String(i + 1)), info, act); ol.append(li);
+    });
+    box.append(ol);
+  }
   box.append(el('div', 'small muted', t('progress', {a: ap, t: S.schedule.filter(x => x.amount != null).length, w: wt})));
 }
 function renderSched() {
   const box = $('sched'); box.replaceChildren();
   const head = el('div', 'srow sh'); [t('thItem'), t('thAmt'), t('thDue'), t('thSt'), ''].forEach(x => head.append(el('span', null, x))); box.append(head);
-  S.schedule.forEach(s => {
+  S.schedule.slice().sort((x, y) => x.due.localeCompare(y.due)).forEach(s => {
     const p = latest(s.code), r = el('div', 'srow');
     const st = p ? p.status : (s.amount != null && s.due < today() ? 'late' : 'none');
     const nm = el('span', 'sn'); nm.append(el('b', null, t(s.code)));
