@@ -381,7 +381,7 @@ function teamTotals() {
 }
 function renderSpo() {
   if (!S) return;
-  if (!S.sponsor) S.sponsor = {target: 35000, splits: [], teams: PORTAL_TEAMS.map(n => sNorm(n) === sNorm(S.team) ? S.team : n.toUpperCase())};
+  if (!S.sponsor) S.sponsor = {target: 50000, splits: [], teams: PORTAL_TEAMS.map(n => sNorm(n) === sNorm(S.team) ? S.team : n.toUpperCase())};
   const link = spoLink();
   $('spLink').value = link;
   if (!$('spMsg').dataset.edited) $('spMsg').value = spoMsg();
@@ -402,7 +402,7 @@ function renderSpo() {
     av.append(tb);
   }
   // target + rank
-  const T = teamTotals(), me = T[S.team] || {got: 0, conf: 0, counted: 0}, target = S.sponsor.target || 35000;
+  const T = teamTotals(), me = T[S.team] || {got: 0, conf: 0, counted: 0}, target = 50000;
   const wait = me.got - me.conf;
   $('tgGot').textContent = inr(me.conf); $('tgTarget').textContent = inr(target);
   $('tgBar').style.width = Math.min(100, me.conf / target * 100) + '%';
