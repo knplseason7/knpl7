@@ -1,6 +1,20 @@
 /* KNPL-7 Team Desk – franchise page logic (uses common.js and receipt.js). */
 window.TX = {
  tabSpo:['Sponsorship','Sponsorship'],
+ tgKick:['Your team\'s sponsorship target','നിങ്ങളുടെ ടീമിന്റെ Sponsorship ലക്ഷ്യം'],tgReceived:['Received so far (confirmed)','ഇതുവരെ ലഭിച്ചത് (ഉറപ്പായത്)'],tgTarget:['Target','ലക്ഷ്യം'],
+ tgSplitT:['{c} confirmed · {w} under approval','{c} ഉറപ്പായി · {w} Approval-ന്'],
+ cheer0:['Start today – one sponsor is all it takes to get going. Share your link below.','ഇന്നുതന്നെ തുടങ്ങൂ – ഒരു Sponsor മതി തുടക്കത്തിന്. താഴെയുള്ള Link അയയ്ക്കൂ.'],
+ cheer1:['{a} more and your full ₹15,000 caution deposit comes back. Keep going!','ഇനി {a} കൂടി – ₹15,000 Caution Deposit മുഴുവൻ തിരികെ ലഭിക്കും. തുടരൂ!'],
+ cheer2:['Deposit covered! {a} more to reach your team target. Every rupee above ₹15,000 also earns 20% for your team.','Deposit ഉറപ്പായി! ലക്ഷ്യത്തിലെത്താൻ ഇനി {a} കൂടി. ₹15,000-ന് മുകളിലുള്ള ഓരോ രൂപയ്ക്കും 20% ടീമിന് ലഭിക്കും.'],
+ cheer3:['Target achieved – thank you! Team Building Allowance earned so far: {a}. Keep raising KNPL higher!','ലക്ഷ്യം നേടി – നന്ദി! ഇതുവരെ നേടിയ Team Building Allowance: {a}. KNPL-നെ ഇനിയും ഉയർത്തൂ!'],
+ rankT:['Your team is #{r} of {n} · {a} teams have brought sponsors so far.','നിങ്ങളുടെ ടീം {n}-ൽ #{r} · ഇതുവരെ {a} ടീമുകൾ Sponsors-നെ കൊണ്ടുവന്നു.'],
+ rank0:['{a} of {n} teams have brought sponsors so far – make yours the next!','{n}-ൽ {a} ടീമുകൾ ഇതുവരെ Sponsors-നെ കൊണ്ടുവന്നു – അടുത്തത് നിങ്ങളുടേതാകട്ടെ!'],
+ shTitle:['Your team\'s sponsorship link','നിങ്ങളുടെ ടീമിന്റെ Sponsorship Link'],
+ shNote:['Every sponsorship made through this link is credited to your team.','ഈ Link വഴി വരുന്ന എല്ലാ Sponsorship-ഉം നിങ്ങളുടെ ടീമിന്റെ പേരിൽ കണക്കാക്കും.'],
+ shMsg:['Message to send (you can edit it)','അയയ്ക്കേണ്ട സന്ദേശം (മാറ്റം വരുത്താം)'],shWa:['Send on WhatsApp','WhatsApp-ൽ അയയ്ക്കുക'],shCopyMsg:['Copy message','സന്ദേശം Copy ചെയ്യുക'],
+ avTitle:['Sponsorships available now','ഇപ്പോൾ ലഭ്യമായ Sponsorships'],avItem:['Sponsorship','Sponsorship'],avRate:['Amount','തുക'],avLeft:['Slots left','ബാക്കി Slots'],
+ lbTitle:['All teams','എല്ലാ ടീമുകളും'],lbNote:['Sponsorship brought by each franchise (including under approval). Every team that brings sponsors makes KNPL stronger.','ഓരോ ഫ്രാഞ്ചൈസിയും കൊണ്ടുവന്ന Sponsorship (Approval-ന് ഉള്ളവ ഉൾപ്പെടെ). Sponsors-നെ കൊണ്ടുവരുന്ന ഓരോ ടീമും KNPL-നെ കൂടുതൽ ശക്തമാക്കുന്നു.'],
+ shareOut:['credit shared with {t}','{t}-മായി Credit പങ്കിട്ടു'],shareIn:['credit shared by {t}','{t} പങ്കിട്ട Credit'],
  spoTitle:['Sponsorship','Sponsorship'],
  spoIntro:['Bring sponsors for KNPL-7. Share your team\'s own sponsorship link – every sponsorship that comes through it is credited to your team.','KNPL-7-ന് Sponsors-നെ കൊണ്ടുവരിക. നിങ്ങളുടെ ടീമിന്റെ സ്വന്തം Sponsorship Link അയയ്ക്കുക – അതിലൂടെ വരുന്ന എല്ലാ Sponsorship-ഉം നിങ്ങളുടെ ടീമിന്റെ പേരിൽ കണക്കാക്കും.'],
  catOpen:['Open now','ഇപ്പോൾ തുറന്നിരിക്കുന്നു'],catSoon:['Coming soon','ഉടൻ വരുന്നു'],
@@ -321,70 +335,103 @@ const SPONSOR_CATS = [
   {key: 'flick', name: 'Flick', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']},
   {key: 'straight', name: 'Straight Drive', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']}
 ];
-const sNorm = x => String(x || '').toUpperCase().replace(/[^A-Z]/g, '').replace(/H/g, '').replace(/D/g, 'T');
-let SPO = null;
-function spoLink(c) { return c.url + '?team=' + encodeURIComponent(SPO_TEAM()); }
 const PORTAL_TEAMS = ['Devils Of Chitrakoot', 'Ayodhya Warriors', 'Spartans Of Nalanda', 'Mighty Mithilas', 'Kalinga United', 'Kurukshetra Yodhas', 'Jaguars Of Jhansi', 'Knights Of Kanchi',
   'Kombans Of Pataleeputhra', 'Kaaliyanz Of Dwaraka', 'Madhura Mavericks', 'Panchaala Panthers', 'Gandhara Giants', 'Vamos Vrindavan', 'Guardians Of Kamboja', 'Varahas Of Vijayanagara'];
+const sNorm = x => String(x || '').toUpperCase().replace(/[^A-Z]/g, '').replace(/H/g, '').replace(/D/g, 'T');
+let SPO = null;
 function SPO_TEAM() { return PORTAL_TEAMS.find(n => sNorm(n) === sNorm(S.team)) || title(S.team); }
-function spoWa(c) {
-  return '🏏 *KNPL-7 Sponsorship – ' + c.name + '*\n\n' +
-    'Support KNPL Season 7 (11–14 Feb 2027, Angamaly). See the open sponsorship slots and sponsor in a few taps.\n' +
-    'KNPL Season 7-നെ (11–14 ഫെബ്രുവരി 2027, അങ്കമാലി) പിന്തുണയ്ക്കൂ. ബാക്കിയുള്ള Sponsorship Slots കണ്ട് എളുപ്പത്തിൽ Sponsor ചെയ്യാം.\n\n' +
-    '👉 ' + spoLink(c) + '\n\n– ' + title(S.team);
-}
-function renderCats() {
-  const box = $('cats'); box.replaceChildren();
-  SPONSOR_CATS.forEach(c => {
-    const open = !!c.url, d = el('div', 'cat' + (open ? ' open' : ''));
-    const h = el('div', 'cathead'); h.append(el('h3', null, c.name), el('span', 'pill ' + (open ? 'APPROVED' : 'none'), open ? t('catOpen') : t('catSoon'))); d.append(h);
-    d.append(el('p', 'small muted', c.desc[LANG === 'ml' ? 1 : 0]));
-    if (open) {
-      if (SPO && SPO[c.key]) { const st = SPO[c.key]; d.append(el('p', 'small', t('slotsOpen', {n: st.open, v: inr(st.openValue)}))); }
-      const r = el('div', 'row');
-      const a = el('a', 'btn or sm', t('catOpenBtn')); a.href = spoLink(c); a.target = '_blank'; a.rel = 'noopener';
-      const w = el('a', 'btn ok sm', t('catShare')); w.href = 'https://wa.me/?text=' + encodeURIComponent(spoWa(c)); w.target = '_blank'; w.rel = 'noopener';
-      const l = el('a', 'btn ghost sm', t('catStatus')); l.href = c.url + 'status.html?team=' + encodeURIComponent(SPO_TEAM()); l.target = '_blank'; l.rel = 'noopener';
-      r.append(a, w, l); d.append(r);
-    }
-    box.append(d);
-  });
+function keyOf(name) { return (S.sponsor.teams || []).find(k => sNorm(k) === sNorm(name)) || ''; }
+function openCat() { return SPONSOR_CATS.find(c => c.url); }
+function spoLink() { const c = openCat(); return c ? c.url + '?team=' + encodeURIComponent(SPO_TEAM()) : ''; }
+function spoMsg() {
+  const open = SPONSOR_CATS.filter(c => c.url).map(c => c.name).join(', ');
+  return '🏏 *KNPL Season 7 – Sponsorship*\n\n' +
+    'Kerala Namboodiris Premier League, Season 7 – 16 teams, 248 players, 11–14 Feb 2027 at FISAT & Boundary Grounds, Angamaly, live on YouTube.\n' +
+    'കേരള നമ്പൂതിരീസ് പ്രീമിയർ ലീഗ് സീസൺ 7 – 16 ടീമുകൾ, 248 കളിക്കാർ, 11–14 ഫെബ്രുവരി 2027, FISAT & Boundary Grounds, അങ്കമാലി, YouTube-ൽ തത്സമയം.\n\n' +
+    'Please support us as a sponsor through ' + title(S.team) + '. ' + open + ' sponsorships are open now – pick a slot and sponsor in a few taps.\n' +
+    title(S.team) + ' വഴി Sponsor ആയി ഞങ്ങളെ പിന്തുണയ്ക്കൂ. ' + open + ' Sponsorships ഇപ്പോൾ തുറന്നിരിക്കുന്നു – Slot തിരഞ്ഞെടുത്ത് എളുപ്പത്തിൽ Sponsor ചെയ്യാം.\n\n' +
+    '👉 ' + spoLink() + '\n\n' +
+    'Your brand reaches every Namboodiri household that follows KNPL. Thank you!\n' +
+    'KNPL പിന്തുടരുന്ന എല്ലാ നമ്പൂതിരി കുടുംബങ്ങളിലേക്കും നിങ്ങളുടെ പേര് എത്തും. നന്ദി!\n\n– ' + title(S.team) + ' · KNPL-7';
 }
 async function loadSpo() {
-  SPO = SPO || {};
-  const mine = sNorm(S.team), all = [];
+  if (!S.sponsor) renderSpo();
+  const all = [], av = [];
+  let ok = false;
   for (const c of SPONSOR_CATS.filter(x => x.api)) {
     try {
       const d = await (await fetch(c.api + '?action=status&t=' + Date.now())).json();
       if (!d.ok) throw new Error(d.error);
-      let open = 0, openValue = 0;
       d.items.forEach(i => {
-        open += Math.max(0, i.slots - i.taken); openValue += Math.max(0, i.slots - i.taken) * i.rate;
-        i.sponsors.forEach(s => { if (sNorm(s.team) === mine) all.push({cat: c.name, item: i.name, code: i.code, jersey: /jersey/i.test(i.name), sponsor: s.name, jerseyTeam: s.jerseyTeam, value: (s.qty || 1) * i.rate, confirmed: s.confirmed}); });
+        const left = Math.max(0, i.slots - i.taken);
+        if (left) av.push({cat: c.name, name: i.name, rate: i.rate, left: left});
+        i.sponsors.forEach(s => all.push({cat: c.name, item: i.name, jersey: /jersey/i.test(i.name), sponsor: s.name, jerseyTeam: s.jerseyTeam, team: keyOf(s.team), value: (s.qty || 1) * i.rate, confirmed: s.confirmed}));
       });
-      SPO[c.key] = {open: open, openValue: openValue};
+      ok = true;
       $('spolive').textContent = 'Live · ' + new Date(d.updated).toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'});
     } catch (e) { $('spolive').textContent = t('spoFail'); }
   }
-  SPO.mine = all; renderSpo();
+  SPO = {all: all, av: av, ok: ok}; renderSpo();
+}
+function teamTotals() {
+  const T = {}; (S.sponsor.teams || []).forEach(k => T[k] = {got: 0, conf: 0, counted: 0});
+  (SPO ? SPO.all : []).forEach(x => { const r = T[x.team]; if (!r) return; r.got += x.value; if (x.confirmed) { r.conf += x.value; r.counted += x.jersey ? 2600 : x.value; } });
+  (S.sponsor.splits || []).forEach(sp => { [[sp.from, -1], [sp.to, 1]].forEach(([k, f]) => { const r = T[k]; if (r) { r.got += f * sp.amount; r.conf += f * sp.amount; r.counted += f * sp.amount; } }); });
+  return T;
 }
 function renderSpo() {
-  renderCats();
-  if (!SPO || !SPO.mine) return;
-  const L = SPO.mine, tot = L.reduce((a, x) => a + x.value, 0), conf = L.filter(x => x.confirmed).reduce((a, x) => a + x.value, 0);
-  const counted = L.filter(x => x.confirmed).reduce((a, x) => a + (x.jersey ? 2600 : x.value), 0);
-  $('spokpi').innerHTML = '';
-  [[t('kTotal'), tot], [t('kConf'), conf], [t('kWait'), tot - conf]].forEach(([k, v]) => { const d = el('div', 'kpi'); d.append(el('b', null, inr(v)), el('span', null, k)); $('spokpi').append(d); });
-  $('spobar').style.width = Math.min(100, counted / 15000 * 100) + '%';
-  $('spodep').textContent = counted >= 15000 ? t('depFull', {a: inr(Math.round((counted - 15000) * 0.2))}) : t('depProg', {a: inr(counted), b: inr(15000)});
+  if (!S) return;
+  if (!S.sponsor) S.sponsor = {target: 35000, splits: [], teams: PORTAL_TEAMS.map(n => sNorm(n) === sNorm(S.team) ? S.team : n.toUpperCase())};
+  const link = spoLink();
+  $('spLink').value = link;
+  if (!$('spMsg').dataset.edited) $('spMsg').value = spoMsg();
+  $('spWa').href = 'https://wa.me/?text=' + encodeURIComponent($('spMsg').value);
+  $('spOpen').href = link;
+  // categories + available slots
+  const cats = $('cats'); cats.replaceChildren();
+  SPONSOR_CATS.forEach(c => {
+    const d = el('div', 'cat' + (c.url ? ' open' : '')), h = el('div', 'cathead');
+    h.append(el('h3', null, c.name), el('span', 'pill ' + (c.url ? 'APPROVED' : 'none'), c.url ? t('catOpen') : t('catSoon'))); d.append(h, el('p', 'small muted', c.desc[LANG === 'ml' ? 1 : 0]));
+    if (c.url && SPO) { const L = SPO.av.filter(a => a.cat === c.name); d.append(el('p', 'small', t('slotsOpen', {n: L.reduce((a, x) => a + x.left, 0), v: inr(L.reduce((a, x) => a + x.left * x.rate, 0))}))); }
+    cats.append(d);
+  });
+  const av = $('avail'); av.replaceChildren();
+  if (SPO && SPO.av.length) {
+    const tb = el('table', 'avt'), hr = el('tr'); [t('avItem'), t('avRate'), t('avLeft')].forEach(x => hr.append(el('th', null, x))); tb.append(hr);
+    SPO.av.slice().sort((a, b) => b.rate - a.rate).forEach(a => { const tr = el('tr'); tr.append(el('td', null, a.name.replace(/^KNPL-7\s+/, '')), el('td', null, inr(a.rate)), el('td', null, String(a.left))); tb.append(tr); });
+    av.append(tb);
+  }
+  // target + rank
+  const T = teamTotals(), me = T[S.team] || {got: 0, conf: 0, counted: 0}, target = S.sponsor.target || 35000;
+  const wait = me.got - me.conf;
+  $('tgGot').textContent = inr(me.conf); $('tgTarget').textContent = inr(target);
+  $('tgBar').style.width = Math.min(100, me.conf / target * 100) + '%';
+  $('tgWait').style.width = Math.max(0, Math.min(100 - Math.min(100, me.conf / target * 100), wait / target * 100)) + '%';
+  $('mk15').style.left = Math.min(100, 15000 / target * 100) + '%';
+  $('tgSplit').textContent = t('tgSplitT', {c: inr(me.conf), w: inr(wait)});
+  const left15 = 15000 - me.counted, leftT = target - me.conf;
+  $('tgCheer').textContent = me.got <= 0 ? t('cheer0') : left15 > 0 ? t('cheer1', {a: inr(left15)}) : leftT > 0 ? t('cheer2', {a: inr(leftT)}) : t('cheer3', {a: inr(Math.round((me.counted - 15000) * 0.2))});
+  const ranked = Object.keys(T).map(k => ({k: k, v: T[k].got})).sort((a, b) => b.v - a.v || a.k.localeCompare(b.k));
+  const pos = ranked.findIndex(r => r.k === S.team) + 1, active = ranked.filter(r => r.v > 0).length;
+  $('tgRank').textContent = me.got > 0 ? t('rankT', {r: pos, n: ranked.length, a: active}) : t('rank0', {a: active, n: ranked.length});
+  // leaderboard
+  const lb = $('lb'); lb.replaceChildren(); const max = Math.max(target, ...ranked.map(r => r.v));
+  ranked.forEach((r, i) => { const li = el('li', r.k === S.team ? 'me' : ''), bar = el('span', 'lbbar'), fill = el('i'); fill.style.width = (r.v / max * 100) + '%'; bar.append(fill);
+    const im = el('img'); im.alt = ''; im.src = '../draft/logos/' + slug(title(r.k)) + '.png'; im.onerror = () => im.style.visibility = 'hidden';
+    li.append(el('span', 'lbn', String(i + 1)), im, el('span', 'lbt', title(r.k)), bar, el('span', 'lbv', r.v ? inr(r.v) : '–')); lb.append(li); });
+  // my list
   const ul = $('spolist'); ul.replaceChildren();
-  if (!L.length) ul.append(el('li', 'muted', t('spoNone')));
-  L.forEach(x => { const li = el('li'), a = el('div'), b = el('div', 'r');
-    a.append(el('b', null, x.sponsor), el('div', 'small muted', x.cat + ' · ' + x.item + (x.jerseyTeam ? ' · ' + x.jerseyTeam : '')));
-    b.append(el('div', 'amt', inr(x.value)), el('span', 'pill ' + (x.confirmed ? 'APPROVED' : 'PENDING'), x.confirmed ? t('confirmed') : t('underAppr')));
-    li.append(a, b); ul.append(li); });
+  const mine = (SPO ? SPO.all : []).filter(x => x.team === S.team);
+  const sp = (S.sponsor.splits || []).filter(x => x.from === S.team || x.to === S.team);
+  if (!mine.length && !sp.length) ul.append(el('li', 'muted', t('spoNone')));
+  mine.forEach(x => { const li = el('li'), a = el('div'), b = el('div', 'r');
+    a.append(el('b', null, x.sponsor), el('div', 'small muted', x.cat + ' · ' + x.item.replace(/^KNPL-7\s+/, '') + (x.jerseyTeam ? ' · ' + x.jerseyTeam : '')));
+    b.append(el('div', 'amt', inr(x.value)), el('span', 'pill ' + (x.confirmed ? 'APPROVED' : 'PENDING'), x.confirmed ? t('confirmed') : t('underAppr'))); li.append(a, b); ul.append(li); });
+  sp.forEach(x => { const li = el('li'), a = el('div'), b = el('div', 'r'), out = x.from === S.team;
+    a.append(el('b', null, x.sponsor), el('div', 'small muted', out ? t('shareOut', {t: title(x.to)}) : t('shareIn', {t: title(x.from)})));
+    b.append(el('div', 'amt', (out ? '− ' : '+ ') + inr(x.amount))); li.append(a, b); ul.append(li); });
 }
-function tab(k) { ['pay', 'jer', 'rep', 'spo'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); loadSpo(); } }
+function tab(k) { ['pay', 'jer', 'rep', 'spo'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 $('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
@@ -392,6 +439,9 @@ $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
 $('rout').onchange = fillIn; $('rsend').onclick = sendRepl;
 $('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo');
+$('spCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spLink').value); } catch (e) { $('spLink').select(); document.execCommand('copy'); } $('spCopy').textContent = t('copied'); setTimeout(() => $('spCopy').textContent = t('copy'), 1500); };
+$('spMsgCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spMsg').value); } catch (e) { $('spMsg').select(); document.execCommand('copy'); } $('spMsgCopy').textContent = t('copied'); setTimeout(() => $('spMsgCopy').textContent = t('shCopyMsg'), 1500); };
+$('spMsg').oninput = () => { $('spMsg').dataset.edited = '1'; $('spWa').href = 'https://wa.me/?text=' + encodeURIComponent($('spMsg').value); };
 $('out').onclick = () => { try { sessionStorage.removeItem('knpl_td'); } catch (e) {} location.reload(); };
 applyStatic();
 (async () => {

@@ -12,7 +12,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=5">
+<link rel="stylesheet" href="desk.css?v=6">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="receipt.js?v=4" defer></script>
 <script src="common.js?v=4"></script>
@@ -120,22 +120,40 @@
   </div>
 
   <div id="pg-spo" hidden>
-    <div class="card">
-      <h2 data-t="spoTitle"></h2>
-      <p class="muted" data-t="spoIntro"></p>
-      <div class="cats" id="cats"></div>
+    <div class="card target">
+      <div class="kick2" data-t="tgKick"></div>
+      <div class="tgrow"><div><span class="small muted" data-t="tgReceived"></span><div class="big2" id="tgGot">–</div></div><div class="r"><span class="small muted" data-t="tgTarget"></span><div class="big2" id="tgTarget">–</div></div></div>
+      <div class="tbar"><i id="tgBar"></i><i class="w" id="tgWait"></i><span class="mk" id="mk15"><em>₹15,000</em></span></div>
+      <div class="small muted" id="tgSplit"></div>
+      <p class="cheer" id="tgCheer"></p>
+      <div class="small" id="tgRank"></div>
     </div>
-    <div class="card" id="spomine">
-      <div class="cardhead"><h3 data-t="spoMine"></h3><span class="small muted" id="spolive"></span></div>
-      <div class="kpis" id="spokpi"></div>
-      <div class="meter"><i id="spobar"></i></div>
-      <p class="small muted" id="spodep"></p>
+    <div class="card">
+      <h3 data-t="shTitle"></h3>
+      <p class="small muted" data-t="shNote"></p>
+      <div class="linkrow"><input id="spLink" type="text" readonly><button class="btn sm" id="spCopy" data-t="copy"></button></div>
+      <label class="fl" for="spMsg" data-t="shMsg"></label>
+      <textarea id="spMsg" style="min-height:190px;font-size:14px"></textarea>
+      <div class="row"><a class="btn ok" id="spWa" target="_blank" rel="noopener" data-t="shWa"></a><button class="btn ghost" id="spMsgCopy" data-t="shCopyMsg"></button><a class="btn or" id="spOpen" target="_blank" rel="noopener" data-t="catOpenBtn"></a></div>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h3 data-t="avTitle"></h3><span class="small muted" id="spolive"></span></div>
+      <div class="cats" id="cats"></div>
+      <div id="avail"></div>
+    </div>
+    <div class="card">
+      <h3 data-t="spoMine"></h3>
       <ul class="hist" id="spolist"></ul>
       <p class="small muted" data-t="spoRule"></p>
+    </div>
+    <div class="card">
+      <h3 data-t="lbTitle"></h3>
+      <p class="small muted" data-t="lbNote"></p>
+      <ol class="lb" id="lb"></ol>
     </div>
   </div>
 </section>
 </main>
 <footer data-t="footer"></footer>
-<script src="desk.js?v=5"></script>
+<script src="desk.js?v=6"></script>
 </body></html>
