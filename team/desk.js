@@ -343,6 +343,17 @@ async function sendRepl() {
   } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
   finally { $('rsend').disabled = false; }
 }
+/* ---------- sponsorship (categories open one by one) ---------- */
+const SPONSOR_CATS = [
+  {key: 'cover', name: 'Cover Drive', url: 'https://knplseason7.github.io/knpl7-cover-drive/', api: 'https://script.google.com/macros/s/AKfycbzhb0N02RyK_lLfsMxQCooY_BRN1MtGhnVCVc7Wn4w6RtdVdPc30k3QaJs4gzgSkEOF/exec',
+   desc: ['Trophies, awards, team jerseys and match-day sponsorships.', 'Trophies, Awards, Team Jersey, Match-day Sponsorships.']},
+  {key: 'flick', name: 'Flick', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']},
+  {key: 'straight', name: 'Straight Drive', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']}
+];
+const PORTAL_TEAMS = ['Devils Of Chitrakoot', 'Ayodhya Warriors', 'Spartans Of Nalanda', 'Mighty Mithilas', 'Kalinga United', 'Kurukshetra Yodhas', 'Jaguars Of Jhansi', 'Knights Of Kanchi',
+  'Kombans Of Pataleeputhra', 'Kaaliyanz Of Dwaraka', 'Madhura Mavericks', 'Panchaala Panthers', 'Gandhara Giants', 'Vamos Vrindavan', 'Guardians Of Kamboja', 'Varahas Of Vijayanagara'];
+const sNorm = x => String(x || '').toUpperCase().replace(/[^A-Z]/g, '').replace(/H/g, '').replace(/D/g, 'T');
+let SPO = null;
 function SPO_TEAM() { return PORTAL_TEAMS.find(n => sNorm(n) === sNorm(S.team)) || title(S.team); }
 function keyOf(name) { return (S.sponsor.teams || []).find(k => sNorm(k) === sNorm(name)) || ''; }
 function openCat() { return SPONSOR_CATS.find(c => c.url); }
