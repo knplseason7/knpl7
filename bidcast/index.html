@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TENVOX BIDCAST · KNPL-7 Mega Auction Live</title>
+<meta name="description" content="TENVOX BIDCAST — every bid of the KNPL-7 Mega Auction, live: player on the block, bids, teams and sponsors.">
+<meta name="theme-color" content="#070b14">
+<meta property="og:title" content="TENVOX BIDCAST · KNPL-7 Mega Auction Live">
+<meta property="og:description" content="Every bid. Live. 12 Dec 2026, 8:00 AM.">
+<meta property="og:image" content="knpl-logo.png">
+<link rel="icon" href="knpl-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b14;--bg2:#0c1322;--card:#111a2c;--card2:#16223a;--line:#22304d;--ink:#eef3fb;--mut:#8b9bb8;
+  --gold:#f5b942;--gold2:#ffd884;--red:#ff4d5e;--green:#35d39a;--cq:#ff8a5c;--dm:#b993ff;--rs:#4fd8c9;--live:#ff3b4f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:radial-gradient(1200px 600px at 80% -10%,#1b2a4a55,transparent),radial-gradient(900px 500px at -10% 110%,#3a1d0c44,transparent),var(--bg)}
+[hidden]{display:none!important}
+.cond{font-family:"Barlow Condensed",sans-serif;letter-spacing:.3px}
+img{display:block}
+
+/* ---------- channel bar ---------- */
+.chan{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 22px;background:linear-gradient(90deg,#0a0f1c,#0f1830 60%,#0a0f1c);border-bottom:1px solid #2a3a5e;box-shadow:0 6px 24px #0008}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.brand .mark{width:44px;height:44px;border-radius:12px;background:conic-gradient(from 210deg,var(--gold),#ff7a3d,var(--live),var(--gold));display:grid;place-items:center;box-shadow:0 0 0 2px #0a0f1c,0 0 18px #ff7a3d55}
+.brand .mark span{width:34px;height:34px;border-radius:9px;background:#0a0f1c;display:grid;place-items:center;font:900 22px "Barlow Condensed";color:var(--gold2)}
+.brand .wm{line-height:1}
+.brand .wm b{display:block;font:900 30px "Barlow Condensed";letter-spacing:2.5px;background:linear-gradient(90deg,#fff,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .wm b i{font-style:normal;background:linear-gradient(90deg,var(--gold),#ff7a3d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .wm small{display:block;font:600 11px Inter;letter-spacing:3px;color:var(--mut);text-transform:uppercase;margin-top:3px}
+.onair{display:inline-flex;align-items:center;gap:7px;font:800 12px Inter;letter-spacing:1.5px;padding:6px 11px;border-radius:999px;border:1px solid #3a4a6e;color:var(--mut);text-transform:uppercase}
+.onair i{width:9px;height:9px;border-radius:50%;background:#56637d}
+.onair.live{color:#fff;background:var(--live);border-color:var(--live)} .onair.live i{background:#fff;animation:pulse 1.2s infinite}
+.onair.demo{color:#1a1205;background:var(--gold);border-color:var(--gold)} .onair.demo i{background:#1a1205}
+@keyframes pulse{50%{opacity:.25}}
+.chan .ev{margin-left:auto;display:flex;align-items:center;gap:12px;text-align:right}
+.chan .ev .t{font:800 18px "Barlow Condensed";letter-spacing:1px;text-transform:uppercase}
+.chan .ev .s{font-size:12px;color:var(--mut)}
+.chan .ev img{width:44px;height:44px}
+
+/* ---------- layout ---------- */
+.wrap{display:grid;grid-template-columns:230px minmax(0,1fr) 430px;gap:16px;padding:16px 22px 120px;max-width:1800px;margin:0 auto}
+.card{background:linear-gradient(180deg,var(--card),#0e1626);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 30px #0006}
+.h{font:800 15px "Barlow Condensed";letter-spacing:1.6px;text-transform:uppercase;color:var(--gold2);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.h .n{margin-left:auto;font:600 12px Inter;letter-spacing:0;color:var(--mut);text-transform:none}
+.mut{color:var(--mut)} .sm{font-size:12.5px}
+
+/* KNPL side rail */
+.side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.rail{position:sticky;top:84px;align-self:start;display:flex;flex-direction:column;gap:14px}
+.knpl{text-align:center;background:radial-gradient(circle at 50% 0%,#3a1d0c,#140d0a 70%);border:1px solid #6b4a1f;border-radius:18px;padding:18px 14px}
+.knpl img{width:132px;height:132px;margin:0 auto 8px;filter:drop-shadow(0 6px 18px #000a)}
+.knpl .t1{font:900 26px "Barlow Condensed";letter-spacing:1.5px;color:var(--gold2);line-height:1}
+.knpl .t2{font:700 12px Inter;letter-spacing:2px;color:#e8d2a8;text-transform:uppercase;margin-top:4px}
+.knpl .tag{margin-top:10px;font:600 13px Inter;color:#f3e6cc;font-style:italic}
+.knpl .ml{margin-top:4px;font-size:14px;color:var(--gold2);font-weight:700}
+.knpl .meta{margin-top:12px;font-size:12px;color:#cdb98f;line-height:1.6}
+.trophy{padding:12px;text-align:center}
+.trophy img{width:100%;border-radius:12px;aspect-ratio:390/412;object-fit:cover}
+.trophy .cap{font:800 15px "Barlow Condensed";letter-spacing:1px;color:var(--gold2);margin-top:8px;text-transform:uppercase}
+
+/* player stage */
+.stage{min-height:560px;position:relative;overflow:hidden}
+.pl{display:grid;grid-template-columns:240px minmax(0,1fr);gap:20px}
+.photo{width:240px;height:300px;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#1f2c48,#0d1424);position:relative;border:1px solid var(--line)}
+.photo img{width:100%;height:100%;object-fit:cover;object-position:top}
+.photo .ph0{position:absolute;inset:0;display:grid;place-items:center;font:900 80px "Barlow Condensed";color:#2c3c60}
+.catband{position:absolute;left:0;right:0;bottom:0;padding:8px 10px;font:800 15px "Barlow Condensed";letter-spacing:1.2px;text-transform:uppercase;color:#fff;background:linear-gradient(0deg,#000d,#0000)}
+.pname{font:900 52px "Barlow Condensed";line-height:.95;letter-spacing:.5px;margin:2px 0 6px;text-transform:uppercase}
+.reg{font:700 12px Inter;letter-spacing:1.5px;color:var(--mut)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12.5px;font-weight:600}
+.chip.gold{border-color:#7a5a1f;background:#2a200f;color:var(--gold2)}
+.c-CV,.c-CC{--cc:var(--cq)} .c-DA,.c-DC{--cc:var(--dm)} .c-RSE,.c-RSC{--cc:var(--rs)}
+.catpill{display:inline-block;padding:4px 12px;border-radius:999px;font:800 14px "Barlow Condensed";letter-spacing:1.2px;text-transform:uppercase;color:#0b0f18;background:var(--cc)}
+.srbox{display:flex;align-items:center;gap:16px;margin:10px 0 4px}
+.ring{width:96px;height:96px;flex:none;position:relative}
+.ring svg{width:96px;height:96px;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font:900 36px "Barlow Condensed"}
+.ring small{position:absolute;left:0;right:0;bottom:14px;text-align:center;font:700 9px Inter;letter-spacing:1.5px;color:var(--mut)}
+.parts{flex:1;display:grid;gap:5px;min-width:0}
+.part{display:grid;grid-template-columns:110px 1fr 38px;align-items:center;gap:8px;font-size:12px}
+.part .bar{height:8px;border-radius:6px;background:#0a1222;overflow:hidden}
+.part .bar i{display:block;height:100%;border-radius:6px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:12px}
+.tile{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.tile span{display:block;font:700 10px Inter;letter-spacing:1.2px;color:var(--mut);text-transform:uppercase}
+.tile b{font:800 26px "Barlow Condensed"}
+.hl{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.hl div{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:7px 10px;border-radius:10px;background:#0d1628;border:1px solid var(--line)}
+.hl div.title,.hl div.award{border-color:#6b5320;background:#1d170c}
+.hl div em{font-style:normal;flex:none}
+.seasons{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.seasons span{font-size:11.5px;padding:4px 8px;border-radius:8px;background:#0d1628;border:1px solid var(--line)}
+
+/* bid panel */
+.bid{position:relative;overflow:hidden;text-align:center;padding:18px}
+.bid .lbl{font:700 11px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
+.bid .amt{font:900 84px "Barlow Condensed";line-height:1;letter-spacing:1px;margin:4px 0;background:linear-gradient(180deg,#fff,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.bid .amt.flash{animation:flash .45s ease}
+@keyframes flash{0%{transform:scale(1.12);filter:brightness(1.6)}100%{transform:scale(1)}}
+.lead{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px}
+.lead img{width:52px;height:52px;border-radius:50%;background:#fff1;object-fit:contain}
+.lead b{font:800 24px "Barlow Condensed";letter-spacing:.6px;text-transform:uppercase}
+.bid .meta{display:flex;justify-content:center;gap:14px;margin-top:8px;font-size:12px;color:var(--mut)}
+.bid .msg{margin-top:10px;padding:8px 12px;border-radius:10px;background:#2a200f;border:1px solid #6b5320;color:var(--gold2);font-weight:600}
+
+/* teams board */
+.teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.team{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 9px;border-radius:12px;background:var(--card2);border:1px solid var(--line);transition:all .3s}
+.team img{width:38px;height:38px;border-radius:50%;object-fit:contain;background:#fff1}
+.team .nm{font:700 14px "Barlow Condensed";letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team .sq{height:5px;border-radius:4px;background:#0a1222;overflow:hidden;margin-top:4px}
+.team .sq i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#ff7a3d)}
+.team .pt{text-align:right;font:800 17px "Barlow Condensed";font-variant-numeric:tabular-nums}
+.team .pt small{display:block;font:600 10px Inter;color:var(--mut)}
+.team.lead{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 18px #f5b94244;background:#231b0c}
+.team.out{opacity:.45}
+
+/* sales */
+.sales{display:flex;flex-direction:column;gap:6px;max-height:330px;overflow:auto}
+.sale{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 8px;border-radius:10px;background:var(--card2);border:1px solid var(--line);animation:in .5s ease}
+.sale img{width:34px;height:34px;border-radius:50%;object-fit:contain;background:#fff1}
+.sale b{font:700 15px "Barlow Condensed";letter-spacing:.3px;text-transform:uppercase}
+.sale .pr{font:800 18px "Barlow Condensed";color:var(--gold2)}
+@keyframes in{from{opacity:0;transform:translateY(-6px)}}
+
+/* sponsor spotlight + ticker */
+.spot{position:relative;min-height:150px;display:grid;place-items:center;text-align:center;padding:18px;overflow:hidden;background:radial-gradient(circle at 50% 0%,#2a200f,#111a2c 70%);border-color:#6b5320}
+.spot .k{font:700 11px Inter;letter-spacing:2.5px;color:#d9b56a;text-transform:uppercase}
+.spot .nm{font:900 34px "Barlow Condensed";line-height:1.05;letter-spacing:.5px;margin:6px 0;color:#fff;text-transform:uppercase}
+.spot .for{font-size:13px;color:var(--gold2);font-weight:600}
+.spot .fade{animation:spotin .7s ease}
+@keyframes spotin{from{opacity:0;transform:translateY(8px) scale(.98)}}
+.spot .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);transition:width linear}
+.ticker{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;align-items:center;height:56px;background:linear-gradient(90deg,#0b1222,#121c33,#0b1222);border-top:1px solid #3a4a6e;overflow:hidden}
+.ticker .lab{flex:none;height:100%;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--gold);color:#1a1205;font:900 16px "Barlow Condensed";letter-spacing:1.5px;text-transform:uppercase;z-index:1;box-shadow:8px 0 18px #000a}
+.ticker .run{display:flex;align-items:center;gap:34px;white-space:nowrap;padding-left:30px;animation:run linear infinite}
+.ticker .run span{font:800 "Barlow Condensed";letter-spacing:.6px;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center;gap:10px}
+.ticker .run span::after{content:"◆";color:var(--gold);font-size:12px;margin-left:24px}
+.ticker .w3{font-size:26px!important;color:var(--gold2)!important} .ticker .w2{font-size:21px!important} .ticker .w1{font-size:17px!important;color:#cdd6e6!important}
+@keyframes run{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* sold overlay */
+.sold{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle,#0a0f1ccc,#000e);animation:fadein .3s ease}
+.sold .box{text-align:center;padding:30px;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+.sold img.tl{width:150px;height:150px;border-radius:50%;margin:0 auto 10px;object-fit:contain;background:#fff1;box-shadow:0 0 0 4px var(--gold),0 0 60px #f5b94288}
+.sold .st{font:900 120px "Barlow Condensed";line-height:.9;letter-spacing:6px;color:var(--gold2);text-shadow:0 6px 40px #f5b94266}
+.sold .who{font:800 34px "Barlow Condensed";letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.sold .to{font:700 22px "Barlow Condensed";letter-spacing:1px;color:var(--mut);text-transform:uppercase}
+.sold .px{font:900 60px "Barlow Condensed";color:#fff;margin-top:4px}
+.sold.uns .st{color:#9fb0cc;font-size:90px}
+@keyframes fadein{from{opacity:0}} @keyframes pop{from{transform:scale(.6);opacity:0}}
+.conf{position:fixed;top:-20px;width:10px;height:14px;z-index:51;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* waiting / pre-auction */
+.hero{display:grid;place-items:center;text-align:center;min-height:540px;padding:30px}
+.hero .k{font:800 14px Inter;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
+.hero h1{font:900 76px "Barlow Condensed";line-height:.95;margin:10px 0;letter-spacing:1px;text-transform:uppercase}
+.hero h1 span{background:linear-gradient(90deg,var(--gold2),#ff7a3d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cd{display:flex;gap:12px;justify-content:center;margin:18px 0}
+.cd div{min-width:92px;padding:12px 10px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
+.cd b{display:block;font:900 52px "Barlow Condensed";line-height:1;font-variant-numeric:tabular-nums}
+.cd span{font:700 11px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
+.tgrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px;margin-top:18px;width:100%}
+.tgrid div{display:flex;flex-direction:column;align-items:center;gap:6px;font:700 12px "Barlow Condensed";letter-spacing:.4px;text-transform:uppercase;text-align:center;color:#cfd8e8}
+.tgrid img{width:58px;height:58px;border-radius:50%;object-fit:contain;background:#fff1}
+.demo-banner{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:30;background:var(--gold);color:#1a1205;font:800 12px Inter;letter-spacing:1px;padding:6px 14px;border-radius:999px;text-transform:uppercase;box-shadow:0 6px 18px #0008}
+
+/* ---------- responsive ---------- */
+@media (max-width:1400px){.wrap{grid-template-columns:200px minmax(0,1fr) 380px}.pl{grid-template-columns:200px minmax(0,1fr)}.photo{width:200px;height:250px}.pname{font-size:44px}.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:1100px){.wrap{grid-template-columns:minmax(0,1fr) 360px}.rail{grid-column:1/-1;position:static;flex-direction:row}.knpl{flex:1;display:flex;align-items:center;gap:14px;text-align:left}.knpl img{width:84px;height:84px;margin:0}.trophy{width:200px;flex:none}}
+@media (max-width:820px){
+  .chan{padding:8px 12px;gap:8px}.brand .mark{width:36px;height:36px}.brand .mark span{width:28px;height:28px;font-size:18px}.brand .wm b{font-size:22px;letter-spacing:1.5px}.brand .wm small{font-size:9px;letter-spacing:2px}
+  .chan .ev .t{font-size:13px}.chan .ev .s{display:none}.chan .ev img{width:34px;height:34px}.onair{font-size:10px;padding:4px 8px}
+  .wrap{grid-template-columns:minmax(0,1fr);padding:10px 10px 90px;gap:10px}
+  .rail{order:9}.knpl img{width:64px;height:64px}.knpl .t1{font-size:22px}.trophy{width:130px}
+  .pl{grid-template-columns:110px minmax(0,1fr);gap:12px}.photo{width:110px;height:140px}.pname{font-size:32px}
+  .srbox{flex-direction:column;align-items:stretch}.ring{margin:0 auto}.part{grid-template-columns:92px 1fr 32px}
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.tile b{font-size:21px}
+  .stage{min-height:0}.bid .amt{font-size:64px}.side{display:contents}.side>*{margin:0}#bidCard{order:1;position:sticky;top:58px;z-index:5;padding:10px}#center{order:2}#spot{order:3}#teamsCard{order:4}.side>.card:last-child{order:5}.rail{order:9}#bidCard .amt{font-size:46px;margin:0}#bidCard .lead{min-height:0}#bidCard .lead img{width:34px;height:34px}#bidCard .lead b{font-size:18px}#bidCard .meta{margin-top:2px}.chan .ev>div{display:none}.side{gap:0}
+  .hero h1{font-size:46px}.cd div{min-width:68px}.cd b{font-size:36px}.tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.tgrid img{width:46px;height:46px}
+  .sold .st{font-size:76px}.sold img.tl{width:110px;height:110px}.sold .px{font-size:44px}.sold .who{font-size:26px}
+  .ticker{height:46px}.ticker .lab{font-size:13px;padding:0 10px}.ticker .w3{font-size:20px!important}.ticker .w2{font-size:17px!important}.ticker .w1{font-size:14px!important}
+  .demo-banner{top:60px;font-size:10px}
+}
+</style>
+</head>
+<body>
+<header class="chan">
+  <a class="brand" href="./"><span class="mark"><span>T</span></span><span class="wm"><b>TENVOX <i>BIDCAST</i></b><small>Every bid · Live</small></span></a>
+  <span class="onair" id="onair"><i></i><span>Off air</span></span>
+  <div class="ev"><div><div class="t">KNPL-7 Mega Auction</div><div class="s">12 Dec 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div></div><img src="knpl-logo.png" alt="KNPL"></div>
+</header>
+
+<main class="wrap">
+  <aside class="rail">
+    <div class="knpl"><img src="knpl-logo.png" alt="Kerala Namboodiris Premier League"><div>
+      <div class="t1">KNPL</div><div class="t2">Season 7 · Mega Auction</div>
+      <div class="tag">Making the Impossible a Reality</div><div class="ml">ടീം സമം, കളി കേമം</div>
+      <div class="meta">16 franchises · 248 players<br>KNPL-7 · 11–14 Feb 2027<br>FISAT &amp; Boundary Grounds, Angamaly</div></div></div>
+    <div class="card trophy"><img src="trophy.jpg" alt="KNPL Champions Ever-Rolling Trophy"><div class="cap">KNPL Champions<br>Ever-Rolling Trophy</div></div>
+  </aside>
+
+  <section id="center"></section>
+
+  <section class="side" id="side">
+    <div class="card bid" id="bidCard"></div>
+    <div class="card spot" id="spot"></div>
+    <div class="card" id="teamsCard"><div class="h">Franchises <span class="n" id="teamsNote"></span></div><div class="teams" id="teams"></div></div>
+    <div class="card"><div class="h">Latest sales <span class="n" id="salesNote"></span></div><div class="sales" id="sales"></div></div>
+  </section>
+</main>
+
+<div class="ticker"><div class="lab">★ Sponsors</div><div class="run" id="run"></div></div>
+<div id="overlay"></div>
+<div class="demo-banner" id="demoBanner" hidden>Demo · simulated bids · not the real auction</div>
+
+<script>
+/* ===================== SETTINGS ===================== */
+const CFG={
+  KNPL_ACTID:null,   // Super Player Auction auction id for KNPL-7 — set when the auction is created
+  FEED:"https://jain-cricket-league.firebaseio.com/auction/",
+  SPONSORS:"https://script.google.com/macros/s/AKfycbzhb0N02RyK_lLfsMxQCooY_BRN1MtGhnVCVc7Wn4w6RtdVdPc30k3QaJs4gzgSkEOF/exec?action=status",
+  START:"2026-12-12T08:00:00+05:30",
+  SKIP_ITEMS:["CD01"], // the Ever-Rolling Trophy is shown on its own, without a sponsor credit
+  PHOTO:"https://mscsuper.blr1.digitaloceanspaces.com/playersphoto/{actid}_{pcode}.jpg"
+};
+const CAT={"Conqueror Vanguard":"CV","Conqueror Core":"CC","Dominator Apex":"DA","Dominator Core":"DC","Rising Star Elite":"RSE","Rising Star Core":"RSC"};
+const PARTS=[["P","Performance","#86a9dd"],["W","Win Impact","#e2a77a"],["Aw","Awards","#e2c27f"],["C","Consistency","#ae9ad8"],["E","Experience","#7fc4b7"]];
+const HLI={title:"🏆",award:"🏅",pom:"⭐",rank:"📈",up:"⬆️",down:"⬇️",new:"✨",final:"🎯"};
+
+/* ===================== HELPERS ===================== */
+const $=id=>document.getElementById(id);
+const fmt=n=>(n==null||isNaN(n))?"–":Math.round(n).toLocaleString("en-IN");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>String(s||"").toUpperCase().replace(/[^A-Z]/g,"").replace(/^THE/,"").replace(/CHITHRAKOOT/,"CHITRAKOOT").replace(/MIDHILAS/,"MITHILAS");
+const Q=new URLSearchParams(location.search);
+let DATA={teams:[],players:[]}, BYID={}, TEAMS=[], MAP=null, MODE="pre", ACTID=null;
+let STATE={pcode:null,bid:0,lead:null,soldout:0,teams:{},banned:[],msg:"",tmy:0}, SALES=[], SHOWN=null, LASTBID=0;
+
+/* ===================== DATA ===================== */
+async function loadData(){
+  DATA=await fetch("data.json").then(r=>r.json());
+  DATA.players.forEach(p=>BYID[p.id]=p);
+  TEAMS=DATA.teams.map((t,i)=>({key:norm(t.name),name:t.name,logo:t.logo,i}));
+}
+const teamByName=n=>TEAMS.find(t=>t.key===norm(n));
+const SHORT={DEVILSOFCHITRAKOOT:"Devils",AYODHYAWARRIORS:"Ayodhya",SPARTANSOFNALANDA:"Spartans",MIGHTYMITHILAS:"Mithilas",KALINGAUNITED:"Kalinga",KURUKSHETRAYODHAS:"Kurukshetra",JAGUARSOFJHANSI:"Jaguars",KNIGHTSOFKANCHI:"Knights",KOMBANSOFPATALEEPUTHRA:"Kombans",KAALIYANZOFDWARAKA:"Kaaliyanz",MADHURAMAVERICKS:"Mavericks",PANCHAALAPANTHERS:"Panchaala",GANDHARAGIANTS:"Gandhara",VAMOSVRINDAVAN:"Vamos",GUARDIANSOFKAMBOJA:"Guardians",VARAHASOFVIJAYANAGARA:"Varahas"};
+const shortName=t=>SHORT[t.key]||t.name;
+// Super Player Auction player/team list for an auction (made once when the auction is set up): spa/<actid>.json
+async function loadMap(id){ try{ const r=await fetch(`spa/${id}.json?v=${Date.now()}`); if(r.ok) MAP=await r.json(); }catch(e){} }
+function spaTeam(tid){
+  tid=String(tid||""); if(!tid||tid==="0") return null;
+  if(MODE==="demo") return TEAMS[+tid]||null;
+  const t=MAP&&MAP.teams.find(x=>String(x.tid)===tid); if(!t) return {key:tid,name:"Team "+tid,logo:""};
+  const k=teamByName(t.name); return k? {...k,tid} : {key:tid,name:t.name,logo:t.logo?(MAP.teamLogoBase||"")+t.logo:"",tid};
+}
+function spaPlayer(pcode){
+  if(pcode==null||pcode==="") return null;
+  if(MODE==="demo") return BYID[pcode]||null;
+  const row=MAP&&MAP.players.find(x=>String(x[0])===String(pcode));
+  if(row && row[2] && BYID[row[2]]) return BYID[row[2]];          // KNPL player: full profile
+  return {id:"",n:row?row[1]:"Player #"+pcode,c:"",s:null,ext:true,photo:CFG.PHOTO.replace("{actid}",ACTID).replace("{pcode}",pcode)};
+}
+
+/* ===================== RENDER: PLAYER ===================== */
+function ring(s){ const r=42,c=2*Math.PI*r,p=Math.max(0,Math.min(100,+s||0))/100;
+  return `<div class="ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="${r}" fill="none" stroke="#0a1222" stroke-width="9"/><circle cx="48" cy="48" r="${r}" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c*p} ${c}"/><defs><linearGradient id="g"><stop offset="0" stop-color="#f5b942"/><stop offset="1" stop-color="#ff7a3d"/></linearGradient></defs></svg><b>${s??"–"}</b><small>SKILL RATING</small></div>`; }
+function playerHTML(p){
+  if(!p) return waitingHTML();
+  const code=CAT[p.c]||"", st=p.st||{}, x=p.x||null;
+  const photo=p.ph?`<img src="data:image/jpeg;base64,${p.ph}" alt="">`:p.photo?`<img src="${esc(p.photo)}" alt="" onerror="this.remove()">`:"";
+  const ini=esc((p.n||"?").split(" ").map(w=>w[0]).slice(0,2).join(""));
+  const tiles=st.m!=null?[["Matches",st.m],["Runs",fmt(st.runs)],["Average",st.avg??"–"],["Wickets",st.wk],["Catches",st.ct],["Sixes",st.s6]].map(([k,v])=>`<div class="tile"><span>${k}</span><b>${v??"–"}</b></div>`).join(""):"";
+  const parts=x?PARTS.map(([k,l,c])=>`<div class="part"><span class="mut">${l}</span><div class="bar"><i style="width:${Math.min(100,x[k]||0)}%;background:${c}"></i></div><b>${Math.round(x[k]||0)}</b></div>`).join(""):"";
+  const hl=(p.hl||[]).slice(0,4).map(([t,s])=>`<div class="${t}"><em>${HLI[t]||"•"}</em><span>${esc(s)}</span></div>`).join("");
+  const se=(p.seasons||[]).filter(s=>/KNPL/.test(s.t)&&s.m&&s.m!=="–").slice(0,4).map(s=>`<span><b>${esc(s.t)}</b> · ${esc(s.team)}${s.res?` · ${esc(s.res)}`:""}</span>`).join("");
+  return `<div class="card stage"><div class="pl c-${code}">
+    <div><div class="photo">${photo}<div class="ph0" ${photo?'style="z-index:-1"':""}>${ini}</div>${code?`<div class="catband" style="background:linear-gradient(0deg,${`var(--cc)`},#0000)">${esc(p.c)}</div>`:""}</div></div>
+    <div style="min-width:0">
+      ${p.id?`<div class="reg">KNPL REG ID · ${esc(p.id)}</div>`:""}
+      <div class="pname cond">${esc(p.n)}</div>
+      <div class="chips">${code?`<span class="catpill">${esc(p.c)}</span>`:""}${p.role?`<span class="chip">${esc(p.role)}</span>`:""}${p.style?`<span class="chip">${esc(p.style)}</span>`:""}${p.bt?`<span class="chip gold">Base ${fmt(p.bt)}</span>`:""}</div>
+      ${p.s!=null?`<div class="srbox">${ring(p.s)}<div class="parts">${parts}</div></div>`:""}
+      ${p.sum?`<div class="sm mut" style="margin-top:6px">${esc(p.sum)}</div>`:""}
+    </div></div>
+    ${tiles?`<div class="tiles">${tiles}</div>`:""}
+    ${hl?`<div class="hl">${hl}</div>`:""}
+    ${se?`<div class="seasons">${se}</div>`:""}
+  </div>`;
+}
+function waitingHTML(){
+  if(MODE==="pre") return preHTML();
+  const top=[...SALES].filter(s=>s.tid).sort((a,b)=>b.price-a.price).slice(0,5);
+  return `<div class="card stage hero"><div><div class="k">${STATE.msg?esc(STATE.msg):"Next player coming up"}</div>
+    <h1 class="cond">KNPL-7 <span>Mega Auction</span></h1><div class="mut">${SALES.filter(s=>s.tid).length} players sold so far</div>
+    ${top.length?`<div style="margin-top:18px;text-align:left;max-width:520px;margin-inline:auto"><div class="h">Top buys</div>${top.map(saleHTML).join("")}</div>`:""}</div></div>`;
+}
+function preHTML(){
+  return `<div class="card stage hero"><div style="width:100%"><div class="k">TENVOX BIDCAST presents</div>
+    <h1 class="cond">KNPL-7 <span>Mega Auction</span></h1>
+    <div class="mut">Saturday, 12 December 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div>
+    <div class="cd" id="cd"></div>
+    <div class="mut sm">This page goes live by itself when the auction starts — every bid, every sale, as it happens.</div>
+    <div class="tgrid">${TEAMS.map(t=>`<div><img src="${t.logo}" alt="">${esc(t.name)}</div>`).join("")}</div></div></div>`;
+}
+function tickCountdown(){ const el=$("cd"); if(!el) return; let s=Math.max(0,Math.floor((Date.parse(CFG.START)-Date.now())/1000));
+  const d=Math.floor(s/86400); s%=86400; const h=Math.floor(s/3600); s%=3600; const m=Math.floor(s/60); s%=60;
+  el.innerHTML=[[d,"Days"],[h,"Hours"],[m,"Minutes"],[s,"Seconds"]].map(([v,l])=>`<div><b>${String(v).padStart(2,"0")}</b><span>${l}</span></div>`).join(""); }
+
+/* ===================== RENDER: BID, TEAMS, SALES ===================== */
+function animateNum(el,to){ const from=+el.dataset.v||0; el.dataset.v=to; if(from===to){ el.textContent=fmt(to); return; }
+  const t0=performance.now(), d=380; const step=t=>{ const k=Math.min(1,(t-t0)/d), e=1-Math.pow(1-k,3); el.textContent=fmt(from+(to-from)*e); if(k<1) requestAnimationFrame(step); }; requestAnimationFrame(step);
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+function renderBid(){
+  const card=$("bidCard"), p=spaPlayer(STATE.pcode), t=spaTeam(STATE.lead);
+  if(MODE==="pre"){ card.innerHTML=`<div class="lbl">Auction opens</div><div class="amt" style="font-size:54px">12 Dec · 8 AM</div><div class="mut sm">Bids appear here live</div>`; return; }
+  if(!card.querySelector(".amt")) card.innerHTML=`<div class="lbl" id="bLbl">Current bid</div><div class="amt" id="bAmt" data-v="0">–</div><div class="lead" id="bLead"></div><div class="meta" id="bMeta"></div><div id="bMsg"></div>`;
+  const has=p && STATE.bid>0;
+  $("bLbl").textContent= STATE.soldout&&STATE.lead? "Sold for" : t? "Current bid" : "Opening bid";
+  const a=$("bAmt"); if(has && +a.dataset.v!==STATE.bid) animateNum(a,STATE.bid); else if(!has){ a.textContent="–"; a.dataset.v=0; }
+  $("bLead").innerHTML= t? `${t.logo?`<img src="${esc(t.logo)}" alt="">`:""}<b>${esc(t.name)}</b>` : `<span class="mut">${p?"Waiting for the first bid":"—"}</span>`;
+  const ago=STATE.tmy? Math.round((Date.now()-STATE.tmy)/1000) : null;
+  $("bMeta").innerHTML= p? `<span>${p.n?esc(p.n):""}</span>${ago!=null&&ago<600&&!STATE.soldout?`<span>last bid ${ago}s ago</span>`:""}` : "";
+  $("bMsg").innerHTML= STATE.msg? `<div class="msg">${esc(STATE.msg)}</div>` : "";
+}
+function teamRows(){
+  if(MODE==="pre") return TEAMS.map(t=>({t,rm:null,n:null}));
+  if(MODE==="demo") return TEAMS.map((t,i)=>({t,rm:(STATE.teams[i]||{}).rm,n:(STATE.teams[i]||{}).n,id:String(i)}));
+  return Object.entries(STATE.teams).map(([tid,v])=>({t:spaTeam(tid),rm:v.rm,n:v.n,id:tid})).filter(r=>r.t);
+}
+function renderTeams(){
+  const rows=teamRows().sort((a,b)=>(b.rm??0)-(a.rm??0)), sq=14;
+  $("teams").innerHTML=rows.map(r=>{ const lead=r.id&&String(r.id)===String(STATE.lead), out=STATE.banned.map(String).includes(String(r.id));
+    return `<div class="team${lead?" lead":""}${out?" out":""}" title="${esc(r.t.name)}"><img src="${esc(r.t.logo)}" alt=""><div style="min-width:0"><div class="nm">${esc(shortName(r.t))}</div>${r.n!=null?`<div class="sq"><i style="width:${Math.min(100,r.n/sq*100)}%"></i></div>`:""}</div><div class="pt">${r.rm!=null?fmt(r.rm):""}<small>${r.n!=null?`${r.n}/${sq} players`:""}</small></div></div>`; }).join("");
+  $("teamsNote").textContent= MODE==="pre"? "16 teams · 14 players each" : "points left · squad";
+  $("teamsCard").hidden= MODE==="pre" && innerWidth>820;
+}
+function saleHTML(s){ const t=spaTeam(s.tid); return `<div class="sale"><img src="${esc(t?t.logo:"")}" alt=""><div style="min-width:0"><b>${esc(s.name)}</b><div class="mut sm">${t?esc(t.name):"Unsold"}${s.cat?` · ${esc(s.cat)}`:""}</div></div><div class="pr">${s.tid?fmt(s.price):"—"}</div></div>`; }
+function renderSales(){ const sold=SALES.filter(s=>s.tid);
+  $("sales").innerHTML= sold.length? sold.slice(0,25).map(saleHTML).join("") : `<div class="mut sm">${MODE==="pre"?"Sales will appear here live.":"No sales yet."}</div>`;
+  $("salesNote").textContent= sold.length? `${sold.length} sold` : ""; }
+function renderCenter(){ const p=spaPlayer(STATE.pcode); const key=(p?p.id||p.n:"")+"|"+MODE;
+  if(SHOWN!==key || MODE==="pre"){ SHOWN=key; $("center").innerHTML=playerHTML(STATE.soldout&&!p?null:p); if(MODE==="pre") tickCountdown(); } }
+function renderAll(){ renderCenter(); renderBid(); renderTeams(); renderSales(); }
+
+/* ===================== SOLD MOMENT ===================== */
+function soldMoment(p,t,price,unsold){
+  const o=$("overlay"); o.innerHTML=`<div class="sold${unsold?" uns":""}"><div class="box">${!unsold&&t&&t.logo?`<img class="tl" src="${esc(t.logo)}" alt="">`:""}<div class="st">${unsold?"UNSOLD":"SOLD"}</div><div class="who">${esc(p?p.n:"")}</div>${unsold?"":`<div class="to">to ${esc(t?t.name:"")}</div><div class="px">${fmt(price)}</div>`}</div></div>`;
+  if(!unsold) for(let i=0;i<70;i++){ const c=document.createElement("i"); c.className="conf"; c.style.left=Math.random()*100+"vw"; c.style.background=["#f5b942","#ff7a3d","#fff","#35d39a","#4fd8c9","#b993ff"][i%6]; c.style.animationDuration=(1.6+Math.random()*1.8)+"s"; c.style.animationDelay=(Math.random()*.4)+"s"; o.appendChild(c); }
+  clearTimeout(o._t); o._t=setTimeout(()=>o.innerHTML="", unsold?1800:3800);
+}
+function recordSale(pcode,tid,price){
+  const p=spaPlayer(pcode); if(!p) return; if(SALES.some(s=>String(s.pcode)===String(pcode)&&s.tid)) return;
+  SALES.unshift({pcode,name:p.n,cat:p.c||"",tid,price,at:Date.now()}); saveSales(); soldMoment(p,spaTeam(tid),price,false); renderSales(); }
+const SK=()=>"bidcast-"+(MODE==="demo"?"demo":ACTID);
+function saveSales(){ try{ localStorage.setItem(SK(),JSON.stringify(SALES.slice(0,300))); }catch(e){} }
+function loadSales(){ try{ SALES=JSON.parse(localStorage.getItem(SK())||"[]"); }catch(e){ SALES=[]; } }
+
+/* ===================== LIVE FEED (Super Player Auction) ===================== */
+let RAW={};
+function setPath(obj,path,data,merge){ const parts=path.split("/").filter(Boolean); if(!parts.length){ if(merge) Object.assign(obj,data); else { for(const k in obj) delete obj[k]; Object.assign(obj,data||{}); } return; }
+  let o=obj; for(let i=0;i<parts.length-1;i++){ if(typeof o[parts[i]]!=="object"||o[parts[i]]===null) o[parts[i]]={}; o=o[parts[i]]; }
+  const k=parts[parts.length-1]; if(merge&&typeof o[k]==="object"&&o[k]) Object.assign(o[k],data); else if(data===null) delete o[k]; else o[k]=data; }
+function fromRaw(){
+  const r=RAW, prev={...STATE,teams:JSON.parse(JSON.stringify(STATE.teams))};
+  const teams={}; Object.entries(r.teamlist||{}).forEach(([tid,v])=>{ if(v&&typeof v==="object") teams[tid]={rm:+v.rmpoint,n:+v.tplayer}; });
+  STATE={pcode:r.pcode!=null?String(r.pcode):null,bid:+r.bidpoint||0,lead:r.bidteam&&r.bidteam!=="0"?String(r.bidteam):null,soldout:+r.soldout||0,teams,
+    banned:Array.isArray(r.bannedteams)?r.bannedteams:Object.values(r.bannedteams||{}),msg:r.msg||"",tmy:+r.tmy||0};
+  // a sale: the sold flag turns on, or a team gains a player
+  if(prev.pcode!=null){
+    if(STATE.soldout && !prev.soldout && STATE.lead && STATE.pcode===prev.pcode) recordSale(STATE.pcode,STATE.lead,STATE.bid);
+    else if(STATE.pcode!==prev.pcode && !prev.soldout && prev.lead && Object.entries(STATE.teams).some(([t,v])=>prev.teams[t]&&v.n>prev.teams[t].n)) recordSale(prev.pcode,prev.lead,prev.bid);
+    else if(STATE.pcode!==prev.pcode && !prev.soldout && !prev.lead){ const p=spaPlayer(prev.pcode); if(p){ SALES.unshift({pcode:prev.pcode,name:p.n,tid:null,price:0,at:Date.now()}); saveSales(); } }
+  }
+  renderAll();
+}
+function startFeed(){
+  setOnAir("connecting");
+  const es=new EventSource(CFG.FEED+ACTID+".json");
+  es.addEventListener("put",e=>{ const m=JSON.parse(e.data); setPath(RAW,m.path,m.data,false); setOnAir("live"); fromRaw(); });
+  es.addEventListener("patch",e=>{ const m=JSON.parse(e.data); setPath(RAW,m.path,m.data,true); setOnAir("live"); fromRaw(); });
+  es.onerror=()=>setOnAir("reconnecting");
+}
+function setOnAir(s){ const el=$("onair"); el.className="onair"+(s==="live"?" live":s==="demo"?" demo":"");
+  el.lastElementChild.textContent={live:"Live",demo:"Demo",connecting:"Connecting…",reconnecting:"Reconnecting…",pre:"Starts 12 Dec"}[s]||s; }
+
+/* ===================== DEMO (simulated bids for preview) ===================== */
+function startDemo(){
+  $("demoBanner").hidden=false; setOnAir("demo");
+  const order=[...DATA.players].filter(p=>p.s!=null).sort((a,b)=>b.s-a.s).slice(0,60);
+  TEAMS.forEach((t,i)=>STATE.teams[i]={rm:100000-Math.round(10000+Math.random()*25000),n:3});
+  let i=0;
+  const next=()=>{ const p=order[i++%order.length]; STATE={...STATE,pcode:p.id,bid:0,lead:null,soldout:0,msg:"",tmy:0}; renderAll(); setTimeout(()=>bidStep(p,0),1800); };
+  const bidStep=(p,k)=>{ const base=+p.bt||2000, cur=STATE.bid||0, inc=cur<4000?100:cur<6000?200:cur<8000?250:cur<10000?400:500;
+    const stop=k>3+Math.random()*9;
+    if(stop){ if(STATE.lead!=null && Math.random()>.12){ STATE.soldout=1; const tid=STATE.lead; STATE.teams[tid].rm-=STATE.bid; STATE.teams[tid].n++; recordSale(p.id,tid,STATE.bid); renderAll(); }
+      else { soldMoment(p,null,0,true); } setTimeout(next,4200); return; }
+    let t; do{ t=String(Math.floor(Math.random()*TEAMS.length)); }while(t===STATE.lead);
+    STATE.bid=cur?cur+inc*(1+Math.floor(Math.random()*3)):base; STATE.lead=t; STATE.tmy=Date.now(); renderBid(); renderTeams();
+    setTimeout(()=>bidStep(p,k+1),900+Math.random()*1500); };
+  next();
+}
+
+/* ===================== SPONSORS (live from the KNPL-7 sponsorship page) ===================== */
+let SP=[], spIdx=0, spCur=null;
+function label(it,s){ let n=String(it.name||"").replace(/^KNPL(-7)?\s*/i,"").replace(/\s*Sponsor$/i,"").replace(/"/g,"").trim();
+  if(/jersey/i.test(n)) return `Team Jersey${s.jerseyTeam?" · "+s.jerseyTeam.replace(/ Of /g," of "):""}`;
+  if(/lunch/i.test(n)) return "Lunch Partner";
+  if(/^(Winners|Runners)/i.test(n)) return n+" Prize";
+  if(!/award/i.test(n) && /best|fair play|star|emerging|captain|keeper|fielder|batter|bowler/i.test(n)) return n+" Award";
+  return n; }
+async function loadSponsors(){
+  try{ const j=await fetch(CFG.SPONSORS+"&t="+Date.now()).then(r=>r.json()); if(!j.ok) return;
+    const m={};
+    j.items.forEach(it=>{ if(CFG.SKIP_ITEMS.includes(it.code)) return; (it.sponsors||[]).forEach(s=>{ if(!s.confirmed) return;
+      const name=String(s.name||"").trim(); if(!name) return; const k=name.toLowerCase().replace(/\s+/g," ");
+      const e=m[k]||(m[k]={name,w:0,tags:[]}); e.w+=(+it.rate||0)*(+s.qty||1); const l=label(it,s); if(!e.tags.includes(l)) e.tags.push(l); }); });
+    SP=Object.values(m).sort((a,b)=>b.w-a.w); SP.forEach(s=>s.cw=0);
+    renderTicker(); if(!spCur) nextSpot();
+  }catch(e){}
+}
+function renderTicker(){ if(!SP.length){ $("run").innerHTML=""; return; }
+  const max=SP[0].w; const cls=s=>s.w>=max*0.6?"w3":s.w>=max*0.3?"w2":"w1";
+  // bigger sponsors appear more often in the band
+  const seq=[]; SP.forEach(s=>{ const reps=cls(s)==="w3"?3:cls(s)==="w2"?2:1; for(let i=0;i<reps;i++) seq.push(s); });
+  const mix=[]; const buckets=[...seq]; while(buckets.length){ mix.push(buckets.splice(Math.floor(buckets.length*((mix.length*0.618)%1)),1)[0]); }
+  const html=mix.map(s=>`<span class="${cls(s)}">${esc(s.name)}</span>`).join("");
+  const run=$("run"); run.innerHTML=html+html; run.style.animationDuration=Math.max(30,mix.length*6)+"s"; }
+// spotlight: smooth weighted rotation — larger sponsorship = more often and longer on screen
+function nextSpot(){
+  if(!SP.length){ $("spot").innerHTML=`<div><div class="k">Sponsor this season</div><div class="nm cond">Your brand here</div><div class="for">KNPL-7 sponsorships open</div></div>`; return; }
+  const tot=SP.reduce((a,s)=>a+s.w,0); SP.forEach(s=>s.cw+=s.w); const best=SP.reduce((a,b)=>b.cw>a.cw?b:a); best.cw-=tot; spCur=best;
+  const max=SP[0].w, dwell=Math.round(5+9*best.w/max);
+  $("spot").innerHTML=`<div class="fade"><div class="k">Proudly supported by</div><div class="nm cond">${esc(best.name)}</div><div class="for">${best.tags.map(esc).join(" · ")}</div></div><i class="bar" id="spBar" style="width:0"></i>`;
+  requestAnimationFrame(()=>{ const b=$("spBar"); if(b){ b.style.transitionDuration=dwell+"s"; b.style.width="100%"; } });
+  clearTimeout(nextSpot._t); nextSpot._t=setTimeout(nextSpot,dwell*1000);
+}
+
+/* ===================== START ===================== */
+(async function(){
+  await loadData();
+  ACTID=Q.get("actid")||CFG.KNPL_ACTID;
+  MODE= Q.has("demo")? "demo" : ACTID? "live" : "pre";
+  loadSales();
+  if(MODE==="pre"){ setOnAir("pre"); setInterval(tickCountdown,1000); }
+  if(MODE==="live"){ await loadMap(ACTID); startFeed(); }
+  renderAll();
+  if(MODE==="demo") startDemo();
+  loadSponsors(); setInterval(loadSponsors,60000);
+  setInterval(()=>{ if(MODE!=="pre") renderBid(); },1000);
+})();
+</script>
+</body>
+</html>
