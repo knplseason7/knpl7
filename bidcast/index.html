@@ -39,6 +39,9 @@ img{display:block}
 .onair{display:inline-flex;align-items:center;gap:7px;font:800 12px Inter;letter-spacing:1.5px;padding:6px 11px;border-radius:999px;border:1px solid #3a4a6e;color:var(--mut);text-transform:uppercase}
 .onair i{width:9px;height:9px;border-radius:50%;background:#56637d}
 .onair.live{color:#fff;background:var(--live);border-color:var(--live);box-shadow:0 0 18px #ff3b4f88} .onair.live i{background:#fff;animation:pulse 1.2s infinite}
+.snd{display:inline-flex;align-items:center;gap:7px;font:800 12px Inter;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;border-radius:999px;border:1px solid var(--g);background:#27d07e1f;color:var(--g2);cursor:pointer;animation:sndhint 2.4s ease-in-out infinite}
+.snd i{font-style:normal;font-size:14px}.snd.muted{background:transparent;color:var(--mut);border-color:#3a4a6e}
+@keyframes sndhint{50%{box-shadow:0 0 0 6px #27d07e22}}
 .onair.demo{color:#04221a;background:var(--g);border-color:var(--g)} .onair.demo i{background:#04221a}
 @keyframes pulse{50%{opacity:.25}}
 .ev{margin-left:auto;display:flex;align-items:center;gap:12px;text-align:right}
@@ -200,7 +203,7 @@ img{display:block}
 
 /* ---------- phones and small tablets: no scrolling, one rotating panel ---------- */
 @media (max-width:820px){
-  .chan{padding:8px 12px 0;gap:8px;flex-wrap:wrap}.brand{gap:8px}.brand .mark{width:36px;height:36px;padding:3px;border-radius:10px}.brand .wm b{font-size:21px;letter-spacing:1.5px}.brand .wm small{display:none}.ev>div{display:none}.ev img{width:32px;height:32px}.onair{font-size:9.5px;padding:3px 7px;gap:5px}.onair i{width:7px;height:7px}
+  .chan{padding:8px 12px 0;gap:8px;flex-wrap:wrap}.brand{gap:8px}.brand .mark{width:36px;height:36px;padding:3px;border-radius:10px}.brand .wm b{font-size:21px;letter-spacing:1.5px}.brand .wm small{display:none}.ev>div{display:none}.ev img{width:32px;height:32px}.onair{font-size:9.5px;padding:3px 7px;gap:5px}.snd{font-size:9.5px;padding:3px 8px;gap:4px;margin-left:auto}.snd i{font-size:12px}.ev{margin-left:6px}.chan>.brand,.chan>.onair,.chan>.snd,.chan>.ev{flex:none}.onair i{width:7px;height:7px}
   .legacybar{margin:6px -12px 0;gap:4px 12px;padding:4px 8px;flex-wrap:wrap}.legacybar .lk{flex:1 1 100%;text-align:center;font-size:9px;letter-spacing:1.6px}.legacybar .lk i{display:none}
   .legacybar img{height:clamp(26px,4vh,34px)}.legacybar img.lpk{height:clamp(20px,3vh,26px)}
   .demo-banner{font-size:9px;bottom:-11px}
@@ -222,6 +225,7 @@ img{display:block}
   .hero{gap:6px}.hero .tvx,.hero>.sm{display:none}.hero .k{font-size:10px;letter-spacing:3px}.hero h1{font-size:clamp(30px,5.4vh,44px)}.hero .when{font-size:11.5px}.cd{gap:6px}.cd div{min-width:54px;padding:6px 4px}.cd b{font-size:clamp(24px,4vh,30px)}.cd span{font-size:8.5px}.hero .hero3d{width:clamp(80px,15vh,130px)}
   .ticker .lab{font-size:12px;padding:0 10px}
 }
+@media (max-width:460px){.snd span{display:none}.snd{width:30px;height:30px;padding:0;justify-content:center}.brand .wm b{font-size:19px;letter-spacing:1px}}
 @media (max-width:820px) and (max-height:760px){.hl div:nth-child(n+2){display:none}.chip:not(.catpill){display:none}}
 @media (max-width:820px) and (max-height:680px){.hl{display:none}}
 </style>
@@ -230,6 +234,7 @@ img{display:block}
 <header class="chan">
   <a class="brand" href="./"><span class="mark"><img src="tenvox-mark.png" alt="TENVOX"></span><span class="wm"><b>TENVOX <i>BIDCAST</i></b><small>TENVOX Sports · Every bid live</small></span></a>
   <span class="onair" id="onair"><i></i><span>Off air</span></span>
+  <button class="snd" id="sndBtn" type="button" aria-label="Background music"><i>🔊</i><span>Tap to mute</span></button>
   <div class="ev"><div><div class="t">KNPL-7 Mega Auction</div><div class="s">Making the Impossible a Reality · <b class="ml">ടീം സമം, കളി കേമം</b></div><div class="s s2">12 Dec 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div></div><img src="knpl-logo.png" alt="KNPL"></div>
   <div class="legacybar"><span class="lk">Legacy Partners <i>· with KNPL since Season 1</i></span><img class="lpv" src="lp-vaidyaratnam.jpg" alt="Ashtavaidyan Thaikkattu Mooss Vaidyaratnam"><span class="dot">◆</span><img class="lpk" src="lp-kpnamboodiris.png" alt="K P Namboodiri's"></div>
   <div class="demo-banner" id="demoBanner" hidden>Demo · simulated bids · not the real auction</div>
@@ -341,7 +346,7 @@ function tickCountdown(){ const el=$("cd"); if(!el) return; let s=Math.max(0,Mat
 /* ===================== RENDER: BID, TEAMS, SALES ===================== */
 function animateNum(el,to){ const from=+el.dataset.v||0; el.dataset.v=to; if(from===to){ el.textContent=fmt(to); return; }
   const t0=performance.now(), d=380; const step=t=>{ const k=Math.min(1,(t-t0)/d), e=1-Math.pow(1-k,3); el.textContent=fmt(from+(to-from)*e); if(k<1) requestAnimationFrame(step); }; requestAnimationFrame(step);
-  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); if(to>from) SND.bid();
   const c=$("bidCard"); c.classList.remove("pulse"); void c.offsetWidth; c.classList.add("pulse"); }
 function renderBid(){
   const card=$("bidCard"), p=spaPlayer(STATE.pcode), t=spaTeam(STATE.lead);
@@ -380,6 +385,7 @@ function rotate(){ const ids=ROT.filter(id=>!(id==="spot"&&!SP.length)); rotI=(r
 
 /* ===================== SOLD MOMENT ===================== */
 function soldMoment(p,t,price,unsold){
+  SND.sold(unsold);
   const o=$("overlay"); o.innerHTML=`<div class="sold${unsold?" uns":""}"><div class="box">${!unsold&&t&&t.logo?`<img class="tl" src="${esc(t.logo)}" alt="">`:""}<div class="st">${unsold?"UNSOLD":"SOLD"}</div><div class="who">${esc(p?p.n:"")}</div>${unsold?"":`<div class="to">to ${esc(t?t.name:"")}</div><div class="px">${fmt(price)}</div>`}</div></div>`;
   if(!unsold) for(let i=0;i<70;i++){ const c=document.createElement("i"); c.className="conf"; c.style.left=Math.random()*100+"vw"; c.style.background=["#27d07e","#12b886","#fff","#35d39a","#4fd8c9","#b993ff"][i%6]; c.style.animationDuration=(1.6+Math.random()*1.8)+"s"; c.style.animationDelay=(Math.random()*.4)+"s"; o.appendChild(c); }
   clearTimeout(o._t); o._t=setTimeout(()=>o.innerHTML="", unsold?1800:3800);
@@ -485,6 +491,72 @@ function nextSpot(){
   setInterval(()=>{ if(MODE!=="pre") renderBid(); },1000);
   $("teamsCard").classList.add("on"); rotate._t=setTimeout(rotate,9000);
 })();
+
+/* ===================== SOUND: original theme, made live in the browser (no audio files) ===================== */
+const SND=(()=>{ let ac=null, master=null, music=null, fx=null, rev=null, on=false, muted=false, timer=null, step=0, nextT=0;
+  const BPM=96, S16=60/BPM/4;
+  const hz=m=>440*Math.pow(2,(m-69)/12);
+  const CH=[[50,53,57],[46,50,53],[53,57,60],[48,52,55]];             // Dm · B♭ · F · C (2 bars each)
+  const PENTA=[62,65,67,69,72,74,77,79];                               // D minor pentatonic for the bell line
+  const MEL=[0,null,2,null,3,null,2,1, 0,null,null,4,3,null,2,null];   // a hook played over chord 1 & 3
+  function init(){ if(ac) return; ac=new (window.AudioContext||window.webkitAudioContext)();
+    master=ac.createGain(); master.gain.value=0; master.connect(ac.destination);
+    const comp=ac.createDynamicsCompressor(); comp.threshold.value=-18; comp.ratio.value=4; comp.connect(master);
+    music=ac.createGain(); music.gain.value=1; music.connect(comp); fx=ac.createGain(); fx.gain.value=1; fx.connect(comp);
+    // small reverb
+    const len=ac.sampleRate*2.2, ir=ac.createBuffer(2,len,ac.sampleRate);
+    for(let c=0;c<2;c++){ const d=ir.getChannelData(c); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3); }
+    rev=ac.createConvolver(); rev.buffer=ir; const rg=ac.createGain(); rg.gain.value=.28; rev.connect(rg); rg.connect(comp);
+    noiseBuf=ac.createBuffer(1,ac.sampleRate,ac.sampleRate); const nd=noiseBuf.getChannelData(0); for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1; }
+  let noiseBuf;
+  function tone(t,f,dur,{type="sine",vol=.2,a=.005,out=music,wet=0,cut=0}={}){ const o=ac.createOscillator(), g=ac.createGain(); o.type=type; o.frequency.value=f;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+a); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    let n=o; if(cut){ const fl=ac.createBiquadFilter(); fl.type="lowpass"; fl.frequency.value=cut; o.connect(fl); n=fl; }
+    n.connect(g); g.connect(out); if(wet){ const w=ac.createGain(); w.gain.value=wet; g.connect(w); w.connect(rev); } o.start(t); o.stop(t+dur+.05); return o; }
+  function noise(t,dur,{vol=.1,hp=6000,out=music}={}){ const s=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain(); s.buffer=noiseBuf; f.type="highpass"; f.frequency.value=hp;
+    g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(f); f.connect(g); g.connect(out); s.start(t); s.stop(t+dur+.02); }
+  function kick(t,v=.9){ const o=ac.createOscillator(), g=ac.createGain(); o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(42,t+.18);
+    g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+.32); o.connect(g); g.connect(music); o.start(t); o.stop(t+.35); }
+  function dhol(t,f,v=.35){ const o=ac.createOscillator(), g=ac.createGain(); o.type="triangle"; o.frequency.setValueAtTime(f*1.6,t); o.frequency.exponentialRampToValueAtTime(f,t+.06);
+    g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+.22); o.connect(g); g.connect(music); o.start(t); o.stop(t+.25); }
+  function sched(t,i){ const bar=Math.floor(i/16), s=i%16, ch=CH[Math.floor(bar/2)%4];
+    // drums: kick + dhol groove + light shaker
+    if(s===0||s===8||(s===10&&bar%2)) kick(t);
+    if(s===6||s===14) dhol(t,190,.3); if(s===3||s===11) dhol(t,120,.25); if(s===15&&bar%4===3) dhol(t,230,.3);
+    noise(t,.04,{vol:s%4===2?.05:.02});
+    if(s===4||s===12) noise(t,.12,{vol:.07,hp:2200});
+    // bass (root, pulsing)
+    if(s%4===0||s===6||s===14) tone(t,hz(ch[0]-12),.22,{type:"sawtooth",vol:.11,cut:420});
+    // pad at the start of each chord
+    if(s===0&&bar%2===0) ch.forEach(n=>{ tone(t,hz(n),S16*30,{type:"triangle",vol:.035,a:.6,wet:.6}); tone(t,hz(n)*1.003,S16*30,{type:"sawtooth",vol:.012,a:.8,cut:1400,wet:.4}); });
+    // tanpura-like pluck drone
+    if(s%4===0) tone(t,hz([57,62,62,50][s/4]),1.2,{type:"triangle",vol:.05,wet:.5,cut:2400});
+    // bell hook, every other phrase
+    const ph=Math.floor(bar/2)%4; if(bar%2===0&&(ph===0||ph===2)){ const k=MEL[s]; if(k!=null) tone(t,hz(PENTA[k]+(ph===2?0:0)),.6,{vol:.07,wet:.7}); }
+    if(bar%8===7&&s%2===0) tone(t,hz(PENTA[7-(s/2)%8]),.3,{vol:.04,wet:.6});
+  }
+  function loop(){ while(nextT<ac.currentTime+.12){ sched(nextT,step++); nextT+=S16; } }
+  function start(){ init(); ac.resume(); on=true; nextT=ac.currentTime+.08; step=0; clearInterval(timer); timer=setInterval(loop,25);
+    master.gain.cancelScheduledValues(ac.currentTime); master.gain.setTargetAtTime(.7,ac.currentTime,.8); }
+  function stop(){ if(!ac) return; on=false; master.gain.setTargetAtTime(0,ac.currentTime,.25); setTimeout(()=>{ if(!on) clearInterval(timer); },900); }
+  function duck(sec){ if(!on) return; const t=ac.currentTime; music.gain.cancelScheduledValues(t); music.gain.setTargetAtTime(.25,t,.08); music.gain.setTargetAtTime(1,t+sec,.6); }
+  function bid(){ if(!on) return; const t=ac.currentTime+.01; tone(t,hz(81),.12,{type:"square",vol:.05,out:fx,cut:3000}); tone(t+.07,hz(88),.25,{vol:.12,out:fx,wet:.4}); }
+  function sold(unsold){ if(!on) return; duck(3.6); const t=ac.currentTime+.02;
+    if(unsold){ [62,58].forEach((n,i)=>tone(t+i*.28,hz(n),.6,{type:"triangle",vol:.14,out:fx,wet:.4})); return; }
+    [0,.16].forEach(d=>{ noise(t+d,.09,{vol:.5,hp:900,out:fx}); tone(t+d,180,.12,{type:"triangle",vol:.5,out:fx}); });            // gavel x2
+    [[62,66,69],[64,67,71],[66,69,74,78]].forEach((c,i)=>c.forEach(n=>{ tone(t+.45+i*.22,hz(n),i===2?1.8:.3,{type:"sawtooth",vol:.05,out:fx,cut:2600,wet:.5}); tone(t+.45+i*.22,hz(n),i===2?1.8:.3,{type:"triangle",vol:.07,out:fx,wet:.5}); }));
+    noise(t+.89,1.4,{vol:.08,hp:5000,out:fx}); }
+  return {start,stop,bid,sold,get on(){return on&&ac&&ac.state==="running"},get muted(){return muted},set muted(v){muted=v}};
+})();
+function soundUI(){ const b=$("sndBtn"), m=SND.muted; b.classList.toggle("muted",m);
+  b.querySelector("i").textContent=m?"🔇":"🔊"; b.querySelector("span").textContent=m?"Tap for sound":"Tap to mute"; b.title=m?"Tap for sound":"Tap to mute"; }
+// music is on by default; browsers only let sound begin after the viewer's first touch, click, key or scroll
+SND.muted=(()=>{ try{ return localStorage.getItem("bidcast-mute")==="1"; }catch(e){ return false; } })();
+function wake(){ if(!SND.muted&&!SND.on) SND.start(); }
+["pointerdown","keydown","touchstart","wheel"].forEach(ev=>document.addEventListener(ev,e=>{ if(!e.target.closest||!e.target.closest("#sndBtn")) wake(); },{passive:true}));
+$("sndBtn").addEventListener("click",()=>{ SND.muted=!SND.muted; SND.muted?SND.stop():SND.start(); try{localStorage.setItem("bidcast-mute",SND.muted?"1":"0")}catch(e){} soundUI(); });
+try{ wake(); }catch(e){}   // plays right away where the browser allows it (e.g. a TV or kiosk set to autoplay)
+soundUI();
 </script>
 
 </body>
