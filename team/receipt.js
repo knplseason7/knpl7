@@ -131,7 +131,7 @@
     doc.setDrawColor(...LINE); doc.setLineWidth(0.3); doc.line(M, 270, W - M, 270);
     doc.setFontSize(8); doc.setTextColor(...MUTED);
     doc.text('This is a computer-generated receipt issued after verification of the payment by the KNPL committee. No signature is required.', W / 2, 276, { align: 'center' });
-    doc.text('Queries: Team KNPL  ·  Krishnadas – 99862 18725  ·  knplseason7.github.io/knpl7/team', W / 2, 281, { align: 'center' });
+    doc.text('Fee & payment queries: Unnikrishnan S – +91 99612 55542  ·  knplseason7.github.io/knpl7/team', W / 2, 281, { align: 'center' });
     doc.setFillColor(...NAVY); doc.rect(0, 289, W, 8, 'F');
     doc.setTextColor(255, 255, 255); doc.setFontSize(7.5);
     doc.text('KNPL-7  ·  11–14 February 2027  ·  FISAT & Boundary Grounds, Angamaly', W / 2, 294, { align: 'center' });

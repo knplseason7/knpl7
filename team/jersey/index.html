@@ -10,7 +10,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="../desk.css?v=4">
+<link rel="stylesheet" href="../desk.css?v=8">
 <script src="../common.js?v=4"></script>
 <style>
 .plist{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:8px}
@@ -27,6 +27,13 @@
 <header><div class="wrap"><img class="hlogo" id="tl" src="../a/knpl.png" alt=""><div class="sp"><div class="kick" id="tn">KNPL-7</div><h1 data-t="h"></h1><div class="tagline" data-t="tag"></div></div>
   <div class="lang" role="group" aria-label="Language"><button data-l="en" aria-pressed="true">English</button><button data-l="ml" aria-pressed="false">മലയാളം</button></div></div></header>
 <main class="wrap" style="max-width:640px">
+  <section class="card" id="sd" hidden>
+    <h2 data-t="dsTitle"></h2>
+    <div class="designs">
+      <figure><figcaption data-t="dsApproved"></figcaption><img id="dsAimg" alt="Approved design"><p class="small muted" id="dsAcol"></p></figure>
+      <figure><figcaption data-t="dsFinal"></figcaption><div id="dsF"></div><p class="small muted" id="dsFnote"></p></figure>
+    </div>
+  </section>
   <section class="card" id="s1">
     <h2 data-t="pick"></h2>
     <p class="small muted" data-t="pickNote"></p>
@@ -81,10 +88,24 @@ window.TX={
  roleOwner:['Owner','Owner'],roleDrafted:['Drafted','Drafted'],roleSquad:['Auction','Auction'],roleReplacement:['Season replacement','Season Replacement'],
  v4:['Enter the last 4 digits.','അവസാന 4 അക്കം നൽകുക.'],vAll:['Fill in size, sleeve, name and number.','Size, Sleeve, പേര്, നമ്പർ എല്ലാം നൽകുക.'],vTaken:['Number {n} is already taken in your team.','{n} എന്ന നമ്പർ ടീമിൽ ഇതിനകം എടുത്തിട്ടുണ്ട്.'],
  noLink:['This link is not complete. Ask your franchise owner for the team link.','ഈ Link പൂർണ്ണമല്ല. ടീം Link ഫ്രാഞ്ചൈസി ഉടമയോട് ചോദിക്കുക.'],
- help:['Queries: your franchise owner, or Krishnadas – 99862 18725 · Team KNPL','സംശയങ്ങൾക്ക്: ഫ്രാഞ്ചൈസി ഉടമ, അല്ലെങ്കിൽ കൃഷ്ണദാസ് – 99862 18725 · Team KNPL']
+ help:['Jersey queries: Ivish Kumar – +91 98466 54562 · Team KNPL','Jersey സംശയങ്ങൾക്ക്: Ivish Kumar – +91 98466 54562 · Team KNPL'],
+ dsTitle:['Your team jersey','നിങ്ങളുടെ ടീം Jersey'],dsApproved:['Approved design','അംഗീകരിച്ച Design'],dsFinal:['Final design (from the manufacturer)','Final Design (നിർമ്മാതാവിൽ നിന്ന്)'],
+ dsWait:['The final design will appear here once the manufacturer makes it.','നിർമ്മാതാവ് തയ്യാറാക്കിയാൽ Final Design ഇവിടെ കാണാം.'],dsColours:['Colours: {c}','നിറങ്ങൾ: {c}'],dsUpdated:['Updated {d}','{d}-ന് പുതുക്കി']
 };
 const TOK=new URLSearchParams(location.search).get('t')||'';
 let T=null,P=null,L4='';
+let TI=null,DI;
+async function designs(){
+  if(!TI){try{TI=await(await fetch('../a/teams.json?v=1')).json()}catch(e){TI={}}}
+  const n=x=>String(x).toUpperCase().replace(/[^A-Z]/g,'').replace(/H/g,'').replace(/D/g,'T');
+  const k=Object.keys(TI).find(x=>n(x)===n(T.team)),info=k?TI[k]:null;if(!info)return;
+  $('sd').hidden=false;$('dsAimg').src='../../jersey/a/'+info.no+'-c1.jpg';$('dsAcol').textContent=info.line?t('dsColours',{c:info.line.replace(/\s*\(#[0-9A-F]{6}\)/gi,'')}):'';
+  const box=$('dsF');box.replaceChildren();
+  if(!T.design){box.append(el('div','dswait',t('dsWait')));$('dsFnote').textContent='';return}
+  $('dsFnote').textContent=(T.design.note?T.design.note+' · ':'')+t('dsUpdated',{d:T.design.at});
+  if(DI===undefined){try{const r=await api('teamDeskDesignTok',TOK);DI=r?'data:'+r.mime+';base64,'+r.data:null}catch(e){DI=null}}
+  if(DI){const im=el('img');im.src=DI;im.alt='Final design';box.append(im)}
+}
 function show(n){['s1','s2','s3'].forEach((s,i)=>$(s).hidden=i+1!==n)}
 function renderList(){
   const ul=$('plist');ul.replaceChildren();if(!T)return;
@@ -97,7 +118,7 @@ function renderList(){
 }
 async function load(){
   if(!TOK){$('m1').textContent=t('noLink');return}
-  try{T=await api('teamDeskJerseyTeam',TOK);const im=$('tl');im.src='../../draft/logos/'+slug(title(T.team))+'.png';im.onerror=()=>{im.src='../a/knpl.png'};renderList()}
+  try{T=await api('teamDeskJerseyTeam',TOK);const im=$('tl');im.src='../../draft/logos/'+slug(title(T.team))+'.png';im.onerror=()=>{im.src='../a/knpl.png'};renderList();designs()}
   catch(e){$('m1').textContent=msgOf(e)}
 }
 function fillForm(r){
@@ -125,7 +146,7 @@ async function save(){
     fillForm(r);m.className='msg ok';m.textContent=t('saved',{d:dmy(r.player.due)})}
   catch(e){m.className='msg err';m.textContent=msgOf(e)}finally{$('save').disabled=false}
 }
-document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.l,renderList));
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.l,()=>{renderList();if(T)designs()}));
 $('nm').oninput=pv;$('num').oninput=pv;$('go2').onclick=open2;$('last4').addEventListener('keydown',e=>{if(e.key==='Enter')open2()});
 $('back2').onclick=()=>show(1);$('back3').onclick=()=>{renderList();show(1)};$('save').onclick=save;
 applyStatic();load();

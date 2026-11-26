@@ -12,9 +12,9 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=7">
+<link rel="stylesheet" href="desk.css?v=8">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-<script src="receipt.js?v=4" defer></script>
+<script src="receipt.js?v=5" defer></script>
 <script src="common.js?v=4"></script>
 </head>
 <body>
@@ -37,6 +37,7 @@
     <button role="tab" id="tb-jer" aria-selected="false" data-t="tabJer"></button>
     <button role="tab" id="tb-rep" aria-selected="false" data-t="tabRep"></button>
     <button role="tab" id="tb-spo" aria-selected="false" data-t="tabSpo"></button>
+    <button role="tab" id="tb-help" aria-selected="false" data-t="tabHelp"></button>
   </div>
 
   <div id="pg-pay">
@@ -49,6 +50,7 @@
         <details class="sample"><summary data-t="seeSample"></summary><div class="utrbox"><a href="a/sample-receipt.jpg" target="_blank" rel="noopener" class="sthumb"><img src="a/sample-receipt.jpg" alt="Sample payment receipt" loading="lazy"></a><div><p data-t="utr1"></p><p class="small muted" data-t="utr3"></p></div></div></details>
       </div>
       <div class="msg ok" id="pmsg" role="status"></div>
+      <p class="small contact" data-ct="fees"></p>
     </div>
     <div class="sheet" id="formcard" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="ftl">
       <div class="sheethead"><h2 id="ftl" data-t="formTitle"></h2><button class="x" id="fx" aria-label="Close">×</button></div>
@@ -75,6 +77,14 @@
 
   <div id="pg-jer" hidden>
     <div class="card">
+      <h2 data-t="dsTitle"></h2>
+      <div class="designs">
+        <figure><figcaption data-t="dsApproved"></figcaption><a id="dsA" target="_blank" rel="noopener"><img id="dsAimg" alt="Approved design"></a><p class="small muted" id="dsAcol"></p></figure>
+        <figure><figcaption data-t="dsFinal"></figcaption><div id="dsF" class="dsf"></div><p class="small muted" id="dsFnote"></p></figure>
+      </div>
+      <p class="small contact" data-ct="jersey"></p>
+    </div>
+    <div class="card">
       <h2 data-t="jerTitle"></h2>
       <p class="muted" data-t="jerIntro"></p>
       <div class="share">
@@ -96,6 +106,7 @@
   <div id="pg-rep" hidden>
     <div class="card">
       <h2 data-t="repTitle"></h2>
+      <p class="small contact" data-ct="fees"></p>
       <ul class="dl"><li data-t="r1"></li><li data-t="r2"></li><li data-t="r3"></li><li data-t="r4"></li><li data-t="r5"></li></ul>
       <div id="repclosed" class="note"></div>
       <div id="repform" hidden>
@@ -133,6 +144,7 @@
     <div class="card">
       <h3 data-t="shTitle"></h3>
       <p class="small muted" data-t="shNote"></p>
+      <p class="small contact" data-ct="fund"></p>
       <div class="linkrow"><input id="spLink" type="text" readonly><button class="btn sm" id="spCopy" data-t="copy"></button></div>
       <label class="fl" for="spMsg" data-t="shMsg"></label>
       <textarea id="spMsg" style="min-height:190px;font-size:14px"></textarea>
@@ -154,9 +166,17 @@
       <ol class="lb" id="lb"></ol>
     </div>
   </div>
+
+  <div id="pg-help" hidden>
+    <div class="card">
+      <h2 data-t="helpTitle"></h2>
+      <p class="muted" data-t="helpIntro"></p>
+      <div class="contacts" id="contacts"></div>
+    </div>
+  </div>
 </section>
 </main>
-<footer data-t="footer"></footer>
+<footer data-t="footer2"></footer>
 <script src="ocr.js?v=1"></script>
-<script src="desk.js?v=8"></script>
+<script src="desk.js?v=9"></script>
 </body></html>

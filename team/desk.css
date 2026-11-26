@@ -158,3 +158,18 @@ body.ml .avt th{font:700 12px "Noto Sans Malayalam",var(--body);letter-spacing:0
 .ocr{margin-top:8px;border-radius:10px;padding:10px 12px;font-weight:600;font-size:14px;white-space:pre-line}
 .ocr.busy{background:var(--bg);color:var(--muted)}.ocr.good{background:var(--ok-soft);color:var(--ok)}
 .ocr.warn{background:var(--amber-soft);color:var(--amber)}.ocr.bad{background:var(--red-soft);color:var(--red);border:1.5px solid #e0312b}.ocr.muted{background:var(--bg);color:var(--muted)}
+/* designs + contacts */
+.designs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.designs figure{margin:0;background:var(--bg);border-radius:12px;padding:10px}
+.designs figcaption{font:800 15px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+body.ml .designs figcaption{font:700 14px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.designs img{width:100%;max-height:360px;object-fit:contain;border-radius:10px;background:#fff;display:block}
+.dswait{min-height:160px;display:grid;place-items:center;text-align:center;color:var(--muted);font-weight:600;border:2px dashed var(--line);border-radius:10px;padding:14px}
+.contact{margin:10px 0 0;padding:8px 12px;background:var(--bg);border-radius:10px;font-weight:600}
+.contact a{color:var(--saffron);text-decoration:none;font-weight:800}
+.contacts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.ct{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.cth{font:800 13px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--saffron)}
+body.ml .cth{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.ct b{font-size:17px}.ctp{color:var(--muted);font-weight:600}.ct .row{margin-top:6px}
+@media (max-width:600px){.designs,.contacts{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(3,1fr)}.tabs button{font-size:12.5px;padding:9px 2px}body.ml .tabs button{font-size:11.5px}}

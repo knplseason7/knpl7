@@ -36,6 +36,13 @@ window.TX = {
  ocrFail:['The receipt could not be read automatically. Please type the details.','Receipt സ്വയം വായിക്കാനായില്ല. വിവരങ്ങൾ ടൈപ്പ് ചെയ്യുക.'],
  ocrWait:['Please wait – the receipt is still being read.','ദയവായി കാത്തിരിക്കുക – Receipt വായിക്കുന്നു.'],
  fTxn:['Transaction no.','Transaction No.'],fDt:['Date','തീയതി'],fMd:['Mode','രീതി'],
+ tabHelp:['Help','സഹായം'],helpTitle:['Help & contacts','സഹായം & ബന്ധപ്പെടേണ്ടവർ'],
+ helpIntro:['Contact the right person directly for faster help.','വേഗത്തിൽ സഹായം ലഭിക്കാൻ ബന്ധപ്പെട്ട ആളെ നേരിട്ട് വിളിക്കുക.'],
+ call:['Call','വിളിക്കുക'],wa:['WhatsApp','WhatsApp'],
+ footer2:['KNPL-7 Team Desk · For queries, see the Help tab · Team KNPL','KNPL-7 Team Desk · സംശയങ്ങൾക്ക് Help Tab കാണുക · Team KNPL'],
+ dsTitle:['Your team jersey','നിങ്ങളുടെ ടീം Jersey'],dsApproved:['Approved design','അംഗീകരിച്ച Design'],dsFinal:['Final design (from the manufacturer)','Final Design (നിർമ്മാതാവിൽ നിന്ന്)'],
+ dsWait:['The final design will appear here once the manufacturer makes it.','നിർമ്മാതാവ് തയ്യാറാക്കിയാൽ Final Design ഇവിടെ കാണാം.'],dsLoading:['Loading…','ലോഡ് ചെയ്യുന്നു…'],
+ dsUpdated:['Updated {d}','{d}-ന് പുതുക്കി'],dsColours:['Colours: {c}','നിറങ്ങൾ: {c}'],
  notYet:['Not due yet','ഇപ്പോൾ ബാധകമല്ല'],
  howTitle:['How to pay','പണമടയ്ക്കേണ്ട വിധം'],
  nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
@@ -155,7 +162,7 @@ function render() {
   $('tname').textContent = title(S.team); $('towner').textContent = 'Owner: ' + (S.owner.name || '') + ' · KNPL7-' + S.owner.id;
   $('payto').textContent = S.payTo;
   [$('fmode'), $('rmode')].forEach(s => { const v = s.value; s.replaceChildren(...S.modes.map(m => { const o = el('option', null, m); o.value = m; return o; })); if (v) s.value = v; });
-  renderNext(); renderSched(); renderHist(); renderJersey(); renderRepl(); if (!$('pg-spo').hidden) renderSpo();
+  renderNext(); renderSched(); renderHist(); renderJersey(); renderRepl(); renderContacts(); if (!$('pg-jer').hidden) renderDesigns(); if (!$('pg-spo').hidden) renderSpo();
   if (!$('formcard').hidden) itemInfo();
 }
 function renderNext() {
@@ -473,19 +480,53 @@ function ocrGate(k) {   // returns a message if the upload must not go ahead yet
   if (o && o.state === 'done' && !o.res.utr) return t('ocrNoTxn');
   return '';
 }
-function tab(k) { ['pay', 'jer', 'rep', 'spo'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } }
+
+/* ---------- contacts (Help tab and per-section lines) ---------- */
+const CONTACTS = [
+  {k: 'jersey', head: ['Jersey design & jersey details', 'Jersey Design & Jersey Details'], name: 'Ivish Kumar', ph: '+91 98466 54562'},
+  {k: 'fees', head: ['Team fees, payments & receipts', 'Team Fees, Payments & Receipts'], name: 'Unnikrishnan S', ph: '+91 99612 55542'},
+  {k: 'fund', head: ['Fund raising & sponsorship', 'Fund Raising & Sponsorship'], name: 'Krishnadas M N', ph: '+91 99862 18725'},
+  {k: 'auction', head: ['Auction rules & Skill Rating', 'Auction Rules & Skill Rating'], name: 'Krishnadas M N', ph: '+91 99862 18725'},
+  {k: 'general', head: ['General queries – KNPL coordinators', 'പൊതു സംശയങ്ങൾ – KNPL Coordinators'], name: 'Praveen Muttas', ph: '+91 97452 64636'},
+  {k: 'general2', head: ['General queries – KNPL coordinators', 'പൊതു സംശയങ്ങൾ – KNPL Coordinators'], name: 'Anish Indira Vasudev', ph: '+91 99951 17684'}
+];
+const CT_LINE = {jersey: ['Jersey queries: {n} – {p}', 'Jersey സംശയങ്ങൾക്ക്: {n} – {p}'], fees: ['Fee & payment queries: {n} – {p}', 'Fee / Payment സംശയങ്ങൾക്ക്: {n} – {p}'], fund: ['Fund raising queries: {n} – {p}', 'Fund Raising സംശയങ്ങൾക്ക്: {n} – {p}']};
+const telOf = p => p.replace(/[^\d+]/g, ''), waOf = p => p.replace(/\D/g, '');
+function renderContacts() {
+  document.querySelectorAll('[data-ct]').forEach(n => { const c = CONTACTS.find(x => x.k === n.dataset.ct), L = CT_LINE[n.dataset.ct]; n.replaceChildren(); const a = el('a', null, c.ph); a.href = 'tel:' + telOf(c.ph); n.append((LANG === 'ml' ? L[1] : L[0]).replace('{n}', c.name).replace(' – {p}', '') + ' – ', a); });
+  const box = $('contacts'); if (!box) return; box.replaceChildren();
+  CONTACTS.forEach(c => { const d = el('div', 'ct');
+    d.append(el('span', 'cth', c.head[LANG === 'ml' ? 1 : 0]), el('b', null, c.name), el('span', 'ctp', c.ph));
+    const r = el('div', 'row'), a = el('a', 'btn sm', t('call')), w = el('a', 'btn ok sm', t('wa'));
+    a.href = 'tel:' + telOf(c.ph); w.href = 'https://wa.me/' + waOf(c.ph); w.target = '_blank'; w.rel = 'noopener'; r.append(a, w); d.append(r); box.append(d); });
+}
+/* ---------- jersey designs ---------- */
+let TEAMS_INFO = null, DESIGN_IMG = undefined;
+async function renderDesigns() {
+  if (!S) return;
+  if (!TEAMS_INFO) { try { TEAMS_INFO = await (await fetch('a/teams.json?v=1')).json(); } catch (e) { TEAMS_INFO = {}; } }
+  const n = x => String(x).toUpperCase().replace(/[^A-Z]/g, '').replace(/H/g, '').replace(/D/g, 'T');
+  const key = Object.keys(TEAMS_INFO).find(k => n(k) === n(S.team)), info = key ? TEAMS_INFO[key] : null;
+  if (info) { const u = '../jersey/a/' + info.no + '-c1.jpg'; $('dsAimg').src = u; $('dsA').href = u; $('dsAcol').textContent = info.line ? t('dsColours', {c: info.line.replace(/\s*\(#[0-9A-F]{6}\)/gi, '')}) : ''; }
+  const box = $('dsF'); box.replaceChildren();
+  if (!S.design) { box.append(el('div', 'dswait', t('dsWait'))); $('dsFnote').textContent = ''; return; }
+  $('dsFnote').textContent = (S.design.note ? S.design.note + ' · ' : '') + t('dsUpdated', {d: S.design.at});
+  if (DESIGN_IMG === undefined) { box.append(el('div', 'dswait', t('dsLoading'))); try { const r = await api('teamDeskDesign', CODE); DESIGN_IMG = r ? 'data:' + r.mime + ';base64,' + r.data : null; } catch (e) { DESIGN_IMG = null; } box.replaceChildren(); }
+  if (DESIGN_IMG) { const a = el('a'), im = el('img'); im.src = DESIGN_IMG; im.alt = 'Final design'; a.href = DESIGN_IMG; a.download = 'KNPL-7 final jersey design.jpg'; a.append(im); box.append(a); }
+}
+function tab(k) { ['pay', 'jer', 'rep', 'spo', 'help'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } if (k === 'jer') renderDesigns(); }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 $('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
 $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
 $('rout').onchange = fillIn; $('ffile').onchange = () => readReceipt('f'); $('rfile').onchange = () => readReceipt('r'); $('rsend').onclick = sendRepl;
-$('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo');
+$('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo'); $('tb-help').onclick = () => tab('help');
 $('spCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spLink').value); } catch (e) { $('spLink').select(); document.execCommand('copy'); } $('spCopy').textContent = t('copied'); setTimeout(() => $('spCopy').textContent = t('copy'), 1500); };
 $('spMsgCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spMsg').value); } catch (e) { $('spMsg').select(); document.execCommand('copy'); } $('spMsgCopy').textContent = t('copied'); setTimeout(() => $('spMsgCopy').textContent = t('shCopyMsg'), 1500); };
 $('spMsg').oninput = () => { $('spMsg').dataset.edited = '1'; $('spWa').href = 'https://wa.me/?text=' + encodeURIComponent($('spMsg').value); };
 $('out').onclick = () => { try { sessionStorage.removeItem('knpl_td'); } catch (e) {} location.reload(); };
-applyStatic();
+applyStatic(); renderContacts();
 (async () => {
   try { const s = await api('teamDeskStatus'); if (!s.open) { $('gmsg').className = 'msg'; $('gmsg').textContent = t('opensOn', {d: s.opens}); } } catch (e) {}
   try { const c = sessionStorage.getItem('knpl_td'); if (c) { $('code').value = c; login(); } } catch (e) {}
