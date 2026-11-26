@@ -42,6 +42,25 @@ img{display:block}
 .snd{display:inline-flex;align-items:center;gap:7px;font:800 12px Inter;letter-spacing:1px;text-transform:uppercase;padding:6px 12px;border-radius:999px;border:1px solid var(--g);background:#27d07e1f;color:var(--g2);cursor:pointer;animation:sndhint 2.4s ease-in-out infinite}
 .snd i{font-style:normal;font-size:14px}.snd.muted{background:transparent;color:var(--mut);border-color:#3a4a6e}
 @keyframes sndhint{50%{box-shadow:0 0 0 6px #27d07e22}}
+.gate{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:radial-gradient(60% 50% at 50% 40%,#123a7acc,#061028f5 70%),#061028;backdrop-filter:blur(6px);transition:opacity .6s ease,transform .6s ease}
+.gate.gone{opacity:0;transform:scale(1.06);pointer-events:none}
+.gbox{text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vh,14px);animation:pop .7s cubic-bezier(.2,1.2,.4,1)}
+.gmark{background:#fff;border-radius:20px;padding:10px 22px;box-shadow:0 0 0 3px var(--g),0 0 50px #27d07e66}
+.gmark img{height:clamp(56px,10vh,92px);width:auto}
+.gk{font:800 13px Inter;letter-spacing:5px;color:var(--g);text-transform:uppercase}
+.gbox h2{margin:0;font:900 clamp(36px,7.5vh,72px) "Barlow Condensed";line-height:.95;text-transform:uppercase;letter-spacing:1px}
+.gbox h2 span{background:linear-gradient(90deg,var(--g2),#12b886);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gstat{font:700 12px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
+.gstat.live{color:#fff;background:var(--live);padding:5px 12px;border-radius:999px;box-shadow:0 0 18px #ff3b4f88}
+.tune{position:relative;margin-top:6px;display:inline-flex;align-items:center;gap:14px;padding:clamp(14px,2.2vh,20px) clamp(34px,5vw,54px);border:0;border-radius:999px;cursor:pointer;
+  background:linear-gradient(90deg,#27d07e,#12b886);color:#04221a;font:900 clamp(26px,4.4vh,38px) "Barlow Condensed";letter-spacing:4px;box-shadow:0 10px 40px #27d07e66;animation:tunepulse 1.8s ease-in-out infinite}
+.tune .pl{display:grid;place-items:center;width:1.3em;height:1.3em;border-radius:50%;background:#04221a;color:var(--g2);font-size:.6em;letter-spacing:0;padding-left:.12em}
+.tune::after{content:"";position:absolute;inset:-6px;border-radius:999px;border:2px solid var(--g);opacity:0;animation:tunering 1.8s ease-out infinite}
+.tune:hover{filter:brightness(1.08)} .tune:active{transform:scale(.97)}
+@keyframes tunepulse{50%{transform:scale(1.045);box-shadow:0 10px 60px #27d07eaa}}
+@keyframes tunering{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.35)}}
+.gsub{font-size:13px;color:#b9cbe8}
+.gquiet{background:none;border:0;color:var(--mut);font:600 12px Inter;text-decoration:underline;cursor:pointer;padding:4px}
 .onair.demo{color:#04221a;background:var(--g);border-color:var(--g)} .onair.demo i{background:#04221a}
 @keyframes pulse{50%{opacity:.25}}
 .ev{margin-left:auto;display:flex;align-items:center;gap:12px;text-align:right}
@@ -252,6 +271,17 @@ img{display:block}
 
 <div class="ticker"><div class="lab">★ Sponsors</div><div class="run" id="run"></div></div>
 <div id="overlay"></div>
+<div class="gate" id="gate">
+  <div class="gbox">
+    <div class="gmark"><img src="tenvox-logo.png" alt="TENVOX Sports"></div>
+    <div class="gk">TENVOX BIDCAST</div>
+    <h2>KNPL-7 <span>Mega Auction</span></h2>
+    <div class="gstat" id="gstat">Live · 12 Dec 2026 · 8:00 AM</div>
+    <button class="tune" id="tuneIn" type="button"><span class="pl">▶</span><b>TUNE IN</b></button>
+    <div class="gsub">Enter the live auction with sound</div>
+    <button class="gquiet" id="tuneQuiet" type="button">or watch without sound</button>
+  </div>
+</div>
 <script>
 /* ===================== SETTINGS ===================== */
 const CFG={
@@ -555,8 +585,17 @@ SND.muted=(()=>{ try{ return localStorage.getItem("bidcast-mute")==="1"; }catch(
 function wake(){ if(!SND.muted&&!SND.on) SND.start(); }
 ["pointerdown","keydown","touchstart","wheel"].forEach(ev=>document.addEventListener(ev,e=>{ if(!e.target.closest||!e.target.closest("#sndBtn")) wake(); },{passive:true}));
 $("sndBtn").addEventListener("click",()=>{ SND.muted=!SND.muted; SND.muted?SND.stop():SND.start(); try{localStorage.setItem("bidcast-mute",SND.muted?"1":"0")}catch(e){} soundUI(); });
-try{ wake(); }catch(e){}   // plays right away where the browser allows it (e.g. a TV or kiosk set to autoplay)
+if(new URLSearchParams(location.search).has("nogate")) try{ wake(); }catch(e){}
 soundUI();
+
+/* ===================== ENTRY GATE: one tap opens the auction and starts the sound ===================== */
+(function(){ const g=$("gate"), q=new URLSearchParams(location.search);
+  if(q.has("nogate")){ g.remove(); return; }                       // for a big screen / TV operator
+  const st=$("gstat"); const upd=()=>{ if(!document.body.contains(g)) return clearInterval(tm); if(MODE==="live"){ st.textContent="● Live now"; st.classList.add("live"); } else if(MODE==="demo"){ st.textContent="Demo · simulated bids"; } }; const tm=setInterval(upd,400); upd();
+  function enter(sound){ SND.muted=!sound; try{localStorage.setItem("bidcast-mute",sound?"0":"1")}catch(e){}
+    if(sound) SND.start(); else SND.stop(); soundUI(); g.classList.add("gone"); setTimeout(()=>g.remove(),700); }
+  $("tuneIn").addEventListener("click",()=>enter(true)); $("tuneQuiet").addEventListener("click",()=>enter(false));
+})();
 </script>
 
 </body>
