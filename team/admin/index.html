@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@700;800&family=Public+Sans:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="../desk.css?v=3">
-<script src="../common.js?v=3"></script>
+<link rel="stylesheet" href="../desk.css?v=4">
+<script src="../common.js?v=4"></script>
 <style>
 .pay{border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:8px}
 .pay .d{font-size:14px;color:var(--muted)}.pay b.t{font:800 19px var(--display);text-transform:uppercase}
@@ -17,14 +17,14 @@ table.g td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:mi
 .dot.APPROVED{background:var(--ok-soft);color:var(--ok)}.dot.PENDING{background:var(--amber-soft);color:var(--amber)}.dot.REJECTED,.dot.late{background:var(--red-soft);color:var(--red)}.dot.none{background:var(--bg);color:var(--muted)}
 textarea.big{min-height:220px;font:500 13px ui-monospace,monospace}
 </style></head><body>
-<header><div class="wrap"><div class="sp"><div class="kick">KNPL-7 · COMMITTEE ONLY</div><h1>Team Desk – Committee</h1></div></div></header>
+<header><div class="wrap"><div class="sp"><div class="kick">KNPL-7 · COMMITTEE ONLY</div><h1>Team Desk – Committee</h1></div><div class="small" id="who" style="color:#c9d3ea"></div></div></header>
 <main class="wrap" style="max-width:1150px">
-<section class="card gate" id="gate"><h2>Committee PIN</h2><input id="pin" type="password" autocomplete="off"><div class="row"><button class="btn" id="go">Open</button></div><div class="msg err" id="gmsg"></div></section>
+<section class="card gate" id="gate"><h2>Committee PIN</h2><p class="small muted">Finance (Unnikrishnan S): use the Finance PIN. Committee admin: use the jersey admin PIN.</p><input id="pin" type="password" autocomplete="off"><div class="row"><button class="btn" id="go">Open</button></div><div class="msg err" id="gmsg"></div></section>
 <section id="app" hidden>
   <div class="tabs"><button id="t1" aria-selected="true">Approvals</button><button id="t2" aria-selected="false">Team summary</button><button id="t3" aria-selected="false">Jersey fee</button><button id="t4" aria-selected="false">Auction squads</button><button id="t5" aria-selected="false">Jersey details</button><button id="t6" aria-selected="false">Team links</button><button class="btn ghost sm" id="reload" style="margin-left:auto">Refresh</button></div>
   <div id="p1"><div class="card"><div class="row" style="margin:0"><h2 style="margin:0">Receipts to verify</h2>
     <select id="flt" style="width:auto"><option value="PENDING">Waiting for approval</option><option value="">All</option><option value="APPROVED">Approved</option><option value="REJECTED">Rejected</option></select>
-    <span class="small muted" id="cnt"></span></div><p class="small muted">Open the proof, check the transaction number, amount and date against the bank statement, then approve. Rejecting needs a reason (the team sees it and can upload again).</p><div class="msg" id="amsg"></div><div id="plist"></div></div></div>
+    <span class="small muted" id="cnt"></span></div><p class="small muted">Open the proof, check the transaction number, amount and date against the bank statement, then approve. Rejecting needs a reason (the team sees it and can upload again).</p><div class="msg" id="amsg"></div><div id="wapanel" class="share" hidden><h3>Inform the owner</h3><p class="small" id="wato"></p><textarea id="watext" style="min-height:170px;font-size:14px"></textarea><div class="row"><a class="btn ok" id="wabtn" target="_blank" rel="noopener">Send on WhatsApp</a><button class="btn ghost sm" id="wacopy">Copy message</button><button class="btn ghost sm" id="waclose">Close</button></div></div><div id="plist"></div></div></div>
   <div id="p2" hidden><div class="card"><h2>Team summary</h2><p class="small muted">✓ approved · … waiting · ✗ rejected · ! due date passed and nothing uploaded</p><div style="overflow-x:auto"><table class="g" id="sum"></table></div></div></div>
   <div id="p3" hidden><div class="card"><h2>Team jersey fee (at actuals)</h2><p class="small muted">Only for teams without a jersey sponsor. Update by 25 Jan 2027; teams pay by 10 Feb 2027. Enter 0 to remove.</p><div style="overflow-x:auto"><table class="g" id="fees"></table></div><div class="msg" id="fmsg"></div></div></div>
   <div id="p4" hidden><div class="card"><h2>Mega Auction squads</h2>
@@ -37,8 +37,34 @@ textarea.big{min-height:220px;font:500 13px ui-monospace,monospace}
 </main>
 <script>
 LANG='en';let PIN='',D=null;const NAME={CD1:'Caution deposit 1/5',CD2:'Caution deposit 2/5',CD3:'Caution deposit 3/5',CD4:'Caution deposit 4/5',CD5:'Caution deposit 5/5',OWN1:'Ownership fee 1/3',DR1:'Draft fee 1/2',DR2:'Draft fee 2/2',JER:'Jersey fee',REPL:'Season replacement'};
+LANG='en';
+const ML={CD1:'Sponsorship Caution Deposit – ഗഡു 1 / 5',CD2:'Sponsorship Caution Deposit – ഗഡു 2 / 5',CD3:'Sponsorship Caution Deposit – ഗഡു 3 / 5',CD4:'Sponsorship Caution Deposit – ഗഡു 4 / 5',CD5:'Sponsorship Caution Deposit – ഗഡു 5 / 5',OWN1:'Ownership Fee – ഗഡു 1 / 3 (KNPL-7)',DR1:'Draft Fee KNPL-7 – ഗഡു 1 / 2',DR2:'Draft Fee KNPL-7 – ഗഡു 2 / 2',JER:'Team Jersey Fee',REPL:'Season Replacement Fee'};
+const DESK='https://knplseason7.github.io/knpl7/team/';
+function ownerOf(team){return (D.teams.find(x=>x.team===team)||{}).owner||{}}
+function waText(p){
+  const o=ownerOf(p.team),nm=o.name||'Owner',ref=p.utr?' · Ref '+p.utr:'';
+  if(p.status==='APPROVED')return '🏏 *KNPL-7 | Payment approved* ✅\n\n'+
+    'Dear '+nm+', your payment of '+inr(p.amount)+' for '+p.kind+ref+' is approved.\n'+
+    'പ്രിയ '+nm+', '+ML[p.type]+' – '+inr(p.amount)+ref+' Approve ചെയ്തു.\n\n'+
+    'Receipt No: '+p.receiptNo+'. You can download the receipt now from the Team Desk.\n'+
+    'Receipt No: '+p.receiptNo+'. Team Desk-ൽ നിന്ന് ഇപ്പോൾ Receipt Download ചെയ്യാം.\n\n'+
+    '👉 '+DESK+'\n'+'Log in with your Team Draft code.\n'+'Team Draft code ഉപയോഗിച്ച് Login ചെയ്യുക.\n\n– Team KNPL (Finance)';
+  return '🏏 *KNPL-7 | Payment receipt not approved*\n\n'+
+    'Dear '+nm+', your receipt for '+p.kind+' ('+inr(p.amount)+ref+') could not be approved.\n'+
+    'പ്രിയ '+nm+', '+ML[p.type]+' ('+inr(p.amount)+ref+') Receipt Approve ചെയ്യാനായില്ല.\n\n'+
+    'Reason: '+p.remarks+'\n'+'കാരണം: '+p.remarks+'\n\n'+
+    'Please correct it and upload again on the Team Desk.\n'+'ദയവായി തിരുത്തി Team Desk-ൽ വീണ്ടും Upload ചെയ്യുക.\n\n'+
+    '👉 '+DESK+'\n\n– Team KNPL (Finance)';
+}
+function waOpen(p){
+  const o=ownerOf(p.team);let ph=String(o.wa||'').replace(/\D/g,'');if(ph.length===10)ph='91'+ph;
+  $('wapanel').hidden=false;$('wato').textContent='To: '+(o.name||'owner')+' – '+title(p.team)+(ph?' · WhatsApp +'+ph:' · WhatsApp number not found, choose the chat yourself');
+  $('watext').value=waText(p);const upd=()=>{$('wabtn').href='https://wa.me/'+(ph||'')+'?text='+encodeURIComponent($('watext').value)};upd();$('watext').oninput=upd;
+  $('wapanel').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
 async function open(){$('gmsg').textContent='';$('go').disabled=true;try{D=await api('teamDeskAdmin',$('pin').value);PIN=$('pin').value;$('gate').hidden=true;$('app').hidden=false;render()}catch(e){$('gmsg').textContent=msgOf(e)}finally{$('go').disabled=false}}
-function render(){renderPay();renderSum();renderFees();renderJer();renderLinks()}
+function render(){$('who').textContent=D.role==='finance'?'Signed in: Finance':'Signed in: Committee admin';$('t4').hidden=D.role!=='admin';renderPay();renderSum();renderFees();renderJer();renderLinks()}
 function renderPay(){
   const f=$('flt').value,list=D.payments.filter(p=>!f||p.status===f).slice().reverse(),box=$('plist');box.replaceChildren();
   $('cnt').textContent=D.payments.filter(p=>p.status==='PENDING').length+' waiting · '+D.payments.length+' in all';
@@ -51,6 +77,7 @@ function renderPay(){
     if(p.note)a.append(el('div','d','Note: '+p.note));if(p.remarks)a.append(el('div','d','Remarks: '+p.remarks));
     if(p.proof){const l=el('a',null,'Open payment proof ↗');l.href=p.proof;l.target='_blank';l.rel='noopener';a.append(l)}
     b.append(el('span','pill '+p.status,p.status==='APPROVED'?p.receiptNo:p.status));
+    if(p.status!=='PENDING'){const w=el('button','btn ok sm','WhatsApp owner');w.style.cssText='display:block;margin:8px 0 0 auto';w.onclick=()=>waOpen(p);b.append(w)}
     if(p.status==='PENDING'){const act=el('div','act'),rm=el('input');rm.type='text';rm.placeholder='Reason (needed to reject)';
       const ok=el('button','btn ok sm','Approve'),no=el('button','btn no sm','Reject');ok.onclick=()=>decide(p.id,'APPROVED','',[ok,no]);no.onclick=()=>decide(p.id,'REJECTED',rm.value,[ok,no]);act.append(rm,ok,no);a.append(act)}
     c.append(a,b);box.append(c);
@@ -59,7 +86,7 @@ function renderPay(){
 async function decide(id,dec,rm,btns){
   if(dec==='APPROVED'&&!confirm('Approve '+id+'? A receipt number will be issued and the team gets the receipt.'))return;
   btns.forEach(b=>b.disabled=true);$('amsg').textContent='';
-  try{D=await api('teamDeskAdminDecide',PIN,id,dec,rm);render();$('amsg').className='msg ok';$('amsg').textContent=id+' '+dec.toLowerCase()+'.'}catch(e){$('amsg').className='msg err';$('amsg').textContent=msgOf(e);btns.forEach(b=>b.disabled=false)}
+  try{D=await api('teamDeskAdminDecide',PIN,id,dec,rm);render();$('amsg').className='msg ok';$('amsg').textContent=id+' '+dec.toLowerCase()+'. Send the message below to the owner.';const p=D.payments.find(x=>x.id===id);if(p)waOpen(p)}catch(e){$('amsg').className='msg err';$('amsg').textContent=msgOf(e);btns.forEach(b=>b.disabled=false)}
 }
 const todayIso=()=>new Date(Date.now()+5.5*3600e3).toISOString().slice(0,10);
 function renderSum(){
@@ -97,6 +124,7 @@ function csv(){const rows=[['Team','Reg ID','Player','Size','Sleeve','Name to Pr
   const s=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+s],{type:'text/csv'}));a.download='KNPL-7 Jersey Details.csv';a.click()}
 function renderLinks(){const t=$('links');t.replaceChildren();D.teams.slice().sort((a,b)=>a.team.localeCompare(b.team)).forEach(tm=>{const tr=el('tr'),a=el('a',null,tm.link);a.href=tm.link;a.target='_blank';const td=el('td');td.append(a);tr.append(el('td',null,title(tm.team)),td);t.append(tr)})}
 function tab(n){[1,2,3,4,5,6].forEach(i=>{$('t'+i).setAttribute('aria-selected',i===n);$('p'+i).hidden=i!==n})}
+$('waclose').onclick=()=>$('wapanel').hidden=true;$('wacopy').onclick=async()=>{try{await navigator.clipboard.writeText($('watext').value)}catch(e){$('watext').select();document.execCommand('copy')}$('wacopy').textContent='Copied'};
 $('go').onclick=open;$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')open()});$('flt').onchange=renderPay;
 [1,2,3,4,5,6].forEach(i=>$('t'+i).onclick=()=>tab(i));$('csv').onclick=csv;$('sqc').onclick=()=>squads(false);$('sqs').onclick=()=>squads(true);
 $('reload').onclick=async()=>{try{D=await api('teamDeskAdmin',PIN);render()}catch(e){alert(msgOf(e))}};

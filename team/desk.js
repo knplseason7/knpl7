@@ -1,5 +1,12 @@
 /* KNPL-7 Team Desk – franchise page logic (uses common.js and receipt.js). */
 window.TX = {
+ notYet:['Not due yet','ഇപ്പോൾ ബാധകമല്ല'],
+ howTitle:['How to pay','പണമടയ്ക്കേണ്ട വിധം'],
+ nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
+ nextLate:['{n} item(s) are past the due date. Upload them first.','{n} ഇനങ്ങളുടെ തീയതി കഴിഞ്ഞു. ആദ്യം അവ Upload ചെയ്യുക.'],
+ allDone:['All payments due so far are uploaded. Thank you!','ഇതുവരെയുള്ള എല്ലാ പണമടയ്ക്കലുകളും Upload ചെയ്തു. നന്ദി!'],
+ progress:['{a} of {t} approved · {w} waiting for approval','{t}-ൽ {a} Approved · {w} Approval കാത്തിരിക്കുന്നു'],
+ dueBy:['Due by {d}','അവസാന തീയതി {d}'],
  franchises:['Franchises only','ഫ്രാഞ്ചൈസികൾക്ക് മാത്രം'],
  tagline:['Fee receipts, jersey details and season replacements – log in with your Team Draft code.','Fee Receipts, Jersey Details, Season Replacement – Team Draft code ഉപയോഗിച്ച് Login ചെയ്യുക.'],
  login:['Log in','Login'],
@@ -8,16 +15,16 @@ window.TX = {
  enterCode:['Enter your team code.','Team Code നൽകുക.'],
  tabPay:['Payments & receipts','പണമടയ്ക്കൽ & Receipts'],tabJer:['Jersey details','Jersey Details'],tabRep:['Season replacement','Season Replacement'],
  payTitle:['Fees, due dates and receipts','Fees, അവസാന തീയതികൾ, Receipts'],
- ps1:['Pay the amount to the KNPL account below.','താഴെ കൊടുത്ത KNPL അക്കൗണ്ടിലേക്ക് തുക അടയ്ക്കുക.'],
- ps2:['Upload the payment screenshot / receipt here for that item, with the transaction number.','ആ ഇനത്തിനുള്ള Payment Screenshot / Receipt, Transaction Number സഹിതം ഇവിടെ Upload ചെയ്യുക.'],
- ps3:['The KNPL committee checks and approves it (or shows the reason if it is rejected).','KNPL കമ്മിറ്റി പരിശോധിച്ച് Approve ചെയ്യും (Reject ചെയ്താൽ കാരണം കാണിക്കും).'],
- ps4:['Your KNPL receipt is then created automatically and downloads the next time you open this page. You can download it any time.','തുടർന്ന് KNPL Receipt സ്വയം തയ്യാറാകും; അടുത്ത തവണ ഈ പേജ് തുറക്കുമ്പോൾ Download ആകും. എപ്പോൾ വേണമെങ്കിലും Download ചെയ്യാം.'],
+ ps1:['Pay the amount to the KNPL account shown below.','താഴെ കാണിച്ച KNPL അക്കൗണ്ടിലേക്ക് തുക അടയ്ക്കുക.'],
+ ps2:['Press Upload next to that item and add the payment screenshot.','ആ ഇനത്തിന് നേരെയുള്ള Upload അമർത്തി Payment Screenshot ചേർക്കുക.'],
+ ps3:['The KNPL committee checks and approves it. You get a WhatsApp message.','KNPL കമ്മിറ്റി പരിശോധിച്ച് Approve ചെയ്യും. WhatsApp സന്ദേശം ലഭിക്കും.'],
+ ps4:['Open this page again – your KNPL receipt downloads automatically.','ഈ പേജ് വീണ്ടും തുറക്കുക – KNPL Receipt സ്വയം Download ആകും.'],
  payTo:['Pay to:','പണമടയ്ക്കേണ്ടത്:'],
  utrTitle:['The transaction number must be visible','Transaction Number വ്യക്തമായി കാണണം'],
  utr1:['Upload the payment confirmation screen or bank receipt that shows the UPI Transaction ID / UTR number, the amount, the date and who it was paid to.','UPI Transaction ID / UTR നമ്പർ, തുക, തീയതി, ആർക്കാണ് അടച്ചത് എന്നിവ കാണുന്ന Payment Confirmation Screen അല്ലെങ്കിൽ Bank Receipt Upload ചെയ്യുക.'],
  utr2:['Type the same transaction number in the form. A receipt without a transaction number cannot be approved.','അതേ Transaction Number ഫോമിലും നൽകുക. Transaction Number ഇല്ലാത്ത Receipt Approve ചെയ്യാനാകില്ല.'],
  utr3:['Photos are compressed automatically before upload and saved securely in KNPL\'s Drive.','ചിത്രങ്ങൾ Upload ചെയ്യുന്നതിന് മുമ്പ് സ്വയം Compress ചെയ്ത് KNPL Drive-ൽ സുരക്ഷിതമായി സൂക്ഷിക്കും.'],
- seeSample:['Open the sample in full size','Sample വലുതാക്കി കാണുക'],
+ seeSample:['See a sample receipt','Sample Receipt കാണുക'],
  uploadAny:['Upload a receipt','Receipt Upload ചെയ്യുക'],
  formTitle:['Upload a payment receipt','Payment Receipt Upload ചെയ്യുക'],fItem:['Payment for','ഏതിനുള്ള പണമടയ്ക്കൽ'],
  fAmt:['Amount: {a} · Due by {d}','തുക: {a} · അവസാന തീയതി {d}'],
@@ -112,8 +119,23 @@ function render() {
   $('tname').textContent = title(S.team); $('towner').textContent = 'Owner: ' + (S.owner.name || '') + ' · KNPL7-' + S.owner.id;
   $('payto').textContent = S.payTo;
   [$('fmode'), $('rmode')].forEach(s => { const v = s.value; s.replaceChildren(...S.modes.map(m => { const o = el('option', null, m); o.value = m; return o; })); if (v) s.value = v; });
-  renderSched(); renderHist(); renderJersey(); renderRepl();
+  renderNext(); renderSched(); renderHist(); renderJersey(); renderRepl();
   if (!$('formcard').hidden) itemInfo();
+}
+function renderNext() {
+  const box = $('nextcard'); box.replaceChildren();
+  const up = uploadable(), today0 = today();
+  const late = up.filter(x => x.due < today0), next = up.slice().sort((a, b) => a.due.localeCompare(b.due))[0];
+  const ap = S.payments.filter(p => p.type !== 'REPL' && p.status === 'APPROVED').length, wt = S.payments.filter(p => p.type !== 'REPL' && p.status === 'PENDING').length;
+  box.append(el('div', 'kick2', t('nextTitle')));
+  if (next) {
+    const r = el('div', 'nextrow'), a = el('div');
+    a.append(el('b', null, t(next.code)), el('div', 'nextamt', inr(next.amount)), el('div', 'small ' + (next.due < today0 ? 'late' : 'muted'), t('dueBy', {d: dmy(next.due)})));
+    const b = el('button', 'btn or', t('nextBtn')); b.onclick = () => openForm(next.code);
+    r.append(a, b); box.append(r);
+    if (late.length > 1) box.append(el('div', 'small late', t('nextLate', {n: late.length})));
+  } else box.append(el('b', null, t('allDone')));
+  box.append(el('div', 'small muted', t('progress', {a: ap, t: S.schedule.filter(x => x.amount != null).length, w: wt})));
 }
 function renderSched() {
   const box = $('sched'); box.replaceChildren();
@@ -124,7 +146,7 @@ function renderSched() {
     const nm = el('span', 'sn'); nm.append(el('b', null, t(s.code)));
     if (s.amount == null) nm.append(el('div', 'small muted', s.code === 'JER' ? t('jerWait') : t('drWait')));
     if (p && p.status === 'REJECTED' && p.remarks) nm.append(el('div', 'rej', t('reason') + p.remarks));
-    const pill = el('span', 'pill ' + st, st === 'late' ? t('stLate') : st === 'none' ? t('stNone') : t('st' + st) + (st === 'APPROVED' ? ' · ' + p.receiptNo : ''));
+    const pill = el('span', 'pill ' + st, st === 'late' ? t('stLate') : st === 'none' ? (s.amount == null ? t('notYet') : t('stNone')) : t('st' + st) + (st === 'APPROVED' ? ' · ' + p.receiptNo : ''));
     const act = el('span', 'sa');
     if (s.amount != null && (!p || p.status === 'REJECTED')) { const b = el('button', 'btn or sm', p ? t('uploadAgain') : t('upload')); b.onclick = () => openForm(s.code); act.append(b); }
     if (p && p.status === 'APPROVED') { const b = el('button', 'btn ok sm', t('receipt')); b.onclick = () => receipt(p); act.append(b); }
@@ -160,8 +182,9 @@ function openForm(code) {
   if (code) $('fitem').value = code;
   $('formcard').hidden = false; $('fmsg').textContent = ''; $('fack').checked = false; $('ffile').value = ''; $('futr').value = ''; $('fnote').value = '';
   $('fdate').max = today(); $('fdate').value = today(); $('fpayer').value = S.owner.name || '';
-  itemInfo(); $('formcard').scrollIntoView({behavior: 'smooth', block: 'start'});
+  itemInfo(); document.body.classList.add('noscroll'); setTimeout(() => $('fitem').focus(), 50);
 }
+function closeForm() { $('formcard').hidden = true; document.body.classList.remove('noscroll'); }
 function itemInfo() { const s = S.schedule.find(x => x.code === $('fitem').value); $('famt').textContent = s ? t('fAmt', {a: inr(s.amount), d: dmy(s.due)}) : ''; }
 async function sendForm() {
   const m = $('fmsg'); m.className = 'msg err'; m.textContent = '';
@@ -176,7 +199,7 @@ async function sendForm() {
   try {
     const file = await compressFile(f, S.maxMb);
     S = await api('teamDeskPay', CODE, {type: $('fitem').value, paidOn: $('fdate').value, mode: $('fmode').value, utr: $('futr').value, payer: $('fpayer').value, note: $('fnote').value, file});
-    $('formcard').hidden = true; render();
+    closeForm(); render();
     $('pmsg').className = 'msg ok'; $('pmsg').textContent = t('submitted'); $('pmsg').scrollIntoView({behavior: 'smooth', block: 'center'});
   } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
   finally { $('fsend').disabled = false; }
@@ -279,7 +302,7 @@ async function sendRepl() {
 function tab(k) { ['pay', 'jer', 'rep'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-$('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = () => { $('formcard').hidden = true; };
+$('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
 $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
 $('rout').onchange = fillIn; $('rsend').onclick = sendRepl;

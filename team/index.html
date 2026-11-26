@@ -12,10 +12,10 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=3">
+<link rel="stylesheet" href="desk.css?v=4">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-<script src="receipt.js?v=3" defer></script>
-<script src="common.js?v=3"></script>
+<script src="receipt.js?v=4" defer></script>
+<script src="common.js?v=4"></script>
 </head>
 <body>
 <header><div class="wrap"><img class="hlogo" src="a/knpl.png" alt="KNPL"><div class="sp"><div class="kick">KNPL-7 · <span data-t="franchises"></span></div><h1>Team Desk</h1><div class="tagline" data-t="tagline"></div></div>
@@ -39,19 +39,18 @@
   </div>
 
   <div id="pg-pay">
+    <div class="card next" id="nextcard"></div>
     <div class="card">
-      <h2 data-t="payTitle"></h2>
-      <ol class="steps"><li data-t="ps1"></li><li data-t="ps2"></li><li data-t="ps3"></li><li data-t="ps4"></li></ol>
+      <h2 data-t="howTitle"></h2>
+      <ol class="flow"><li><b>1</b><span data-t="ps1"></span></li><li><b>2</b><span data-t="ps2"></span></li><li><b>3</b><span data-t="ps3"></span></li><li><b>4</b><span data-t="ps4"></span></li></ol>
       <div class="payto"><span data-t="payTo"></span> <b id="payto"></b></div>
-      <div class="utrbox">
-        <a href="a/sample-receipt.jpg" target="_blank" rel="noopener" class="sthumb"><img src="a/sample-receipt.jpg" alt="Sample payment receipt"></a>
-        <div><h3 data-t="utrTitle"></h3><p data-t="utr1"></p><p data-t="utr2"></p><p class="small muted" data-t="utr3"></p><a href="a/sample-receipt.jpg" target="_blank" rel="noopener" class="small" data-t="seeSample"></a></div>
+      <div class="warn"><b data-t="utrTitle"></b> <span data-t="utr2"></span>
+        <details class="sample"><summary data-t="seeSample"></summary><div class="utrbox"><a href="a/sample-receipt.jpg" target="_blank" rel="noopener" class="sthumb"><img src="a/sample-receipt.jpg" alt="Sample payment receipt" loading="lazy"></a><div><p data-t="utr1"></p><p class="small muted" data-t="utr3"></p></div></div></details>
       </div>
       <div class="msg ok" id="pmsg" role="status"></div>
-      <div style="margin:12px 0 4px"><button class="btn or" id="upAny" data-t="uploadAny"></button></div>
     </div>
-    <div class="card" id="formcard" hidden>
-      <h2 data-t="formTitle"></h2>
+    <div class="sheet" id="formcard" hidden><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="ftl">
+      <div class="sheethead"><h2 id="ftl" data-t="formTitle"></h2><button class="x" id="fx" aria-label="Close">×</button></div>
       <label class="fl" for="fitem" data-t="fItem"></label><select id="fitem"></select>
       <p class="small muted" id="famt"></p>
       <div class="grid2">
@@ -66,8 +65,8 @@
       <label class="chk"><input type="checkbox" id="fack"><span data-t="fAck"></span></label>
       <div class="row"><button class="btn or" id="fsend" data-t="submit"></button><button class="btn ghost" id="fcancel" data-t="cancel"></button></div>
       <div class="msg" id="fmsg" role="status"></div>
-    </div>
-    <div class="card"><h3 data-t="schedTitle"></h3><div class="sched" id="sched"></div>
+    </div></div>
+    <div class="card"><div class="cardhead"><h3 data-t="schedTitle"></h3><button class="btn or sm" id="upAny" data-t="uploadAny"></button></div><div class="sched" id="sched"></div>
       <details class="small" style="margin-top:10px"><summary data-t="draftBreak"></summary><table class="brk" id="dbrk"></table></details></div>
     <div class="card"><h3 data-t="histTitle"></h3><ul class="hist" id="hist"></ul></div>
   </div>
@@ -121,5 +120,5 @@
 </section>
 </main>
 <footer data-t="footer"></footer>
-<script src="desk.js?v=3"></script>
+<script src="desk.js?v=4"></script>
 </body></html>
