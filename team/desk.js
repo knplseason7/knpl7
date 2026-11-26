@@ -32,6 +32,13 @@ window.TX = {
  ocrReading:['🔍 Reading your receipt…','🔍 Receipt വായിക്കുന്നു…'],
  ocrFilled:['✔ Filled from the receipt – please check: {f}','✔ Receipt-ൽ നിന്ന് പൂരിപ്പിച്ചു – ദയവായി പരിശോധിക്കുക: {f}'],
  ocrNoTxn:['⚠ No transaction number found in this receipt. Please upload a screenshot or receipt that clearly shows the UPI Transaction ID / UTR number.','⚠ ഈ Receipt-ൽ Transaction Number കാണുന്നില്ല. UPI Transaction ID / UTR നമ്പർ വ്യക്തമായി കാണുന്ന Screenshot അല്ലെങ്കിൽ Receipt Upload ചെയ്യുക.'],
+ fCovTitle:['This receipt also pays for (tick if you paid them together)','ഈ Receipt-ൽ ഒരുമിച്ച് അടച്ച മറ്റിനങ്ങൾ (ഉണ്ടെങ്കിൽ tick ചെയ്യുക)'],
+ fCovHint:['Paid two or more items in one transaction? Tick them – the same receipt is submitted for each.','ഒരേ transaction-ൽ ഒന്നിലധികം ഇനങ്ങൾ അടച്ചെങ്കിൽ tick ചെയ്യുക – അതേ receipt ഓരോന്നിനും സമർപ്പിക്കും.'],
+ fCovTot:['{n} items · {a} in all – check this matches the receipt.','{n} ഇനങ്ങൾ · ആകെ {a} – Receipt-ലെ തുകയുമായി ഒത്തുനോക്കുക.'],
+ ocrCombined:['Receipt amount {a} = {l}. These items are ticked and will be submitted together.','Receipt-ലെ തുക {a} = {l}. ഈ ഇനങ്ങൾ tick ചെയ്തിട്ടുണ്ട്, ഒരുമിച്ച് സമർപ്പിക്കും.'],
+ ocrAmt2:['If you paid more than one item together, tick them below.','ഒന്നിലധികം ഇനങ്ങൾ ഒരുമിച്ച് അടച്ചെങ്കിൽ താഴെ tick ചെയ്യുക.'],
+ uploadingN:['Uploading {i} of {n}…','{n}-ൽ {i} upload ചെയ്യുന്നു…'],
+ submittedN:['Submitted for {n} items. The committee will check and approve.','{n} ഇനങ്ങൾക്ക് സമർപ്പിച്ചു. കമ്മിറ്റി പരിശോധിച്ച് approve ചെയ്യും.'],
  ocrAmt:['Amount on the receipt is {a}, but {b} is due for this item. Please check you chose the right item.','Receipt-ലെ തുക {a} ആണ്, ഈ ഇനത്തിന് {b} ആണ് അടയ്ക്കേണ്ടത്. ശരിയായ ഇനമാണോ തിരഞ്ഞെടുത്തതെന്ന് പരിശോധിക്കുക.'],
  ocrFail:['The receipt could not be read automatically. Please type the details.','Receipt സ്വയം വായിക്കാനായില്ല. വിവരങ്ങൾ ടൈപ്പ് ചെയ്യുക.'],
  ocrWait:['Please wait – the receipt is still being read.','ദയവായി കാത്തിരിക്കുക – Receipt വായിക്കുന്നു.'],
@@ -254,7 +261,7 @@ function openForm(code) {
   if (code) $('fitem').value = code;
   $('formcard').hidden = false; $('fmsg').textContent = ''; OCR.f = null; $('focr').hidden = true; $('fack').checked = false; $('ffile').value = ''; $('futr').value = ''; $('fnote').value = '';
   $('fdate').max = today(); $('fdate').value = today(); $('fpayer').value = S.owner.name || '';
-  itemInfo(); document.body.classList.add('noscroll'); setTimeout(() => $('fitem').focus(), 50);
+  $('fcov').replaceChildren(); renderCover(); itemInfo(); document.body.classList.add('noscroll'); setTimeout(() => $('fitem').focus(), 50);
 }
 function closeForm() { $('formcard').hidden = true; document.body.classList.remove('noscroll'); }
 function itemInfo() { const s = S.schedule.find(x => x.code === $('fitem').value); $('famt').textContent = s ? t('fAmt', {a: inr(s.amount), d: dmy(s.due)}) : ''; }
@@ -271,9 +278,16 @@ async function sendForm() {
   $('fsend').disabled = true; m.className = 'msg'; m.textContent = t('uploading');
   try {
     const file = await compressFile(f, S.maxMb);
-    S = await api('teamDeskPay', CODE, {type: $('fitem').value, paidOn: $('fdate').value, mode: $('fmode').value, utr: $('futr').value, payer: $('fpayer').value, note: $('fnote').value, file});
+    const codes = [$('fitem').value].concat(coverCodes()), tot = codes.reduce((n, c) => n + Number((S.schedule.find(x => x.code === c) || {}).amount || 0), 0);
+    const note = (codes.length > 1 ? 'Combined payment ' + inr(tot) + ': ' + codes.map(c => t(c)).join(' + ') + '. ' : '') + $('fnote').value;
+    const fails = [];
+    for (let i = 0; i < codes.length; i++) {
+      if (codes.length > 1) m.textContent = t('uploadingN', {i: i + 1, n: codes.length});
+      try { S = await api('teamDeskPay', CODE, {type: codes[i], paidOn: $('fdate').value, mode: $('fmode').value, utr: $('futr').value, payer: $('fpayer').value, note: note.slice(0, 300), file}); }
+      catch (e) { if (i === 0) throw e; fails.push(t(codes[i]) + ': ' + msgOf(e)); }
+    }
     closeForm(); render();
-    $('pmsg').className = 'msg ok'; $('pmsg').textContent = t('submitted'); $('pmsg').scrollIntoView({behavior: 'smooth', block: 'center'});
+    $('pmsg').className = fails.length ? 'msg err' : 'msg ok'; $('pmsg').textContent = (codes.length > 1 ? t('submittedN', {n: codes.length - fails.length}) : t('submitted')) + (fails.length ? '\n' + fails.join('\n') : ''); $('pmsg').scrollIntoView({behavior: 'smooth', block: 'center'});
   } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
   finally { $('fsend').disabled = false; }
 }
@@ -474,6 +488,35 @@ function renderSpo() {
 const OCR = {};
 function ocrBox(k) { return $(k === 'f' ? 'focr' : 'rocr'); }
 function ocrShow(k, cls, html) { const b = ocrBox(k); b.hidden = false; b.className = 'ocr ' + cls; b.textContent = html; }
+function subsetFor(target, items) {   // smallest set of items whose amounts add up to target
+  let best = null; const n = Math.min(items.length, 12);
+  for (let m = 1; m < (1 << n); m++) { let s = 0, pick = []; for (let i = 0; i < n; i++) if (m & (1 << i)) { s += Number(items[i].amount); pick.push(items[i]); }
+    if (Math.abs(s - target) < 1 && (!best || pick.length < best.length)) best = pick; }
+  return best;
+}
+function fixAmount(a, items) {   // the ₹ sign is often read as 3, 2, 7 or 4: "₹8,000" -> "38,000"
+  if (!a) return a; const ok = x => subsetFor(x, items);
+  if (ok(a)) return a;
+  const s = String(Math.round(a)); if (s.length >= 4 && /^[2347]/.test(s) && s[1] !== '0') { const b = Number(s.slice(1)); if (ok(b)) return b; }
+  return a;
+}
+function renderCover(autoAmt) {   // other items this one receipt also pays for
+  const box = $('fcov'), sel = $('fitem').value, list = uploadable().filter(s => s.code !== sel);
+  const keep = {}; box.querySelectorAll('input[data-c]').forEach(x => keep[x.dataset.c] = x.checked);
+  box.replaceChildren(); if (!list.length) { box.hidden = true; return; }
+  box.hidden = false; box.append(el('div', 'fl', t('fCovTitle')), el('p', 'small muted', t('fCovHint')));
+  let auto = null;
+  if (autoAmt) { const me = S.schedule.find(x => x.code === sel); const rest = autoAmt - Number(me ? me.amount : 0); if (rest > 0) auto = subsetFor(rest, list); }
+  list.forEach(s => { const l = el('label', 'chk'), c = el('input'); c.type = 'checkbox'; c.dataset.c = s.code;
+    c.checked = auto ? auto.some(x => x.code === s.code) : !!keep[s.code]; c.onchange = coverTotal;
+    l.append(c, el('span', null, t(s.code) + ' – ' + inr(s.amount) + ' · ' + t('dueBy', {d: dmy(s.due)}))); box.append(l); });
+  box.append(el('div', 'small', '')); coverTotal();
+}
+function coverCodes() { return [...$('fcov').querySelectorAll('input[data-c]:checked')].map(x => x.dataset.c); }
+function coverTotal() {
+  const codes = [$('fitem').value].concat(coverCodes()), tot = codes.reduce((n, c) => n + Number((S.schedule.find(x => x.code === c) || {}).amount || 0), 0);
+  const last = $('fcov').lastChild; if (last) { last.className = 'small covtot'; last.textContent = codes.length > 1 ? t('fCovTot', {n: codes.length, a: inr(tot)}) : ''; }
+}
 async function readReceipt(k) {
   const input = $(k === 'f' ? 'ffile' : 'rfile'), f = input.files[0];
   const ids = k === 'f' ? {utr: 'futr', date: 'fdate', mode: 'fmode'} : {utr: 'rutr', date: 'rdate', mode: 'rmode'};
@@ -492,8 +535,15 @@ async function readReceipt(k) {
   if (r.mode && S.modes.indexOf(r.mode) >= 0) { $(ids.mode).value = r.mode; filled.push(t('fMd') + ' ' + r.mode); }
   let msg = t('ocrFilled', {f: filled.join(' · ')});
   const due = k === 'f' ? (S.schedule.find(x => x.code === $('fitem').value) || {}).amount : S.replFee;
-  if (r.amount && due && Math.abs(r.amount - due) >= 1) msg += '\n' + t('ocrAmt', {a: inr(r.amount), b: inr(due)});
-  ocrShow(k, r.amount && due && Math.abs(r.amount - due) >= 1 ? 'warn' : 'good', msg);
+  if (k === 'f' && r.amount) r.amount = fixAmount(r.amount, uploadable());
+  let warn = r.amount && due && Math.abs(r.amount - due) >= 1;
+  if (warn && k === 'f') {
+    renderCover(r.amount);
+    const codes = [$('fitem').value].concat(coverCodes()), tot = codes.reduce((n, c) => n + Number((S.schedule.find(x => x.code === c) || {}).amount || 0), 0);
+    if (Math.abs(tot - r.amount) < 1) { warn = false; msg += '\n' + t('ocrCombined', {a: inr(r.amount), l: codes.map(c => t(c)).join(' + ')}); }
+  }
+  if (warn) msg += '\n' + t('ocrAmt', {a: inr(r.amount), b: inr(due)}) + (k === 'f' ? ' ' + t('ocrAmt2') : '');
+  ocrShow(k, warn ? 'warn' : 'good', msg);
 }
 function ocrGate(k) {   // returns a message if the upload must not go ahead yet
   const o = OCR[k];
@@ -549,7 +599,7 @@ async function renderDesigns() {
 function tab(k) { ['pay', 'jer', 'rep', 'spo', 'help'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } if (k === 'jer') renderDesigns(); }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-$('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
+$('upAny').onclick = () => openForm(''); $('fitem').onchange = () => { itemInfo(); renderCover(OCR.f && OCR.f.res ? fixAmount(OCR.f.res.amount, uploadable()) : null); }; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
 $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
 $('rout').onchange = fillIn; $('ffile').onchange = () => readReceipt('f'); $('rsend').onclick = sendRepl;
