@@ -131,7 +131,7 @@ img{display:block}
 
 /* franchises board: 16 tiles, 4 × 4, fills its space */
 .teams{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:6px}
-.team{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:3px 4px;border-radius:12px;background:var(--card2);border:1px solid var(--line);transition:all .35s;min-height:0;text-align:center}
+.team{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:3px 4px;overflow:hidden;border-radius:12px;background:var(--card2);border:1px solid var(--line);transition:all .35s;min-height:0;text-align:center}
 .team img{width:clamp(20px,3.3vh,36px);height:clamp(20px,3.3vh,36px);border-radius:50%;object-fit:contain;background:#fff1;flex:none}
 .team .tx{width:100%;min-width:0;text-align:center}
 .team .nm{font:700 clamp(10.5px,1.5vh,14px) "Barlow Condensed";letter-spacing:.2px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -194,6 +194,8 @@ img{display:block}
 
 /* ---------- narrower laptops ---------- */
 @media (max-width:1250px){.screen{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 210px}.tiles .tile.x{display:none}.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.part{grid-template-columns:78px 1fr 26px}.ev .s{display:none}}
+@media (max-height:860px) and (min-width:821px){.team{flex-direction:row;justify-content:flex-start;gap:6px;padding:2px 6px}.team .tx{text-align:left;flex:1}.team img{width:clamp(20px,3.6vh,30px);height:clamp(20px,3.6vh,30px)}.team .sq{margin:2px 0 0}.ls:nth-of-type(n+2){display:none}.lead{min-height:0}}
+@media (max-height:640px) and (min-width:821px){.last{display:none}.tiles{display:none}}
 @media (max-height:760px) and (min-width:821px){.hl div:nth-child(3){display:none}.legacybar .lk i{display:none}}
 
 /* ---------- phones and small tablets: no scrolling, one rotating panel ---------- */
