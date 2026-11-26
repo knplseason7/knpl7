@@ -20,6 +20,7 @@
     return 'Rs. ' + rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + last + (dec ? '.' + String(dec).padStart(2, '0') : '.00');
   }
   const title = t => String(t || '').toLowerCase().replace(/\b[a-z]/g, m => m.toUpperCase()).replace(/\bOf\b/g, 'of');
+  const dmy = d => { const m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? m[3] + ' ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(m[2]) - 1] + ' ' + m[1] : String(d || ''); };
   const slug = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   function img(url) {
     return fetch(url).then(r => r.ok ? r.blob() : null).then(b => b && new Promise(res => { const f = new FileReader(); f.onload = () => res(f.result); f.onerror = () => res(null); f.readAsDataURL(b); })).catch(() => null);
@@ -96,7 +97,7 @@
     y += 12;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...MUTED); doc.text('PAYMENT DETAILS', M, y);
     y += 3;
-    const det = [['Mode', p.mode], ['Transaction ref.', p.utr || '-'], ['Date of payment', p.paidOn], ['Paid by', p.payer], ['Submitted on', p.at], ['Approved on', p.approvedOn]];
+    const det = [['Mode', p.mode], ['Transaction ref.', p.utr || '-'], ['Date of payment', dmy(p.paidOn)], ['Paid by', p.payer], ['Submitted on', p.at], ['Approved on', p.approvedOn]];
     doc.setDrawColor(...LINE); doc.roundedRect(M, y, W - 2 * M, 30, 2, 2, 'S');
     det.forEach((d, i) => {
       const cx = M + 5 + (i % 2) * ((W - 2 * M) / 2), cy = y + 8 + Math.floor(i / 2) * 9;

@@ -189,7 +189,7 @@ function renderHist(){
   S.payments.slice().reverse().forEach(p=>{
     const li=el('li'),a=el('div'),b=el('div','r');
     a.append(el('b',null,p.kind));
-    a.append(el('div','small muted',inr(p.amount)+' · '+p.mode+(p.utr?' · Ref '+p.utr:'')+' · paid '+p.paidOn+' · '+p.id));
+    a.append(el('div','small muted',inr(p.amount)+' · '+p.mode+(p.utr?' · Ref '+p.utr:'')+' · paid '+p.paidOn.split('-').reverse().join('-')+' · '+p.id));
     if(p.type==='REPL'&&p.replIn)a.append(el('div','small muted',(p.replOut?p.replOut.name+' → ':'')+p.replIn.name+' (KNPL7-'+p.replIn.id+')'));
     if(p.status==='REJECTED'&&p.remarks)a.append(el('div','rej','Reason: '+p.remarks));
     b.append(el('span','pill '+p.status,p.status==='APPROVED'?p.receiptNo:p.status.toLowerCase()));
