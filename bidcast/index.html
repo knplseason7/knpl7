@@ -255,8 +255,8 @@ const shortName=t=>SHORT[t.key]||t.name;
 // Super Player Auction player/team list for an auction (made once when the auction is set up): spa/<actid>.json
 async function loadMap(id){ try{ const r=await fetch(`spa/${id}.json?v=${Date.now()}`); if(r.ok) MAP=await r.json(); }catch(e){} }
 function spaTeam(tid){
+  if(MODE==="demo") return (tid==null||tid==="")? null : TEAMS[+tid]||null;
   tid=String(tid||""); if(!tid||tid==="0") return null;
-  if(MODE==="demo") return TEAMS[+tid]||null;
   const t=MAP&&MAP.teams.find(x=>String(x.tid)===tid); if(!t) return {key:tid,name:"Team "+tid,logo:""};
   const k=teamByName(t.name); return k? {...k,tid} : {key:tid,name:t.name,logo:t.logo?(MAP.teamLogoBase||"")+t.logo:"",tid};
 }
