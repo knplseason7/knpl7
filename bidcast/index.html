@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TENVOX BIDCAST · KNPL-7 Mega Auction Live</title>
 <meta name="description" content="TENVOX BIDCAST — every bid of the KNPL-7 Mega Auction, live: player on the block, bids, teams and sponsors.">
-<meta name="theme-color" content="#070b14">
+<meta name="theme-color" content="#071330">
 <meta property="og:title" content="TENVOX BIDCAST · KNPL-7 Mega Auction Live">
 <meta property="og:description" content="Every bid. Live. 12 Dec 2026, 8:00 AM.">
 <meta property="og:image" content="knpl-logo.png">
@@ -13,28 +13,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#070b14;--bg2:#0c1322;--card:#111a2c;--card2:#16223a;--line:#22304d;--ink:#eef3fb;--mut:#8b9bb8;
-  --gold:#f5b942;--gold2:#ffd884;--red:#ff4d5e;--green:#35d39a;--cq:#ff8a5c;--dm:#b993ff;--rs:#4fd8c9;--live:#ff3b4f}
+:root{--bg:#061028;--bg2:#0a1a3c;--card:#0d1f45;--card2:#122a5a;--line:#1f3d74;--ink:#eef5ff;--mut:#93a8cc;
+  --gold:#27d07e;--gold2:#7ef2b6;--navy:#13274f;--red:#ff4d5e;--green:#35d39a;--cq:#ff8a5c;--dm:#b993ff;--rs:#4fd8c9;--live:#ff3b4f}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh;background:radial-gradient(1200px 600px at 80% -10%,#1b2a4a55,transparent),radial-gradient(900px 500px at -10% 110%,#3a1d0c44,transparent),var(--bg)}
+body{min-height:100vh;background:radial-gradient(1200px 600px at 80% -10%,#1d3a7a66,transparent),radial-gradient(900px 500px at -10% 110%,#0f6b4a2e,transparent),var(--bg)}
 [hidden]{display:none!important}
 .cond{font-family:"Barlow Condensed",sans-serif;letter-spacing:.3px}
 img{display:block}
 
 /* ---------- channel bar ---------- */
-.chan{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 22px;background:linear-gradient(90deg,#0a0f1c,#0f1830 60%,#0a0f1c);border-bottom:1px solid #2a3a5e;box-shadow:0 6px 24px #0008}
+.chan{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 22px;background:linear-gradient(90deg,#071330,#0c2454 55%,#071330);border-bottom:2px solid var(--gold);box-shadow:0 6px 24px #0008}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
-.brand .mark{width:44px;height:44px;border-radius:12px;background:conic-gradient(from 210deg,var(--gold),#ff7a3d,var(--live),var(--gold));display:grid;place-items:center;box-shadow:0 0 0 2px #0a0f1c,0 0 18px #ff7a3d55}
-.brand .mark span{width:34px;height:34px;border-radius:9px;background:#0a0f1c;display:grid;place-items:center;font:900 22px "Barlow Condensed";color:var(--gold2)}
+.brand .mark{width:50px;height:50px;border-radius:14px;background:#fff;display:grid;place-items:center;box-shadow:0 0 0 2px var(--gold),0 6px 18px #0008;padding:5px}
+.brand .mark img{width:100%;height:100%;object-fit:contain}
 .brand .wm{line-height:1}
-.brand .wm b{display:block;font:900 30px "Barlow Condensed";letter-spacing:2.5px;background:linear-gradient(90deg,#fff,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.brand .wm b i{font-style:normal;background:linear-gradient(90deg,var(--gold),#ff7a3d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .wm b{display:block;font:900 30px "Barlow Condensed";letter-spacing:2.5px;color:#fff}
+.brand .wm b i{font-style:normal;background:linear-gradient(90deg,var(--gold),#12b886);-webkit-background-clip:text;background-clip:text;color:transparent}
 .brand .wm small{display:block;font:600 11px Inter;letter-spacing:3px;color:var(--mut);text-transform:uppercase;margin-top:3px}
 .onair{display:inline-flex;align-items:center;gap:7px;font:800 12px Inter;letter-spacing:1.5px;padding:6px 11px;border-radius:999px;border:1px solid #3a4a6e;color:var(--mut);text-transform:uppercase}
 .onair i{width:9px;height:9px;border-radius:50%;background:#56637d}
 .onair.live{color:#fff;background:var(--live);border-color:var(--live)} .onair.live i{background:#fff;animation:pulse 1.2s infinite}
-.onair.demo{color:#1a1205;background:var(--gold);border-color:var(--gold)} .onair.demo i{background:#1a1205}
+.onair.demo{color:#04221a;background:var(--gold);border-color:var(--gold)} .onair.demo i{background:#04221a}
 @keyframes pulse{50%{opacity:.25}}
 .chan .ev{margin-left:auto;display:flex;align-items:center;gap:12px;text-align:right}
 .chan .ev .t{font:800 18px "Barlow Condensed";letter-spacing:1px;text-transform:uppercase}
@@ -51,13 +51,13 @@ img{display:block}
 /* KNPL side rail */
 .side{display:flex;flex-direction:column;gap:16px;min-width:0}
 .rail{position:sticky;top:84px;align-self:start;display:flex;flex-direction:column;gap:14px}
-.knpl{text-align:center;background:radial-gradient(circle at 50% 0%,#3a1d0c,#140d0a 70%);border:1px solid #6b4a1f;border-radius:18px;padding:18px 14px}
-.knpl img{width:132px;height:132px;margin:0 auto 8px;filter:drop-shadow(0 6px 18px #000a)}
+.knpl{text-align:center;background:radial-gradient(circle at 50% 0%,#15336e,#0a1a3c 72%);border:1px solid #2a5aa8;box-shadow:inset 0 3px 0 var(--gold);border-radius:18px;padding:18px 14px}
+.knpl img{width:132px;height:132px;margin:0 auto 8px;border-radius:50%;background:#fff;padding:6px;filter:drop-shadow(0 6px 18px #000a)}
 .knpl .t1{font:900 26px "Barlow Condensed";letter-spacing:1.5px;color:var(--gold2);line-height:1}
-.knpl .t2{font:700 12px Inter;letter-spacing:2px;color:#e8d2a8;text-transform:uppercase;margin-top:4px}
-.knpl .tag{margin-top:10px;font:600 13px Inter;color:#f3e6cc;font-style:italic}
+.knpl .t2{font:700 12px Inter;letter-spacing:2px;color:#b9cbe8;text-transform:uppercase;margin-top:4px}
+.knpl .tag{margin-top:10px;font:600 13px Inter;color:#e6eefc;font-style:italic}
 .knpl .ml{margin-top:4px;font-size:14px;color:var(--gold2);font-weight:700}
-.knpl .meta{margin-top:12px;font-size:12px;color:#cdb98f;line-height:1.6}
+.knpl .meta{margin-top:12px;font-size:12px;color:#a9bddc;line-height:1.6}
 .trophy{padding:12px;text-align:center}
 .trophy img{width:100%;border-radius:12px;aspect-ratio:390/412;object-fit:cover}
 .trophy .cap{font:800 15px "Barlow Condensed";letter-spacing:1px;color:var(--gold2);margin-top:8px;text-transform:uppercase}
@@ -73,7 +73,7 @@ img{display:block}
 .reg{font:700 12px Inter;letter-spacing:1.5px;color:var(--mut)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12.5px;font-weight:600}
-.chip.gold{border-color:#7a5a1f;background:#2a200f;color:var(--gold2)}
+.chip.gold{border-color:#1f7a52;background:#0c2c24;color:var(--gold2)}
 .c-CV,.c-CC{--cc:var(--cq)} .c-DA,.c-DC{--cc:var(--dm)} .c-RSE,.c-RSC{--cc:var(--rs)}
 .catpill{display:inline-block;padding:4px 12px;border-radius:999px;font:800 14px "Barlow Condensed";letter-spacing:1.2px;text-transform:uppercase;color:#0b0f18;background:var(--cc)}
 .srbox{display:flex;align-items:center;gap:16px;margin:10px 0 4px}
@@ -91,7 +91,7 @@ img{display:block}
 .tile b{font:800 26px "Barlow Condensed"}
 .hl{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .hl div{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:7px 10px;border-radius:10px;background:#0d1628;border:1px solid var(--line)}
-.hl div.title,.hl div.award{border-color:#6b5320;background:#1d170c}
+.hl div.title,.hl div.award{border-color:#1f7a52;background:#0b2620}
 .hl div em{font-style:normal;flex:none}
 .seasons{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .seasons span{font-size:11.5px;padding:4px 8px;border-radius:8px;background:#0d1628;border:1px solid var(--line)}
@@ -106,7 +106,7 @@ img{display:block}
 .lead img{width:52px;height:52px;border-radius:50%;background:#fff1;object-fit:contain}
 .lead b{font:800 24px "Barlow Condensed";letter-spacing:.6px;text-transform:uppercase}
 .bid .meta{display:flex;justify-content:center;gap:14px;margin-top:8px;font-size:12px;color:var(--mut)}
-.bid .msg{margin-top:10px;padding:8px 12px;border-radius:10px;background:#2a200f;border:1px solid #6b5320;color:var(--gold2);font-weight:600}
+.bid .msg{margin-top:10px;padding:8px 12px;border-radius:10px;background:#0c2c24;border:1px solid #1f7a52;color:var(--gold2);font-weight:600}
 
 /* teams board */
 .teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -114,10 +114,10 @@ img{display:block}
 .team img{width:38px;height:38px;border-radius:50%;object-fit:contain;background:#fff1}
 .team .nm{font:700 14px "Barlow Condensed";letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .team .sq{height:5px;border-radius:4px;background:#0a1222;overflow:hidden;margin-top:4px}
-.team .sq i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#ff7a3d)}
+.team .sq i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#12b886)}
 .team .pt{text-align:right;font:800 17px "Barlow Condensed";font-variant-numeric:tabular-nums}
 .team .pt small{display:block;font:600 10px Inter;color:var(--mut)}
-.team.lead{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 18px #f5b94244;background:#231b0c}
+.team.lead{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 18px #27d07e44;background:#0b2f27}
 .team.out{opacity:.45}
 
 /* sales */
@@ -129,15 +129,15 @@ img{display:block}
 @keyframes in{from{opacity:0;transform:translateY(-6px)}}
 
 /* sponsor spotlight + ticker */
-.spot{position:relative;min-height:150px;display:grid;place-items:center;text-align:center;padding:18px;overflow:hidden;background:radial-gradient(circle at 50% 0%,#2a200f,#111a2c 70%);border-color:#6b5320}
-.spot .k{font:700 11px Inter;letter-spacing:2.5px;color:#d9b56a;text-transform:uppercase}
+.spot{position:relative;min-height:150px;display:grid;place-items:center;text-align:center;padding:18px;overflow:hidden;background:radial-gradient(circle at 50% 0%,#0f4a38,#0d1f45 72%);border-color:#1f7a52}
+.spot .k{font:700 11px Inter;letter-spacing:2.5px;color:var(--gold2);text-transform:uppercase}
 .spot .nm{font:900 34px "Barlow Condensed";line-height:1.05;letter-spacing:.5px;margin:6px 0;color:#fff;text-transform:uppercase}
 .spot .for{font-size:13px;color:var(--gold2);font-weight:600}
 .spot .fade{animation:spotin .7s ease}
 @keyframes spotin{from{opacity:0;transform:translateY(8px) scale(.98)}}
 .spot .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);transition:width linear}
-.ticker{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;align-items:center;height:56px;background:linear-gradient(90deg,#0b1222,#121c33,#0b1222);border-top:1px solid #3a4a6e;overflow:hidden}
-.ticker .lab{flex:none;height:100%;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--gold);color:#1a1205;font:900 16px "Barlow Condensed";letter-spacing:1.5px;text-transform:uppercase;z-index:1;box-shadow:8px 0 18px #000a}
+.ticker{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;align-items:center;height:56px;background:linear-gradient(90deg,#071330,#0c2454,#071330);border-top:2px solid var(--gold);overflow:hidden}
+.ticker .lab{flex:none;height:100%;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--gold);color:#04221a;font:900 16px "Barlow Condensed";letter-spacing:1.5px;text-transform:uppercase;z-index:1;box-shadow:8px 0 18px #000a}
 .ticker .run{display:flex;align-items:center;gap:34px;white-space:nowrap;padding-left:30px;animation:run linear infinite}
 .ticker .run span{font:800 "Barlow Condensed";letter-spacing:.6px;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center;gap:10px}
 .ticker .run span::after{content:"◆";color:var(--gold);font-size:12px;margin-left:24px}
@@ -147,8 +147,8 @@ img{display:block}
 /* sold overlay */
 .sold{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle,#0a0f1ccc,#000e);animation:fadein .3s ease}
 .sold .box{text-align:center;padding:30px;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
-.sold img.tl{width:150px;height:150px;border-radius:50%;margin:0 auto 10px;object-fit:contain;background:#fff1;box-shadow:0 0 0 4px var(--gold),0 0 60px #f5b94288}
-.sold .st{font:900 120px "Barlow Condensed";line-height:.9;letter-spacing:6px;color:var(--gold2);text-shadow:0 6px 40px #f5b94266}
+.sold img.tl{width:150px;height:150px;border-radius:50%;margin:0 auto 10px;object-fit:contain;background:#fff1;box-shadow:0 0 0 4px var(--gold),0 0 60px #27d07e88}
+.sold .st{font:900 120px "Barlow Condensed";line-height:.9;letter-spacing:6px;color:var(--gold2);text-shadow:0 6px 40px #27d07e66}
 .sold .who{font:800 34px "Barlow Condensed";letter-spacing:1px;text-transform:uppercase;margin-top:6px}
 .sold .to{font:700 22px "Barlow Condensed";letter-spacing:1px;color:var(--mut);text-transform:uppercase}
 .sold .px{font:900 60px "Barlow Condensed";color:#fff;margin-top:4px}
@@ -161,7 +161,7 @@ img{display:block}
 .hero{display:grid;place-items:center;text-align:center;min-height:540px;padding:30px}
 .hero .k{font:800 14px Inter;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
 .hero h1{font:900 76px "Barlow Condensed";line-height:.95;margin:10px 0;letter-spacing:1px;text-transform:uppercase}
-.hero h1 span{background:linear-gradient(90deg,var(--gold2),#ff7a3d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 span{background:linear-gradient(90deg,var(--gold2),#12b886);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cd{display:flex;gap:12px;justify-content:center;margin:18px 0}
 .cd div{min-width:92px;padding:12px 10px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
 .cd b{display:block;font:900 52px "Barlow Condensed";line-height:1;font-variant-numeric:tabular-nums}
@@ -169,13 +169,13 @@ img{display:block}
 .tgrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px;margin-top:18px;width:100%}
 .tgrid div{display:flex;flex-direction:column;align-items:center;gap:6px;font:700 12px "Barlow Condensed";letter-spacing:.4px;text-transform:uppercase;text-align:center;color:#cfd8e8}
 .tgrid img{width:58px;height:58px;border-radius:50%;object-fit:contain;background:#fff1}
-.demo-banner{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:30;background:var(--gold);color:#1a1205;font:800 12px Inter;letter-spacing:1px;padding:6px 14px;border-radius:999px;text-transform:uppercase;box-shadow:0 6px 18px #0008}
+.demo-banner{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:30;background:var(--gold);color:#04221a;font:800 12px Inter;letter-spacing:1px;padding:6px 14px;border-radius:999px;text-transform:uppercase;box-shadow:0 6px 18px #0008}
 
 /* ---------- responsive ---------- */
 @media (max-width:1400px){.wrap{grid-template-columns:200px minmax(0,1fr) 380px}.pl{grid-template-columns:200px minmax(0,1fr)}.photo{width:200px;height:250px}.pname{font-size:44px}.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:1100px){.wrap{grid-template-columns:minmax(0,1fr) 360px}.rail{grid-column:1/-1;position:static;flex-direction:row}.knpl{flex:1;display:flex;align-items:center;gap:14px;text-align:left}.knpl img{width:84px;height:84px;margin:0}.trophy{width:200px;flex:none}}
 @media (max-width:820px){
-  .chan{padding:8px 12px;gap:8px}.brand .mark{width:36px;height:36px}.brand .mark span{width:28px;height:28px;font-size:18px}.brand .wm b{font-size:22px;letter-spacing:1.5px}.brand .wm small{font-size:9px;letter-spacing:2px}
+  .chan{padding:8px 12px;gap:8px}.brand .mark{width:40px;height:40px;padding:4px;border-radius:11px}.brand .wm b{font-size:22px;letter-spacing:1.5px}.brand .wm small{font-size:9px;letter-spacing:2px}
   .chan .ev .t{font-size:13px}.chan .ev .s{display:none}.chan .ev img{width:34px;height:34px}.onair{font-size:10px;padding:4px 8px}
   .wrap{grid-template-columns:minmax(0,1fr);padding:10px 10px 90px;gap:10px}
   .rail{order:9}.knpl img{width:64px;height:64px}.knpl .t1{font-size:22px}.trophy{width:130px}
@@ -186,17 +186,18 @@ img{display:block}
   .hero h1{font-size:46px}.cd div{min-width:68px}.cd b{font-size:36px}.tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.tgrid img{width:46px;height:46px}
   .sold .st{font-size:76px}.sold img.tl{width:110px;height:110px}.sold .px{font-size:44px}.sold .who{font-size:26px}
   .ticker{height:46px}.ticker .lab{font-size:13px;padding:0 10px}.ticker .w3{font-size:20px!important}.ticker .w2{font-size:17px!important}.ticker .w1{font-size:14px!important}
-  .demo-banner{top:60px;font-size:10px}
+  .demo-banner{position:static;transform:none;display:block;width:max-content;max-width:94vw;margin:8px auto 0;font-size:10px;text-align:center}.demo-banner[hidden]{display:none!important}.brand .wm small{display:none}
 }
 </style>
 </head>
 <body>
 <header class="chan">
-  <a class="brand" href="./"><span class="mark"><span>T</span></span><span class="wm"><b>TENVOX <i>BIDCAST</i></b><small>Every bid · Live</small></span></a>
+  <a class="brand" href="./"><span class="mark"><img src="tenvox-mark.png" alt="TENVOX"></span><span class="wm"><b>TENVOX <i>BIDCAST</i></b><small>TENVOX Sports · Every bid live</small></span></a>
   <span class="onair" id="onair"><i></i><span>Off air</span></span>
   <div class="ev"><div><div class="t">KNPL-7 Mega Auction</div><div class="s">12 Dec 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div></div><img src="knpl-logo.png" alt="KNPL"></div>
 </header>
 
+<div class="demo-banner" id="demoBanner" hidden>Demo · simulated bids · not the real auction</div>
 <main class="wrap">
   <aside class="rail">
     <div class="knpl"><img src="knpl-logo.png" alt="Kerala Namboodiris Premier League"><div>
@@ -218,7 +219,6 @@ img{display:block}
 
 <div class="ticker"><div class="lab">★ Sponsors</div><div class="run" id="run"></div></div>
 <div id="overlay"></div>
-<div class="demo-banner" id="demoBanner" hidden>Demo · simulated bids · not the real auction</div>
 
 <script>
 /* ===================== SETTINGS ===================== */
@@ -270,7 +270,7 @@ function spaPlayer(pcode){
 
 /* ===================== RENDER: PLAYER ===================== */
 function ring(s){ const r=42,c=2*Math.PI*r,p=Math.max(0,Math.min(100,+s||0))/100;
-  return `<div class="ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="${r}" fill="none" stroke="#0a1222" stroke-width="9"/><circle cx="48" cy="48" r="${r}" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c*p} ${c}"/><defs><linearGradient id="g"><stop offset="0" stop-color="#f5b942"/><stop offset="1" stop-color="#ff7a3d"/></linearGradient></defs></svg><b>${s??"–"}</b><small>SKILL RATING</small></div>`; }
+  return `<div class="ring"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="${r}" fill="none" stroke="#0a1222" stroke-width="9"/><circle cx="48" cy="48" r="${r}" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c*p} ${c}"/><defs><linearGradient id="g"><stop offset="0" stop-color="#27d07e"/><stop offset="1" stop-color="#12b886"/></linearGradient></defs></svg><b>${s??"–"}</b><small>SKILL RATING</small></div>`; }
 function playerHTML(p){
   if(!p) return waitingHTML();
   const code=CAT[p.c]||"", st=p.st||{}, x=p.x||null;
@@ -302,7 +302,7 @@ function waitingHTML(){
     ${top.length?`<div style="margin-top:18px;text-align:left;max-width:520px;margin-inline:auto"><div class="h">Top buys</div>${top.map(saleHTML).join("")}</div>`:""}</div></div>`;
 }
 function preHTML(){
-  return `<div class="card stage hero"><div style="width:100%"><div class="k">TENVOX BIDCAST presents</div>
+  return `<div class="card stage hero"><div style="width:100%"><div style="display:inline-block;background:#fff;border-radius:18px;padding:10px 22px;margin-bottom:14px;box-shadow:0 0 0 3px var(--gold),0 10px 30px #0009"><img src="tenvox-logo.png" alt="TENVOX Sports" style="height:84px;width:auto"></div><div class="k">TENVOX BIDCAST presents</div>
     <h1 class="cond">KNPL-7 <span>Mega Auction</span></h1>
     <div class="mut">Saturday, 12 December 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div>
     <div class="cd" id="cd"></div>
@@ -352,7 +352,7 @@ function renderAll(){ renderCenter(); renderBid(); renderTeams(); renderSales();
 /* ===================== SOLD MOMENT ===================== */
 function soldMoment(p,t,price,unsold){
   const o=$("overlay"); o.innerHTML=`<div class="sold${unsold?" uns":""}"><div class="box">${!unsold&&t&&t.logo?`<img class="tl" src="${esc(t.logo)}" alt="">`:""}<div class="st">${unsold?"UNSOLD":"SOLD"}</div><div class="who">${esc(p?p.n:"")}</div>${unsold?"":`<div class="to">to ${esc(t?t.name:"")}</div><div class="px">${fmt(price)}</div>`}</div></div>`;
-  if(!unsold) for(let i=0;i<70;i++){ const c=document.createElement("i"); c.className="conf"; c.style.left=Math.random()*100+"vw"; c.style.background=["#f5b942","#ff7a3d","#fff","#35d39a","#4fd8c9","#b993ff"][i%6]; c.style.animationDuration=(1.6+Math.random()*1.8)+"s"; c.style.animationDelay=(Math.random()*.4)+"s"; o.appendChild(c); }
+  if(!unsold) for(let i=0;i<70;i++){ const c=document.createElement("i"); c.className="conf"; c.style.left=Math.random()*100+"vw"; c.style.background=["#27d07e","#12b886","#fff","#35d39a","#4fd8c9","#b993ff"][i%6]; c.style.animationDuration=(1.6+Math.random()*1.8)+"s"; c.style.animationDelay=(Math.random()*.4)+"s"; o.appendChild(c); }
   clearTimeout(o._t); o._t=setTimeout(()=>o.innerHTML="", unsold?1800:3800);
 }
 function recordSale(pcode,tid,price){
