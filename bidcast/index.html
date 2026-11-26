@@ -291,8 +291,6 @@ img{display:block}
     <h2>KNPL-7 <span>Mega Auction</span></h2>
     <div class="gstat" id="gstat">Live · 12 Dec 2026 · 8:00 AM</div>
     <button class="tune" id="tuneIn" type="button"><span class="pl">▶</span><b>TUNE IN</b></button>
-    <div class="gsub">Enter the live auction with sound</div>
-    <button class="gquiet" id="tuneQuiet" type="button">or watch without sound</button>
   </div>
 </div>
 <script>
@@ -610,7 +608,7 @@ soundUI();
   const st=$("gstat"); const upd=()=>{ if(!document.body.contains(g)) return clearInterval(tm); if(MODE==="live"){ st.textContent="● Live now"; st.classList.add("live"); } else if(MODE==="demo"){ st.textContent="Demo · simulated bids"; } }; const tm=setInterval(upd,400); upd();
   function enter(sound){ SND.muted=!sound; try{localStorage.setItem("bidcast-mute",sound?"0":"1")}catch(e){}
     if(sound) SND.start(); else SND.stop(); soundUI(); g.classList.add("gone"); setTimeout(()=>g.remove(),700); }
-  $("tuneIn").addEventListener("click",()=>enter(true)); $("tuneQuiet").addEventListener("click",()=>enter(false));
+  $("tuneIn").addEventListener("click",()=>enter(true)); 
 })();
 </script>
 
