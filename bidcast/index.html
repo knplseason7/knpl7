@@ -60,13 +60,13 @@ img{display:block}
 .knpl .meta{margin-top:12px;font-size:12px;color:#a9bddc;line-height:1.6}
 .trophy{padding:14px 12px 12px;text-align:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 18%,#2a5aa855,transparent 60%),radial-gradient(ellipse at 50% 92%,#27d07e33,transparent 55%),linear-gradient(180deg,#0d1f45,#081633);border-color:#2a5aa8}
 .trophy .k{font:800 10.5px Inter;letter-spacing:2.6px;color:var(--gold2);text-transform:uppercase}
-.t3d{perspective:900px;margin:10px auto 0;width:86%;position:relative}
+.t3d{perspective:900px;margin:12px auto 0;width:80%;position:relative}
 .t3d::before{content:"";position:absolute;left:-20%;right:-20%;top:-10%;height:80%;background:radial-gradient(ellipse at 50% 0%,#fff3,transparent 62%);pointer-events:none}
 .t3d .spin{transform-style:preserve-3d;animation:tturn 9s ease-in-out infinite,tfloat 4.5s ease-in-out infinite}
-.t3d img{width:100%;border-radius:50% 50% 14px 14px/42% 42% 14px 14px;aspect-ratio:390/412;object-fit:cover;box-shadow:0 18px 40px #000b,0 0 0 2px #c08a4a55;-webkit-box-reflect:below 4px linear-gradient(transparent 68%,#ffffff22)}
-.t3d .shine{position:absolute;inset:0;border-radius:50% 50% 14px 14px/42% 42% 14px 14px;background:linear-gradient(110deg,transparent 35%,#fff4 48%,transparent 60%);background-size:250% 100%;animation:tshine 5s linear infinite;mix-blend-mode:screen;pointer-events:none}
-.pedestal{width:92%;height:16px;margin:30px auto 0;border-radius:50%;background:radial-gradient(ellipse,#27d07e66,transparent 70%);filter:blur(2px)}
-@keyframes tturn{0%,100%{transform:rotateY(-14deg) rotateX(3deg)}50%{transform:rotateY(14deg) rotateX(-2deg)}}
+.t3d img{width:100%;height:auto;filter:drop-shadow(0 18px 22px #000c) drop-shadow(0 0 18px #e0a46a33)}
+.t3d .shine{position:absolute;inset:0;background:linear-gradient(110deg,transparent 38%,#fff5 48%,transparent 58%);background-size:250% 100%;animation:tshine 5.5s linear infinite;mix-blend-mode:overlay;pointer-events:none;-webkit-mask:url(trophy.png) center/100% 100% no-repeat;mask:url(trophy.png) center/100% 100% no-repeat}
+.pedestal{width:92%;height:16px;margin:-4px auto 0;border-radius:50%;background:radial-gradient(ellipse,#27d07e66,transparent 70%);filter:blur(2px)}
+@keyframes tturn{0%,100%{transform:rotateY(-12deg) rotateX(2deg)}50%{transform:rotateY(12deg) rotateX(-1deg)}}
 @keyframes tfloat{0%,100%{translate:0 0}50%{translate:0 -6px}}
 @keyframes tshine{from{background-position:150% 0}to{background-position:-100% 0}}
 .trophy .cap{font:900 17px "Barlow Condensed";letter-spacing:.8px;color:#fff;margin-top:6px;text-transform:uppercase;line-height:1.1}
@@ -231,8 +231,8 @@ img{display:block}
       <div class="tag">Making the Impossible a Reality</div><div class="ml">ടീം സമം, കളി കേമം</div>
       <div class="meta">16 franchises · 248 players<br>KNPL-7 · 11–14 Feb 2027<br>FISAT &amp; Boundary Grounds, Angamaly</div></div></div>
     <div class="card trophy" id="trophyCard"><div class="k">The Champions' Crown</div>
-      <div class="t3d"><div class="spin"><img src="trophy.jpg" alt="K Sreejayan Thampi Memorial Ever-Rolling Trophy"><i class="shine"></i></div></div><div class="pedestal"></div>
-      <div class="cap">K Sreejayan Thampi Memorial<br>Ever-Rolling Trophy<small>KNPL Champions · from Season 7</small></div></div>
+      <div class="t3d"><div class="spin"><img src="trophy.png" alt="K Sreejayan Thampy Memorial Ever-Rolling Trophy"><i class="shine"></i></div></div><div class="pedestal"></div>
+      <div class="cap">K Sreejayan Thampy Memorial<br>Ever-Rolling Trophy<small>KNPL Champions · from Season 7</small></div></div>
   </aside>
 
   <section id="center"></section>
@@ -326,8 +326,8 @@ function waitingHTML(){
   if(MODE==="pre") return preHTML();
   const top=[...SALES].filter(s=>s.tid).sort((a,b)=>b.price-a.price).slice(0,5);
   return `<div class="card stage hero"><div><div class="k">${STATE.msg?esc(STATE.msg):"Next player coming up"}</div>
-    <div class="t3d" style="width:220px"><div class="spin"><img src="trophy.jpg" alt=""><i class="shine"></i></div></div>
-    <h1 class="cond" style="margin-top:30px">KNPL-7 <span>Mega Auction</span></h1><div class="mut">Playing for the K Sreejayan Thampi Memorial Ever-Rolling Trophy · ${SALES.filter(s=>s.tid).length} players sold so far</div>
+    <div class="t3d" style="width:200px"><div class="spin"><img src="trophy.png" alt=""><i class="shine"></i></div></div>
+    <h1 class="cond" style="margin-top:30px">KNPL-7 <span>Mega Auction</span></h1><div class="mut">Playing for the K Sreejayan Thampy Memorial Ever-Rolling Trophy · ${SALES.filter(s=>s.tid).length} players sold so far</div>
     ${top.length?`<div style="margin-top:18px;text-align:left;max-width:520px;margin-inline:auto"><div class="h">Top buys</div>${top.map(saleHTML).join("")}</div>`:""}</div></div>`;
 }
 function preHTML(){
