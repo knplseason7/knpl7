@@ -8,247 +8,243 @@
 <meta name="theme-color" content="#071330">
 <meta property="og:title" content="TENVOX BIDCAST · KNPL-7 Mega Auction Live">
 <meta property="og:description" content="Every bid. Live. 12 Dec 2026, 8:00 AM.">
-<meta property="og:image" content="knpl-logo.png">
-<link rel="icon" href="knpl-logo.png">
+<meta property="og:image" content="tenvox-logo.png">
+<link rel="icon" href="tenvox-mark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#061028;--bg2:#0a1a3c;--card:#0d1f45;--card2:#122a5a;--line:#1f3d74;--ink:#eef5ff;--mut:#93a8cc;
-  --gold:#27d07e;--gold2:#7ef2b6;--navy:#13274f;--red:#ff4d5e;--green:#35d39a;--cq:#ff8a5c;--dm:#b993ff;--rs:#4fd8c9;--live:#ff3b4f}
+:root{--bg:#061028;--card:#0d1f45;--card2:#122a5a;--line:#1f3d74;--ink:#eef5ff;--mut:#93a8cc;--g:#27d07e;--g2:#7ef2b6;--live:#ff3b4f;
+  --cq:#ff8a5c;--dm:#b993ff;--rs:#4fd8c9;--gap:clamp(8px,1.1vw,14px)}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh;background:radial-gradient(1200px 600px at 80% -10%,#1d3a7a66,transparent),radial-gradient(900px 500px at -10% 110%,#0f6b4a2e,transparent),var(--bg)}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:15px/1.4 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(40% 40% at 20% 30%,#1d3a7a66,transparent 70%),radial-gradient(35% 35% at 80% 70%,#0f6b4a40,transparent 70%),var(--bg);animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(4%,-3%) scale(1.06)}}
 [hidden]{display:none!important}
-.cond{font-family:"Barlow Condensed",sans-serif;letter-spacing:.3px}
 img{display:block}
+.mut{color:var(--mut)} .sm{font-size:12px}
+.card{background:linear-gradient(180deg,#0f2349e6,#0b1a3ae6);border:1px solid var(--line);border-radius:16px;padding:clamp(10px,1.2vw,16px);box-shadow:0 10px 30px #0006;min-height:0;overflow:hidden;position:relative}
+.h{font:800 clamp(12px,1.5vh,15px) "Barlow Condensed";letter-spacing:1.6px;text-transform:uppercase;color:var(--g2);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.h .n{margin-left:auto;font:600 11px Inter;letter-spacing:0;color:var(--mut);text-transform:none}
 
-/* ---------- channel bar ---------- */
-.chan{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:10px 22px;background:linear-gradient(90deg,#071330,#0c2454 55%,#071330);border-bottom:2px solid var(--gold);box-shadow:0 6px 24px #0008}
+/* ---------- channel bar + legacy partners ---------- */
+.chan{position:relative;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:clamp(6px,1vh,10px) 22px 0;background:linear-gradient(90deg,#071330,#0c2454 55%,#071330);box-shadow:0 6px 24px #0008}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
-.brand .mark{width:50px;height:50px;border-radius:14px;background:#fff;display:grid;place-items:center;box-shadow:0 0 0 2px var(--gold),0 6px 18px #0008;padding:5px}
+.brand .mark{width:clamp(40px,5.6vh,52px);height:clamp(40px,5.6vh,52px);border-radius:13px;background:#fff;display:grid;place-items:center;box-shadow:0 0 0 2px var(--g),0 0 22px #27d07e55;padding:5px}
 .brand .mark img{width:100%;height:100%;object-fit:contain}
 .brand .wm{line-height:1}
-.brand .wm b{display:block;font:900 30px "Barlow Condensed";letter-spacing:2.5px;color:#fff}
-.brand .wm b i{font-style:normal;background:linear-gradient(90deg,var(--gold),#12b886);-webkit-background-clip:text;background-clip:text;color:transparent}
-.brand .wm small{display:block;font:600 11px Inter;letter-spacing:3px;color:var(--mut);text-transform:uppercase;margin-top:3px}
+.brand .wm b{display:block;font:900 clamp(22px,3.3vh,30px) "Barlow Condensed";letter-spacing:2.5px;color:#fff}
+.brand .wm b i{font-style:normal;color:var(--g)}
+.brand .wm small{display:block;font:600 10px Inter;letter-spacing:3px;color:var(--mut);text-transform:uppercase;margin-top:3px}
 .onair{display:inline-flex;align-items:center;gap:7px;font:800 12px Inter;letter-spacing:1.5px;padding:6px 11px;border-radius:999px;border:1px solid #3a4a6e;color:var(--mut);text-transform:uppercase}
 .onair i{width:9px;height:9px;border-radius:50%;background:#56637d}
-.onair.live{color:#fff;background:var(--live);border-color:var(--live)} .onair.live i{background:#fff;animation:pulse 1.2s infinite}
-.onair.demo{color:#04221a;background:var(--gold);border-color:var(--gold)} .onair.demo i{background:#04221a}
+.onair.live{color:#fff;background:var(--live);border-color:var(--live);box-shadow:0 0 18px #ff3b4f88} .onair.live i{background:#fff;animation:pulse 1.2s infinite}
+.onair.demo{color:#04221a;background:var(--g);border-color:var(--g)} .onair.demo i{background:#04221a}
 @keyframes pulse{50%{opacity:.25}}
-.chan .ev{margin-left:auto;display:flex;align-items:center;gap:12px;text-align:right}
-.chan .ev .t{font:800 18px "Barlow Condensed";letter-spacing:1px;text-transform:uppercase}
-.chan .ev .s{font-size:12px;color:var(--mut)}
-.chan .ev img{width:44px;height:44px}
-
-/* ---------- layout ---------- */
-.wrap{display:grid;grid-template-columns:230px minmax(0,1fr) 430px;gap:16px;padding:16px 22px 120px;max-width:1800px;margin:0 auto}
-.card{background:linear-gradient(180deg,var(--card),#0e1626);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 30px #0006}
-.h{font:800 15px "Barlow Condensed";letter-spacing:1.6px;text-transform:uppercase;color:var(--gold2);margin:0 0 10px;display:flex;align-items:center;gap:8px}
-.h .n{margin-left:auto;font:600 12px Inter;letter-spacing:0;color:var(--mut);text-transform:none}
-.mut{color:var(--mut)} .sm{font-size:12.5px}
-
-/* KNPL side rail */
-.side{display:flex;flex-direction:column;gap:16px;min-width:0}
-.rail{position:sticky;top:160px;align-self:start;display:flex;flex-direction:column;gap:14px}
-.knpl{text-align:center;background:radial-gradient(circle at 50% 0%,#15336e,#0a1a3c 72%);border:1px solid #2a5aa8;box-shadow:inset 0 3px 0 var(--gold);border-radius:18px;padding:18px 14px}
-.knpl img{width:132px;height:132px;margin:0 auto 8px;border-radius:50%;background:#fff;padding:6px;filter:drop-shadow(0 6px 18px #000a)}
-.knpl .t1{font:900 26px "Barlow Condensed";letter-spacing:1.5px;color:var(--gold2);line-height:1}
-.knpl .t2{font:700 12px Inter;letter-spacing:2px;color:#b9cbe8;text-transform:uppercase;margin-top:4px}
-.knpl .tag{margin-top:10px;font:600 13px Inter;color:#e6eefc;font-style:italic}
-.knpl .ml{margin-top:4px;font-size:14px;color:var(--gold2);font-weight:700}
-.knpl .meta{margin-top:12px;font-size:12px;color:#a9bddc;line-height:1.6}
-.trophy{padding:14px 12px 12px;text-align:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 18%,#2a5aa855,transparent 60%),radial-gradient(ellipse at 50% 92%,#27d07e33,transparent 55%),linear-gradient(180deg,#0d1f45,#081633);border-color:#2a5aa8}
-.trophy .k{font:800 10.5px Inter;letter-spacing:2.6px;color:var(--gold2);text-transform:uppercase}
-.t3d{perspective:900px;margin:12px auto 0;width:80%;position:relative}
-.t3d::before{content:"";position:absolute;left:-20%;right:-20%;top:-10%;height:80%;background:radial-gradient(ellipse at 50% 0%,#fff3,transparent 62%);pointer-events:none}
-.t3d .spin{transform-style:preserve-3d;animation:tturn 9s ease-in-out infinite,tfloat 4.5s ease-in-out infinite}
-.t3d img{width:100%;height:auto;filter:drop-shadow(0 18px 22px #000c) drop-shadow(0 0 18px #e0a46a33)}
-.t3d .shine{position:absolute;inset:0;background:linear-gradient(110deg,transparent 38%,#fff5 48%,transparent 58%);background-size:250% 100%;animation:tshine 5.5s linear infinite;mix-blend-mode:overlay;pointer-events:none;-webkit-mask:url(trophy.png) center/100% 100% no-repeat;mask:url(trophy.png) center/100% 100% no-repeat}
-.pedestal{width:92%;height:16px;margin:-4px auto 0;border-radius:50%;background:radial-gradient(ellipse,#27d07e66,transparent 70%);filter:blur(2px)}
-@keyframes tturn{0%,100%{transform:rotateY(-12deg) rotateX(2deg)}50%{transform:rotateY(12deg) rotateX(-1deg)}}
-@keyframes tfloat{0%,100%{translate:0 0}50%{translate:0 -6px}}
-@keyframes tshine{from{background-position:150% 0}to{background-position:-100% 0}}
-.trophy .cap{font:900 17px "Barlow Condensed";letter-spacing:.8px;color:#fff;margin-top:6px;text-transform:uppercase;line-height:1.1}
-.trophy .cap small{display:block;font:700 11px Inter;letter-spacing:1.6px;color:var(--gold2);margin-top:4px}
-/* legacy partners strip (always on screen) */
-.legacybar{order:5;flex:1 1 100%;margin:8px -22px -10px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:9px 14px;background:#fff;border-top:2px solid var(--gold);color:#0b1f45}
+.ev{margin-left:auto;display:flex;align-items:center;gap:12px;text-align:right}
+.ev .t{font:800 clamp(14px,2.2vh,18px) "Barlow Condensed";letter-spacing:1px;text-transform:uppercase}
+.ev .s{font-size:12px;color:var(--mut)}.ev .ml{color:var(--g2);font-weight:700}.ev .s2{font-size:11px}
+.ev img{width:clamp(36px,5vh,46px);height:clamp(36px,5vh,46px);border-radius:50%;background:#fff;padding:2px}
+.legacybar{flex:1 1 100%;margin:clamp(5px,.8vh,8px) -22px 0;display:flex;align-items:center;justify-content:center;gap:14px;padding:clamp(4px,.7vh,8px) 14px;background:#fff;border-top:2px solid var(--g);border-bottom:2px solid var(--g);color:#0b1f45}
 .legacybar .lk{font:800 11px Inter;letter-spacing:2px;color:#0f8a55;text-transform:uppercase}.legacybar .lk i{font-style:normal;color:#3d5a8c;letter-spacing:.5px;text-transform:none;font-weight:600}
-.legacybar b{font:900 22px "Barlow Condensed";letter-spacing:.8px;text-transform:uppercase;color:#0b1f45}
-.legacybar em{font:600 11px Inter;font-style:normal;color:#3d5a8c}
-.legacybar .dot{color:var(--gold)}
-.legacybar img{display:block;height:54px;width:auto}.legacybar img.lpk{height:38px}
-/* legacy partners */
-.legacy{text-align:center;background:linear-gradient(180deg,#f7fbff,#e3eefc);color:#0b1f45;border:2px solid var(--gold);padding:14px 12px}
-.legacy .k{font:800 10.5px Inter;letter-spacing:2.4px;color:#0f8a55;text-transform:uppercase}
-.legacy .since{font:700 11px Inter;color:#3d5a8c;margin-top:2px}
-.legacy .lp{margin-top:10px;padding:10px 8px;border-radius:12px;background:#fff;box-shadow:0 4px 14px #0b1f4522;border:1px solid #cfe0f5}
-.legacy .lp b{display:block;font:900 24px "Barlow Condensed";letter-spacing:.6px;line-height:1.05;color:#0b1f45;text-transform:uppercase}
-.legacy .lp span{display:block;font:600 11px Inter;color:#3d5a8c;margin-top:3px}
+.legacybar img{height:clamp(36px,5.4vh,52px);width:auto}.legacybar img.lpk{height:clamp(26px,3.9vh,38px)}
+.legacybar .dot{color:var(--g)}
+.demo-banner{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);z-index:3;background:var(--g);color:#04221a;font:800 11px Inter;letter-spacing:1px;padding:4px 12px;border-radius:999px;text-transform:uppercase;white-space:nowrap;box-shadow:0 6px 18px #0008}
 
-/* player stage */
-.stage{min-height:560px;position:relative;overflow:hidden}
-.pl{display:grid;grid-template-columns:240px minmax(0,1fr);gap:20px}
-.photo{width:240px;height:300px;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#1f2c48,#0d1424);position:relative;border:1px solid var(--line)}
+/* ---------- screen grid (laptop / TV) ---------- */
+.screen{display:grid;gap:var(--gap);padding:var(--gap) 22px;min-height:0;
+  grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(220px,.62fr);
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"player bid trophy" "player teams trophy" "player teams spot"}
+#center{grid-area:player;min-height:0;display:flex}
+#center>.card{flex:1}
+#bidCard{grid-area:bid} #teamsCard{grid-area:teams;display:flex;flex-direction:column} #trophyCard{grid-area:trophy} #spot{grid-area:spot}
+.swap{animation:swapin .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes swapin{from{opacity:0;transform:translateY(10px) scale(.985)}}
+
+/* player card */
+.pcard{display:flex;flex-direction:column;gap:clamp(8px,1.2vh,14px)}
+.ptop{display:flex;gap:clamp(12px,1.4vw,22px);flex:none}
+.photo{flex:none;width:clamp(130px,26vh,250px);aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,#1f2c48,#0d1424);position:relative;border:2px solid var(--cc,#2a5aa8);box-shadow:0 0 30px color-mix(in srgb,var(--cc,#2a5aa8) 35%,transparent)}
 .photo img{width:100%;height:100%;object-fit:cover;object-position:top}
-.photo .ph0{position:absolute;inset:0;display:grid;place-items:center;font:900 80px "Barlow Condensed";color:#2c3c60}
-.catband{position:absolute;left:0;right:0;bottom:0;padding:8px 10px;font:800 15px "Barlow Condensed";letter-spacing:1.2px;text-transform:uppercase;color:#fff;background:linear-gradient(0deg,#000d,#0000)}
-.pname{font:900 52px "Barlow Condensed";line-height:.95;letter-spacing:.5px;margin:2px 0 6px;text-transform:uppercase}
-.reg{font:700 12px Inter;letter-spacing:1.5px;color:var(--mut)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12.5px;font-weight:600}
-.chip.gold{border-color:#1f7a52;background:#0c2c24;color:var(--gold2)}
+.photo .ph0{position:absolute;inset:0;display:grid;place-items:center;font:900 70px "Barlow Condensed";color:#2c3c60}
+.pinfo{min-width:0;flex:1;display:flex;flex-direction:column}
+.reg{font:700 11px Inter;letter-spacing:1.5px;color:var(--mut)}
+.pname{font:900 clamp(30px,6.2vh,60px) "Barlow Condensed";line-height:.95;letter-spacing:.5px;margin:2px 0 6px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12px;font-weight:600}
 .c-CV,.c-CC{--cc:var(--cq)} .c-DA,.c-DC{--cc:var(--dm)} .c-RSE,.c-RSC{--cc:var(--rs)}
-.catpill{display:inline-block;padding:4px 12px;border-radius:999px;font:800 14px "Barlow Condensed";letter-spacing:1.2px;text-transform:uppercase;color:#0b0f18;background:var(--cc)}
-.srbox{display:flex;align-items:center;gap:16px;margin:10px 0 4px}
-.ring{width:96px;height:96px;flex:none;position:relative}
-.ring svg{width:96px;height:96px;transform:rotate(-90deg)}
-.ring b{position:absolute;left:0;right:0;top:20px;text-align:center;font:900 38px "Barlow Condensed";line-height:1}
-.ring small{position:absolute;left:0;right:0;top:58px;text-align:center;font:700 7.5px Inter;letter-spacing:1.2px;color:var(--mut)}
-.parts{flex:1;display:grid;gap:5px;min-width:0}
-.part{display:grid;grid-template-columns:110px 1fr 38px;align-items:center;gap:8px;font-size:12px}
-.part .bar{height:8px;border-radius:6px;background:#0a1222;overflow:hidden}
+.catpill{display:inline-block;padding:4px 12px;border-radius:999px;font:800 clamp(12px,1.7vh,15px) "Barlow Condensed";letter-spacing:1.2px;text-transform:uppercase;color:#0b0f18;background:var(--cc)}
+.srbox{display:flex;align-items:center;gap:14px;margin-top:auto;padding-top:8px}
+.ring{width:clamp(70px,11vh,104px);aspect-ratio:1;flex:none;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring b{position:absolute;left:0;right:0;top:20%;text-align:center;font:900 clamp(26px,4.2vh,40px) "Barlow Condensed";line-height:1}
+.ring small{position:absolute;left:0;right:0;top:61%;text-align:center;font:700 7.5px Inter;letter-spacing:1.2px;color:var(--mut)}
+.parts{flex:1;display:grid;gap:clamp(2px,.5vh,5px);min-width:0}
+.part{display:grid;grid-template-columns:92px 1fr 30px;align-items:center;gap:8px;font-size:clamp(10.5px,1.4vh,12.5px);color:var(--mut)}
+.part b{color:var(--ink);text-align:right}
+.part .bar{height:7px;border-radius:6px;background:#0a1222;overflow:hidden}
 .part .bar i{display:block;height:100%;border-radius:6px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
-.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:12px}
-.tile{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
-.tile span{display:block;font:700 10px Inter;letter-spacing:1.2px;color:var(--mut);text-transform:uppercase}
-.tile b{font:800 26px "Barlow Condensed"}
-.hl{display:flex;flex-direction:column;gap:6px;margin-top:12px}
-.hl div{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:7px 10px;border-radius:10px;background:#0d1628;border:1px solid var(--line)}
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.tile{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:6px 10px}
+.tile span{display:block;font:700 10px Inter;letter-spacing:1.1px;color:var(--mut);text-transform:uppercase}
+.tile b{font:800 clamp(20px,3.3vh,28px) "Barlow Condensed"}
+.hl{display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden}
+.hl div{display:flex;gap:8px;align-items:center;font-size:clamp(11.5px,1.55vh,13.5px);padding:6px 10px;border-radius:10px;background:#0d1a34;border:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hl div span{overflow:hidden;text-overflow:ellipsis}
 .hl div.title,.hl div.award{border-color:#1f7a52;background:#0b2620}
 .hl div em{font-style:normal;flex:none}
-.seasons{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.seasons span{font-size:11.5px;padding:4px 8px;border-radius:8px;background:#0d1628;border:1px solid var(--line)}
 
-/* bid panel */
-.bid{position:relative;overflow:hidden;text-align:center;padding:18px}
-.bid .lbl{font:700 11px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
-.bid .amt{font:900 84px "Barlow Condensed";line-height:1;letter-spacing:1px;margin:4px 0;background:linear-gradient(180deg,#fff,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+/* hero (before the auction / between players) */
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:clamp(6px,1.2vh,12px)}
+.hero .k{font:800 13px Inter;letter-spacing:4px;color:var(--g);text-transform:uppercase}
+.hero h1{font:900 clamp(40px,8vh,80px) "Barlow Condensed";line-height:.95;margin:0;letter-spacing:1px;text-transform:uppercase}
+.hero h1 span{background:linear-gradient(90deg,var(--g2),#12b886);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .tvx{background:#fff;border-radius:18px;padding:10px 22px;box-shadow:0 0 0 3px var(--g),0 0 40px #27d07e55}
+.hero .tvx img{height:clamp(56px,10vh,90px);width:auto}
+.hero .hero3d{width:clamp(120px,24vh,220px)}
+.cd{display:flex;gap:10px;justify-content:center}
+.cd div{min-width:clamp(64px,9vh,92px);padding:10px 8px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
+.cd b{display:block;font:900 clamp(34px,6vh,54px) "Barlow Condensed";line-height:1;font-variant-numeric:tabular-nums}
+.cd span{font:700 10px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
+
+/* bid */
+.bid{text-align:center}
+.bid .lbl{font:700 11px Inter;letter-spacing:2.4px;color:var(--mut);text-transform:uppercase}
+.bid .amt{font:900 clamp(56px,11vh,104px) "Barlow Condensed";line-height:1;letter-spacing:1px;background:linear-gradient(180deg,#fff,var(--g2));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.bid .amt.sm2{font-size:clamp(34px,6vh,56px);margin:4px 0}
 .bid .amt.flash{animation:flash .45s ease}
-@keyframes flash{0%{transform:scale(1.12);filter:brightness(1.6)}100%{transform:scale(1)}}
-.lead{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px}
-.lead img{width:52px;height:52px;border-radius:50%;background:#fff1;object-fit:contain}
-.lead b{font:800 24px "Barlow Condensed";letter-spacing:.6px;text-transform:uppercase}
-.bid .meta{display:flex;justify-content:center;gap:14px;margin-top:8px;font-size:12px;color:var(--mut)}
-.bid .msg{margin-top:10px;padding:8px 12px;border-radius:10px;background:#0c2c24;border:1px solid #1f7a52;color:var(--gold2);font-weight:600}
+@keyframes flash{0%{transform:scale(1.12);filter:brightness(1.7)}100%{transform:scale(1)}}
+.bid.pulse{animation:glow 1s ease}
+@keyframes glow{0%{box-shadow:0 0 0 2px var(--g),0 0 40px #27d07e99}100%{box-shadow:0 10px 30px #0006}}
+.lead{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px}
+.lead img{width:clamp(36px,5.5vh,52px);height:clamp(36px,5.5vh,52px);border-radius:50%;background:#fff1;object-fit:contain}
+.lead b{font:800 clamp(18px,3vh,26px) "Barlow Condensed";letter-spacing:.6px;text-transform:uppercase}
+.bid .meta{font-size:12px;color:var(--mut);min-height:16px;margin-top:2px}
+.bid .meta .msg{color:var(--g2);font-weight:700}
+.last{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.last .lk{font:700 10px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
+.ls{display:grid;grid-template-columns:24px minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:12px;padding:4px 8px;border-radius:9px;background:var(--card2);text-align:left;animation:swapin .5s ease}
+.ls img{width:24px;height:24px;border-radius:50%;object-fit:contain;background:#fff1}
+.ls b{font:700 14px "Barlow Condensed";text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ls span{color:var(--mut)} .ls em{font:800 15px "Barlow Condensed";font-style:normal;color:var(--g2)}
 
-/* teams board */
-.teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.team{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 9px;border-radius:12px;background:var(--card2);border:1px solid var(--line);transition:all .3s}
-.team img{width:38px;height:38px;border-radius:50%;object-fit:contain;background:#fff1}
-.team .nm{font:700 14px "Barlow Condensed";letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.team .sq{height:5px;border-radius:4px;background:#0a1222;overflow:hidden;margin-top:4px}
-.team .sq i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#12b886)}
-.team .pt{text-align:right;font:800 17px "Barlow Condensed";font-variant-numeric:tabular-nums}
-.team .pt small{display:block;font:600 10px Inter;color:var(--mut)}
-.team.lead{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 18px #27d07e44;background:#0b2f27}
-.team.out{opacity:.45}
+/* franchises board: 16 tiles, 4 × 4, fills its space */
+.teams{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:6px}
+.team{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:3px 4px;border-radius:12px;background:var(--card2);border:1px solid var(--line);transition:all .35s;min-height:0;text-align:center}
+.team img{width:clamp(20px,3.3vh,36px);height:clamp(20px,3.3vh,36px);border-radius:50%;object-fit:contain;background:#fff1;flex:none}
+.team .tx{width:100%;min-width:0;text-align:center}
+.team .nm{font:700 clamp(10.5px,1.5vh,14px) "Barlow Condensed";letter-spacing:.2px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team .pt{font:800 clamp(13px,2vh,17px) "Barlow Condensed";font-variant-numeric:tabular-nums;line-height:1}
+.team .sq{height:3px;border-radius:3px;background:#0a1222;overflow:hidden;margin:2px 10px 0}
+.team .sq i{display:block;height:100%;background:linear-gradient(90deg,var(--g),#12b886)}
+.team .n{display:none}
+.team.lead{border-color:var(--g);box-shadow:0 0 0 1px var(--g),0 0 22px #27d07e66;background:#0b2f27;transform:scale(1.04)}
+.team.out{opacity:.4}
 
-/* sales */
-.sales{display:flex;flex-direction:column;gap:6px;max-height:330px;overflow:auto}
-.sale{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 8px;border-radius:10px;background:var(--card2);border:1px solid var(--line);animation:in .5s ease}
-.sale img{width:34px;height:34px;border-radius:50%;object-fit:contain;background:#fff1}
-.sale b{font:700 15px "Barlow Condensed";letter-spacing:.3px;text-transform:uppercase}
-.sale .pr{font:800 18px "Barlow Condensed";color:var(--gold2)}
-@keyframes in{from{opacity:0;transform:translateY(-6px)}}
+/* KNPL, trophy, sponsor spotlight */
+.knpl{display:flex;align-items:center;gap:12px;background:radial-gradient(circle at 0% 0%,#15336e,#0a1a3c 72%);border-color:#2a5aa8;box-shadow:inset 0 3px 0 var(--g)}
+.knpl img{width:clamp(48px,7.5vh,72px);height:clamp(48px,7.5vh,72px);border-radius:50%;background:#fff;padding:4px;flex:none}
+.knpl .t1{font:900 clamp(18px,2.8vh,24px) "Barlow Condensed";letter-spacing:1.5px;color:var(--g2);line-height:1}
+.knpl .t2{font:700 10px Inter;letter-spacing:1.8px;color:#b9cbe8;text-transform:uppercase;margin-top:2px}
+.knpl .ml{margin-top:3px;font-size:13px;color:var(--g2);font-weight:700}
+.trophy{display:flex;flex-direction:column;align-items:center;text-align:center;background:radial-gradient(ellipse at 50% 18%,#2a5aa855,transparent 60%),radial-gradient(ellipse at 50% 92%,#27d07e33,transparent 55%),linear-gradient(180deg,#0d1f45,#081633);border-color:#2a5aa8}
+.trophy .k{font:800 10px Inter;letter-spacing:2.6px;color:var(--g2);text-transform:uppercase}
+.trophy .t3d{flex:1;min-height:0;width:100%;display:flex;justify-content:center}
+.t3d{perspective:900px;position:relative}
+.t3d .spin{height:100%;max-height:100%;transform-style:preserve-3d;animation:tturn 9s ease-in-out infinite,tfloat 4.5s ease-in-out infinite;position:relative}
+.trophy .t3d .spin{padding:8px 0 4px}
+.t3d img{height:100%;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 16px 20px #000c) drop-shadow(0 0 18px #e0a46a33)}
+.hero .t3d img{width:100%;height:auto}
+.t3d .shine{position:absolute;inset:0;background:linear-gradient(110deg,transparent 38%,#fff5 48%,transparent 58%);background-size:250% 100%;animation:tshine 5.5s linear infinite;mix-blend-mode:overlay;pointer-events:none;-webkit-mask:url(trophy.png) center/contain no-repeat;mask:url(trophy.png) center/contain no-repeat}
+@keyframes tturn{0%,100%{transform:rotateY(-12deg) rotateX(2deg)}50%{transform:rotateY(12deg) rotateX(-1deg)}}
+@keyframes tfloat{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@keyframes tshine{from{background-position:150% 0}to{background-position:-100% 0}}
+.trophy .cap{font:900 clamp(13px,2vh,16px) "Barlow Condensed";letter-spacing:.6px;color:#fff;text-transform:uppercase;line-height:1.1}
+.trophy .cap small{display:block;font:700 9.5px Inter;letter-spacing:1.4px;color:var(--g2);margin-top:3px}
+.spot{display:grid;place-items:center;text-align:center;min-height:clamp(110px,17vh,170px);background:radial-gradient(circle at 50% 0%,#0f4a38,#0d1f45 72%);border-color:#1f7a52}
+.spot .k{font:700 10px Inter;letter-spacing:2.5px;color:var(--g2);text-transform:uppercase}
+.spot .nm{font:900 clamp(20px,3.4vh,32px) "Barlow Condensed";line-height:1.05;letter-spacing:.5px;margin:5px 0;color:#fff;text-transform:uppercase}
+.spot .for{font-size:12px;color:var(--g2);font-weight:600}
+.spot .fade{animation:swapin .7s ease}
+.spot .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--g);transition:width linear}
+.dots{display:none}
 
-/* sponsor spotlight + ticker */
-.spot{position:relative;min-height:150px;display:grid;place-items:center;text-align:center;padding:18px;overflow:hidden;background:radial-gradient(circle at 50% 0%,#0f4a38,#0d1f45 72%);border-color:#1f7a52}
-.spot .k{font:700 11px Inter;letter-spacing:2.5px;color:var(--gold2);text-transform:uppercase}
-.spot .nm{font:900 34px "Barlow Condensed";line-height:1.05;letter-spacing:.5px;margin:6px 0;color:#fff;text-transform:uppercase}
-.spot .for{font-size:13px;color:var(--gold2);font-weight:600}
-.spot .fade{animation:spotin .7s ease}
-@keyframes spotin{from{opacity:0;transform:translateY(8px) scale(.98)}}
-.spot .bar{position:absolute;left:0;bottom:0;height:3px;background:var(--gold);transition:width linear}
-.ticker{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;align-items:center;height:56px;background:linear-gradient(90deg,#071330,#0c2454,#071330);border-top:2px solid var(--gold);overflow:hidden}
-.ticker .lab{flex:none;height:100%;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--gold);color:#04221a;font:900 16px "Barlow Condensed";letter-spacing:1.5px;text-transform:uppercase;z-index:1;box-shadow:8px 0 18px #000a}
+/* sponsor band */
+.ticker{position:relative;display:flex;align-items:center;height:clamp(40px,6vh,54px);background:linear-gradient(90deg,#071330,#0c2454,#071330);border-top:2px solid var(--g);overflow:hidden}
+.ticker .lab{flex:none;height:100%;display:flex;align-items:center;gap:8px;padding:0 16px;background:var(--g);color:#04221a;font:900 15px "Barlow Condensed";letter-spacing:1.5px;text-transform:uppercase;z-index:1;box-shadow:8px 0 18px #000a}
 .ticker .run{display:flex;align-items:center;gap:34px;white-space:nowrap;padding-left:30px;animation:run linear infinite}
-.ticker .run span{font:800 "Barlow Condensed";letter-spacing:.6px;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center;gap:10px}
-.ticker .run span::after{content:"◆";color:var(--gold);font-size:12px;margin-left:24px}
-.ticker .w3{font-size:26px!important;color:var(--gold2)!important} .ticker .w2{font-size:21px!important} .ticker .w1{font-size:17px!important;color:#cdd6e6!important}
+.ticker .run span{font-family:"Barlow Condensed";font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center}
+.ticker .run span::after{content:"◆";color:var(--g);font-size:12px;margin-left:30px}
+.ticker .w3{font-size:clamp(18px,3.1vh,26px)!important;color:var(--g2)!important} .ticker .w2{font-size:clamp(16px,2.6vh,21px)!important} .ticker .w1{font-size:clamp(14px,2.1vh,17px)!important;color:#cdd6e6!important}
 @keyframes run{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* sold overlay */
-.sold{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle,#0a0f1ccc,#000e);animation:fadein .3s ease}
+/* sold moment */
+.sold{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle,#071330cc,#000e);animation:fadein .3s ease}
 .sold .box{text-align:center;padding:30px;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
-.sold img.tl{width:150px;height:150px;border-radius:50%;margin:0 auto 10px;object-fit:contain;background:#fff1;box-shadow:0 0 0 4px var(--gold),0 0 60px #27d07e88}
-.sold .st{font:900 120px "Barlow Condensed";line-height:.9;letter-spacing:6px;color:var(--gold2);text-shadow:0 6px 40px #27d07e66}
-.sold .who{font:800 34px "Barlow Condensed";letter-spacing:1px;text-transform:uppercase;margin-top:6px}
-.sold .to{font:700 22px "Barlow Condensed";letter-spacing:1px;color:var(--mut);text-transform:uppercase}
-.sold .px{font:900 60px "Barlow Condensed";color:#fff;margin-top:4px}
-.sold.uns .st{color:#9fb0cc;font-size:90px}
+.sold img.tl{width:clamp(100px,18vh,160px);height:clamp(100px,18vh,160px);border-radius:50%;margin:0 auto 10px;object-fit:contain;background:#fff1;box-shadow:0 0 0 4px var(--g),0 0 60px #27d07e88}
+.sold .st{font:900 clamp(72px,15vh,130px) "Barlow Condensed";line-height:.9;letter-spacing:6px;color:var(--g2);text-shadow:0 6px 40px #27d07e66}
+.sold .who{font:800 clamp(24px,4.5vh,38px) "Barlow Condensed";letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+.sold .to{font:700 clamp(16px,2.8vh,22px) "Barlow Condensed";letter-spacing:1px;color:var(--mut);text-transform:uppercase}
+.sold .px{font:900 clamp(40px,8vh,66px) "Barlow Condensed";color:#fff;margin-top:4px}
+.sold.uns .st{color:#9fb0cc;font-size:clamp(56px,11vh,96px)}
 @keyframes fadein{from{opacity:0}} @keyframes pop{from{transform:scale(.6);opacity:0}}
 .conf{position:fixed;top:-20px;width:10px;height:14px;z-index:51;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
-/* waiting / pre-auction */
-.hero{display:grid;place-items:center;text-align:center;min-height:540px;padding:30px}
-.hero .k{font:800 14px Inter;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
-.hero h1{font:900 76px "Barlow Condensed";line-height:.95;margin:10px 0;letter-spacing:1px;text-transform:uppercase}
-.hero h1 span{background:linear-gradient(90deg,var(--gold2),#12b886);-webkit-background-clip:text;background-clip:text;color:transparent}
-.cd{display:flex;gap:12px;justify-content:center;margin:18px 0}
-.cd div{min-width:92px;padding:12px 10px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
-.cd b{display:block;font:900 52px "Barlow Condensed";line-height:1;font-variant-numeric:tabular-nums}
-.cd span{font:700 11px Inter;letter-spacing:2px;color:var(--mut);text-transform:uppercase}
-.tgrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:10px;margin-top:18px;width:100%}
-.tgrid div{display:flex;flex-direction:column;align-items:center;gap:6px;font:700 12px "Barlow Condensed";letter-spacing:.4px;text-transform:uppercase;text-align:center;color:#cfd8e8}
-.tgrid img{width:58px;height:58px;border-radius:50%;object-fit:contain;background:#fff1}
-.demo-banner{position:fixed;top:158px;left:50%;transform:translateX(-50%);z-index:30;background:var(--gold);color:#04221a;font:800 12px Inter;letter-spacing:1px;padding:6px 14px;border-radius:999px;text-transform:uppercase;box-shadow:0 6px 18px #0008}
+/* ---------- narrower laptops ---------- */
+@media (max-width:1250px){.screen{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 210px}.tiles .tile.x{display:none}.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.part{grid-template-columns:78px 1fr 26px}.ev .s{display:none}}
+@media (max-height:760px) and (min-width:821px){.hl div:nth-child(3){display:none}.legacybar .lk i{display:none}}
 
-/* ---------- responsive ---------- */
-@media (max-height:980px){.rail{position:static}}
-@media (max-width:1400px){.wrap{grid-template-columns:200px minmax(0,1fr) 380px}.pl{grid-template-columns:200px minmax(0,1fr)}.photo{width:200px;height:250px}.pname{font-size:44px}.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media (max-width:1100px){.wrap{grid-template-columns:minmax(0,1fr) 360px}.rail{grid-column:1/-1;position:static;flex-direction:row}.knpl{flex:1;display:flex;align-items:center;gap:14px;text-align:left}.knpl img{width:84px;height:84px;margin:0}.trophy{width:220px;flex:none}.legacy{width:230px;flex:none}}
+/* ---------- phones and small tablets: no scrolling, one rotating panel ---------- */
 @media (max-width:820px){
-  .chan{padding:8px 12px;gap:8px}.brand .mark{width:40px;height:40px;padding:4px;border-radius:11px}.brand .wm b{font-size:22px;letter-spacing:1.5px}.brand .wm small{font-size:9px;letter-spacing:2px}
-  .chan .ev .t{font-size:13px}.chan .ev .s{display:none}.chan .ev img{width:34px;height:34px}.onair{font-size:10px;padding:4px 8px}
-  .wrap{grid-template-columns:minmax(0,1fr);padding:10px 10px 90px;gap:10px}
-  .legacybar{margin:6px -12px -8px;gap:4px 10px;padding:5px 8px}.legacybar .lk{flex:1 1 100%;text-align:center;font-size:9.5px}.legacybar .lk i{display:none}.legacybar img{height:30px}.legacybar img.lpk{height:24px}
-  .rail{display:contents}.knpl{order:9}#trophyCard{order:6;width:auto}.knpl img{width:64px;height:64px}.knpl .t1{font-size:22px}.t3d{width:62%}.legacy .lp b{font-size:22px}
-  .pl{grid-template-columns:110px minmax(0,1fr);gap:12px}.photo{width:110px;height:140px}.pname{font-size:32px}
-  .srbox{flex-direction:column;align-items:stretch}.ring{margin:0 auto}.part{grid-template-columns:92px 1fr 32px}
-  .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.tile b{font-size:21px}
-  .stage{min-height:0}.bid .amt{font-size:64px}.side{display:contents}.side>*{margin:0}#bidCard{order:1;position:sticky;top:122px;z-index:5;padding:10px}#center{order:2}#spot{order:3}#teamsCard{order:4}.side>.card:last-child{order:5}.rail{order:9}#bidCard .amt{font-size:46px;margin:0}#bidCard .lead{min-height:0}#bidCard .lead img{width:34px;height:34px}#bidCard .lead b{font-size:18px}#bidCard .meta{margin-top:2px}.chan .ev>div{display:none}.side{gap:0}
-  .hero h1{font-size:46px}.cd div{min-width:68px}.cd b{font-size:36px}.tgrid{grid-template-columns:repeat(4,minmax(0,1fr))}.tgrid img{width:46px;height:46px}
-  .sold .st{font-size:76px}.sold img.tl{width:110px;height:110px}.sold .px{font-size:44px}.sold .who{font-size:26px}
-  .ticker{height:46px}.ticker .lab{font-size:13px;padding:0 10px}.ticker .w3{font-size:20px!important}.ticker .w2{font-size:17px!important}.ticker .w1{font-size:14px!important}
-  .demo-banner{position:static;transform:none;display:block;width:max-content;max-width:94vw;margin:8px auto 0;font-size:10px;text-align:center}.demo-banner[hidden]{display:none!important}.brand .wm small{display:none}
+  .chan{padding:8px 12px 0;gap:8px;flex-wrap:wrap}.brand{gap:8px}.brand .mark{width:36px;height:36px;padding:3px;border-radius:10px}.brand .wm b{font-size:21px;letter-spacing:1.5px}.brand .wm small{display:none}.ev>div{display:none}.ev img{width:32px;height:32px}.onair{font-size:9.5px;padding:3px 7px;gap:5px}.onair i{width:7px;height:7px}
+  .legacybar{margin:6px -12px 0;gap:4px 12px;padding:4px 8px;flex-wrap:wrap}.legacybar .lk{flex:1 1 100%;text-align:center;font-size:9px;letter-spacing:1.6px}.legacybar .lk i{display:none}
+  .legacybar img{height:clamp(26px,4vh,34px)}.legacybar img.lpk{height:clamp(20px,3vh,26px)}
+  .demo-banner{font-size:9px;bottom:-11px}
+  .screen{padding:12px 10px 8px;gap:8px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) minmax(0,31%);grid-template-areas:"bid" "player" "rot"}
+  #teamsCard,#trophyCard,#spot{grid-area:rot;display:none}
+  #teamsCard.on{display:flex}#trophyCard.on{display:flex}#spot.on{display:grid}
+  .dots{display:flex;gap:6px;position:absolute;right:12px;top:10px;z-index:2}.dots i{width:6px;height:6px;border-radius:50%;background:#3a4a6e}.dots i.on{background:var(--g)}
+  .bid{padding:8px 10px;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"lbl lbl" "amt lead" "meta meta";align-items:center;column-gap:12px;text-align:left}
+  .bid .lbl{grid-area:lbl;font-size:9.5px}.bid .amt{grid-area:amt;font-size:clamp(40px,7vh,56px)}.bid .lead{grid-area:lead;justify-content:flex-start;min-height:0}.bid .lead b{font-size:17px;line-height:1.05}.bid .lead img{width:34px;height:34px}
+  .bid .meta{grid-area:meta;margin:0}.last{display:none}
+  .pcard{gap:8px;padding:10px}.photo{width:clamp(84px,15vh,120px)}.pname{font-size:clamp(24px,4.2vh,34px)}.reg{font-size:9.5px}
+  .chip.sty{display:none}.catpill{font-size:12px}.chip{font-size:11px;padding:3px 8px}
+  .parts{display:none}.srbox{gap:10px;padding-top:6px;margin-top:6px}.ring{width:clamp(56px,9vh,74px)}.ring b{font-size:clamp(22px,3.4vh,30px)}.ring small{font-size:6px}
+  .part{grid-template-columns:70px 1fr 24px;font-size:10px;gap:6px}.part .bar{height:5px}
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.tiles .tile.x{display:none}.tile{padding:4px 8px}.tile b{font-size:clamp(17px,2.7vh,22px)}.tile span{font-size:8.5px}
+  .tiles .tile:nth-child(4){display:none}
+  .hl div{font-size:11px;padding:5px 8px}.hl div:nth-child(n+3){display:none}
+  .teams{gap:5px}.team{border-radius:9px;padding:2px 5px;flex-direction:row;justify-content:flex-start;gap:4px}.team .tx{text-align:left;flex:1;width:auto}.team img{width:clamp(20px,3.4vh,30px);height:clamp(20px,3.4vh,30px)}.team .nm{display:none}.team .pt{font-size:12px}.team .sq{margin:2px 0 0;height:3px}#teamsCard .h{margin-bottom:5px}
+  .hero{gap:6px}.hero .tvx,.hero>.sm{display:none}.hero .k{font-size:10px;letter-spacing:3px}.hero h1{font-size:clamp(30px,5.4vh,44px)}.hero .when{font-size:11.5px}.cd{gap:6px}.cd div{min-width:54px;padding:6px 4px}.cd b{font-size:clamp(24px,4vh,30px)}.cd span{font-size:8.5px}.hero .hero3d{width:clamp(80px,15vh,130px)}
+  .ticker .lab{font-size:12px;padding:0 10px}
 }
+@media (max-width:820px) and (max-height:760px){.hl div:nth-child(n+2){display:none}.chip:not(.catpill){display:none}}
+@media (max-width:820px) and (max-height:680px){.hl{display:none}}
 </style>
 </head>
 <body>
 <header class="chan">
   <a class="brand" href="./"><span class="mark"><img src="tenvox-mark.png" alt="TENVOX"></span><span class="wm"><b>TENVOX <i>BIDCAST</i></b><small>TENVOX Sports · Every bid live</small></span></a>
   <span class="onair" id="onair"><i></i><span>Off air</span></span>
+  <div class="ev"><div><div class="t">KNPL-7 Mega Auction</div><div class="s">Making the Impossible a Reality · <b class="ml">ടീം സമം, കളി കേമം</b></div><div class="s s2">12 Dec 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div></div><img src="knpl-logo.png" alt="KNPL"></div>
   <div class="legacybar"><span class="lk">Legacy Partners <i>· with KNPL since Season 1</i></span><img class="lpv" src="lp-vaidyaratnam.jpg" alt="Ashtavaidyan Thaikkattu Mooss Vaidyaratnam"><span class="dot">◆</span><img class="lpk" src="lp-kpnamboodiris.png" alt="K P Namboodiri's"></div>
-  <div class="ev"><div><div class="t">KNPL-7 Mega Auction</div><div class="s">12 Dec 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div></div><img src="knpl-logo.png" alt="KNPL"></div>
+  <div class="demo-banner" id="demoBanner" hidden>Demo · simulated bids · not the real auction</div>
 </header>
 
-<div class="demo-banner" id="demoBanner" hidden>Demo · simulated bids · not the real auction</div>
-<main class="wrap">
-  <aside class="rail">
-    <div class="knpl"><img src="knpl-logo.png" alt="Kerala Namboodiris Premier League"><div>
-      <div class="t1">KNPL</div><div class="t2">Season 7 · Mega Auction</div>
-      <div class="tag">Making the Impossible a Reality</div><div class="ml">ടീം സമം, കളി കേമം</div>
-      <div class="meta">16 franchises · 248 players<br>KNPL-7 · 11–14 Feb 2027<br>FISAT &amp; Boundary Grounds, Angamaly</div></div></div>
-    <div class="card trophy" id="trophyCard"><div class="k">The Champions' Crown</div>
-      <div class="t3d"><div class="spin"><img src="trophy.png" alt="K Sreejayan Thampy Memorial Ever-Rolling Trophy"><i class="shine"></i></div></div><div class="pedestal"></div>
-      <div class="cap">K Sreejayan Thampy Memorial<br>Ever-Rolling Trophy<small>KNPL Champions · from Season 7</small></div></div>
-  </aside>
-
+<main class="screen">
   <section id="center"></section>
-
-  <section class="side" id="side">
-    <div class="card bid" id="bidCard"></div>
-    <div class="card spot" id="spot"></div>
-    <div class="card" id="teamsCard"><div class="h">Franchises <span class="n" id="teamsNote"></span></div><div class="teams" id="teams"></div></div>
-    <div class="card"><div class="h">Latest sales <span class="n" id="salesNote"></span></div><div class="sales" id="sales"></div></div>
-  </section>
+  <div class="card bid" id="bidCard"></div>
+  <div class="card" id="teamsCard"><div class="h">Franchises <span class="n" id="teamsNote"></span></div><div class="teams" id="teams"></div><div class="dots"><i class="on"></i><i></i><i></i></div></div>
+  <div class="card trophy" id="trophyCard"><div class="k">The Champions' Crown</div>
+    <div class="t3d"><div class="spin"><img src="trophy.png" alt="K Sreejayan Thampy Memorial Ever-Rolling Trophy"><i class="shine"></i></div></div>
+    <div class="cap">K Sreejayan Thampy Memorial<br>Ever-Rolling Trophy<small>KNPL Champions · from Season 7</small></div><div class="dots"><i></i><i></i><i class="on"></i></div></div>
+  <div class="card spot" id="spot"></div>
 </main>
 
 <div class="ticker"><div class="lab">★ Sponsors</div><div class="run" id="run"></div></div>
 <div id="overlay"></div>
-
 <script>
 /* ===================== SETTINGS ===================== */
 const CFG={
@@ -305,59 +301,57 @@ function playerHTML(p){
   const code=CAT[p.c]||"", st=p.st||{}, x=p.x||null;
   const photo=p.ph?`<img src="data:image/jpeg;base64,${p.ph}" alt="">`:p.photo?`<img src="${esc(p.photo)}" alt="" onerror="this.remove()">`:"";
   const ini=esc((p.n||"?").split(" ").map(w=>w[0]).slice(0,2).join(""));
-  const tiles=st.m!=null?[["Matches",st.m],["Runs",fmt(st.runs)],["Average",st.avg??"–"],["Wickets",st.wk],["Catches",st.ct],["Sixes",st.s6]].map(([k,v])=>`<div class="tile"><span>${k}</span><b>${v??"–"}</b></div>`).join(""):"";
-  const parts=x?PARTS.map(([k,l,c])=>`<div class="part"><span class="mut">${l}</span><div class="bar"><i style="width:${Math.min(100,x[k]||0)}%;background:${c}"></i></div><b>${Math.round(x[k]||0)}</b></div>`).join(""):"";
-  const hl=(p.hl||[]).slice(0,4).map(([t,s])=>`<div class="${t}"><em>${HLI[t]||"•"}</em><span>${esc(s)}</span></div>`).join("");
-  const se=(p.seasons||[]).filter(s=>/KNPL/.test(s.t)&&s.m&&s.m!=="–").slice(0,4).map(s=>`<span><b>${esc(s.t)}</b> · ${esc(s.team)}${s.res?` · ${esc(s.res)}`:""}</span>`).join("");
-  return `<div class="card stage"><div class="pl c-${code}">
-    <div><div class="photo">${photo}<div class="ph0" ${photo?'style="z-index:-1"':""}>${ini}</div>${code?`<div class="catband" style="background:linear-gradient(0deg,${`var(--cc)`},#0000)">${esc(p.c)}</div>`:""}</div></div>
-    <div style="min-width:0">
-      ${p.id?`<div class="reg">KNPL REG ID · ${esc(p.id)}</div>`:""}
-      <div class="pname cond">${esc(p.n)}</div>
-      <div class="chips">${code?`<span class="catpill">${esc(p.c)}</span>`:""}${p.role?`<span class="chip">${esc(p.role)}</span>`:""}${p.style?`<span class="chip">${esc(p.style)}</span>`:""}${p.bt?`<span class="chip gold">Base ${fmt(p.bt)}</span>`:""}</div>
-      ${p.s!=null?`<div class="srbox">${ring(p.s)}<div class="parts">${parts}</div></div>`:""}
-      ${p.sum?`<div class="sm mut" style="margin-top:6px">${esc(p.sum)}</div>`:""}
-    </div></div>
+  const tiles=st.m!=null?[["Matches",st.m],["Runs",fmt(st.runs)],["Average",st.avg??"–"],["Wickets",st.wk],["Catches",st.ct],["Sixes",st.s6]].map(([k,v],i)=>`<div class="tile${i>3?" x":""}"><span>${k}</span><b>${v??"–"}</b></div>`).join(""):"";
+  const parts=x?PARTS.map(([k,l,c])=>`<div class="part"><span>${l}</span><div class="bar"><i style="width:${Math.min(100,x[k]||0)}%;background:${c}"></i></div><b>${Math.round(x[k]||0)}</b></div>`).join(""):"";
+  const hl=(p.hl||[]).slice(0,3).map(([t,s])=>`<div class="${t}"><em>${HLI[t]||"•"}</em><span>${esc(s)}</span></div>`).join("");
+  return `<div class="card pcard c-${code}">
+    <div class="ptop">
+      <div class="photo">${photo}<div class="ph0" ${photo?'style="z-index:-1"':""}>${ini}</div></div>
+      <div class="pinfo">
+        ${p.id?`<div class="reg">KNPL REG ID · ${esc(p.id)}</div>`:""}
+        <div class="pname">${esc(p.n)}</div>
+        <div class="chips">${code?`<span class="catpill">${esc(p.c)}</span>`:""}${p.role?`<span class="chip">${esc(p.role)}</span>`:""}${p.style?`<span class="chip sty">${esc(p.style)}</span>`:""}</div>
+        ${p.s!=null?`<div class="srbox">${ring(p.s)}<div class="parts">${parts}</div></div>`:""}
+      </div>
+    </div>
     ${tiles?`<div class="tiles">${tiles}</div>`:""}
     ${hl?`<div class="hl">${hl}</div>`:""}
-    ${se?`<div class="seasons">${se}</div>`:""}
   </div>`;
 }
 function waitingHTML(){
   if(MODE==="pre") return preHTML();
-  const top=[...SALES].filter(s=>s.tid).sort((a,b)=>b.price-a.price).slice(0,5);
-  return `<div class="card stage hero"><div><div class="k">${STATE.msg?esc(STATE.msg):"Next player coming up"}</div>
-    <div class="t3d" style="width:200px"><div class="spin"><img src="trophy.png" alt=""><i class="shine"></i></div></div>
-    <h1 class="cond" style="margin-top:30px">KNPL-7 <span>Mega Auction</span></h1><div class="mut">Playing for the K Sreejayan Thampy Memorial Ever-Rolling Trophy · ${SALES.filter(s=>s.tid).length} players sold so far</div>
-    ${top.length?`<div style="margin-top:18px;text-align:left;max-width:520px;margin-inline:auto"><div class="h">Top buys</div>${top.map(saleHTML).join("")}</div>`:""}</div></div>`;
+  const n=SALES.filter(s=>s.tid).length;
+  return `<div class="card pcard hero"><div class="k">${STATE.msg?esc(STATE.msg):"Next player coming up"}</div>
+    <div class="t3d hero3d"><div class="spin"><img src="trophy.png" alt=""><i class="shine"></i></div></div>
+    <h1>KNPL-7 <span>Mega Auction</span></h1><div class="mut">Playing for the K Sreejayan Thampy Memorial Ever-Rolling Trophy${n?` · ${n} sold so far`:""}</div></div>`;
 }
 function preHTML(){
-  return `<div class="card stage hero"><div style="width:100%"><div style="display:inline-block;background:#fff;border-radius:18px;padding:10px 22px;margin-bottom:14px;box-shadow:0 0 0 3px var(--gold),0 10px 30px #0009"><img src="tenvox-logo.png" alt="TENVOX Sports" style="height:84px;width:auto"></div><div class="k">TENVOX BIDCAST presents</div>
-    <h1 class="cond">KNPL-7 <span>Mega Auction</span></h1>
-    <div class="mut">Saturday, 12 December 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div>
+  return `<div class="card pcard hero"><div class="tvx"><img src="tenvox-logo.png" alt="TENVOX Sports"></div><div class="k">TENVOX BIDCAST presents</div>
+    <h1>KNPL-7 <span>Mega Auction</span></h1>
+    <div class="mut when">Saturday, 12 December 2026 · 8:00 AM · Chola Farm Resorts, Karukutty</div>
     <div class="cd" id="cd"></div>
-    <div class="mut sm">This page goes live by itself when the auction starts — every bid, every sale, as it happens.</div>
-    <div class="tgrid">${TEAMS.map(t=>`<div><img src="${t.logo}" alt="">${esc(t.name)}</div>`).join("")}</div></div></div>`;
+    <div class="mut sm">Goes live by itself when the auction starts — every bid, every sale, as it happens.</div></div>`;
 }
 function tickCountdown(){ const el=$("cd"); if(!el) return; let s=Math.max(0,Math.floor((Date.parse(CFG.START)-Date.now())/1000));
   const d=Math.floor(s/86400); s%=86400; const h=Math.floor(s/3600); s%=3600; const m=Math.floor(s/60); s%=60;
-  el.innerHTML=[[d,"Days"],[h,"Hours"],[m,"Minutes"],[s,"Seconds"]].map(([v,l])=>`<div><b>${String(v).padStart(2,"0")}</b><span>${l}</span></div>`).join(""); }
+  el.innerHTML=[[d,"Days"],[h,"Hours"],[m,"Mins"],[s,"Secs"]].map(([v,l])=>`<div><b>${String(v).padStart(2,"0")}</b><span>${l}</span></div>`).join(""); }
 
 /* ===================== RENDER: BID, TEAMS, SALES ===================== */
 function animateNum(el,to){ const from=+el.dataset.v||0; el.dataset.v=to; if(from===to){ el.textContent=fmt(to); return; }
   const t0=performance.now(), d=380; const step=t=>{ const k=Math.min(1,(t-t0)/d), e=1-Math.pow(1-k,3); el.textContent=fmt(from+(to-from)*e); if(k<1) requestAnimationFrame(step); }; requestAnimationFrame(step);
-  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+  el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+  const c=$("bidCard"); c.classList.remove("pulse"); void c.offsetWidth; c.classList.add("pulse"); }
 function renderBid(){
   const card=$("bidCard"), p=spaPlayer(STATE.pcode), t=spaTeam(STATE.lead);
-  if(MODE==="pre"){ card.innerHTML=`<div class="lbl">Auction opens</div><div class="amt" style="font-size:54px">12 Dec · 8 AM</div><div class="mut sm">Bids appear here live</div>`; return; }
-  if(!card.querySelector(".amt")) card.innerHTML=`<div class="lbl" id="bLbl">Current bid</div><div class="amt" id="bAmt" data-v="0">–</div><div class="lead" id="bLead"></div><div class="meta" id="bMeta"></div><div id="bMsg"></div>`;
+  if(MODE==="pre"){ card.innerHTML=`<div class="lbl">Auction opens</div><div class="amt sm2">12 Dec · 8 AM</div><div class="mut sm">Bids appear here live</div><div class="last" id="sales"></div>`; renderSales(); return; }
+  if(!card.querySelector("#bAmt")) card.innerHTML=`<div class="lbl" id="bLbl">Current bid</div><div class="amt" id="bAmt" data-v="0">–</div><div class="lead" id="bLead"></div><div class="meta" id="bMeta"></div><div class="last" id="sales"></div>`;
   const has=p && STATE.bid>0;
   $("bLbl").textContent= STATE.soldout&&STATE.lead? "Sold for" : t? "Current bid" : "Opening bid";
   const a=$("bAmt"); if(has && +a.dataset.v!==STATE.bid) animateNum(a,STATE.bid); else if(!has){ a.textContent="–"; a.dataset.v=0; }
-  $("bLead").innerHTML= t? `${t.logo?`<img src="${esc(t.logo)}" alt="">`:""}<b>${esc(t.name)}</b>` : `<span class="mut">${p?"Waiting for the first bid":"—"}</span>`;
+  const lh= t? `${t.logo?`<img src="${esc(t.logo)}" alt="">`:""}<b>${esc(t.name)}</b>` : `<span class="mut">${p?"Waiting for the first bid":"—"}</span>`;
+  if($("bLead").innerHTML!==lh) $("bLead").innerHTML=lh;
   const ago=STATE.tmy? Math.round((Date.now()-STATE.tmy)/1000) : null;
-  $("bMeta").innerHTML= p? `<span>${p.n?esc(p.n):""}</span>${ago!=null&&ago<600&&!STATE.soldout?`<span>last bid ${ago}s ago</span>`:""}` : "";
-  $("bMsg").innerHTML= STATE.msg? `<div class="msg">${esc(STATE.msg)}</div>` : "";
+  $("bMeta").innerHTML= STATE.msg? `<span class="msg">${esc(STATE.msg)}</span>` : (p&&ago!=null&&ago<600&&!STATE.soldout? `<span>last bid ${ago}s ago</span>` : "");
 }
 function teamRows(){
   if(MODE==="pre") return TEAMS.map(t=>({t,rm:null,n:null}));
@@ -367,17 +361,20 @@ function teamRows(){
 function renderTeams(){
   const rows=teamRows().sort((a,b)=>(b.rm??0)-(a.rm??0)), sq=14;
   $("teams").innerHTML=rows.map(r=>{ const lead=r.id&&String(r.id)===String(STATE.lead), out=STATE.banned.map(String).includes(String(r.id));
-    return `<div class="team${lead?" lead":""}${out?" out":""}" title="${esc(r.t.name)}"><img src="${esc(r.t.logo)}" alt=""><div style="min-width:0"><div class="nm">${esc(shortName(r.t))}</div>${r.n!=null?`<div class="sq"><i style="width:${Math.min(100,r.n/sq*100)}%"></i></div>`:""}</div><div class="pt">${r.rm!=null?fmt(r.rm):""}<small>${r.n!=null?`${r.n}/${sq} players`:""}</small></div></div>`; }).join("");
+    return `<div class="team${lead?" lead":""}${out?" out":""}" title="${esc(r.t.name)}"><img src="${esc(r.t.logo)}" alt=""><div class="tx"><div class="nm">${esc(shortName(r.t))}</div>${r.rm!=null?`<div class="pt">${fmt(r.rm)}</div><div class="sq"><i style="width:${Math.min(100,r.n/sq*100)}%"></i></div><div class="n">${r.n}/${sq}</div>`:""}</div></div>`; }).join("");
   $("teamsNote").textContent= MODE==="pre"? "16 teams · 14 players each" : "points left · squad";
-  $("teamsCard").hidden= MODE==="pre" && innerWidth>820;
 }
-function saleHTML(s){ const t=spaTeam(s.tid); return `<div class="sale"><img src="${esc(t?t.logo:"")}" alt=""><div style="min-width:0"><b>${esc(s.name)}</b><div class="mut sm">${t?esc(t.name):"Unsold"}${s.cat?` · ${esc(s.cat)}`:""}</div></div><div class="pr">${s.tid?fmt(s.price):"—"}</div></div>`; }
-function renderSales(){ const sold=SALES.filter(s=>s.tid);
-  $("sales").innerHTML= sold.length? sold.slice(0,25).map(saleHTML).join("") : `<div class="mut sm">${MODE==="pre"?"Sales will appear here live.":"No sales yet."}</div>`;
-  $("salesNote").textContent= sold.length? `${sold.length} sold` : ""; }
+function renderSales(){ const el=$("sales"); if(!el) return; const sold=SALES.filter(s=>s.tid).slice(0,2);
+  el.innerHTML= sold.length? `<span class="lk">Last sold</span>`+sold.map(s=>{ const t=spaTeam(s.tid); return `<div class="ls">${t&&t.logo?`<img src="${esc(t.logo)}" alt="">`:""}<b>${esc(s.name)}</b><span>${esc(t?shortName(t):"")}</span><em>${fmt(s.price)}</em></div>`; }).join("") : ""; }
 function renderCenter(){ const p=spaPlayer(STATE.pcode); const key=(p?p.id||p.n:"")+"|"+MODE;
-  if(SHOWN!==key || MODE==="pre"){ SHOWN=key; $("center").innerHTML=playerHTML(STATE.soldout&&!p?null:p); if(MODE==="pre") tickCountdown(); } }
+  if(SHOWN!==key){ SHOWN=key; const c=$("center"); c.classList.remove("swap"); void c.offsetWidth; c.innerHTML=playerHTML(STATE.soldout&&!p?null:p); c.classList.add("swap"); if(MODE==="pre") tickCountdown(); } }
 function renderAll(){ renderCenter(); renderBid(); renderTeams(); renderSales(); }
+
+/* ===================== PHONE: one panel at a time (franchises · sponsor · trophy) ===================== */
+const ROT=["teamsCard","spot","trophyCard"]; let rotI=0;
+function rotate(){ const ids=ROT.filter(id=>!(id==="spot"&&!SP.length)); rotI=(rotI+1)%ids.length; ids.forEach((id,i)=>$(id).classList.toggle("on",i===rotI));
+  document.querySelectorAll(".dots i").forEach((d,i)=>d.classList.toggle("on",ROT[i]===ids[rotI]));
+  clearTimeout(rotate._t); rotate._t=setTimeout(rotate, ids[rotI]==="teamsCard"?9000:7000); }
 
 /* ===================== SOLD MOMENT ===================== */
 function soldMoment(p,t,price,unsold){
@@ -467,7 +464,7 @@ function nextSpot(){
   if(!SP.length){ $("spot").innerHTML=`<div><div class="k">Sponsor this season</div><div class="nm cond">Your brand here</div><div class="for">KNPL-7 sponsorships open</div></div>`; return; }
   const tot=SP.reduce((a,s)=>a+s.w,0); SP.forEach(s=>s.cw+=s.w); const best=SP.reduce((a,b)=>b.cw>a.cw?b:a); best.cw-=tot; spCur=best;
   const max=SP[0].w, dwell=Math.round(5+9*best.w/max);
-  $("spot").innerHTML=`<div class="fade"><div class="k">Proudly supported by</div><div class="nm cond">${esc(best.name)}</div><div class="for">${best.tags.map(esc).join(" · ")}</div></div><i class="bar" id="spBar" style="width:0"></i>`;
+  $("spot").innerHTML=`<div class="fade"><div class="k">Proudly supported by</div><div class="nm cond">${esc(best.name)}</div><div class="for">${best.tags.map(esc).join(" · ")}</div></div><i class="bar" id="spBar" style="width:0"></i><div class="dots"><i></i><i class="on"></i><i></i></div>`;
   requestAnimationFrame(()=>{ const b=$("spBar"); if(b){ b.style.transitionDuration=dwell+"s"; b.style.width="100%"; } });
   clearTimeout(nextSpot._t); nextSpot._t=setTimeout(nextSpot,dwell*1000);
 }
@@ -484,7 +481,9 @@ function nextSpot(){
   if(MODE==="demo") startDemo();
   loadSponsors(); setInterval(loadSponsors,60000);
   setInterval(()=>{ if(MODE!=="pre") renderBid(); },1000);
+  $("teamsCard").classList.add("on"); rotate._t=setTimeout(rotate,9000);
 })();
 </script>
+
 </body>
 </html>
