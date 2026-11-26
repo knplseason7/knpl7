@@ -107,6 +107,7 @@ img{display:block}
 .part b{color:var(--ink);text-align:right}
 .part .bar{height:7px;border-radius:6px;background:#0a1222;overflow:hidden}
 .part .bar i{display:block;height:100%;border-radius:6px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.srbox.mob{display:none}.mstats{display:none}
 .tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
 .tile{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:6px 10px}
 .tile span{display:block;font:700 10px Inter;letter-spacing:1.1px;color:var(--mut);text-transform:uppercase}
@@ -214,6 +215,15 @@ img{display:block}
 .conf{position:fixed;top:-20px;width:10px;height:14px;z-index:51;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
+
+/* rating breakdown: upright columns */
+.parts{flex:1;min-width:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(6px,.8vw,12px);align-items:end}
+.vb{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.vb b{font:800 clamp(14px,2.1vh,19px) "Barlow Condensed";line-height:1}
+.vb .col{width:min(26px,70%);height:clamp(44px,8vh,80px);border-radius:7px 7px 3px 3px;background:#0a1222;display:flex;align-items:flex-end;overflow:hidden;box-shadow:inset 0 0 0 1px #1f3d74}
+.vb .col i{display:block;width:100%;border-radius:6px 6px 0 0;animation:grow .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes grow{from{height:0!important}}
+.vb span{font:700 clamp(8px,1.15vh,10.5px) Inter;letter-spacing:0;color:var(--mut);text-transform:uppercase;white-space:nowrap}
 /* ---------- narrower laptops ---------- */
 @media (max-width:1250px){.screen{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 210px}.tiles .tile.x{display:none}.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.part{grid-template-columns:78px 1fr 26px}.ev .s{display:none}}
 @media (max-height:860px) and (min-width:821px){.team{flex-direction:row;justify-content:flex-start;gap:6px;padding:2px 6px}.team .tx{text-align:left;flex:1}.team img{width:clamp(20px,3.6vh,30px);height:clamp(20px,3.6vh,30px)}.team .sq{margin:2px 0 0}.ls:nth-of-type(n+2){display:none}.lead{min-height:0}}
@@ -235,8 +245,10 @@ img{display:block}
   .bid .meta{grid-area:meta;margin:0}.last{display:none}
   .pcard{gap:8px;padding:10px}.photo{width:clamp(84px,15vh,120px)}.pname{font-size:clamp(24px,4.2vh,34px)}.reg{font-size:9.5px}
   .chip.sty{display:none}.catpill{font-size:12px}.chip{font-size:11px;padding:3px 8px}
-  .parts{display:none}.srbox{gap:10px;padding-top:6px;margin-top:6px}.ring{width:clamp(56px,9vh,74px)}.ring b{font-size:clamp(22px,3.4vh,30px)}.ring small{font-size:6px}
-  .part{grid-template-columns:70px 1fr 24px;font-size:10px;gap:6px}.part .bar{height:5px}
+  .pinfo .srbox{display:none}.hl{display:none!important}.pcard>.tiles{display:none!important}.chip{display:none}
+  .mstats{display:flex;gap:14px;margin-top:8px}.mstats div{line-height:1}.mstats b{display:block;font:800 clamp(18px,2.6vh,22px) "Barlow Condensed"}.mstats span{font:700 8.5px Inter;letter-spacing:1px;color:var(--mut);text-transform:uppercase}
+  .srbox.mob{display:flex;margin:0;padding:8px 12px;gap:12px;border-radius:12px;background:#0b1834;border:1px solid var(--line)}.srbox.mob .parts{display:grid;gap:6px}.vb .col{height:clamp(38px,6.2vh,62px);width:min(22px,70%)}.vb b{font-size:clamp(13px,2vh,16px)}.vb span{font-size:8px}.pinfo{justify-content:center}.ring{width:clamp(56px,9vh,74px)}.ring b{font-size:clamp(22px,3.4vh,30px)}.ring small{font-size:6.5px;letter-spacing:.6px;top:63%}
+  .part{grid-template-columns:84px 1fr 26px;font-size:clamp(10.5px,1.5vh,12px);gap:8px}.part .bar{height:6px}
   .tiles{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.tiles .tile.x{display:none}.tile{padding:4px 8px}.tile b{font-size:clamp(17px,2.7vh,22px)}.tile span{font-size:8.5px}
   .tiles .tile:nth-child(4){display:none}
   .hl div{font-size:11px;padding:5px 8px}.hl div:nth-child(n+3){display:none}
@@ -245,8 +257,9 @@ img{display:block}
   .ticker .lab{font-size:12px;padding:0 10px}
 }
 @media (max-width:460px){.snd span{display:none}.snd{width:30px;height:30px;padding:0;justify-content:center}.brand .wm b{font-size:19px;letter-spacing:1px}}
-@media (max-width:820px) and (max-height:760px){.hl div:nth-child(n+2){display:none}.chip:not(.catpill){display:none}}
-@media (max-width:820px) and (max-height:680px){.hl{display:none}}
+@media (max-width:820px) and (max-height:760px){.chip:not(.catpill){display:none}}
+@media (max-width:820px) and (max-height:660px){.legacybar .lk{display:none}}
+@media (max-width:820px) and (max-height:760px){.photo{width:clamp(80px,13vh,100px)}.vb .col{height:clamp(30px,5vh,44px)}}
 </style>
 </head>
 <body>
@@ -339,7 +352,8 @@ function playerHTML(p){
   const photo=p.ph?`<img src="data:image/jpeg;base64,${p.ph}" alt="">`:p.photo?`<img src="${esc(p.photo)}" alt="" onerror="this.remove()">`:"";
   const ini=esc((p.n||"?").split(" ").map(w=>w[0]).slice(0,2).join(""));
   const tiles=st.m!=null?[["Matches",st.m],["Runs",fmt(st.runs)],["Average",st.avg??"–"],["Wickets",st.wk],["Catches",st.ct],["Sixes",st.s6]].map(([k,v],i)=>`<div class="tile${i>3?" x":""}"><span>${k}</span><b>${v??"–"}</b></div>`).join(""):"";
-  const parts=x?PARTS.map(([k,l,c])=>`<div class="part"><span>${l}</span><div class="bar"><i style="width:${Math.min(100,x[k]||0)}%;background:${c}"></i></div><b>${Math.round(x[k]||0)}</b></div>`).join(""):"";
+  const SHORTL={"Performance":"Perf","Win Impact":"Impact","Awards":"Awards","Consistency":"Consist","Experience":"Exp"};
+  const parts=x?PARTS.map(([k,l,c])=>`<div class="vb" title="${l}"><b>${Math.round(x[k]||0)}</b><div class="col"><i style="height:${Math.max(4,Math.min(100,x[k]||0))}%;background:linear-gradient(180deg,${c},color-mix(in srgb,${c} 45%,#0a1222))"></i></div><span>${SHORTL[l]||l}</span></div>`).join(""):"";
   const hl=(p.hl||[]).slice(0,3).map(([t,s])=>`<div class="${t}"><em>${HLI[t]||"•"}</em><span>${esc(s)}</span></div>`).join("");
   return `<div class="card pcard c-${code}">
     <div class="ptop">
@@ -348,9 +362,11 @@ function playerHTML(p){
         ${p.id?`<div class="reg">KNPL REG ID · ${esc(p.id)}</div>`:""}
         <div class="pname">${esc(p.n)}</div>
         <div class="chips">${code?`<span class="catpill">${esc(p.c)}</span>`:""}${p.role?`<span class="chip">${esc(p.role)}</span>`:""}${p.style?`<span class="chip sty">${esc(p.style)}</span>`:""}</div>
+        ${st.m!=null?`<div class="mstats"><div><b>${st.m}</b><span>Matches</span></div><div><b>${fmt(st.runs)}</b><span>Runs</span></div><div><b>${st.avg??"–"}</b><span>Avg</span></div></div>`:""}
         ${p.s!=null?`<div class="srbox">${ring(p.s)}<div class="parts">${parts}</div></div>`:""}
       </div>
     </div>
+    ${p.s!=null?`<div class="srbox mob">${ring(p.s)}<div class="parts">${parts}</div></div>`:""}
     ${tiles?`<div class="tiles">${tiles}</div>`:""}
     ${hl?`<div class="hl">${hl}</div>`:""}
   </div>`;
