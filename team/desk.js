@@ -36,8 +36,8 @@ window.TX = {
  ocrFail:['The receipt could not be read automatically. Please type the details.','Receipt സ്വയം വായിക്കാനായില്ല. വിവരങ്ങൾ ടൈപ്പ് ചെയ്യുക.'],
  ocrWait:['Please wait – the receipt is still being read.','ദയവായി കാത്തിരിക്കുക – Receipt വായിക്കുന്നു.'],
  fTxn:['Transaction no.','Transaction No.'],fDt:['Date','തീയതി'],fMd:['Mode','രീതി'],
- tabHelp:['Help','സഹായം'],helpTitle:['Help & contacts','സഹായം & ബന്ധപ്പെടേണ്ടവർ'],
- helpIntro:['Contact the right person directly for faster help.','വേഗത്തിൽ സഹായം ലഭിക്കാൻ ബന്ധപ്പെട്ട ആളെ നേരിട്ട് വിളിക്കുക.'],
+ tabHelp:['Help','സഹായം'],helpTitle:['Help & contacts – topic-wise','സഹായം – ഓരോ വിഷയത്തിനും ബന്ധപ്പെടേണ്ടവർ'],
+ helpIntro:['Each topic is handled by its KNPL Playbook presenter. For any query or clarification, contact the person for that topic directly.','ഓരോ വിഷയവും KNPL Playbook-ൽ അവതരിപ്പിച്ച ആളാണ് കൈകാര്യം ചെയ്യുന്നത്. സംശയങ്ങൾക്കും വിശദീകരണങ്ങൾക്കും ആ വിഷയത്തിന്റെ ആളെ നേരിട്ട് ബന്ധപ്പെടുക.'],
  call:['Call','വിളിക്കുക'],wa:['WhatsApp','WhatsApp'],
  footer2:['KNPL-7 Team Desk · For queries, see the Help tab · Team KNPL','KNPL-7 Team Desk · സംശയങ്ങൾക്ക് Help Tab കാണുക · Team KNPL'],
  dsTitle:['Your team jersey','നിങ്ങളുടെ ടീം Jersey'],dsApproved:['Approved design','അംഗീകരിച്ച Design'],dsFinal:['Final design (from the manufacturer)','Final Design (നിർമ്മാതാവിൽ നിന്ന്)'],
@@ -481,12 +481,23 @@ function ocrGate(k) {   // returns a message if the upload must not go ahead yet
 
 /* ---------- contacts (Help tab and per-section lines) ---------- */
 const CONTACTS = [
-  {k: 'jersey', head: ['Jersey design & jersey details', 'Jersey Design & Jersey Details'], name: 'Ivish Kumar', ph: '+91 98466 54562'},
-  {k: 'fees', head: ['Team fees, payments & receipts', 'Team Fees, Payments & Receipts'], name: 'Unnikrishnan S', ph: '+91 99612 55542'},
+  {k: 'vision', head: ['Welcome & KNPL vision', 'KNPL Vision'], name: 'Prasanth Puliyannoor', ph: '+91 94471 77430'},
+  {k: 'glance', head: ['KNPL-7 at a glance', 'KNPL-7 at a Glance'], name: 'Krishnadas M N', ph: '+91 99862 18725'},
+  {k: 'auction', head: ['Mega Auction rules', 'Mega Auction നിയമങ്ങൾ'], name: 'Krishnadas M N', ph: '+91 99862 18725'},
+  {k: 'aucday', head: ['Auction day conduct & platform', 'Auction ദിവസം & Auction Platform'], name: 'Ajaya Ghosh C I', ph: '+91 80899 70271'},
+  {k: 'logi', head: ['Mega Auction event logistics', 'Mega Auction ക്രമീകരണങ്ങൾ'], name: 'Anish Kumar M V', ph: '+91 99951 17684'},
+  {k: 'format', head: ['Dynamic Ladder fixture format', 'Dynamic Ladder Fixture Format'], name: 'Sooraj Mullanezhi', ph: '+91 95398 00685'},
+  {k: 'rules', head: ['Playing rules', 'കളി നിയമങ്ങൾ (Playing Rules)'], name: 'Vineeth K V', ph: '+91 85475 62249'},
+  {k: 'grounds', head: ['Grounds & match day preparations', 'Grounds & Match Day ഒരുക്കങ്ങൾ'], name: 'Sandeep M N', ph: '+91 94460 13178'},
+  {k: 'officials', head: ['Officials, live streaming & production', 'Officials, Live Streaming & Production'], name: 'Praveen Muttas', ph: '+91 97452 64636'},
+  {k: 'food', head: ['Food & hospitality', 'ഭക്ഷണം & ആതിഥ്യം'], name: 'Vishal A N', ph: '+91 82814 43840'},
+  {k: 'jersey', head: ['Jerseys – design & jersey details', 'Jersey – Design & Jersey Details'], name: 'Ivish Kumar M V', ph: '+91 98466 54562'},
+  {k: 'awards', head: ['Awards, trophies & prizes', 'Awards, Trophies & Prizes'], name: 'Rahul E R', ph: '+91 96569 97486'},
+  {k: 'budget', head: ['KNPL-7 budget', 'KNPL-7 Budget'], name: 'Ivish Kumar M V', ph: '+91 98466 54562'},
   {k: 'fund', head: ['Fund raising & sponsorship', 'Fund Raising & Sponsorship'], name: 'Krishnadas M N', ph: '+91 99862 18725'},
-  {k: 'auction', head: ['Auction rules & Skill Rating', 'Auction Rules & Skill Rating'], name: 'Krishnadas M N', ph: '+91 99862 18725'},
-  {k: 'general', head: ['General queries – KNPL coordinators', 'പൊതു സംശയങ്ങൾ – KNPL Coordinators'], name: 'Praveen Muttas', ph: '+91 97452 64636'},
-  {k: 'general2', head: ['General queries – KNPL coordinators', 'പൊതു സംശയങ്ങൾ – KNPL Coordinators'], name: 'Anish Indira Vasudev', ph: '+91 99951 17684'}
+  {k: 'fees', head: ['Finance – team fees, payments & receipts', 'Finance – Team Fees, Payments & Receipts'], name: 'Unnikrishnan S', ph: '+91 99612 55542'},
+  {k: 'media', head: ['Media & marketing', 'Media & Marketing'], name: 'Umesh Krishna', ph: '+91 99952 03514'},
+  {k: 'social', head: ['Social commitment & wellness', 'സാമൂഹിക പ്രതിബദ്ധത & Wellness'], name: 'Sunil Narayanan', ph: '+91 82813 80942'}
 ];
 const CT_LINE = {jersey: ['Jersey queries: {n} – {p}', 'Jersey സംശയങ്ങൾക്ക്: {n} – {p}'], fees: ['Fee & payment queries: {n} – {p}', 'Fee / Payment സംശയങ്ങൾക്ക്: {n} – {p}'], fund: ['Fund raising queries: {n} – {p}', 'Fund Raising സംശയങ്ങൾക്ക്: {n} – {p}']};
 const telOf = p => p.replace(/[^\d+]/g, ''), waOf = p => p.replace(/\D/g, '');
