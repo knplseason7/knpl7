@@ -2,295 +2,124 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <title>KNPL-7 Team Desk | Kerala Namboodiris Premier League</title>
-<meta name="description" content="KNPL-7 franchises: upload fee payments, download receipts and enter your players' jersey details.">
+<meta name="description" content="KNPL-7 franchises: upload fee receipts, download KNPL receipts, collect jersey details and request season replacements.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Kerala Namboodiris Premier League · KNPL-7">
 <meta property="og:title" content="KNPL-7 Team Desk">
-<meta property="og:description" content="Fee payments, receipts and jersey details for KNPL-7 franchises. Log in with your Team Draft code.">
+<meta property="og:description" content="Fee receipts, jersey details and season replacements for KNPL-7 franchises. Log in with your Team Draft code.">
 <meta property="og:url" content="https://knplseason7.github.io/knpl7/team/">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="desk.css?v=3">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-<script src="receipt.js?v=2" defer></script>
-<style>
-:root{--bg:#f3f5fa;--surface:#fff;--ink:#13213f;--muted:#5b6784;--line:#d9dfec;--navy:#0b1a38;--saffron:#e07a1f;--saffron-soft:#fff3e6;
-  --red:#c0392b;--red-soft:#fdeceb;--ok:#1f8a5b;--ok-soft:#e5f5ec;--amber:#9a6a00;--amber-soft:#fff6dc;--focus:#e07a1f;
-  --display:"Saira Condensed","Arial Narrow",Arial,sans-serif;--body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
-@media (prefers-color-scheme:dark){:root{--bg:#0c1426;--surface:#142039;--ink:#e7ecf7;--muted:#9aa7c4;--line:#26355a;--navy:#08101f;--saffron:#f2933c;--saffron-soft:#2a2116;--red:#ff7a6b;--red-soft:#3a1d1a;--ok:#4cc38a;--ok-soft:#12301f;--amber:#f1c75b;--amber-soft:#2d2611}}
-*{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
-.wrap{max-width:940px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-header{background:var(--navy);color:#fff;border-bottom:4px solid var(--saffron)}
-header .wrap{padding-block:20px 18px;display:flex;gap:16px;align-items:center}
-.hlogo{width:58px;height:58px;border-radius:50%;background:#fff;flex:none;object-fit:contain}
-.kick{font:700 13px/1 var(--display);letter-spacing:.22em;color:#ffb366;text-transform:uppercase}
-h1{font:800 clamp(30px,5.4vw,46px)/1 var(--display);margin:4px 0 0}
-.tagline{color:#c9d3ea;font-size:14px;margin-top:4px}
-main{padding-block:20px 40px}
-.card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
-h2{font:800 26px/1.1 var(--display);margin:0 0 6px}
-h3{font:800 20px/1.1 var(--display);margin:0 0 4px;text-transform:uppercase;letter-spacing:.02em}
-.muted{color:var(--muted)}.small{font-size:13px}
-label.fl{display:block;font:700 13px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
-input[type=text],input[type=date],input[type=number],select,textarea{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:10px 12px}
-#code{font-size:20px;letter-spacing:.06em;text-transform:uppercase}
-textarea{min-height:60px;resize:vertical;font-weight:500}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.btn{font:700 15px var(--body);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px 18px;cursor:pointer;text-decoration:none;display:inline-block}
-.btn.or{background:var(--saffron)}.btn.ok{background:var(--ok)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
-.btn.sm{padding:8px 12px;font-size:14px}
-.btn[disabled]{opacity:.5;cursor:not-allowed}
-.msg{min-height:22px;font-weight:600;margin-top:10px}.msg.err{color:var(--red)}.msg.ok{color:var(--ok)}
-.gate{max-width:520px}
-.teambar{display:flex;gap:14px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px}
-.tlogo{width:60px;height:60px;border-radius:12px;object-fit:contain;flex:none;background:#fff}
-.teambar b{font:800 24px/1.05 var(--display);text-transform:uppercase;display:block}.teambar .sp{flex:1;min-width:0}
-.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.tabs button{font:800 17px var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 16px;cursor:pointer}
-.tabs button[aria-selected=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
-.payto{background:var(--saffron-soft);border:1.5px solid #f3c99a;border-radius:12px;padding:12px 14px;font-weight:600}
-.dues{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
-.due{border:1.5px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
-.due .amt{font:800 30px/1 var(--display)}
-.pill{display:inline-block;font:800 12px var(--display);letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:3px 10px}
-.pill.none{background:var(--bg);color:var(--muted);border:1px solid var(--line)}.pill.PENDING{background:var(--amber-soft);color:var(--amber)}
-.pill.APPROVED{background:var(--ok-soft);color:var(--ok)}.pill.REJECTED{background:var(--red-soft);color:var(--red)}
-.brk{width:100%;border-collapse:collapse;font-size:13px}.brk td{padding:3px 0;border-bottom:1px dashed var(--line)}.brk td:last-child{text-align:right;font-weight:700;white-space:nowrap}
-.rej{background:var(--red-soft);color:var(--red);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}@media (max-width:620px){.grid2{grid-template-columns:1fr}}
-.drop{display:block;border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;cursor:pointer;background:var(--bg)}
-.drop input{display:block;margin:6px auto 0}
-.chk{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-weight:600}.chk input{width:20px;height:20px;margin-top:2px;flex:none}
-.hist{list-style:none;padding:0;margin:0}.hist li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;border-bottom:1px solid var(--line);padding:10px 0}
-.hist .r{text-align:right}
-.jt{width:100%;border-collapse:collapse}.jt th{font:800 13px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 6px;border-bottom:2px solid var(--line)}
-.jt td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
-.jt select,.jt input{padding:8px 9px;font-size:15px}
-.jt .pn b{display:block}.jt .num{width:76px}.jt .nm{min-width:150px;text-transform:uppercase}
-.back{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:62px;height:62px;border-radius:10px 10px 6px 6px;background:var(--navy);color:#fff;line-height:1}
-.back i{font:normal 800 9px var(--display);letter-spacing:.05em;max-width:58px;overflow:hidden;white-space:nowrap}.back b{font:800 24px var(--display)}
-@media (max-width:720px){.jt thead{display:none}.jt tr{display:grid;grid-template-columns:1fr 1fr;gap:6px;border-bottom:2px solid var(--line);padding:10px 0}.jt td{border:0;padding:0}.jt td.pn{grid-column:1/-1}.jt td.pv{display:none}}
-.note{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:14px}
-footer{text-align:center;color:var(--muted);font-size:13px;padding:10px 16px 30px}
-</style></head>
+<script src="receipt.js?v=3" defer></script>
+<script src="common.js?v=3"></script>
+</head>
 <body>
-<header><div class="wrap"><img class="hlogo" src="a/knpl.png" alt="KNPL"><div><div class="kick">KNPL-7 · Franchises only</div><h1>Team Desk</h1><div class="tagline">Fee payments, receipts and jersey details – log in with your Team Draft code.</div></div></div></header>
+<header><div class="wrap"><img class="hlogo" src="a/knpl.png" alt="KNPL"><div class="sp"><div class="kick">KNPL-7 · <span data-t="franchises"></span></div><h1>Team Desk</h1><div class="tagline" data-t="tagline"></div></div>
+  <div class="lang" role="group" aria-label="Language"><button data-l="en" aria-pressed="true">English</button><button data-l="ml" aria-pressed="false">മലയാളം</button></div></div></header>
 <main class="wrap">
 <section id="gate" class="card gate">
-  <h2>Log in</h2>
-  <p class="muted" id="opennote">Use your <b>team code</b> – the same code you use for the Team Draft page.</p>
-  <label class="fl" for="code">Team code</label>
+  <h2 data-t="login"></h2>
+  <p class="muted" data-th="loginNote"></p>
+  <label class="fl" for="code" data-t="teamCode"></label>
   <input id="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KD7-XXXX-XXXXXX">
-  <div style="margin-top:12px"><button class="btn or" id="go">Log in</button></div>
+  <div style="margin-top:12px"><button class="btn or" id="go" data-t="loginBtn"></button></div>
   <div class="msg err" id="gmsg" role="alert"></div>
 </section>
 
 <section id="app" hidden>
-  <div class="teambar"><span id="tlogo"></span><div class="sp"><b id="tname"></b><span class="muted small" id="towner"></span></div><button class="btn ghost sm" id="out">Log out</button></div>
-  <div class="tabs" role="tablist"><button role="tab" id="tb-pay" aria-selected="true">Payments &amp; receipts</button><button role="tab" id="tb-jer" aria-selected="false">Jersey details</button></div>
+  <div class="teambar"><span id="tlogo"></span><div class="sp"><b id="tname"></b><span class="muted small" id="towner"></span></div><button class="btn ghost sm" id="out" data-t="logout"></button></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tb-pay" aria-selected="true" data-t="tabPay"></button>
+    <button role="tab" id="tb-jer" aria-selected="false" data-t="tabJer"></button>
+    <button role="tab" id="tb-rep" aria-selected="false" data-t="tabRep"></button>
+  </div>
 
   <div id="pg-pay">
     <div class="card">
-      <h2>Fees and receipts</h2>
-      <p class="muted">Pay, then upload the payment screenshot here. Once the KNPL committee approves it, your receipt is generated automatically and downloads the next time you open this page. You can also download it any time.</p>
-      <div class="payto" id="payto"></div>
-      <div class="dues" id="dues"></div>
+      <h2 data-t="payTitle"></h2>
+      <ol class="steps"><li data-t="ps1"></li><li data-t="ps2"></li><li data-t="ps3"></li><li data-t="ps4"></li></ol>
+      <div class="payto"><span data-t="payTo"></span> <b id="payto"></b></div>
+      <div class="utrbox">
+        <a href="a/sample-receipt.jpg" target="_blank" rel="noopener" class="sthumb"><img src="a/sample-receipt.jpg" alt="Sample payment receipt"></a>
+        <div><h3 data-t="utrTitle"></h3><p data-t="utr1"></p><p data-t="utr2"></p><p class="small muted" data-t="utr3"></p><a href="a/sample-receipt.jpg" target="_blank" rel="noopener" class="small" data-t="seeSample"></a></div>
+      </div>
+      <div class="msg ok" id="pmsg" role="status"></div>
+      <div style="margin:12px 0 4px"><button class="btn or" id="upAny" data-t="uploadAny"></button></div>
     </div>
     <div class="card" id="formcard" hidden>
-      <h2 id="ftitle">Upload payment</h2>
-      <p class="muted small" id="fsub"></p>
-      <div id="replbox" hidden class="grid2">
-        <div><label class="fl" for="rout">Player being replaced</label><select id="rout"></select></div>
-        <div><label class="fl" for="rin">Replacement player Reg ID</label><input id="rin" type="text" inputmode="numeric" placeholder="e.g. 0123"></div>
-        <p class="small muted" style="grid-column:1/-1;margin:6px 0 0">The ₹500 is paid by the replacement player and given by KNPL to the replaced player (50% of his registration fee). Replacement is from the reserve pool only, for the whole season, with Skill Rating equal or lower.</p>
-      </div>
+      <h2 data-t="formTitle"></h2>
+      <label class="fl" for="fitem" data-t="fItem"></label><select id="fitem"></select>
+      <p class="small muted" id="famt"></p>
       <div class="grid2">
-        <div><label class="fl" for="fdate">Date of payment</label><input id="fdate" type="date"></div>
-        <div><label class="fl" for="fmode">Payment mode</label><select id="fmode"></select></div>
-        <div><label class="fl" for="futr">Transaction reference (UTR / UPI ref.)</label><input id="futr" type="text" autocomplete="off" placeholder="12-digit UPI reference"></div>
-        <div><label class="fl" for="fpayer">Paid by (name)</label><input id="fpayer" type="text"></div>
+        <div><label class="fl" for="fdate" data-t="fDate"></label><input id="fdate" type="date"></div>
+        <div><label class="fl" for="fmode" data-t="fMode"></label><select id="fmode"></select></div>
+        <div><label class="fl" for="futr" data-t="fUtr"></label><input id="futr" type="text" autocomplete="off" data-tp="fUtrPh"></div>
+        <div><label class="fl" for="fpayer" data-t="fPayer"></label><input id="fpayer" type="text"></div>
       </div>
-      <label class="fl" for="ffile">Payment screenshot or receipt</label>
-      <label class="drop">JPG, PNG, WEBP or PDF · up to <span id="maxmb">8</span> MB<input id="ffile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
-      <label class="fl" for="fnote">Note (optional)</label><textarea id="fnote" maxlength="300"></textarea>
-      <label class="chk"><input type="checkbox" id="fack"><span>I confirm the amount shown was paid to KNPL and the details above are correct.</span></label>
-      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn or" id="fsend">Submit for approval</button><button class="btn ghost" id="fcancel">Cancel</button></div>
+      <label class="fl" for="ffile" data-t="fFile"></label>
+      <label class="drop"><span data-t="fFileNote"></span><input id="ffile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+      <label class="fl" for="fnote" data-t="fNote"></label><textarea id="fnote" maxlength="300"></textarea>
+      <label class="chk"><input type="checkbox" id="fack"><span data-t="fAck"></span></label>
+      <div class="row"><button class="btn or" id="fsend" data-t="submit"></button><button class="btn ghost" id="fcancel" data-t="cancel"></button></div>
       <div class="msg" id="fmsg" role="status"></div>
     </div>
-    <div class="card"><h3>Submission history</h3><ul class="hist" id="hist"></ul></div>
+    <div class="card"><h3 data-t="schedTitle"></h3><div class="sched" id="sched"></div>
+      <details class="small" style="margin-top:10px"><summary data-t="draftBreak"></summary><table class="brk" id="dbrk"></table></details></div>
+    <div class="card"><h3 data-t="histTitle"></h3><ul class="hist" id="hist"></ul></div>
   </div>
 
   <div id="pg-jer" hidden>
     <div class="card">
-      <h2>Jersey details</h2>
-      <p class="muted">Enter the details for every player in your team. The committee supplies the jersey only.</p>
-      <div class="note" id="jnote"></div>
-      <div style="overflow-x:auto;margin-top:12px"><table class="jt"><thead><tr><th>Player</th><th>Size</th><th>Sleeve</th><th>Name to print</th><th>No.</th><th>Back</th></tr></thead><tbody id="jrows"></tbody></table></div>
-      <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn or" id="jsave">Save jersey details</button><span class="small muted" id="jsaved"></span></div>
+      <h2 data-t="jerTitle"></h2>
+      <p class="muted" data-t="jerIntro"></p>
+      <div class="share">
+        <h3 data-t="shareTitle"></h3>
+        <p class="small" data-t="shareNote"></p>
+        <div class="linkrow"><input id="jlink" type="text" readonly><button class="btn sm" id="jcopy" data-t="copy"></button><a class="btn ok sm" id="jwa" target="_blank" rel="noopener" data-t="shareWa"></a></div>
+      </div>
+      <ul class="dl"><li data-t="jd1"></li><li data-t="jd2"></li><li data-t="jd3"></li><li data-t="jd4"></li></ul>
+    </div>
+    <div class="card">
+      <h3 data-t="jerList"></h3>
+      <p class="small muted" data-t="jerListNote"></p>
+      <div style="overflow-x:auto"><table class="jt"><thead><tr><th data-t="thPlayer"></th><th data-t="thSize"></th><th data-t="thSleeve"></th><th data-t="thName"></th><th data-t="thNo"></th><th data-t="thBack"></th></tr></thead><tbody id="jrows"></tbody></table></div>
+      <div class="row"><button class="btn or" id="jsave" data-t="jSave"></button></div>
       <div class="msg" id="jmsg" role="status"></div>
     </div>
   </div>
+
+  <div id="pg-rep" hidden>
+    <div class="card">
+      <h2 data-t="repTitle"></h2>
+      <ul class="dl"><li data-t="r1"></li><li data-t="r2"></li><li data-t="r3"></li><li data-t="r4"></li><li data-t="r5"></li></ul>
+      <div id="repclosed" class="note"></div>
+      <div id="repform" hidden>
+        <div class="grid2">
+          <div><label class="fl" for="rout" data-t="rOut"></label><select id="rout"></select></div>
+          <div><label class="fl" for="rin" data-t="rIn"></label><select id="rin"></select></div>
+        </div>
+        <p class="small muted" id="rinfo"></p>
+        <label class="chk"><input type="checkbox" id="ragree"><span data-t="rAgree"></span></label>
+        <div class="grid2">
+          <div><label class="fl" for="rdate" data-t="fDate"></label><input id="rdate" type="date"></div>
+          <div><label class="fl" for="rmode" data-t="fMode"></label><select id="rmode"></select></div>
+          <div><label class="fl" for="rutr" data-t="fUtr"></label><input id="rutr" type="text" autocomplete="off" data-tp="fUtrPh"></div>
+          <div><label class="fl" for="rpayer" data-t="rPayer"></label><input id="rpayer" type="text"></div>
+        </div>
+        <label class="fl" for="rfile" data-t="fFile"></label>
+        <label class="drop"><span data-t="fFileNote"></span><input id="rfile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+        <div class="row"><button class="btn or" id="rsend" data-t="rSubmit"></button></div>
+        <div class="msg" id="rmsg" role="status"></div>
+      </div>
+    </div>
+    <div class="card"><h3 data-t="rList"></h3><ul class="hist" id="rhist"></ul></div>
+  </div>
 </section>
 </main>
-<footer>KNPL-7 Team Desk · Queries: Krishnadas – 99862 18725 · Team KNPL</footer>
-
-<script>
-const API_URL='https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
-const $=id=>document.getElementById(id);
-const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
-const slug=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-const title=t=>String(t||'').toLowerCase().replace(/\b[a-z]/g,m=>m.toUpperCase()).replace(/\bOf\b/g,'of');
-const inr=v=>'₹'+Number(v||0).toLocaleString('en-IN',{maximumFractionDigits:2});
-let CODE='',S=null,FTYPE='';
-async function api(fn,...args){let r;try{r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'})}catch(_){throw new Error('Could not reach the KNPL server. Check your internet connection and try again.')}
-  const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed.');return j.result}
-function b64(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(',')[1]);fr.onerror=()=>rej(new Error('Could not read the file.'));fr.readAsDataURL(file)})}
-
-async function login(){
-  const c=$('code').value.trim();$('gmsg').textContent='';if(!c){$('gmsg').textContent='Enter your team code.';return}
-  $('go').disabled=true;$('go').textContent='Checking…';
-  try{const r=await api('teamDeskLogin',c);CODE=c;try{sessionStorage.setItem('knpl_td',c)}catch(e){}show(r)}
-  catch(e){$('gmsg').textContent=e.message}finally{$('go').disabled=false;$('go').textContent='Log in'}
-}
-function show(r){
-  S=r;$('gate').hidden=true;$('app').hidden=false;
-  const im=el('img','tlogo');im.alt='';im.src='../draft/logos/'+slug(title(r.team))+'.png';im.onerror=()=>im.remove();$('tlogo').replaceChildren(im);
-  $('tname').textContent=title(r.team);$('towner').textContent='Owner: '+(r.owner.name||'')+' · KNPL7-'+r.owner.id;
-  $('payto').textContent='Pay to → '+r.payTo;$('maxmb').textContent=r.maxMb;
-  $('fmode').replaceChildren(...r.modes.map(m=>{const o=el('option',null,m);o.value=m;return o}));
-  renderDues();renderHist();renderJersey();autoReceipts();
-}
-function latest(type){const l=S.payments.filter(p=>p.type===type);return l[l.length-1]||null}
-function renderDues(){
-  const box=$('dues');box.replaceChildren();
-  const card=(type,amt,extra)=>{
-    const p=latest(type),d=el('div','due');
-    d.append(el('h3',null,{OWN:'Ownership fee',DRAFT:'Draft fee',REPL:'Season replacement'}[type]),el('div','muted small',S.kinds[type]));
-    d.append(el('div','amt',inr(amt)));if(extra)d.append(extra);
-    const st=p?p.status:'none';d.append(el('span','pill '+st,{none:'Not submitted',PENDING:'Waiting for approval',APPROVED:'Approved · '+(p&&p.receiptNo),REJECTED:'Rejected'}[st]));
-    if(p&&p.status==='REJECTED'&&p.remarks)d.append(el('div','rej','Reason: '+p.remarks));
-    const row=el('div');row.style.cssText='display:flex;gap:8px;flex-wrap:wrap';
-    if(type==='REPL'){const b=el('button','btn or sm','Upload replacement payment');b.onclick=()=>openForm('REPL');row.append(b)}
-    else if(!p||p.status==='REJECTED'){const b=el('button','btn or sm',p?'Upload again':'Upload payment proof');b.onclick=()=>openForm(type);row.append(b)}
-    if(p&&p.status==='APPROVED'&&type!=='REPL'){const b=el('button','btn ok sm','Download receipt');b.onclick=()=>receipt(p,true);row.append(b)}
-    d.append(row);box.append(d);
-  };
-  card('OWN',S.dues.OWN);
-  const t=el('table','brk');S.dues.DRAFT.lines.forEach(l=>{const tr=el('tr');tr.append(el('td',null,(l.owner?'Owner · ':'')+l.name+' · '+Math.round(l.share*100)+'% of '+inr(l.price)),el('td',null,inr(l.pay)));t.append(tr)});
-  card('DRAFT',S.dues.DRAFT.total,t);
-  const n=S.payments.filter(p=>p.type==='REPL').length;
-  card('REPL',S.dues.REPL,el('div','small muted',n?n+' replacement payment(s) – see history below.':'Only if a player is replaced for the whole season.'));
-}
-function renderHist(){
-  const ul=$('hist');ul.replaceChildren();
-  if(!S.payments.length){ul.append(el('li','muted','No payments submitted yet.'));return}
-  S.payments.slice().reverse().forEach(p=>{
-    const li=el('li'),a=el('div'),b=el('div','r');
-    a.append(el('b',null,p.kind));
-    a.append(el('div','small muted',inr(p.amount)+' · '+p.mode+(p.utr?' · Ref '+p.utr:'')+' · paid '+p.paidOn.split('-').reverse().join('-')+' · '+p.id));
-    if(p.type==='REPL'&&p.replIn)a.append(el('div','small muted',(p.replOut?p.replOut.name+' → ':'')+p.replIn.name+' (KNPL7-'+p.replIn.id+')'));
-    if(p.status==='REJECTED'&&p.remarks)a.append(el('div','rej','Reason: '+p.remarks));
-    b.append(el('span','pill '+p.status,p.status==='APPROVED'?p.receiptNo:p.status.toLowerCase()));
-    if(p.status==='APPROVED'){const d=el('button','btn ok sm','Receipt');d.style.marginTop='6px';d.style.display='block';d.onclick=()=>receipt(p,true);b.append(d)}
-    li.append(a,b);ul.append(li);
-  });
-}
-function openForm(type){
-  FTYPE=type;$('formcard').hidden=false;$('fmsg').textContent='';$('fack').checked=false;$('ffile').value='';$('futr').value='';$('fnote').value='';
-  $('fdate').max=new Date().toISOString().slice(0,10);$('fdate').value=$('fdate').max;$('fpayer').value=type==='REPL'?'':(S.owner.name||'');
-  const amt=type==='DRAFT'?S.dues.DRAFT.total:type==='OWN'?S.dues.OWN:S.dues.REPL;
-  $('ftitle').textContent='Upload payment – '+{OWN:'Ownership fee',DRAFT:'Draft fee',REPL:'Season replacement'}[type];
-  $('fsub').textContent=S.kinds[type]+' · Amount: '+inr(amt);
-  $('replbox').hidden=type!=='REPL';
-  if(type==='REPL'){$('rout').replaceChildren(el('option',null,'Choose player'),...S.players.filter(p=>p.role!=='Replacement').map(p=>{const o=el('option',null,p.name+' (KNPL7-'+p.id+')');o.value=p.id;return o}));$('rout').options[0].value='';$('rin').value=''}
-  $('formcard').scrollIntoView({behavior:'smooth',block:'start'});
-}
-async function sendForm(){
-  const m=$('fmsg');m.className='msg err';m.textContent='';
-  const f=$('ffile').files[0];
-  if(!$('fdate').value)return m.textContent='Enter the date of payment.';
-  if($('fmode').value!==S.modes[2]&&$('futr').value.trim().length<6)return m.textContent='Enter the transaction reference.';
-  if($('fpayer').value.trim().length<3)return m.textContent='Enter the name of the person who paid.';
-  if(FTYPE==='REPL'&&(!$('rout').value||!$('rin').value.trim()))return m.textContent='Choose the player being replaced and enter the replacement player\'s Reg ID.';
-  if(!f)return m.textContent='Attach the payment screenshot or receipt.';
-  if(f.size>S.maxMb*1048576)return m.textContent='The file is larger than '+S.maxMb+' MB.';
-  if(!$('fack').checked)return m.textContent='Please tick the confirmation.';
-  $('fsend').disabled=true;m.className='msg';m.textContent='Uploading…';
-  try{
-    const r=await api('teamPaySubmit',CODE,{type:FTYPE,paidOn:$('fdate').value,mode:$('fmode').value,utr:$('futr').value,payer:$('fpayer').value,
-      replIn:$('rin').value,replOut:$('rout').value,note:$('fnote').value,file:{name:f.name,mime:f.type,data:await b64(f)}});
-    S=r;renderDues();renderHist();renderJersey();$('formcard').hidden=true;
-    $('dues').scrollIntoView({behavior:'smooth'});alertBox('Submitted. The committee will verify it; your receipt will be ready here once approved.');
-  }catch(e){m.className='msg err';m.textContent=e.message}finally{$('fsend').disabled=false}
-}
-function alertBox(t){const d=el('div','msg ok',t);$('dues').before(d);setTimeout(()=>d.remove(),8000)}
-async function receipt(p,manual){
-  if(!window.jspdf||!window.KNPLReceipt){alert('The receipt tool did not load. Check your connection and reload the page.');return}
-  const doc=await KNPLReceipt.makeReceipt({p,team:S.team,owner:S.owner,lines:S.dues.DRAFT.lines,base:'../'});
-  doc.save(KNPLReceipt.fileName(p,S.team));
-  try{localStorage.setItem('knpl_rct_'+p.receiptNo,'1')}catch(e){}
-}
-async function autoReceipts(){
-  const todo=S.payments.filter(p=>p.status==='APPROVED'&&p.receiptNo&&!(()=>{try{return localStorage.getItem('knpl_rct_'+p.receiptNo)}catch(e){return '1'}})());
-  if(!todo.length)return;
-  for(let i=0;i<50&&!(window.jspdf&&window.KNPLReceipt);i++)await new Promise(r=>setTimeout(r,100));
-  for(const p of todo){await receipt(p,false);await new Promise(r=>setTimeout(r,600))}
-  alertBox(todo.length+' new receipt'+(todo.length>1?'s':'')+' downloaded: '+todo.map(p=>p.receiptNo).join(', ')+'.');
-}
-/* ---------- jersey ---------- */
-function renderJersey(){
-  const J=S.jersey,tb=$('jrows');tb.replaceChildren();
-  $('jnote').innerHTML='';
-  [ 'Size: '+J.sizes.join(' · ')+'. Check the size chart shared by the committee before choosing.',
-    'Sleeve: half or full.',
-    'Name to print: capitals, up to 12 characters (letters, space, dot, hyphen).',
-    'Number: 0 to 99, unique within the team.',
-    'Players bought at the Mega Auction (12 Dec) and approved season replacements appear here once the committee adds them.',
-    J.locked?'Jersey details are now LOCKED. Contact the committee for any change.':(J.lockAt?'You can change details until '+J.lockAt+'.':'You can change details until the committee locks the list for printing.')
-  ].forEach(t=>$('jnote').append(el('div',null,'• '+t)));
-  S.players.forEach(p=>{
-    const j=p.j||{},tr=el('tr');tr.dataset.id=p.id;
-    const pn=el('td','pn');pn.append(el('b',null,p.name||('KNPL7-'+p.id)),el('span','small muted','KNPL7-'+p.id+' · '+p.role));
-    const sz=el('select');sz.append(el('option',null,'Size'));sz.options[0].value='';J.sizes.forEach(s=>{const o=el('option',null,s);o.value=s;sz.append(o)});sz.value=j.size||'';sz.dataset.k='size';
-    const sl=el('select');[['','Sleeve'],['Half','Half'],['Full','Full']].forEach(([v,t])=>{const o=el('option',null,t);o.value=v;sl.append(o)});sl.value=j.sleeve||'';sl.dataset.k='sleeve';
-    const nm=el('input','nm');nm.type='text';nm.maxLength=12;nm.value=j.name||'';nm.placeholder='NAME';nm.dataset.k='name';
-    const nu=el('input','num');nu.type='text';nu.inputMode='numeric';nu.maxLength=2;nu.value=j.num||'';nu.placeholder='No.';nu.dataset.k='num';
-    const bk=el('span','back');const bi=el('i'),bb=el('b');bk.append(bi,bb);
-    const upd=()=>{nm.value=nm.value.toUpperCase().replace(/[^A-Z .\-']/g,'');nu.value=nu.value.replace(/\D/g,'');bi.textContent=nm.value||'NAME';bb.textContent=nu.value||'00'};
-    nm.oninput=upd;nu.oninput=upd;upd();
-    [sz,sl,nm,nu].forEach(x=>{x.disabled=J.locked;x.setAttribute('aria-label',(x.dataset.k)+' for '+p.name)});
-    const td=x=>{const c=el('td');c.append(x);return c};const pv=td(bk);pv.className='pv';
-    tr.append(pn,td(sz),td(sl),td(nm),td(nu),pv);tb.append(tr);
-  });
-  if(!S.players.length)tb.append(el('tr',null,'No players yet.'));
-  const last=S.players.map(p=>p.j&&p.j.at).filter(Boolean).sort().pop();$('jsaved').textContent=last?'Last saved: '+last:'';
-  $('jsave').disabled=J.locked;
-}
-async function saveJersey(){
-  const m=$('jmsg');m.className='msg err';m.textContent='';const rows=[];const nums={};
-  for(const tr of $('jrows').querySelectorAll('tr[data-id]')){
-    const g=k=>tr.querySelector('[data-k='+k+']').value.trim(),r={id:tr.dataset.id,size:g('size'),sleeve:g('sleeve'),name:g('name'),num:g('num')};
-    const any=r.size||r.sleeve||r.name||r.num;if(!any)continue;
-    const who=tr.querySelector('b').textContent;
-    if(!r.size||!r.sleeve||!r.name||r.num==='')return m.textContent='Complete all four details for '+who+' (or leave the row empty).';
-    const n=String(Number(r.num));if(nums[n])return m.textContent='Number '+n+' is given to '+nums[n]+' and '+who+'. Each number must be unique.';nums[n]=who;
-    rows.push(r);
-  }
-  if(!rows.length)return m.textContent='Enter the details for at least one player.';
-  $('jsave').disabled=true;m.className='msg';m.textContent='Saving…';
-  try{S=await api('teamJerseySave',CODE,rows);renderJersey();m.className='msg ok';m.textContent='Saved for '+rows.length+' player'+(rows.length>1?'s':'')+'.'}
-  catch(e){m.className='msg err';m.textContent=e.message}finally{$('jsave').disabled=S.jersey.locked}
-}
-function tab(t){['pay','jer'].forEach(k=>{$('tb-'+k).setAttribute('aria-selected',k===t);$('pg-'+k).hidden=k!==t})}
-$('go').onclick=login;$('code').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
-$('fsend').onclick=sendForm;$('fcancel').onclick=()=>{$('formcard').hidden=true};
-$('jsave').onclick=saveJersey;$('tb-pay').onclick=()=>tab('pay');$('tb-jer').onclick=()=>tab('jer');
-$('out').onclick=()=>{try{sessionStorage.removeItem('knpl_td')}catch(e){}location.reload()};
-(async()=>{
-  try{const s=await api('teamDeskStatus');if(!s.open){$('opennote').innerHTML='The Team Desk opens on <b>'+s.opens+'</b>. Use your <b>team code</b> – the same code you use for the Team Draft page.'}}catch(e){}
-  try{const c=sessionStorage.getItem('knpl_td');if(c){$('code').value=c;login()}}catch(e){}
-})();
-</script>
+<footer data-t="footer"></footer>
+<script src="desk.js?v=3"></script>
 </body></html>

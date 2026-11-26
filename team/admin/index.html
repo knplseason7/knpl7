@@ -5,98 +5,99 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@700;800&family=Public+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../desk.css?v=3">
+<script src="../common.js?v=3"></script>
 <style>
-:root{--bg:#f3f5fa;--surface:#fff;--ink:#13213f;--muted:#5b6784;--line:#d9dfec;--navy:#0b1a38;--saffron:#e07a1f;--red:#c0392b;--red-soft:#fdeceb;--ok:#1f8a5b;--ok-soft:#e5f5ec;--amber:#9a6a00;--amber-soft:#fff6dc;
-  --display:"Saira Condensed","Arial Narrow",Arial,sans-serif;--body:"Public Sans",system-ui,sans-serif}
-*{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body)}
-header{background:var(--navy);color:#fff;border-bottom:4px solid var(--saffron);padding:16px}
-header h1{font:800 32px/1 var(--display);margin:0}.k{font:700 12px var(--display);letter-spacing:.2em;color:#ffb366}
-main{max-width:1100px;margin:0 auto;padding:16px}
-.card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-h2{font:800 24px var(--display);margin:0 0 8px}
-input,select,textarea{font:600 15px var(--body);border:2px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--bg);color:var(--ink)}
-.btn{font:700 14px var(--body);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:9px 14px;cursor:pointer}
-.btn.ok{background:var(--ok)}.btn.no{background:var(--red)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}.btn[disabled]{opacity:.5}
-.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.tabs button{font:800 16px var(--display);text-transform:uppercase;letter-spacing:.06em;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
-.tabs button[aria-selected=true]{background:var(--navy);color:#fff}
-.pill{font:800 12px var(--display);letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:3px 10px;display:inline-block}
-.PENDING{background:var(--amber-soft);color:var(--amber)}.APPROVED{background:var(--ok-soft);color:var(--ok)}.REJECTED{background:var(--red-soft);color:var(--red)}.none{background:var(--bg);color:var(--muted)}
 .pay{border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:8px}
 .pay .d{font-size:14px;color:var(--muted)}.pay b.t{font:800 19px var(--display);text-transform:uppercase}
 .act{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}.act input{flex:1;min-width:200px}
-table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;font:800 13px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line);padding:6px}
-td{padding:6px;border-bottom:1px solid var(--line)}
-.msg{font-weight:600;min-height:20px}.err{color:var(--red)}
+table.g{width:100%;border-collapse:collapse;font-size:13px}table.g th{text-align:left;font:800 12px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line);padding:6px 4px}
+table.g td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.dot{display:inline-block;min-width:26px;text-align:center;border-radius:6px;padding:2px 4px;font-weight:700;font-size:12px}
+.dot.APPROVED{background:var(--ok-soft);color:var(--ok)}.dot.PENDING{background:var(--amber-soft);color:var(--amber)}.dot.REJECTED,.dot.late{background:var(--red-soft);color:var(--red)}.dot.none{background:var(--bg);color:var(--muted)}
+textarea.big{min-height:220px;font:500 13px ui-monospace,monospace}
 </style></head><body>
-<header><div class="k">KNPL-7 · COMMITTEE ONLY</div><h1>Team Desk – Approvals</h1></header>
-<main>
-<section class="card" id="gate" style="max-width:460px"><h2>Committee PIN</h2><input id="pin" type="password" autocomplete="off" style="width:100%"><div style="margin-top:10px"><button class="btn" id="go">Open</button></div><div class="msg err" id="gmsg"></div></section>
+<header><div class="wrap"><div class="sp"><div class="kick">KNPL-7 · COMMITTEE ONLY</div><h1>Team Desk – Committee</h1></div></div></header>
+<main class="wrap" style="max-width:1150px">
+<section class="card gate" id="gate"><h2>Committee PIN</h2><input id="pin" type="password" autocomplete="off"><div class="row"><button class="btn" id="go">Open</button></div><div class="msg err" id="gmsg"></div></section>
 <section id="app" hidden>
-  <div class="tabs"><button id="t1" aria-selected="true">Payments</button><button id="t2" aria-selected="false">Team summary</button><button id="t3" aria-selected="false">Jersey details</button><button class="btn ghost" id="reload" style="margin-left:auto">Refresh</button></div>
-  <div id="p1"><div class="card"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">Payments</h2>
-    <select id="flt"><option value="PENDING">Waiting for approval</option><option value="">All</option><option value="APPROVED">Approved</option><option value="REJECTED">Rejected</option></select>
-    <span class="d" id="cnt"></span></div><div class="msg" id="amsg"></div><div id="plist" style="margin-top:10px"></div></div></div>
-  <div id="p2" hidden><div class="card"><h2>Team summary</h2><div style="overflow-x:auto"><table id="sum"></table></div></div></div>
-  <div id="p3" hidden><div class="card"><div style="display:flex;gap:10px;align-items:center"><h2 style="margin:0">Jersey details</h2><button class="btn" id="csv">Download CSV for the printer</button></div><div style="overflow-x:auto;margin-top:10px"><table id="jt"></table></div></div></div>
+  <div class="tabs"><button id="t1" aria-selected="true">Approvals</button><button id="t2" aria-selected="false">Team summary</button><button id="t3" aria-selected="false">Jersey fee</button><button id="t4" aria-selected="false">Auction squads</button><button id="t5" aria-selected="false">Jersey details</button><button id="t6" aria-selected="false">Team links</button><button class="btn ghost sm" id="reload" style="margin-left:auto">Refresh</button></div>
+  <div id="p1"><div class="card"><div class="row" style="margin:0"><h2 style="margin:0">Receipts to verify</h2>
+    <select id="flt" style="width:auto"><option value="PENDING">Waiting for approval</option><option value="">All</option><option value="APPROVED">Approved</option><option value="REJECTED">Rejected</option></select>
+    <span class="small muted" id="cnt"></span></div><p class="small muted">Open the proof, check the transaction number, amount and date against the bank statement, then approve. Rejecting needs a reason (the team sees it and can upload again).</p><div class="msg" id="amsg"></div><div id="plist"></div></div></div>
+  <div id="p2" hidden><div class="card"><h2>Team summary</h2><p class="small muted">✓ approved · … waiting · ✗ rejected · ! due date passed and nothing uploaded</p><div style="overflow-x:auto"><table class="g" id="sum"></table></div></div></div>
+  <div id="p3" hidden><div class="card"><h2>Team jersey fee (at actuals)</h2><p class="small muted">Only for teams without a jersey sponsor. Update by 25 Jan 2027; teams pay by 10 Feb 2027. Enter 0 to remove.</p><div style="overflow-x:auto"><table class="g" id="fees"></table></div><div class="msg" id="fmsg"></div></div></div>
+  <div id="p4" hidden><div class="card"><h2>Mega Auction squads</h2>
+    <p class="small muted">After the auction on 12 Dec, paste the result from the auction platform export (Excel → copy the rows). Each line must contain the player's Reg ID (e.g. 0123 or KNPL7-0123) and his team name. Owners and drafted players are added automatically, so including them is fine. "Check" first, then "Save" – saving replaces the whole list. Teams and players see these players from 12 Dec.</p>
+    <textarea class="big" id="sq" placeholder="KNPL7-0123	Player Name	Madhura Mavericks	6,200"></textarea>
+    <div class="row"><button class="btn" id="sqc">Check</button><button class="btn ok" id="sqs">Save squads</button></div><div class="msg" id="sqm"></div><div id="sqr" class="small"></div></div></div>
+  <div id="p5" hidden><div class="card"><div class="row" style="margin:0"><h2 style="margin:0">Jersey details</h2><button class="btn" id="csv">Download CSV for the printer</button></div><div style="overflow-x:auto;margin-top:10px"><table class="g" id="jt"></table></div></div></div>
+  <div id="p6" hidden><div class="card"><h2>Team jersey links</h2><p class="small muted">Each owner also sees and shares his own link on the Team Desk.</p><div style="overflow-x:auto"><table class="g" id="links"></table></div></div></div>
 </section>
 </main>
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbxX7MQ9VkfZo7USkdxQzldaOVKIkE8hFiwe-xZsJl_ynAKcGBu8wRX6OmwMBTb22ARg/exec';
-const $=id=>document.getElementById(id);const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
-const title=t=>String(t||'').toLowerCase().replace(/\b[a-z]/g,m=>m.toUpperCase()).replace(/\bOf\b/g,'of');
-const inr=v=>'₹'+Number(v||0).toLocaleString('en-IN',{maximumFractionDigits:2});
-let PIN='',D=null;
-async function api(fn,...args){const r=await fetch(API_URL,{method:'POST',body:JSON.stringify({fn,args}),redirect:'follow'});const j=await r.json();if(!j.ok)throw new Error(j.error||'Request failed.');return j.result}
-async function open(){$('gmsg').textContent='';$('go').disabled=true;try{D=await api('teamDeskAdmin',$('pin').value);PIN=$('pin').value;$('gate').hidden=true;$('app').hidden=false;render()}catch(e){$('gmsg').textContent=e.message}finally{$('go').disabled=false}}
-function render(){renderPay();renderSum();renderJer()}
+LANG='en';let PIN='',D=null;const NAME={CD1:'Caution deposit 1/5',CD2:'Caution deposit 2/5',CD3:'Caution deposit 3/5',CD4:'Caution deposit 4/5',CD5:'Caution deposit 5/5',OWN1:'Ownership fee 1/3',DR1:'Draft fee 1/2',DR2:'Draft fee 2/2',JER:'Jersey fee',REPL:'Season replacement'};
+async function open(){$('gmsg').textContent='';$('go').disabled=true;try{D=await api('teamDeskAdmin',$('pin').value);PIN=$('pin').value;$('gate').hidden=true;$('app').hidden=false;render()}catch(e){$('gmsg').textContent=msgOf(e)}finally{$('go').disabled=false}}
+function render(){renderPay();renderSum();renderFees();renderJer();renderLinks()}
 function renderPay(){
   const f=$('flt').value,list=D.payments.filter(p=>!f||p.status===f).slice().reverse(),box=$('plist');box.replaceChildren();
   $('cnt').textContent=D.payments.filter(p=>p.status==='PENDING').length+' waiting · '+D.payments.length+' in all';
-  if(!list.length)box.append(el('p','d','Nothing here.'));
+  if(!list.length)box.append(el('p','muted','Nothing here.'));
   list.forEach(p=>{
     const c=el('div','pay'),a=el('div'),b=el('div');b.style.textAlign='right';
     a.append(el('b','t',title(p.team)),el('div',null,p.kind+' · '+inr(p.amount)));
-    a.append(el('div','d',p.mode+(p.utr?' · Ref '+p.utr:'')+' · paid '+p.paidOn+' by '+p.payer+' · submitted '+p.at+' · '+p.id));
-    if(p.type==='REPL')a.append(el('div','d','Replaced: '+(p.replOut?p.replOut.name+' (KNPL7-'+p.replOut.id+')':'-')+' → replacement: '+(p.replIn?p.replIn.name+' (KNPL7-'+p.replIn.id+')':'-')));
-    if(p.note)a.append(el('div','d','Note: '+p.note));
-    if(p.remarks)a.append(el('div','d','Remarks: '+p.remarks));
+    a.append(el('div','d',p.mode+(p.utr?' · UTR '+p.utr:'')+' · paid '+dmy(p.paidOn)+' by '+p.payer+' · submitted '+p.at+' · '+p.id));
+    if(p.type==='REPL')a.append(el('div','d','Replaced: '+(p.replOut?p.replOut.name+' (KNPL7-'+p.replOut.id+', SR '+p.replOut.sr+')':'-')+' → replacement: '+(p.replIn?p.replIn.name+' (KNPL7-'+p.replIn.id+', SR '+p.replIn.sr+')':'-')));
+    if(p.note)a.append(el('div','d','Note: '+p.note));if(p.remarks)a.append(el('div','d','Remarks: '+p.remarks));
     if(p.proof){const l=el('a',null,'Open payment proof ↗');l.href=p.proof;l.target='_blank';l.rel='noopener';a.append(l)}
     b.append(el('span','pill '+p.status,p.status==='APPROVED'?p.receiptNo:p.status));
-    if(p.status==='PENDING'){
-      const act=el('div','act'),rm=el('input');rm.placeholder='Reason (needed to reject)';
-      const ok=el('button','btn ok','Approve'),no=el('button','btn no','Reject');
-      ok.onclick=()=>decide(p.id,'APPROVED','',[ok,no]);no.onclick=()=>decide(p.id,'REJECTED',rm.value,[ok,no]);
-      act.append(rm,ok,no);a.append(act);
-    }
+    if(p.status==='PENDING'){const act=el('div','act'),rm=el('input');rm.type='text';rm.placeholder='Reason (needed to reject)';
+      const ok=el('button','btn ok sm','Approve'),no=el('button','btn no sm','Reject');ok.onclick=()=>decide(p.id,'APPROVED','',[ok,no]);no.onclick=()=>decide(p.id,'REJECTED',rm.value,[ok,no]);act.append(rm,ok,no);a.append(act)}
     c.append(a,b);box.append(c);
   });
 }
 async function decide(id,dec,rm,btns){
-  if(dec==='APPROVED'&&!confirm('Approve '+id+'? A receipt number will be issued and the team can download the receipt.'))return;
+  if(dec==='APPROVED'&&!confirm('Approve '+id+'? A receipt number will be issued and the team gets the receipt.'))return;
   btns.forEach(b=>b.disabled=true);$('amsg').textContent='';
-  try{D=await api('teamDeskAdminDecide',PIN,id,dec,rm);render();$('amsg').textContent=id+' '+dec.toLowerCase()+'.'}catch(e){$('amsg').textContent=e.message;btns.forEach(b=>b.disabled=false)}
+  try{D=await api('teamDeskAdminDecide',PIN,id,dec,rm);render();$('amsg').className='msg ok';$('amsg').textContent=id+' '+dec.toLowerCase()+'.'}catch(e){$('amsg').className='msg err';$('amsg').textContent=msgOf(e);btns.forEach(b=>b.disabled=false)}
 }
+const todayIso=()=>new Date(Date.now()+5.5*3600e3).toISOString().slice(0,10);
 function renderSum(){
-  const t=$('sum');t.replaceChildren();const h=el('tr');['Team','Ownership fee','Draft fee','Replacements','Jersey rows'].forEach(x=>h.append(el('th',null,x)));t.append(h);
-  D.teams.slice().sort().forEach(team=>{
-    const tr=el('tr');tr.append(el('td',null,title(team)));
-    ['OWN','DRAFT'].forEach(ty=>{const l=D.payments.filter(p=>p.team===team&&p.type===ty);const p=l[l.length-1];const td=el('td');td.append(el('span','pill '+(p?p.status:'none'),p?(p.status==='APPROVED'?p.receiptNo:p.status):'not paid'));tr.append(td)});
-    tr.append(el('td',null,String(D.payments.filter(p=>p.team===team&&p.type==='REPL').length)));
-    tr.append(el('td',null,String(D.jersey.filter(j=>j.team===team).length)));t.append(tr);
+  const t=$('sum');t.replaceChildren();const h=el('tr');['Team'].concat(D.schedule.map(s=>NAME[s.code])).concat(['Repl.','Drafted','Auction','Jersey rows']).forEach(x=>h.append(el('th',null,x)));t.append(h);
+  D.teams.slice().sort((a,b)=>a.team.localeCompare(b.team)).forEach(tm=>{
+    const tr=el('tr');tr.append(el('td',null,title(tm.team)));
+    D.schedule.forEach(s=>{const l=D.payments.filter(p=>p.team===tm.team&&p.type===s.code),p=l[l.length-1];const st=p?p.status:(s.due<todayIso()?'late':'none');
+      const td=el('td');td.append(el('span','dot '+st,{APPROVED:'✓',PENDING:'…',REJECTED:'✗',late:'!',none:'–'}[st]));td.title=p?(p.receiptNo||p.status):'not uploaded';tr.append(td)});
+    tr.append(el('td',null,String(D.payments.filter(p=>p.team===tm.team&&p.type==='REPL'&&p.status==='APPROVED').length)),el('td',null,String(tm.drafted)),el('td',null,String(tm.squad)),el('td',null,String(D.jersey.filter(j=>j.team===tm.team).length)));
+    t.append(tr);
   });
 }
-function renderJer(){
-  const t=$('jt');t.replaceChildren();const h=el('tr');['Team','Reg ID','Player','Size','Sleeve','Name','No.','Updated'].forEach(x=>h.append(el('th',null,x)));t.append(h);
-  D.jersey.slice().sort((a,b)=>a.team.localeCompare(b.team)||Number(a.num)-Number(b.num)).forEach(j=>{const tr=el('tr');[title(j.team),'KNPL7-'+j.id,j.player,j.size,j.sleeve,j.name,j.num,j.at].forEach(x=>tr.append(el('td',null,x)));t.append(tr)});
+function renderFees(){
+  const t=$('fees');t.replaceChildren();const h=el('tr');['Team','Jersey fee (₹)','Note','',''].forEach(x=>h.append(el('th',null,x)));t.append(h);
+  D.teams.slice().sort((a,b)=>a.team.localeCompare(b.team)).forEach(tm=>{
+    const f=D.fees[tm.team]||{},tr=el('tr'),a=el('input'),n=el('input'),b=el('button','btn sm','Save');a.type='number';a.min=0;a.value=f.amount??'';a.style.maxWidth='130px';n.type='text';n.value=f.note||'';n.placeholder='e.g. 14 jerseys × ₹350';
+    b.onclick=async()=>{b.disabled=true;$('fmsg').textContent='';try{D=await api('teamDeskAdminFee',PIN,tm.team,a.value||0,n.value);render();$('fmsg').className='msg ok';$('fmsg').textContent='Saved for '+title(tm.team)+'.'}catch(e){$('fmsg').className='msg err';$('fmsg').textContent=msgOf(e)}finally{b.disabled=false}};
+    const td=x=>{const c=el('td');c.append(x);return c};tr.append(el('td',null,title(tm.team)),td(a),td(n),td(b),el('td','small muted',f.amount?'set':''));t.append(tr);
+  });
 }
-function csv(){
-  const rows=[['Team','Reg ID','Player','Size','Sleeve','Name to Print','Number','Updated']].concat(D.jersey.slice().sort((a,b)=>a.team.localeCompare(b.team)||Number(a.num)-Number(b.num)).map(j=>[title(j.team),'KNPL7-'+j.id,j.player,j.size,j.sleeve,j.name,j.num,j.at]));
-  const s=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+s],{type:'text/csv'}));a.download='KNPL-7 Jersey Details.csv';a.click();
+async function squads(save){
+  $('sqm').textContent='';$('sqr').replaceChildren();
+  if(save&&!confirm('Save these squads? This replaces the whole auction squad list.'))return;
+  try{const r=await api('teamDeskAdminSquads',PIN,$('sq').value,save);
+    $('sqm').className='msg '+(r.bad.length?'err':'ok');$('sqm').textContent=(r.saved?'Saved. ':'Checked. ')+r.read+' player(s) read'+(r.bad.length?', '+r.bad.length+' line(s) could not be read:':'.');
+    r.bad.forEach(x=>$('sqr').append(el('div',null,'• '+x)));
+    const per=el('div');per.style.marginTop='8px';Object.keys(r.perTeam).sort().forEach(k=>per.append(el('div',null,title(k)+': '+r.perTeam[k])));$('sqr').append(per);
+    if(r.data){D=r.data;render()}
+  }catch(e){$('sqm').className='msg err';$('sqm').textContent=msgOf(e)}
 }
-function tab(n){[1,2,3].forEach(i=>{$('t'+i).setAttribute('aria-selected',i===n);$('p'+i).hidden=i!==n})}
+function sortedJ(){return D.jersey.slice().sort((a,b)=>a.team.localeCompare(b.team)||Number(a.num)-Number(b.num))}
+function renderJer(){const t=$('jt');t.replaceChildren();const h=el('tr');['Team','Reg ID','Player','Size','Sleeve','Name','No.','Updated','By'].forEach(x=>h.append(el('th',null,x)));t.append(h);
+  sortedJ().forEach(j=>{const tr=el('tr');[title(j.team),'KNPL7-'+j.id,j.player,j.size,j.sleeve,j.name,j.num,j.at,j.by].forEach(x=>tr.append(el('td',null,x)));t.append(tr)})}
+function csv(){const rows=[['Team','Reg ID','Player','Size','Sleeve','Name to Print','Number','Updated','By']].concat(sortedJ().map(j=>[title(j.team),'KNPL7-'+j.id,j.player,j.size,j.sleeve,j.name,j.num,j.at,j.by]));
+  const s=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+s],{type:'text/csv'}));a.download='KNPL-7 Jersey Details.csv';a.click()}
+function renderLinks(){const t=$('links');t.replaceChildren();D.teams.slice().sort((a,b)=>a.team.localeCompare(b.team)).forEach(tm=>{const tr=el('tr'),a=el('a',null,tm.link);a.href=tm.link;a.target='_blank';const td=el('td');td.append(a);tr.append(el('td',null,title(tm.team)),td);t.append(tr)})}
+function tab(n){[1,2,3,4,5,6].forEach(i=>{$('t'+i).setAttribute('aria-selected',i===n);$('p'+i).hidden=i!==n})}
 $('go').onclick=open;$('pin').addEventListener('keydown',e=>{if(e.key==='Enter')open()});$('flt').onchange=renderPay;
-$('t1').onclick=()=>tab(1);$('t2').onclick=()=>tab(2);$('t3').onclick=()=>tab(3);$('csv').onclick=csv;
-$('reload').onclick=async()=>{try{D=await api('teamDeskAdmin',PIN);render()}catch(e){alert(e.message)}};
+[1,2,3,4,5,6].forEach(i=>$('t'+i).onclick=()=>tab(i));$('csv').onclick=csv;$('sqc').onclick=()=>squads(false);$('sqs').onclick=()=>squads(true);
+$('reload').onclick=async()=>{try{D=await api('teamDeskAdmin',PIN);render()}catch(e){alert(msgOf(e))}};
 </script></body></html>

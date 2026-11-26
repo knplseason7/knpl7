@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>KNPL-7 Jersey Details | Kerala Namboodiris Premier League</title>
+<meta name="description" content="KNPL-7 players: select your name and enter your jersey size, sleeve, name and number.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kerala Namboodiris Premier League · KNPL-7">
+<meta property="og:title" content="KNPL-7 Jersey Details">
+<meta property="og:description" content="Select your name and enter your jersey size, sleeve, name and number.">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../desk.css?v=3">
+<script src="../common.js?v=3"></script>
+<style>
+.plist{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:8px}
+.plist button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;color:var(--ink);font:600 15px var(--body)}
+.plist button[disabled]{opacity:.55;cursor:not-allowed}
+.plist small{display:block;color:var(--muted);font-weight:500}
+.big{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.back.lg{width:120px;height:130px;border-radius:18px 18px 10px 10px}.back.lg i{font-size:15px;max-width:110px}.back.lg b{font-size:54px}
+.taken{font-size:13px;color:var(--muted);margin-top:6px}
+#last4{font-size:22px;letter-spacing:.3em;max-width:180px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><img class="hlogo" id="tl" src="../a/knpl.png" alt=""><div class="sp"><div class="kick" id="tn">KNPL-7</div><h1 data-t="h"></h1><div class="tagline" data-t="tag"></div></div>
+  <div class="lang" role="group" aria-label="Language"><button data-l="en" aria-pressed="true">English</button><button data-l="ml" aria-pressed="false">മലയാളം</button></div></div></header>
+<main class="wrap" style="max-width:640px">
+  <section class="card" id="s1">
+    <h2 data-t="pick"></h2>
+    <p class="small muted" data-t="pickNote"></p>
+    <ul class="plist" id="plist"></ul>
+    <div class="msg err" id="m1"></div>
+  </section>
+  <section class="card" id="s2" hidden>
+    <h2 id="pname"></h2>
+    <p class="small muted" id="prole"></p>
+    <label class="fl" for="last4" data-t="l4"></label>
+    <input id="last4" type="text" inputmode="numeric" maxlength="4" autocomplete="off">
+    <p class="small muted" data-t="l4note"></p>
+    <div class="row"><button class="btn or" id="go2" data-t="cont"></button><button class="btn ghost" id="back2" data-t="back"></button></div>
+    <div class="msg err" id="m2"></div>
+  </section>
+  <section class="card" id="s3" hidden>
+    <h2 id="pname3"></h2>
+    <p class="small muted" id="pdue"></p>
+    <div class="big">
+      <div style="flex:1;min-width:240px">
+        <div class="grid2">
+          <div><label class="fl" for="size" data-t="size"></label><select id="size"></select></div>
+          <div><label class="fl" for="sleeve" data-t="sleeve"></label><select id="sleeve"></select></div>
+        </div>
+        <label class="fl" for="nm" data-t="nm"></label><input id="nm" type="text" maxlength="12" autocomplete="off" style="text-transform:uppercase">
+        <p class="small muted" data-t="nmNote"></p>
+        <label class="fl" for="num" data-t="num"></label><input id="num" type="text" inputmode="numeric" maxlength="2" style="max-width:120px">
+        <div class="taken" id="taken"></div>
+      </div>
+      <span class="back lg"><i id="pvn">NAME</i><b id="pvb">00</b></span>
+    </div>
+    <div class="row"><button class="btn or" id="save" data-t="save"></button><button class="btn ghost" id="back3" data-t="other"></button></div>
+    <div class="msg" id="m3"></div>
+  </section>
+  <p class="small muted" style="text-align:center" data-t="help"></p>
+</main>
+<script>
+window.TX={
+ h:['Jersey Details','Jersey Details'],tag:['Select your name and enter your jersey details.','നിങ്ങളുടെ പേര് തിരഞ്ഞെടുത്ത് Jersey Details നൽകുക.'],
+ pick:['Select your name','നിങ്ങളുടെ പേര് തിരഞ്ഞെടുക്കുക'],
+ pickNote:['Owner and drafted players: by 30 Nov 2026 · Players bought at the Mega Auction appear here after 12 Dec 2026 – by 25 Dec 2026.','Owner, Drafted കളിക്കാർ: 30 നവംബർ 2026-നകം · Mega Auction-ൽ എടുത്ത കളിക്കാർ 12 ഡിസംബർ 2026-ന് ശേഷം ഇവിടെ വരും – 25 ഡിസംബർ 2026-നകം.'],
+ l4:['Last 4 digits of your registered WhatsApp number','KNPL-7-ന് നൽകിയ WhatsApp നമ്പറിന്റെ അവസാന 4 അക്കം'],
+ l4note:['This keeps your details safe – only you can change them.','നിങ്ങളുടെ വിവരങ്ങൾ സുരക്ഷിതമാക്കാനാണിത് – നിങ്ങൾക്ക് മാത്രമേ മാറ്റാനാകൂ.'],
+ cont:['Continue','തുടരുക'],back:['Back','തിരികെ'],other:['Another player','മറ്റൊരു കളിക്കാരൻ'],
+ size:['Size','Size'],sleeve:['Sleeve','Sleeve'],half:['Half sleeve','Half Sleeve'],full:['Full sleeve','Full Sleeve'],choose:['Choose','തിരഞ്ഞെടുക്കുക'],
+ nm:['Name to print on the back','പിൻവശത്ത് പ്രിന്റ് ചെയ്യേണ്ട പേര്'],nmNote:['Capital letters, up to 12 characters.','ഇംഗ്ലീഷ് വലിയ അക്ഷരം, പരമാവധി 12.'],
+ num:['Number (0–99)','നമ്പർ (0–99)'],takenL:['Numbers already taken in your team: {l}','ടീമിൽ ഇതിനകം എടുത്ത നമ്പറുകൾ: {l}'],
+ save:['Save my jersey details','എന്റെ Jersey Details സേവ് ചെയ്യുക'],saving:['Saving…','സേവ് ചെയ്യുന്നു…'],
+ saved:['Saved. Thank you! You can change it until {d}.','സേവ് ചെയ്തു. നന്ദി! {d} വരെ മാറ്റാം.'],
+ due:['{r} · can be changed until {d}','{r} · {d} വരെ മാറ്റാം'],lockedT:['The last date has passed. Contact your franchise owner.','അവസാന തീയതി കഴിഞ്ഞു. ഫ്രാഞ്ചൈസി ഉടമയെ ബന്ധപ്പെടുക.'],
+ done:['done','നൽകി'],pending:['pending','ബാക്കി'],locked:['locked','Lock ആയി'],
+ roleOwner:['Owner','Owner'],roleDrafted:['Drafted','Drafted'],roleSquad:['Auction','Auction'],roleReplacement:['Season replacement','Season Replacement'],
+ v4:['Enter the last 4 digits.','അവസാന 4 അക്കം നൽകുക.'],vAll:['Fill in size, sleeve, name and number.','Size, Sleeve, പേര്, നമ്പർ എല്ലാം നൽകുക.'],vTaken:['Number {n} is already taken in your team.','{n} എന്ന നമ്പർ ടീമിൽ ഇതിനകം എടുത്തിട്ടുണ്ട്.'],
+ noLink:['This link is not complete. Ask your franchise owner for the team link.','ഈ Link പൂർണ്ണമല്ല. ടീം Link ഫ്രാഞ്ചൈസി ഉടമയോട് ചോദിക്കുക.'],
+ help:['Queries: your franchise owner, or Krishnadas – 99862 18725 · Team KNPL','സംശയങ്ങൾക്ക്: ഫ്രാഞ്ചൈസി ഉടമ, അല്ലെങ്കിൽ കൃഷ്ണദാസ് – 99862 18725 · Team KNPL']
+};
+const TOK=new URLSearchParams(location.search).get('t')||'';
+let T=null,P=null,L4='';
+function show(n){['s1','s2','s3'].forEach((s,i)=>$(s).hidden=i+1!==n)}
+function renderList(){
+  const ul=$('plist');ul.replaceChildren();if(!T)return;
+  $('tn').textContent='KNPL-7 · '+title(T.team);
+  T.players.forEach(p=>{const li=el('li'),b=el('button');b.disabled=p.locked;
+    const a=el('span');a.append(el('span',null,p.name),el('small',null,'KNPL7-'+p.id+' · '+t('role'+p.role)+' · '+dmy(p.due)));
+    b.append(a,el('span','pill '+(p.locked?'none':p.done?'APPROVED':'PENDING'),p.locked?t('locked'):p.done?t('done'):t('pending')));
+    b.onclick=()=>{P=p;$('pname').textContent=p.name;$('prole').textContent='KNPL7-'+p.id+' · '+t('role'+p.role);$('last4').value='';$('m2').textContent='';show(2);$('last4').focus()};
+    li.append(b);ul.append(li)});
+}
+async function load(){
+  if(!TOK){$('m1').textContent=t('noLink');return}
+  try{T=await api('teamDeskJerseyTeam',TOK);const im=$('tl');im.src='../../draft/logos/'+slug(title(T.team))+'.png';im.onerror=()=>{im.src='../a/knpl.png'};renderList()}
+  catch(e){$('m1').textContent=msgOf(e)}
+}
+function fillForm(r){
+  const sz=$('size');sz.replaceChildren(el('option',null,t('choose')),...T.sizes.map(s=>{const o=el('option',null,s);o.value=s;return o}));sz.options[0].value='';
+  const sl=$('sleeve');sl.replaceChildren(el('option',null,t('choose')),...[['Half',t('half')],['Full',t('full')]].map(([v,x])=>{const o=el('option',null,x);o.value=v;return o}));sl.options[0].value='';
+  const j=r.j||{};sz.value=j.size||'';sl.value=j.sleeve||'';$('nm').value=j.name||'';$('num').value=j.num||'';pv();
+  $('pname3').textContent=r.player.name;$('pdue').textContent=r.player.locked?t('lockedT'):t('due',{r:t('role'+r.player.role),d:dmy(r.player.due)});
+  const tk=T.taken.filter(x=>x.id!==r.player.id).map(x=>x.num).sort((a,b)=>a-b);$('taken').textContent=tk.length?t('takenL',{l:tk.join(', ')}):'';
+  ['size','sleeve','nm','num','save'].forEach(i=>$(i).disabled=r.player.locked);
+}
+function pv(){$('nm').value=$('nm').value.toUpperCase().replace(/[^A-Z .\-']/g,'');$('num').value=$('num').value.replace(/\D/g,'');$('pvn').textContent=$('nm').value||'NAME';$('pvb').textContent=$('num').value||'00'}
+async function open2(){
+  const v=$('last4').value.replace(/\D/g,'');$('m2').textContent='';if(v.length!==4)return $('m2').textContent=t('v4');
+  $('go2').disabled=true;
+  try{const r=await api('teamDeskJerseyOpen',TOK,P.id,v);L4=v;$('m3').textContent='';fillForm(r);show(3)}catch(e){$('m2').textContent=msgOf(e)}finally{$('go2').disabled=false}
+}
+async function save(){
+  const m=$('m3');m.className='msg err';m.textContent='';
+  const d={size:$('size').value,sleeve:$('sleeve').value,name:$('nm').value.trim(),num:$('num').value};
+  if(!d.size||!d.sleeve||!d.name||d.num==='')return m.textContent=t('vAll');
+  if(T.taken.some(x=>x.id!==P.id&&Number(x.num)===Number(d.num)))return m.textContent=t('vTaken',{n:Number(d.num)});
+  $('save').disabled=true;m.className='msg';m.textContent=t('saving');
+  try{const r=await api('teamDeskJerseyPlayerSave',TOK,P.id,L4,d);
+    T.taken=T.taken.filter(x=>x.id!==P.id).concat([{id:P.id,num:r.j.num}]);const pp=T.players.find(x=>x.id===P.id);if(pp)pp.done=true;
+    fillForm(r);m.className='msg ok';m.textContent=t('saved',{d:dmy(r.player.due)})}
+  catch(e){m.className='msg err';m.textContent=msgOf(e)}finally{$('save').disabled=false}
+}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.l,renderList));
+$('nm').oninput=pv;$('num').oninput=pv;$('go2').onclick=open2;$('last4').addEventListener('keydown',e=>{if(e.key==='Enter')open2()});
+$('back2').onclick=()=>show(1);$('back3').onclick=()=>{renderList();show(1)};$('save').onclick=save;
+applyStatic();load();
+</script>
+</body></html>

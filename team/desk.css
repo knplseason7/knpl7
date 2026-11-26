@@ -1,0 +1,82 @@
+:root{--bg:#f3f5fa;--surface:#fff;--ink:#13213f;--muted:#5b6784;--line:#d9dfec;--navy:#0b1a38;--saffron:#e07a1f;--saffron-soft:#fff3e6;
+  --red:#c0392b;--red-soft:#fdeceb;--ok:#1f8a5b;--ok-soft:#e5f5ec;--amber:#9a6a00;--amber-soft:#fff6dc;--focus:#e07a1f;
+  --display:"Saira Condensed","Arial Narrow",Arial,sans-serif;--body:"Public Sans","Noto Sans Malayalam",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1426;--surface:#142039;--ink:#e7ecf7;--muted:#9aa7c4;--line:#26355a;--navy:#08101f;--saffron:#f2933c;--saffron-soft:#2a2116;--red:#ff7a6b;--red-soft:#3a1d1a;--ok:#4cc38a;--ok-soft:#12301f;--amber:#f1c75b;--amber-soft:#2d2611}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+body.ml{line-height:1.7}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--navy);color:#fff;border-bottom:4px solid var(--saffron)}
+header .wrap{padding-block:18px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+header .sp{flex:1;min-width:220px}
+.hlogo{width:58px;height:58px;border-radius:50%;background:#fff;flex:none;object-fit:contain}
+.kick{font:700 13px/1 var(--display);letter-spacing:.22em;color:#ffb366;text-transform:uppercase}
+body.ml .kick{letter-spacing:.04em}
+h1{font:800 clamp(30px,5.4vw,46px)/1 var(--display);margin:4px 0 0}
+.tagline{color:#c9d3ea;font-size:14px;margin-top:4px}
+.lang{display:flex;border:1.5px solid #3a4a72;border-radius:10px;overflow:hidden}
+.lang button{background:transparent;color:#c9d3ea;border:0;padding:8px 12px;font:700 14px var(--body);cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--saffron);color:#fff}
+main{padding-block:20px 40px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+h2{font:800 26px/1.15 var(--display);margin:0 0 8px}
+h3{font:800 20px/1.15 var(--display);margin:0 0 6px;text-transform:uppercase;letter-spacing:.02em}
+body.ml h2,body.ml h3{font-family:"Noto Sans Malayalam",var(--display);font-weight:700;text-transform:none;letter-spacing:0}
+.muted{color:var(--muted)}.small{font-size:13px}
+label.fl{display:block;font:700 13px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+body.ml label.fl{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+input[type=text],input[type=date],input[type=number],input[type=password],select,textarea{width:100%;font:600 15px var(--body);color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:10px 12px}
+#code{font-size:20px;letter-spacing:.06em;text-transform:uppercase}
+textarea{min-height:60px;resize:vertical;font-weight:500}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn{font:700 15px var(--body);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:12px 18px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn.or{background:var(--saffron)}.btn.ok{background:var(--ok)}.btn.no{background:var(--red)}.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.sm{padding:8px 12px;font-size:14px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.row{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.msg{min-height:22px;font-weight:600;margin-top:10px}.msg.err{color:var(--red)}.msg.ok{color:var(--ok)}
+.gate{max-width:520px}
+.teambar{display:flex;gap:14px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px}
+.tlogo{width:60px;height:60px;border-radius:12px;object-fit:contain;flex:none;background:#fff}
+.teambar b{font:800 24px/1.05 var(--display);text-transform:uppercase;display:block}.teambar .sp{flex:1;min-width:0}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{font:800 17px var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:10px 16px;cursor:pointer}
+body.ml .tabs button{font:700 15px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.tabs button[aria-selected=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.steps{margin:6px 0 12px;padding-left:22px}.steps li{margin:3px 0}
+.payto{background:var(--saffron-soft);border:1.5px solid #f3c99a;border-radius:12px;padding:12px 14px;font-weight:600}
+.utrbox{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:start;margin-top:12px;border:2px solid #e0312b;border-radius:12px;padding:12px;background:var(--red-soft)}
+.utrbox h3{color:var(--red)}.utrbox p{margin:4px 0}
+.sthumb img{width:150px;border-radius:10px;border:1px solid var(--line);display:block}
+@media (max-width:560px){.utrbox{grid-template-columns:1fr}.sthumb img{width:100%;max-width:260px;margin:0 auto}}
+.sched{display:flex;flex-direction:column}
+.srow{display:grid;grid-template-columns:1fr 100px 110px 190px 150px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.srow.sh{font:800 13px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line);padding-top:0}
+body.ml .srow.sh{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.srow .amt{font:800 18px var(--display)}.srow .sa{text-align:right}
+@media (max-width:760px){.srow{grid-template-columns:1fr auto;gap:4px 10px}.srow.sh{display:none}.srow .sn{grid-column:1/-1}.srow .due{text-align:right}.srow .sa{grid-column:1/-1;text-align:left}}
+.pill{display:inline-block;font:800 12px var(--display);letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:3px 10px}
+body.ml .pill{font:700 12px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.pill.none{background:var(--bg);color:var(--muted);border:1px solid var(--line)}.pill.PENDING{background:var(--amber-soft);color:var(--amber)}
+.pill.APPROVED{background:var(--ok-soft);color:var(--ok)}.pill.REJECTED,.pill.late{background:var(--red-soft);color:var(--red)}
+.brk{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}.brk td{padding:4px 0;border-bottom:1px dashed var(--line)}.brk td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+.rej{background:var(--red-soft);color:var(--red);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;margin-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}@media (max-width:620px){.grid2{grid-template-columns:1fr}}
+.drop{display:block;border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;cursor:pointer;background:var(--bg)}
+.drop input{display:block;margin:6px auto 0}
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-weight:600}.chk input{width:20px;height:20px;margin-top:2px;flex:none}
+.hist{list-style:none;padding:0;margin:0}.hist li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;border-bottom:1px solid var(--line);padding:10px 0}
+.hist .r{text-align:right}
+.share{background:var(--ok-soft);border:1.5px solid #9fd6b0;border-radius:12px;padding:12px 14px;margin-top:10px}
+.linkrow{display:flex;gap:8px;flex-wrap:wrap}.linkrow input{flex:1;min-width:220px;font-size:14px}
+ul.dl{margin:10px 0 0;padding-left:20px}ul.dl li{margin:3px 0}
+.note{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:10px;font-weight:600}
+.jt{width:100%;border-collapse:collapse}.jt th{font:800 13px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px;border-bottom:2px solid var(--line)}
+body.ml .jt th{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.jt td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.jt select,.jt input{padding:8px 9px;font-size:15px}
+.jt .pn b{display:block}.jt .pn .pill{margin-top:3px}.jt .num{width:76px}.jt .nm{min-width:140px;text-transform:uppercase}
+.back{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:62px;height:62px;border-radius:10px 10px 6px 6px;background:var(--navy);color:#fff;line-height:1}
+.back i{font:normal 800 9px var(--display);letter-spacing:.05em;max-width:58px;overflow:hidden;white-space:nowrap}.back b{font:800 24px var(--display)}
+@media (max-width:720px){.jt thead{display:none}.jt tr{display:grid;grid-template-columns:1fr 1fr;gap:6px;border-bottom:2px solid var(--line);padding:10px 0}.jt td{border:0;padding:0}.jt td.pn{grid-column:1/-1}.jt td.pv{display:none}}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:10px 16px 30px}

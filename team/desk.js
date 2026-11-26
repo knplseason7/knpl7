@@ -1,0 +1,292 @@
+/* KNPL-7 Team Desk – franchise page logic (uses common.js and receipt.js). */
+window.TX = {
+ franchises:['Franchises only','ഫ്രാഞ്ചൈസികൾക്ക് മാത്രം'],
+ tagline:['Fee receipts, jersey details and season replacements – log in with your Team Draft code.','Fee Receipts, Jersey Details, Season Replacement – Team Draft code ഉപയോഗിച്ച് Login ചെയ്യുക.'],
+ login:['Log in','Login'],
+ loginNote:['Use your <b>team code</b> – the same code you use for the Team Draft page.','Team Draft പേജിന് ഉപയോഗിക്കുന്ന അതേ <b>Team Code</b> ഉപയോഗിക്കുക.'],
+ teamCode:['Team code','Team Code'],loginBtn:['Log in','Login'],checking:['Checking…','പരിശോധിക്കുന്നു…'],logout:['Log out','Logout'],
+ enterCode:['Enter your team code.','Team Code നൽകുക.'],
+ tabPay:['Payments & receipts','പണമടയ്ക്കൽ & Receipts'],tabJer:['Jersey details','Jersey Details'],tabRep:['Season replacement','Season Replacement'],
+ payTitle:['Fees, due dates and receipts','Fees, അവസാന തീയതികൾ, Receipts'],
+ ps1:['Pay the amount to the KNPL account below.','താഴെ കൊടുത്ത KNPL അക്കൗണ്ടിലേക്ക് തുക അടയ്ക്കുക.'],
+ ps2:['Upload the payment screenshot / receipt here for that item, with the transaction number.','ആ ഇനത്തിനുള്ള Payment Screenshot / Receipt, Transaction Number സഹിതം ഇവിടെ Upload ചെയ്യുക.'],
+ ps3:['The KNPL committee checks and approves it (or shows the reason if it is rejected).','KNPL കമ്മിറ്റി പരിശോധിച്ച് Approve ചെയ്യും (Reject ചെയ്താൽ കാരണം കാണിക്കും).'],
+ ps4:['Your KNPL receipt is then created automatically and downloads the next time you open this page. You can download it any time.','തുടർന്ന് KNPL Receipt സ്വയം തയ്യാറാകും; അടുത്ത തവണ ഈ പേജ് തുറക്കുമ്പോൾ Download ആകും. എപ്പോൾ വേണമെങ്കിലും Download ചെയ്യാം.'],
+ payTo:['Pay to:','പണമടയ്ക്കേണ്ടത്:'],
+ utrTitle:['The transaction number must be visible','Transaction Number വ്യക്തമായി കാണണം'],
+ utr1:['Upload the payment confirmation screen or bank receipt that shows the UPI Transaction ID / UTR number, the amount, the date and who it was paid to.','UPI Transaction ID / UTR നമ്പർ, തുക, തീയതി, ആർക്കാണ് അടച്ചത് എന്നിവ കാണുന്ന Payment Confirmation Screen അല്ലെങ്കിൽ Bank Receipt Upload ചെയ്യുക.'],
+ utr2:['Type the same transaction number in the form. A receipt without a transaction number cannot be approved.','അതേ Transaction Number ഫോമിലും നൽകുക. Transaction Number ഇല്ലാത്ത Receipt Approve ചെയ്യാനാകില്ല.'],
+ utr3:['Photos are compressed automatically before upload and saved securely in KNPL\'s Drive.','ചിത്രങ്ങൾ Upload ചെയ്യുന്നതിന് മുമ്പ് സ്വയം Compress ചെയ്ത് KNPL Drive-ൽ സുരക്ഷിതമായി സൂക്ഷിക്കും.'],
+ seeSample:['Open the sample in full size','Sample വലുതാക്കി കാണുക'],
+ uploadAny:['Upload a receipt','Receipt Upload ചെയ്യുക'],
+ formTitle:['Upload a payment receipt','Payment Receipt Upload ചെയ്യുക'],fItem:['Payment for','ഏതിനുള്ള പണമടയ്ക്കൽ'],
+ fAmt:['Amount: {a} · Due by {d}','തുക: {a} · അവസാന തീയതി {d}'],
+ fDate:['Date of payment','പണമടച്ച തീയതി'],fMode:['Payment mode','പണമടച്ച രീതി'],
+ fUtr:['Transaction number (UTR / UPI ref.)','Transaction Number (UTR / UPI Ref.)'],fUtrPh:['e.g. 6123 4567 8901','ഉദാ: 6123 4567 8901'],
+ fPayer:['Paid by (name)','പണമടച്ചയാളുടെ പേര്'],fFile:['Payment screenshot or receipt','Payment Screenshot / Receipt'],
+ fFileNote:['JPG, PNG, WEBP or PDF – photos are compressed automatically','JPG, PNG, WEBP അല്ലെങ്കിൽ PDF – ചിത്രങ്ങൾ സ്വയം Compress ചെയ്യും'],
+ fNote:['Note (optional)','കുറിപ്പ് (ആവശ്യമെങ്കിൽ)'],
+ fAck:['I confirm this amount was paid to KNPL and the transaction number is visible in the uploaded receipt.','ഈ തുക KNPL-ന് അടച്ചതാണെന്നും Upload ചെയ്യുന്ന Receipt-ൽ Transaction Number കാണാമെന്നും ഞാൻ ഉറപ്പുനൽകുന്നു.'],
+ submit:['Submit for approval','Approval-ന് സമർപ്പിക്കുക'],cancel:['Cancel','റദ്ദാക്കുക'],uploading:['Compressing and uploading…','Compress ചെയ്ത് Upload ചെയ്യുന്നു…'],
+ submitted:['Submitted. The committee will verify it; your receipt will be ready here once approved.','സമർപ്പിച്ചു. കമ്മിറ്റി പരിശോധിച്ച് Approve ചെയ്താൽ Receipt ഇവിടെ ലഭിക്കും.'],
+ vDate:['Enter the date of payment.','പണമടച്ച തീയതി നൽകുക.'],vUtr:['Enter the transaction number.','Transaction Number നൽകുക.'],vPayer:['Enter the name of the person who paid.','പണമടച്ച ആളുടെ പേര് നൽകുക.'],
+ vFile:['Attach the payment screenshot or receipt.','Payment Screenshot / Receipt ചേർക്കുക.'],vAck:['Please tick the confirmation.','ഉറപ്പുനൽകൽ Tick ചെയ്യുക.'],vItem:['Choose what the payment is for.','ഏതിനുള്ള പണമടയ്ക്കലാണെന്ന് തിരഞ്ഞെടുക്കുക.'],
+ nothingDue:['All receipts that can be uploaded now are uploaded.','ഇപ്പോൾ Upload ചെയ്യാവുന്ന എല്ലാ Receipts-ഉം Upload ചെയ്തിട്ടുണ്ട്.'],
+ schedTitle:['Payment schedule','പണമടയ്ക്കൽ ഷെഡ്യൂൾ'],thItem:['Item','ഇനം'],thAmt:['Amount','തുക'],thDue:['Due by','അവസാന തീയതി'],thSt:['Status','നില'],
+ stNone:['Not uploaded','Upload ചെയ്തിട്ടില്ല'],stLate:['Due date passed – upload now','തീയതി കഴിഞ്ഞു – ഉടൻ Upload ചെയ്യുക'],stPENDING:['Waiting for approval','Approval കാത്തിരിക്കുന്നു'],stAPPROVED:['Approved','Approved'],stREJECTED:['Rejected','Reject ചെയ്തു'],
+ upload:['Upload','Upload'],uploadAgain:['Upload again','വീണ്ടും Upload'],receipt:['Receipt','Receipt'],reason:['Reason: ','കാരണം: '],
+ drWait:['Fixed after your draft is submitted (draft closes 28 Nov, 6:30 PM)','Draft സമർപ്പിച്ച ശേഷം ഉറപ്പാകും (Draft 28 നവംബർ വൈകിട്ട് 6:30-ന് അവസാനിക്കും)'],
+ jerWait:['Only for teams without a jersey sponsor – amount updated by 25 Jan 2027','Jersey Sponsor ഇല്ലാത്ത ടീമുകൾക്ക് മാത്രം – തുക 25 ജനുവരി 2027-നകം ചേർക്കും'],
+ draftBreak:['How your draft fee is worked out','Draft Fee കണക്കാക്കുന്ന വിധം'],
+ drTotal:['Year-1 draft fee {a} = instalment 1 ({b}, by 10 Dec 2026) + instalment 2 ({c}, by 10 Feb 2027)','Year-1 Draft Fee {a} = ഗഡു 1 ({b}, 10 ഡിസംബർ 2026-നകം) + ഗഡു 2 ({c}, 10 ഫെബ്രുവരി 2027-നകം)'],
+ histTitle:['Submission history','സമർപ്പിച്ചവ'],noHist:['No receipts uploaded yet.','ഇതുവരെ Receipts Upload ചെയ്തിട്ടില്ല.'],
+ paidOn:['paid','അടച്ചത്'],ref:['Ref','Ref'],
+ newRcpt:['{n} new receipt(s) downloaded: {l}.','{n} പുതിയ Receipt Download ചെയ്തു: {l}.'],
+ rcptFail:['The receipt tool did not load. Check your connection and reload the page.','Receipt tool ലോഡ് ആയില്ല. ഇന്റർനെറ്റ് പരിശോധിച്ച് പേജ് Reload ചെയ്യുക.'],
+ jerTitle:['Jersey details','Jersey Details'],
+ jerIntro:['Each player enters his own jersey details using your team link. You can also enter or correct them here until each player\'s last date. The committee supplies the jersey only.','ഓരോ കളിക്കാരനും ടീം Link ഉപയോഗിച്ച് സ്വന്തം Jersey Details നൽകാം. ഓരോരുത്തരുടെയും അവസാന തീയതി വരെ നിങ്ങൾക്ക് ഇവിടെയും നൽകാം / തിരുത്താം. കമ്മിറ്റി Jersey മാത്രമാണ് നൽകുന്നത്.'],
+ shareTitle:['Your team\'s jersey link','നിങ്ങളുടെ ടീമിന്റെ Jersey Link'],
+ shareNote:['Share this link in your team group or personally. The player picks his name and confirms with the last 4 digits of the WhatsApp number he registered for KNPL-7.','ഈ Link ടീം ഗ്രൂപ്പിലോ വ്യക്തിപരമായോ അയയ്ക്കുക. കളിക്കാരൻ സ്വന്തം പേര് തിരഞ്ഞെടുത്ത്, KNPL-7-ന് നൽകിയ WhatsApp നമ്പറിന്റെ അവസാന 4 അക്കം നൽകി ഉറപ്പാക്കണം.'],
+ copy:['Copy','Copy'],copied:['Copied','Copy ചെയ്തു'],shareWa:['Share on WhatsApp','WhatsApp-ൽ അയയ്ക്കുക'],
+ jd1:['Owner and drafted players: on or before 30 Nov 2026.','Owner, Drafted കളിക്കാർ: 30 നവംബർ 2026-നകം.'],
+ jd2:['Players bought at the Mega Auction (12 Dec 2026) are added to this list after the auction: on or before 25 Dec 2026.','Mega Auction-ൽ (12 ഡിസംബർ 2026) എടുത്ത കളിക്കാരെ ലേലത്തിന് ശേഷം ഈ ലിസ്റ്റിൽ ചേർക്കും: 25 ഡിസംബർ 2026-നകം.'],
+ jd3:['Season replacement players are added after approval: on or before 10 Feb 2027.','Season Replacement കളിക്കാരെ Approval-ന് ശേഷം ചേർക്കും: 10 ഫെബ്രുവരി 2027-നകം.'],
+ jd4:['Name: capitals, up to 12 characters · Number: 0–99, unique in the team · Size: XS–4XL · Sleeve: half or full.','പേര്: ഇംഗ്ലീഷ് വലിയ അക്ഷരം, പരമാവധി 12 · നമ്പർ: 0–99, ടീമിൽ ആവർത്തിക്കരുത് · Size: XS–4XL · Sleeve: Half / Full.'],
+ jerList:['Team list','ടീം ലിസ്റ്റ്'],jerListNote:['Rows after the last date are locked. Contact the committee for any change after that.','അവസാന തീയതി കഴിഞ്ഞ വരികൾ Lock ആകും. അതിനുശേഷം മാറ്റത്തിന് കമ്മിറ്റിയെ ബന്ധപ്പെടുക.'],
+ thPlayer:['Player','കളിക്കാരൻ'],thSize:['Size','Size'],thSleeve:['Sleeve','Sleeve'],thName:['Name to print','പ്രിന്റ് ചെയ്യേണ്ട പേര്'],thNo:['No.','നമ്പർ'],thBack:['Back','പിൻവശം'],
+ roleOwner:['Owner','Owner'],roleDrafted:['Drafted','Drafted'],roleSquad:['Auction','Auction'],roleReplacement:['Season replacement','Season Replacement'],
+ by:['by {d}','{d}-നകം'],locked:['locked','Lock ആയി'],done:['done','നൽകി'],pending:['pending','ബാക്കി'],replacedBy:['replaced for KNPL-7','KNPL-7-ന് മാറ്റി'],
+ half:['Half','Half'],full:['Full','Full'],size:['Size','Size'],sleeve:['Sleeve','Sleeve'],
+ jSave:['Save jersey details','Jersey Details സേവ് ചെയ്യുക'],saving:['Saving…','സേവ് ചെയ്യുന്നു…'],saved:['Saved for {n} player(s).','{n} കളിക്കാരുടെ വിവരം സേവ് ചെയ്തു.'],
+ vRow:['Complete all four details for {p} (or leave the row empty).','{p}-ന്റെ നാല് വിവരങ്ങളും നൽകുക (അല്ലെങ്കിൽ വരി ഒഴിച്ചിടുക).'],
+ vDupNum:['Number {n} is given to two players. Each number must be unique.','{n} എന്ന നമ്പർ രണ്ട് പേർക്ക് നൽകി. ഓരോ നമ്പറും ഒരാൾക്ക് മാത്രം.'],
+ vNone:['Nothing new to save.','സേവ് ചെയ്യാൻ പുതിയതായി ഒന്നുമില്ല.'],
+ repTitle:['Season replacement request','Season Replacement അപേക്ഷ'],
+ r1:['Opens on 25 Jan 2027. Only for a player who cannot play the whole of KNPL-7.','25 ജനുവരി 2027-ന് തുറക്കും. KNPL-7 മുഴുവൻ കളിക്കാൻ കഴിയാത്ത കളിക്കാരന് മാത്രം.'],
+ r2:['Choose the player being replaced from your squad and the replacement from the unsold list.','മാറ്റുന്ന കളിക്കാരനെ നിങ്ങളുടെ Squad-ൽ നിന്നും, പകരക്കാരനെ Unsold List-ൽ നിന്നും തിരഞ്ഞെടുക്കുക.'],
+ r3:['The replacement\'s Skill Rating must be equal to or lower than the player replaced.','പകരക്കാരന്റെ Skill Rating, മാറ്റുന്ന കളിക്കാരന്റേതിന് തുല്യമോ കുറവോ ആകണം.'],
+ r4:['Replacement fee ₹500 (50% of the replaced player\'s registration fee) is paid by the replacement player; KNPL gives it to the replaced player. Upload its receipt with the request.','Replacement Fee ₹500 (മാറ്റുന്ന കളിക്കാരന്റെ Registration Fee-യുടെ 50%) പകരക്കാരൻ അടയ്ക്കണം; KNPL അത് മാറ്റുന്ന കളിക്കാരന് നൽകും. അതിന്റെ Receipt അപേക്ഷയോടൊപ്പം Upload ചെയ്യുക.'],
+ r5:['Once the committee approves, the replacement joins your squad for KNPL-7 only.','കമ്മിറ്റി Approve ചെയ്താൽ, പകരക്കാരൻ KNPL-7-ന് മാത്രം നിങ്ങളുടെ Squad-ൽ ചേരും.'],
+ repOpens:['Season replacement requests open on {d}.','Season Replacement അപേക്ഷ {d}-ന് തുറക്കും.'],
+ rOut:['Player being replaced','മാറ്റുന്ന കളിക്കാരൻ'],rIn:['Replacement (unsold list)','പകരക്കാരൻ (Unsold List)'],choose:['Choose','തിരഞ്ഞെടുക്കുക'],chooseOutFirst:['Choose the player being replaced first','ആദ്യം മാറ്റുന്ന കളിക്കാരനെ തിരഞ്ഞെടുക്കുക'],
+ rInfo:['{n} unsold player(s) with Skill Rating {s} or lower.','Skill Rating {s} അല്ലെങ്കിൽ കുറവുള്ള {n} Unsold കളിക്കാർ.'],
+ rAgree:['I agree that the replacement player pays the ₹500 replacement fee, which KNPL gives to the replaced player, and that the replacement is for the whole of KNPL-7 only.','പകരക്കാരൻ ₹500 Replacement Fee അടയ്ക്കുമെന്നും, KNPL അത് മാറ്റുന്ന കളിക്കാരന് നൽകുമെന്നും, Replacement KNPL-7 മുഴുവനായി മാത്രമാണെന്നും ഞാൻ അംഗീകരിക്കുന്നു.'],
+ rPayer:['Paid by (replacement player)','പണമടച്ചയാൾ (പകരക്കാരൻ)'],rSubmit:['Submit replacement request','Replacement അപേക്ഷ സമർപ്പിക്കുക'],
+ vRepl:['Choose both players.','രണ്ട് കളിക്കാരെയും തിരഞ്ഞെടുക്കുക.'],vAgree:['Please agree to the replacement fee terms.','Replacement Fee നിബന്ധനകൾ അംഗീകരിക്കുക.'],
+ rSent:['Request submitted. The committee will review it.','അപേക്ഷ സമർപ്പിച്ചു. കമ്മിറ്റി പരിശോധിക്കും.'],
+ rList:['Your replacement requests','നിങ്ങളുടെ Replacement അപേക്ഷകൾ'],noRep:['No replacement requests.','Replacement അപേക്ഷകൾ ഇല്ല.'],
+ footer:['KNPL-7 Team Desk · Queries: Krishnadas – 99862 18725 · Team KNPL','KNPL-7 Team Desk · സംശയങ്ങൾക്ക്: കൃഷ്ണദാസ് – 99862 18725 · Team KNPL'],
+ opensOn:['The Team Desk opens on {d}.','Team Desk {d}-ന് തുറക്കും.'],
+ CD1:['Sponsorship Caution Deposit – instalment 1 of 5','Sponsorship Caution Deposit – ഗഡു 1 / 5'],CD2:['Sponsorship Caution Deposit – instalment 2 of 5','Sponsorship Caution Deposit – ഗഡു 2 / 5'],
+ CD3:['Sponsorship Caution Deposit – instalment 3 of 5','Sponsorship Caution Deposit – ഗഡു 3 / 5'],CD4:['Sponsorship Caution Deposit – instalment 4 of 5','Sponsorship Caution Deposit – ഗഡു 4 / 5'],
+ CD5:['Sponsorship Caution Deposit – instalment 5 of 5','Sponsorship Caution Deposit – ഗഡു 5 / 5'],OWN1:['Ownership Fee – instalment 1 of 3 (KNPL-7)','Ownership Fee – ഗഡു 1 / 3 (KNPL-7)'],
+ DR1:['Draft Fee KNPL-7 – instalment 1 of 2','Draft Fee KNPL-7 – ഗഡു 1 / 2'],DR2:['Draft Fee KNPL-7 – instalment 2 of 2','Draft Fee KNPL-7 – ഗഡു 2 / 2'],
+ JER:['Team Jersey Fee (at actuals)','Team Jersey Fee (യഥാർത്ഥ ചെലവ്)'],REPL:['Season Replacement Fee','Season Replacement Fee']
+};
+const WA_MSG = (team, link) => '🏏 *KNPL-7 | ' + team + ' – Jersey Details*\n\n' +
+  'Please open the link, select your name and enter your jersey size, sleeve, name and number.\n' +
+  'ലിങ്ക് തുറന്ന് നിങ്ങളുടെ പേര് തിരഞ്ഞെടുത്ത് Jersey Size, Sleeve, പേര്, നമ്പർ എന്നിവ നൽകുക.\n\n' +
+  'Confirm with the last 4 digits of the WhatsApp number you registered for KNPL-7.\n' +
+  'KNPL-7-ന് നൽകിയ WhatsApp നമ്പറിന്റെ അവസാന 4 അക്കം നൽകി ഉറപ്പാക്കുക.\n\n' +
+  '👉 ' + link + '\n\n' +
+  '⏰ Owner & drafted players: by 30 Nov 2026 · Auction players: by 25 Dec 2026\n' +
+  '⏰ Owner, Drafted കളിക്കാർ: 30 നവംബർ 2026-നകം · Auction കളിക്കാർ: 25 ഡിസംബർ 2026-നകം';
+let CODE = '', S = null;
+const today = () => new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
+function latest(code) { const l = S.payments.filter(p => p.type === code); return l[l.length - 1] || null; }
+async function login() {
+  const c = $('code').value.trim(); $('gmsg').className = 'msg err'; $('gmsg').textContent = '';
+  if (!c) { $('gmsg').textContent = t('enterCode'); return; }
+  $('go').disabled = true; $('go').textContent = t('checking');
+  try { S = await api('teamDeskLogin', c); CODE = c; try { sessionStorage.setItem('knpl_td', c); } catch (e) {} show(); }
+  catch (e) { $('gmsg').textContent = msgOf(e); }
+  finally { $('go').disabled = false; $('go').textContent = t('loginBtn'); }
+}
+function show() {
+  $('gate').hidden = true; $('app').hidden = false;
+  const im = el('img', 'tlogo'); im.alt = ''; im.src = '../draft/logos/' + slug(title(S.team)) + '.png'; im.onerror = () => im.remove(); $('tlogo').replaceChildren(im);
+  render(); autoReceipts();
+}
+function render() {
+  if (!S) return;
+  $('tname').textContent = title(S.team); $('towner').textContent = 'Owner: ' + (S.owner.name || '') + ' · KNPL7-' + S.owner.id;
+  $('payto').textContent = S.payTo;
+  [$('fmode'), $('rmode')].forEach(s => { const v = s.value; s.replaceChildren(...S.modes.map(m => { const o = el('option', null, m); o.value = m; return o; })); if (v) s.value = v; });
+  renderSched(); renderHist(); renderJersey(); renderRepl();
+  if (!$('formcard').hidden) itemInfo();
+}
+function renderSched() {
+  const box = $('sched'); box.replaceChildren();
+  const head = el('div', 'srow sh'); [t('thItem'), t('thAmt'), t('thDue'), t('thSt'), ''].forEach(x => head.append(el('span', null, x))); box.append(head);
+  S.schedule.forEach(s => {
+    const p = latest(s.code), r = el('div', 'srow');
+    const st = p ? p.status : (s.amount != null && s.due < today() ? 'late' : 'none');
+    const nm = el('span', 'sn'); nm.append(el('b', null, t(s.code)));
+    if (s.amount == null) nm.append(el('div', 'small muted', s.code === 'JER' ? t('jerWait') : t('drWait')));
+    if (p && p.status === 'REJECTED' && p.remarks) nm.append(el('div', 'rej', t('reason') + p.remarks));
+    const pill = el('span', 'pill ' + st, st === 'late' ? t('stLate') : st === 'none' ? t('stNone') : t('st' + st) + (st === 'APPROVED' ? ' · ' + p.receiptNo : ''));
+    const act = el('span', 'sa');
+    if (s.amount != null && (!p || p.status === 'REJECTED')) { const b = el('button', 'btn or sm', p ? t('uploadAgain') : t('upload')); b.onclick = () => openForm(s.code); act.append(b); }
+    if (p && p.status === 'APPROVED') { const b = el('button', 'btn ok sm', t('receipt')); b.onclick = () => receipt(p); act.append(b); }
+    const pc = el('span'); pc.append(pill);
+    r.append(nm, el('span', 'amt', s.amount != null ? inr(s.amount) : '–'), el('span', 'due', dmy(s.due)), pc, act);
+    box.append(r);
+  });
+  const d = S.draft, tb = $('dbrk'); tb.replaceChildren();
+  d.lines.forEach(l => { const tr = el('tr'); tr.append(el('td', null, (l.owner ? 'Owner · ' : '') + l.name + ' (KNPL7-' + l.id + ', ' + l.cat + ', SR ' + l.sr + ') · ' + Math.round(l.share * 100) + '% × ' + inr(l.price)), el('td', null, inr(l.pay))); tb.append(tr); });
+  const tr = el('tr'), td = el('td', null, t('drTotal', {a: inr(d.total), b: inr(d.i1), c: inr(d.i2)})); td.colSpan = 2; td.style.fontWeight = '700'; tr.append(td); tb.append(tr);
+}
+function histItem(p) {
+  const li = el('li'), a = el('div'), b = el('div', 'r');
+  a.append(el('b', null, t(p.type)));
+  a.append(el('div', 'small muted', inr(p.amount) + ' · ' + p.mode + (p.utr ? ' · ' + t('ref') + ' ' + p.utr : '') + ' · ' + t('paidOn') + ' ' + dmy(p.paidOn) + ' · ' + p.id));
+  if (p.type === 'REPL') a.append(el('div', 'small muted', (p.replOut ? p.replOut.name + ' → ' : '') + (p.replIn ? p.replIn.name + ' (KNPL7-' + p.replIn.id + ')' : '')));
+  if (p.status === 'REJECTED' && p.remarks) a.append(el('div', 'rej', t('reason') + p.remarks));
+  b.append(el('span', 'pill ' + p.status, p.status === 'APPROVED' ? p.receiptNo : t('st' + p.status)));
+  if (p.status === 'APPROVED') { const d = el('button', 'btn ok sm', t('receipt')); d.style.cssText = 'margin-top:6px;display:block;margin-left:auto'; d.onclick = () => receipt(p); b.append(d); }
+  li.append(a, b); return li;
+}
+function renderHist() {
+  const ul = $('hist'); ul.replaceChildren();
+  const list = S.payments.filter(p => p.type !== 'REPL');
+  if (!list.length) { ul.append(el('li', 'muted', t('noHist'))); return; }
+  list.slice().reverse().forEach(p => ul.append(histItem(p)));
+}
+function uploadable() { return S.schedule.filter(s => { const p = latest(s.code); return s.amount != null && (!p || p.status === 'REJECTED'); }); }
+function openForm(code) {
+  const list = uploadable();
+  if (!list.length) { $('pmsg').className = 'msg'; $('pmsg').textContent = t('nothingDue'); return; }
+  $('fitem').replaceChildren(...list.map(s => { const o = el('option', null, t(s.code) + ' – ' + inr(s.amount)); o.value = s.code; return o; }));
+  if (code) $('fitem').value = code;
+  $('formcard').hidden = false; $('fmsg').textContent = ''; $('fack').checked = false; $('ffile').value = ''; $('futr').value = ''; $('fnote').value = '';
+  $('fdate').max = today(); $('fdate').value = today(); $('fpayer').value = S.owner.name || '';
+  itemInfo(); $('formcard').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+function itemInfo() { const s = S.schedule.find(x => x.code === $('fitem').value); $('famt').textContent = s ? t('fAmt', {a: inr(s.amount), d: dmy(s.due)}) : ''; }
+async function sendForm() {
+  const m = $('fmsg'); m.className = 'msg err'; m.textContent = '';
+  const f = $('ffile').files[0];
+  if (!$('fitem').value) return m.textContent = t('vItem');
+  if (!$('fdate').value) return m.textContent = t('vDate');
+  if ($('fmode').value !== S.modes[2] && $('futr').value.replace(/\s/g, '').length < 6) return m.textContent = t('vUtr');
+  if ($('fpayer').value.trim().length < 3) return m.textContent = t('vPayer');
+  if (!f) return m.textContent = t('vFile');
+  if (!$('fack').checked) return m.textContent = t('vAck');
+  $('fsend').disabled = true; m.className = 'msg'; m.textContent = t('uploading');
+  try {
+    const file = await compressFile(f, S.maxMb);
+    S = await api('teamDeskPay', CODE, {type: $('fitem').value, paidOn: $('fdate').value, mode: $('fmode').value, utr: $('futr').value, payer: $('fpayer').value, note: $('fnote').value, file});
+    $('formcard').hidden = true; render();
+    $('pmsg').className = 'msg ok'; $('pmsg').textContent = t('submitted'); $('pmsg').scrollIntoView({behavior: 'smooth', block: 'center'});
+  } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
+  finally { $('fsend').disabled = false; }
+}
+async function receipt(p) {
+  if (!window.jspdf || !window.KNPLReceipt) { alert(t('rcptFail')); return; }
+  const doc = await KNPLReceipt.makeReceipt({p, team: S.team, owner: S.owner, draft: S.draft, base: '../'});
+  doc.save(KNPLReceipt.fileName(p, S.team));
+  try { localStorage.setItem('knpl_rct_' + p.receiptNo, '1'); } catch (e) {}
+}
+async function autoReceipts() {
+  const seen = n => { try { return localStorage.getItem('knpl_rct_' + n); } catch (e) { return '1'; } };
+  const todo = S.payments.filter(p => p.status === 'APPROVED' && p.receiptNo && !seen(p.receiptNo));
+  if (!todo.length) return;
+  for (let i = 0; i < 60 && !(window.jspdf && window.KNPLReceipt); i++) await new Promise(r => setTimeout(r, 100));
+  for (const p of todo) { await receipt(p); await new Promise(r => setTimeout(r, 700)); }
+  $('pmsg').className = 'msg ok'; $('pmsg').textContent = t('newRcpt', {n: todo.length, l: todo.map(p => p.receiptNo).join(', ')});
+}
+/* ---------- jersey ---------- */
+function renderJersey() {
+  $('jlink').value = S.jersey.link;
+  $('jwa').href = 'https://wa.me/?text=' + encodeURIComponent(WA_MSG(title(S.team), S.jersey.link));
+  const tb = $('jrows'), old = {};
+  tb.querySelectorAll('tr[data-id]').forEach(tr => { old[tr.dataset.id] = {}; tr.querySelectorAll('[data-k]').forEach(x => old[tr.dataset.id][x.dataset.k] = x.value); });
+  tb.replaceChildren();
+  S.players.forEach(p => {
+    const j = p.j || {}, o = old[p.id] || {}, tr = el('tr'); tr.dataset.id = p.id;
+    const pn = el('td', 'pn'); pn.append(el('b', null, p.name || ('KNPL7-' + p.id)));
+    pn.append(el('span', 'small muted', 'KNPL7-' + p.id + ' · ' + t('role' + p.role) + ' · ' + (p.locked ? t('locked') : t('by', {d: dmy(p.due)})) + (p.replacedBy ? ' · ' + t('replacedBy') : '')));
+    pn.append(el('span', 'pill ' + (j.size ? 'APPROVED' : 'none'), j.size ? t('done') : t('pending')));
+    const sz = el('select'); sz.append(el('option', null, t('size'))); sz.options[0].value = ''; S.jersey.sizes.forEach(s => { const op = el('option', null, s); op.value = s; sz.append(op); }); sz.value = o.size ?? j.size ?? ''; sz.dataset.k = 'size';
+    const sl = el('select'); [['', t('sleeve')], ['Half', t('half')], ['Full', t('full')]].forEach(([v, x]) => { const op = el('option', null, x); op.value = v; sl.append(op); }); sl.value = o.sleeve ?? j.sleeve ?? ''; sl.dataset.k = 'sleeve';
+    const nm = el('input', 'nm'); nm.type = 'text'; nm.maxLength = 12; nm.value = o.name ?? j.name ?? ''; nm.placeholder = 'NAME'; nm.dataset.k = 'name';
+    const nu = el('input', 'num'); nu.type = 'text'; nu.inputMode = 'numeric'; nu.maxLength = 2; nu.value = o.num ?? j.num ?? ''; nu.placeholder = 'No.'; nu.dataset.k = 'num';
+    const bk = el('span', 'back'), bi = el('i'), bb = el('b'); bk.append(bi, bb);
+    const upd = () => { nm.value = nm.value.toUpperCase().replace(/[^A-Z .\-']/g, ''); nu.value = nu.value.replace(/\D/g, ''); bi.textContent = nm.value || 'NAME'; bb.textContent = nu.value || '00'; };
+    nm.oninput = upd; nu.oninput = upd; upd();
+    [sz, sl, nm, nu].forEach(x => { x.disabled = p.locked; x.setAttribute('aria-label', x.dataset.k + ' – ' + p.name); });
+    const td = x => { const c = el('td'); c.append(x); return c; }; const pv = td(bk); pv.className = 'pv';
+    tr.append(pn, td(sz), td(sl), td(nm), td(nu), pv); tb.append(tr);
+  });
+}
+async function saveJersey() {
+  const m = $('jmsg'); m.className = 'msg err'; m.textContent = ''; const rows = [], nums = {};
+  for (const tr of $('jrows').querySelectorAll('tr[data-id]')) {
+    const p = S.players.find(x => x.id === tr.dataset.id); if (p.locked) continue;
+    const g = k => tr.querySelector('[data-k=' + k + ']').value.trim(), r = {id: p.id, size: g('size'), sleeve: g('sleeve'), name: g('name'), num: g('num')};
+    const j = p.j || {}; if (!(r.size || r.sleeve || r.name || r.num)) continue;
+    if (!r.size || !r.sleeve || !r.name || r.num === '') return m.textContent = t('vRow', {p: p.name});
+    if (j.size === r.size && j.sleeve === r.sleeve && j.name === r.name && j.num === r.num) continue;
+    rows.push(r);
+  }
+  for (const tr of $('jrows').querySelectorAll('tr[data-id]')) { const n = tr.querySelector('[data-k=num]').value; if (n === '' || !tr.querySelector('[data-k=name]').value) continue; const k = String(Number(n)); if (nums[k]) return m.textContent = t('vDupNum', {n: k}); nums[k] = 1; }
+  if (!rows.length) return m.textContent = t('vNone');
+  $('jsave').disabled = true; m.className = 'msg'; m.textContent = t('saving');
+  try { S = await api('teamDeskJersey', CODE, rows); $('jrows').replaceChildren(); render(); m.className = 'msg ok'; m.textContent = t('saved', {n: rows.length}); }
+  catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
+  finally { $('jsave').disabled = false; }
+}
+/* ---------- season replacement ---------- */
+function renderRepl() {
+  const R = S.repl; $('repclosed').hidden = R.open; $('repform').hidden = !R.open; $('repclosed').textContent = t('repOpens', {d: R.opens});
+  if (R.open) {
+    const busy = S.payments.filter(p => p.type === 'REPL' && p.status !== 'REJECTED').map(p => p.replOut && p.replOut.id);
+    const outs = S.players.filter(p => p.role !== 'Replacement' && !p.replacedBy && busy.indexOf(p.id) < 0);
+    const v = $('rout').value;
+    $('rout').replaceChildren(el('option', null, t('choose')), ...outs.map(p => { const o = el('option', null, p.name + ' (KNPL7-' + p.id + ' · SR ' + p.sr + ')'); o.value = p.id; return o; }));
+    $('rout').options[0].value = ''; if (v) $('rout').value = v;
+    fillIn();
+    $('rdate').max = today(); if (!$('rdate').value) $('rdate').value = today();
+  }
+  const ul = $('rhist'); ul.replaceChildren(); const l = S.payments.filter(p => p.type === 'REPL');
+  if (!l.length) ul.append(el('li', 'muted', t('noRep'))); else l.slice().reverse().forEach(p => ul.append(histItem(p)));
+}
+function fillIn() {
+  const out = S.players.find(p => p.id === $('rout').value);
+  if (!out) { $('rin').replaceChildren(el('option', null, t('chooseOutFirst'))); $('rin').options[0].value = ''; $('rinfo').textContent = ''; return; }
+  const list = S.repl.unsold.filter(u => u.sr <= out.sr), v = $('rin').value;
+  $('rin').replaceChildren(el('option', null, t('choose')), ...list.map(u => { const o = el('option', null, u.name + ' (KNPL7-' + u.id + ' · ' + u.cat + ' · SR ' + u.sr + ')'); o.value = u.id; return o; }));
+  $('rin').options[0].value = ''; if (v && list.some(u => u.id === v)) $('rin').value = v;
+  $('rinfo').textContent = t('rInfo', {n: list.length, s: out.sr});
+}
+async function sendRepl() {
+  const m = $('rmsg'); m.className = 'msg err'; m.textContent = ''; const f = $('rfile').files[0];
+  if (!$('rout').value || !$('rin').value) return m.textContent = t('vRepl');
+  if (!$('ragree').checked) return m.textContent = t('vAgree');
+  if (!$('rdate').value) return m.textContent = t('vDate');
+  if ($('rmode').value !== S.modes[2] && $('rutr').value.replace(/\s/g, '').length < 6) return m.textContent = t('vUtr');
+  if ($('rpayer').value.trim().length < 3) return m.textContent = t('vPayer');
+  if (!f) return m.textContent = t('vFile');
+  $('rsend').disabled = true; m.className = 'msg'; m.textContent = t('uploading');
+  try {
+    const file = await compressFile(f, S.maxMb);
+    S = await api('teamDeskPay', CODE, {type: 'REPL', agree: true, replOut: $('rout').value, replIn: $('rin').value, paidOn: $('rdate').value, mode: $('rmode').value, utr: $('rutr').value, payer: $('rpayer').value, file});
+    ['rutr', 'rpayer', 'rfile'].forEach(i => $(i).value = ''); $('ragree').checked = false; $('rout').value = ''; render();
+    m.className = 'msg ok'; m.textContent = t('rSent');
+  } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
+  finally { $('rsend').disabled = false; }
+}
+function tab(k) { ['pay', 'jer', 'rep'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); }
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
+$('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+$('upAny').onclick = () => openForm(''); $('fitem').onchange = itemInfo; $('fsend').onclick = sendForm; $('fcancel').onclick = () => { $('formcard').hidden = true; };
+$('jsave').onclick = saveJersey;
+$('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
+$('rout').onchange = fillIn; $('rsend').onclick = sendRepl;
+$('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep');
+$('out').onclick = () => { try { sessionStorage.removeItem('knpl_td'); } catch (e) {} location.reload(); };
+applyStatic();
+(async () => {
+  try { const s = await api('teamDeskStatus'); if (!s.open) { $('gmsg').className = 'msg'; $('gmsg').textContent = t('opensOn', {d: s.opens}); } } catch (e) {}
+  try { const c = sessionStorage.getItem('knpl_td'); if (c) { $('code').value = c; login(); } } catch (e) {}
+})();

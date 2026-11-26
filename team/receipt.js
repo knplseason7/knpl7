@@ -72,12 +72,19 @@
     doc.setTextColor(255, 255, 255); doc.setFontSize(9); doc.setFont('helvetica', 'bold');
     doc.text('DESCRIPTION', M + 4, y + 6); doc.text('AMOUNT', W - M - 4, y + 6, { align: 'right' });
     y += 9;
-    let rows = [[p.kind, p.amount]];
-    if (p.type === 'DRAFT' && info.lines && info.lines.length) {
-      const sum = info.lines.reduce((a, l) => a + l.pay, 0);
-      if (Math.abs(sum - p.amount) < 0.01) rows = info.lines.map(l => [(l.owner ? 'Owner – ' : 'Drafted – ') + l.name + ' (KNPL7-' + l.id + ', ' + l.cat + ', SR ' + l.sr + ')  ·  draft price ' + inr(l.price) + ' × ' + Math.round(l.share * 100) + '%', l.pay]);
+    let rows = [[p.kind, p.amount]], note = '';
+    const dr = info.draft;
+    if (/^DR/.test(p.type) && dr) {
+      rows = [[p.kind + '  ·  Year-1 draft fee total ' + inr(dr.total) + ' (owner 100%, other drafted players 50%)', p.amount]];
+      note = 'Year-1 draft fee: ' + dr.lines.map(l => (l.owner ? 'Owner ' : '') + l.name + ' (KNPL7-' + l.id + ', ' + l.cat + ', SR ' + l.sr + ') ' + inr(l.pay)).join('; ') + '. Paid in 2 instalments: by 10 Dec 2026 and by 10 Feb 2027. Other drafted players also pay 25% in KNPL-8 and 25% in KNPL-9 (Rule Book 5.4).';
     }
-    if (p.type === 'REPL' && p.replOut) rows = [['Season replacement – 50% of the registration fee of ' + (p.replOut.name || '') + ' (KNPL7-' + p.replOut.id + '), replaced by ' + (p.replIn ? p.replIn.name + ' (KNPL7-' + p.replIn.id + ')' : ''), p.amount]];
+    if (/^CD/.test(p.type)) note = 'Sponsorship caution deposit Rs. 15,000 for KNPL-7, paid in 5 instalments of Rs. 3,000. It is refunded up to the sponsorship amount the franchise brings (maximum Rs. 15,000).';
+    if (p.type === 'OWN1') note = 'Ownership fee Rs. 10,000 for the cycle: KNPL-7 Rs. 5,000, KNPL-8 Rs. 2,500, KNPL-9 Rs. 2,500.';
+    if (p.type === 'JER') note = 'Team jersey cost at actuals, payable by a team without a jersey sponsor.';
+    if (p.type === 'REPL' && p.replOut) {
+      rows = [['Season replacement – 50% of the registration fee of ' + (p.replOut.name || '') + ' (KNPL7-' + p.replOut.id + '), replaced by ' + (p.replIn ? p.replIn.name + ' (KNPL7-' + p.replIn.id + ')' : '') + ' for KNPL-7', p.amount]];
+      note = 'As per Rule 10.2 of the KNPL-7 Mega Auction Rule Book, this Rs. 500 is collected from the season replacement player and paid by KNPL to the replaced player. It is not a charge to the team.';
+    }
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...INK);
     rows.forEach((r, i) => {
       const t = doc.splitTextToSize(r[0], W - 2 * M - 48), h = Math.max(10, t.length * 4.6 + 5);
@@ -105,15 +112,11 @@
       doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(...INK); doc.text(String(d[1] || '-'), cx + 32, cy);
     });
     y += 38;
-    if (p.type === 'REPL') {
+    if (note) {
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...MUTED);
-      doc.text(doc.splitTextToSize('As per Rule 10.2 of the KNPL-7 Mega Auction Rule Book, this Rs. 500 is collected from the season replacement player and paid by KNPL to the replaced player. It is not a charge to the team.', W - 2 * M), M, y);
-      y += 12;
-    }
-    if (p.type === 'DRAFT') {
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...MUTED);
-      doc.text(doc.splitTextToSize('Year-1 draft fee: owner 100%; other drafted players 50% now, 25% in KNPL-8 and 25% in KNPL-9 (Rule Book 5.4).', W - 2 * M), M, y);
-      y += 10;
+      const nt = doc.splitTextToSize(note, W - 2 * M);
+      doc.text(nt, M, y);
+      y += nt.length * 4.2 + 4;
     }
     // PAID stamp
     doc.setDrawColor(...OK); doc.setTextColor(...OK); doc.setLineWidth(1.1);
@@ -134,5 +137,5 @@
     doc.text('KNPL-7  ·  11–14 February 2027  ·  FISAT & Boundary Grounds, Angamaly', W / 2, 294, { align: 'center' });
     return doc;
   }
-  window.KNPLReceipt = { makeReceipt, inr, words, fileName: (p, team) => p.receiptNo + ' ' + title(team).replace(/[^A-Za-z0-9 ]/g, '') + ' ' + ({ OWN: 'Ownership Fee', DRAFT: 'Draft Fee', REPL: 'Season Replacement' }[p.type] || 'Payment') + '.pdf' };
+  window.KNPLReceipt = { makeReceipt, inr, words, fileName: (p, team) => p.receiptNo + ' ' + title(team).replace(/[^A-Za-z0-9 ]/g, '') + ' ' + ({ CD1: 'Caution Deposit 1', CD2: 'Caution Deposit 2', CD3: 'Caution Deposit 3', CD4: 'Caution Deposit 4', CD5: 'Caution Deposit 5', OWN1: 'Ownership Fee 1', DR1: 'Draft Fee 1', DR2: 'Draft Fee 2', JER: 'Jersey Fee', REPL: 'Season Replacement' }[p.type] || 'Payment') + '.pdf' };
 })();
