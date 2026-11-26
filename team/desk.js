@@ -50,7 +50,7 @@ window.TX = {
  noPay:['No payment','പണമടയ്ക്കേണ്ടതില്ല'],refund2:['₹500 back to each player','ഓരോ കളിക്കാരനും ₹500 തിരികെ'],
  notYet:['Not due yet','ഇപ്പോൾ ബാധകമല്ല'],
  howTitle:['How to pay','പണമടയ്ക്കേണ്ട വിധം'],
- nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],pendTitle:['Pending payments – pay in this order','അടയ്ക്കാനുള്ളവ – ഈ ക്രമത്തിൽ അടയ്ക്കുക'],pendSum:['{n} to pay · {a} in all','അടയ്ക്കാനുള്ളത് {n} · ആകെ {a}'],pendLate:['{n} past the due date','{n} എണ്ണത്തിന്റെ തീയതി കഴിഞ്ഞു'],pastDue:['Due date {d} passed – pay / upload the receipt now','അവസാന തീയതി {d} കഴിഞ്ഞു – ഉടൻ അടച്ച് Receipt Upload ചെയ്യുക'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
+ nextTitle:['Next payment','അടുത്ത പണമടയ്ക്കൽ'],pendTitle:['Pending payments – pay in this order','അടയ്ക്കാനുള്ളവ – ഈ ക്രമത്തിൽ അടയ്ക്കുക'],pendSum:['{n} to pay · {a} in all','അടയ്ക്കാനുള്ളത് {n} · ആകെ {a}'],pendWaitHead:['Uploaded – waiting for committee approval (nothing more to do)','Upload ചെയ്തു – Committee Approval കാത്തിരിക്കുന്നു (ഇനി ഒന്നും ചെയ്യേണ്ടതില്ല)'],pendLate:['{n} past the due date','{n} എണ്ണത്തിന്റെ തീയതി കഴിഞ്ഞു'],pastDue:['Due date {d} passed – pay / upload the receipt now','അവസാന തീയതി {d} കഴിഞ്ഞു – ഉടൻ അടച്ച് Receipt Upload ചെയ്യുക'],nextBtn:['Upload receipt','Receipt Upload ചെയ്യുക'],
  nextLate:['{n} item(s) are past the due date. Upload them first.','{n} ഇനങ്ങളുടെ തീയതി കഴിഞ്ഞു. ആദ്യം അവ Upload ചെയ്യുക.'],
  allDone:['All payments due so far are uploaded. Thank you!','ഇതുവരെയുള്ള എല്ലാ പണമടയ്ക്കലുകളും Upload ചെയ്തു. നന്ദി!'],
  progress:['{a} of {t} approved · {w} waiting for approval','{t}-ൽ {a} Approved · {w} Approval കാത്തിരിക്കുന്നു'],
@@ -173,7 +173,8 @@ function render() {
 function renderNext() {
   const box = $('nextcard'); box.replaceChildren();
   const t0 = today(), byDue = (x, y) => x.due.localeCompare(y.due) || 0;
-  const open = S.schedule.filter(s => { const p = latest(s.code); return !p || p.status !== 'APPROVED'; }).slice().sort(byDue);
+  const rank = s => { const p = latest(s.code); return p && p.status === 'PENDING' ? 2 : s.amount == null ? 1 : 0; };
+  const open = S.schedule.filter(s => { const p = latest(s.code); return !p || p.status !== 'APPROVED'; }).slice().sort((x, y) => rank(x) - rank(y) || byDue(x, y));
   const toPay = open.filter(s => { const p = latest(s.code); return s.amount != null && (!p || p.status === 'REJECTED'); });
   const late = toPay.filter(s => s.due < t0), sum = toPay.reduce((n, s) => n + Number(s.amount || 0), 0);
   const ap = S.payments.filter(p => p.type !== 'REPL' && p.status === 'APPROVED').length, wt = S.payments.filter(p => p.type !== 'REPL' && p.status === 'PENDING').length;
@@ -183,8 +184,8 @@ function renderNext() {
     const sm = el('div', 'pqsum'); sm.append(el('span', null, t('pendSum', {n: toPay.length, a: inr(sum)})));
     if (late.length) sm.append(el('span', 'late', ' · ' + t('pendLate', {n: late.length})));
     box.append(sm);
-    const ol = el('ol', 'pq'); let first = true;
-    open.forEach((s, i) => {
+    const ol = el('ol', 'pq'); let first = true, num = 0, wHead = false;
+    open.forEach(s => {
       const p = latest(s.code), li = el('li'), info = el('div', 'pqi'), act = el('div', 'pqa');
       const can = s.amount != null && (!p || p.status === 'REJECTED'), isLate = can && s.due < t0;
       if (can && first) { li.className = 'now'; first = false; }
@@ -198,7 +199,10 @@ function renderNext() {
       if (can) { const bt = el('button', 'btn or sm', p ? t('uploadAgain') : t('upload')); bt.onclick = () => openForm(s.code); act.append(bt); }
       else if (p && p.status === 'PENDING') act.append(el('span', 'pill PENDING', t('stPENDING')));
       else act.append(el('span', 'pill none', t('notYet')));
-      li.append(el('span', 'pqn', String(i + 1)), info, act); ol.append(li);
+      const wait = p && p.status === 'PENDING';
+      if (wait && !wHead) { wHead = true; ol.append(el('li', 'pqh', t('pendWaitHead'))); }
+      if (wait) li.classList.add('wt');
+      li.append(el('span', 'pqn', wait ? '✓' : String(++num)), info, act); ol.append(li);
     });
     box.append(ol);
   }

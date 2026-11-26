@@ -184,3 +184,6 @@ body.ml .cth{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;te
 .pqi b{display:block;font-size:15.5px;line-height:1.3}.pqa{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .pqamt{font:800 20px var(--display)}
 @media (max-width:520px){.pq li{grid-template-columns:26px 1fr;}.pqa{grid-column:2;flex-direction:row;align-items:center;justify-content:space-between;width:100%}.pqa .btn{flex:1;max-width:60%}}
+.pq li.pqh{display:block;background:none;border:0;padding:8px 2px 0;font:800 13px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--amber)}
+body.ml .pq li.pqh{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.pq li.wt{background:var(--bg);opacity:.9}.pq li.wt .pqn{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
