@@ -17,7 +17,7 @@ window.TX = {
  shareOut:['credit shared with {t}','{t}-മായി Credit പങ്കിട്ടു'],shareIn:['credit shared by {t}','{t} പങ്കിട്ട Credit'],
  spoTitle:['Sponsorship','Sponsorship'],
  spoIntro:['Bring sponsors for KNPL-7. Share your team\'s own sponsorship link – every sponsorship that comes through it is credited to your team.','KNPL-7-ന് Sponsors-നെ കൊണ്ടുവരിക. നിങ്ങളുടെ ടീമിന്റെ സ്വന്തം Sponsorship Link അയയ്ക്കുക – അതിലൂടെ വരുന്ന എല്ലാ Sponsorship-ഉം നിങ്ങളുടെ ടീമിന്റെ പേരിൽ കണക്കാക്കും.'],
- catOpen:['Open now','ഇപ്പോൾ തുറന്നിരിക്കുന്നു'],catSoon:['Coming soon','ഉടൻ വരുന്നു'],
+ catOpen:['Open now','ഇപ്പോൾ തുറന്നിരിക്കുന്നു'],catSoon:['Coming soon','ഉടൻ വരുന്നു'],catOpens:['Opens {d}','{d}-ന് തുറക്കും'],catIn:['Opens in {w} · share the link now so sponsors are ready','{w}-ൽ തുറക്കും · Sponsors തയ്യാറാകാൻ Link ഇപ്പോൾ തന്നെ അയയ്ക്കൂ'],catPreview:['Preview page','പേജ് കാണുക'],
  catOpenBtn:['Open sponsorship page','Sponsorship പേജ് തുറക്കുക'],catShare:['Share with a sponsor','Sponsor-ന് അയയ്ക്കുക'],catStatus:['Live status','Live Status'],
  slotsOpen:['{n} slots open · worth {v}','{n} Slots ബാക്കി · {v} മൂല്യം'],
  spoMine:['Your team\'s sponsorships','നിങ്ങളുടെ ടീമിന്റെ Sponsorships'],
@@ -384,27 +384,49 @@ async function sendRepl() {
 const SPONSOR_CATS = [
   {key: 'cover', name: 'Cover Drive', url: 'https://knplseason7.github.io/knpl7-cover-drive/', api: 'https://script.google.com/macros/s/AKfycbzhb0N02RyK_lLfsMxQCooY_BRN1MtGhnVCVc7Wn4w6RtdVdPc30k3QaJs4gzgSkEOF/exec',
    desc: ['Trophies, awards, team jerseys and match-day sponsorships.', 'Trophies, Awards, Team Jersey, Match-day Sponsorships.']},
-  {key: 'flick', name: 'Flick', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']},
+  {key: 'flick', name: 'The Flick', url: 'https://knplseason7.github.io/knpl7-cover-drive/flick/', api: 'https://script.google.com/macros/s/AKfycby1VzRbBVcU8t_I7YYQqL1E8Hskmt9ZgBZDSpMDOAwudSc0bIzQBlsmZ592Xzc_iSkgyQ/exec',
+   opens: '2026-12-01T08:00:00+05:30', opensLabel: ['Tue 1 Dec 2026, 8:00 AM', 'ചൊവ്വ 1 ഡിസംബർ 2026, രാവിലെ 8:00'],
+   desc: ['Knockout match sponsors, telecast, breakfast, awards and match officials – 14 sponsorships from ₹1,000.', 'Knockout Match Sponsors, Telecast, Breakfast, Awards, Match Officials – ₹1,000 മുതൽ 14 Sponsorships.']},
   {key: 'straight', name: 'Straight Drive', url: '', api: '', desc: ['Opens soon.', 'ഉടൻ തുറക്കും.']}
 ];
+const catLive = c => !!c.url && (!c.opens || Date.now() >= new Date(c.opens).getTime());
+function catWait(c) {   // "2d 14h 05m" until a scheduled category opens
+  const ms = new Date(c.opens).getTime() - Date.now(); if (ms <= 0) return '';
+  const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60;
+  return (d ? d + 'd ' : '') + (d || h ? h + 'h ' : '') + String(m).padStart(2, '0') + 'm';
+}
 const PORTAL_TEAMS = ['Devils Of Chitrakoot', 'Ayodhya Warriors', 'Spartans Of Nalanda', 'Mighty Mithilas', 'Kalinga United', 'Kurukshetra Yodhas', 'Jaguars Of Jhansi', 'Knights Of Kanchi',
   'Kombans Of Pataleeputhra', 'Kaaliyanz Of Dwaraka', 'Madhura Mavericks', 'Panchaala Panthers', 'Gandhara Giants', 'Vamos Vrindavan', 'Guardians Of Kamboja', 'Varahas Of Vijayanagara'];
 const sNorm = x => String(x || '').toUpperCase().replace(/[^A-Z]/g, '').replace(/H/g, '').replace(/D/g, 'T');
 let SPO = null;
 function SPO_TEAM() { return PORTAL_TEAMS.find(n => sNorm(n) === sNorm(S.team)) || title(S.team); }
 function keyOf(name) { return (S.sponsor.teams || []).find(k => sNorm(k) === sNorm(name)) || ''; }
-function openCat() { return SPONSOR_CATS.find(c => c.url); }
-function spoLink() { const c = openCat(); return c ? c.url + '?team=' + encodeURIComponent(SPO_TEAM()) : ''; }
+function openCat() { return SPONSOR_CATS.find(catLive); }
+function catLink(c) { return c && c.url ? c.url + '?team=' + encodeURIComponent(SPO_TEAM()) : ''; }
+function spoLink() { return catLink(openCat()); }
 function spoMsg() {
-  const open = SPONSOR_CATS.filter(c => c.url).map(c => c.name).join(', ');
+  const live = SPONSOR_CATS.filter(catLive), soon = SPONSOR_CATS.filter(c => c.url && !catLive(c));
+  const open = live.map(c => c.name).join(', ');
   return '🏏 *KNPL Season 7 – Sponsorship*\n\n' +
     'Kerala Namboodiris Premier League, Season 7 – 16 teams, 248 players, 11–14 Feb 2027 at FISAT & Boundary Grounds, Angamaly, live on YouTube.\n' +
     'കേരള നമ്പൂതിരീസ് പ്രീമിയർ ലീഗ് സീസൺ 7 – 16 ടീമുകൾ, 248 കളിക്കാർ, 11–14 ഫെബ്രുവരി 2027, FISAT & Boundary Grounds, അങ്കമാലി, YouTube-ൽ തത്സമയം.\n\n' +
     'Please support us as a sponsor through ' + title(S.team) + '. ' + open + ' sponsorships are open now – pick a slot and sponsor in a few taps.\n' +
     title(S.team) + ' വഴി Sponsor ആയി ഞങ്ങളെ പിന്തുണയ്ക്കൂ. ' + open + ' Sponsorships ഇപ്പോൾ തുറന്നിരിക്കുന്നു – Slot തിരഞ്ഞെടുത്ത് എളുപ്പത്തിൽ Sponsor ചെയ്യാം.\n\n' +
-    '👉 ' + spoLink() + '\n\n' +
+    live.map(c => '👉 *' + c.name + '*: ' + catLink(c)).join('\n') + '\n\n' +
+    soon.map(c => '🗓️ *' + c.name + '* opens on ' + c.opensLabel[0] + ' – ' + catLink(c) + '\n' +
+      '🗓️ *' + c.name + '* ' + c.opensLabel[1] + '-ന് തുറക്കും.\n\n').join('') +
     'Your brand reaches every Namboodiri household that follows KNPL. Thank you!\n' +
     'KNPL പിന്തുടരുന്ന എല്ലാ നമ്പൂതിരി കുടുംബങ്ങളിലേക്കും നിങ്ങളുടെ പേര് എത്തും. നന്ദി!\n\n– ' + title(S.team) + ' · KNPL-7';
+}
+/* one category's own message (share button on its card) */
+function catMsg(c) {
+  const live = catLive(c);
+  return '🏏 *KNPL Season 7 – ' + c.name + ' Sponsorship*\n\n' +
+    (live ? 'Please support ' + title(S.team) + ' as a KNPL-7 "' + c.name + '" sponsor – pick a slot and sponsor in a few taps.\n' +
+            title(S.team) + '-നെ KNPL-7 "' + c.name + '" Sponsor ആയി പിന്തുണയ്ക്കൂ – Slot തിരഞ്ഞെടുത്ത് എളുപ്പത്തിൽ Sponsor ചെയ്യാം.\n\n'
+          : 'KNPL-7 "' + c.name + '" sponsorships open on ' + c.opensLabel[0] + '. Slots are first come, first served – please sponsor through ' + title(S.team) + '.\n' +
+            'KNPL-7 "' + c.name + '" Sponsorships ' + c.opensLabel[1] + '-ന് തുറക്കും. ആദ്യം വരുന്നവർക്ക് ആദ്യം – ' + title(S.team) + ' വഴി Sponsor ചെയ്യൂ.\n\n') +
+    '👉 ' + catLink(c) + '\n\n– ' + title(S.team) + ' · KNPL-7';
 }
 async function loadSpo() {
   if (!S.sponsor) renderSpo();
@@ -442,9 +464,19 @@ function renderSpo() {
   // categories + available slots
   const cats = $('cats'); cats.replaceChildren();
   SPONSOR_CATS.forEach(c => {
-    const d = el('div', 'cat' + (c.url ? ' open' : '')), h = el('div', 'cathead');
-    h.append(el('h3', null, c.name), el('span', 'pill ' + (c.url ? 'APPROVED' : 'none'), c.url ? t('catOpen') : t('catSoon'))); d.append(h, el('p', 'small muted', c.desc[LANG === 'ml' ? 1 : 0]));
-    if (c.url && SPO) { const L = SPO.av.filter(a => a.cat === c.name); d.append(el('p', 'small', t('slotsOpen', {n: L.reduce((a, x) => a + x.left, 0), v: inr(L.reduce((a, x) => a + x.left * x.rate, 0))}))); }
+    const live = catLive(c), sched = !!c.url && !live;
+    const d = el('div', 'cat' + (live ? ' open' : sched ? ' sched' : '')), h = el('div', 'cathead');
+    h.append(el('h3', null, c.name), el('span', 'pill ' + (live ? 'APPROVED' : sched ? 'PENDING' : 'none'), live ? t('catOpen') : sched ? t('catOpens', {d: c.opensLabel[LANG === 'ml' ? 1 : 0]}) : t('catSoon')));
+    d.append(h, el('p', 'small muted', c.desc[LANG === 'ml' ? 1 : 0]));
+    if (sched) d.append(el('p', 'small catwait', t('catIn', {w: catWait(c)})));
+    if (c.url && SPO) { const L = SPO.av.filter(a => a.cat === c.name); if (L.length) d.append(el('p', 'small', t('slotsOpen', {n: L.reduce((a, x) => a + x.left, 0), v: inr(L.reduce((a, x) => a + x.left * x.rate, 0))}))); }
+    if (c.url) {
+      const r = el('div', 'row'), o = el('a', 'btn sm or', live ? t('catOpenBtn') : t('catPreview')), w = el('a', 'btn sm ok', t('catShare')), st = el('a', 'btn sm ghost', t('catStatus'));
+      o.href = catLink(c); o.target = '_blank'; o.rel = 'noopener';
+      w.href = 'https://wa.me/?text=' + encodeURIComponent(catMsg(c)); w.target = '_blank'; w.rel = 'noopener';
+      st.href = c.url + 'status.html'; st.target = '_blank'; st.rel = 'noopener';
+      r.append(o, w, st); d.append(r);
+    }
     cats.append(d);
   });
   const av = $('avail'); av.replaceChildren();
@@ -627,3 +659,5 @@ applyStatic(); renderContacts();
   try { const s = await api('teamDeskStatus'); if (!s.open) { $('gmsg').className = 'msg'; $('gmsg').textContent = t('opensOn', {d: s.opens}); } } catch (e) {}
   try { const c = sessionStorage.getItem('knpl_td'); if (c) { $('code').value = c; login(); } } catch (e) {}
 })();
+/* scheduled categories (The Flick: 1 Dec 2026, 8:00 AM IST) – keep the countdown current and switch to "Open now" on time */
+setInterval(() => { if (S && S.sponsor) { const was = SPONSOR_CATS.filter(catLive).length; renderSpo(); if (SPONSOR_CATS.filter(catLive).length !== was) loadSpo(); } }, 30000);

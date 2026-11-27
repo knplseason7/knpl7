@@ -143,8 +143,25 @@
       if (!UI.inc) UI.inc = can('decideIncome') ? 'PENDING' : 'ALL';
       if (!UI.exp) UI.exp = is('EXP_CREATE') ? 'MINE' : (can('decideExpense') || can('pay')) ? 'ACTION' : 'ALL';
       render();
+      setTimeout(autoFetch, 1500);
     }).catch(function (e) { if (e.code === 'SESSION' || /session/i.test(e.message)) signOut(); else showGate(e.message); });
   }
+  /* Real-time: while the desk is open (and visible), new portal / Team Desk / registration entries are fetched every
+     3 minutes, and once on sign-in. The screen is redrawn only when nothing is being typed and no form is open. */
+  var AUTO = { busy: false, last: 0 };
+  function autoFetch() {
+    if (DEMO || AUTO.busy || !D || !TOKEN || document.hidden || !can('sync')) return;
+    if (Date.now() - AUTO.last < 170000) return;
+    AUTO.busy = true; AUTO.last = Date.now();
+    api('syncSources', TOKEN).then(function (r) {
+      var typing = document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+      D = r.data;
+      if (!typing && !document.querySelector('.modal')) render();
+      var x = r.result || {}; if (x.added || x.updated) toast('Live update: ' + (x.added || 0) + ' new · ' + (x.updated || 0) + ' updated' + (x.autoApproved ? ' · ' + x.autoApproved + ' auto-approved' : ''));
+    }).catch(function (e) { if (e && e.code === 'SESSION') signOut(e.message); }).then(function () { AUTO.busy = false; });
+  }
+  setInterval(autoFetch, 30000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) autoFetch(); });
   $('outBtn').onclick = function () { signOut(); };
   $('gGo').onclick = signIn;
   $('gCode').addEventListener('keydown', function (e) { if (e.key === 'Enter') signIn(); });
@@ -938,7 +955,7 @@
     cats.forEach(function (c) {
       var x = all.filter(function (i) { return i.source === c.id; });
       ct.appendChild(h('tr', null, h('td', null, h('b', null, c.cat)), h('td', null, c.sheetId ? pill('Connected', 'ok') : pill('Not connected yet', 'warn')),
-        h('td', { class: 'num' }, money(sum(x.filter(function (i) { return i.status === 'APPROVED'; })))), h('td', { class: 'num' }, money(sum(x.filter(toApprove)))), h('td', null, c.portal ? link(c.portal, 'Open portal ↗') : h('span', { class: 'muted' }, 'Not opened yet'))));
+        h('td', { class: 'num' }, money(sum(x.filter(function (i) { return i.status === 'APPROVED'; })))), h('td', { class: 'num' }, money(sum(x.filter(toApprove)))), h('td', null, c.portal ? link(c.portal, 'Open portal ↗') : h('span', { class: 'muted' }, 'Not opened yet'), c.opensAt && Date.now() < new Date(c.opensAt).getTime() ? h('div', { class: 'small muted' }, 'Opens ' + new Date(c.opensAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' })) : null)));
     });
     var o2 = all.filter(function (i) { return catOf(i) === 'OTHER'; });
     ct.appendChild(h('tr', null, h('td', null, h('b', null, 'Direct / other')), h('td', null, h('span', { class: 'muted' }, 'Entered here')), h('td', { class: 'num' }, money(sum(o2.filter(function (i) { return i.status === 'APPROVED'; })))), h('td', { class: 'num' }, money(sum(o2.filter(toApprove)))), h('td', null, '')));

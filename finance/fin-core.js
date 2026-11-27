@@ -10,7 +10,7 @@
  */
 var FinCore = (function () {
   'use strict';
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
 
   /* ---------------------------------------------------------------- schema */
   var SCHEMA = {
@@ -113,7 +113,9 @@ var FinCore = (function () {
       { id: 'SPONSOR', code: 'CD', cat: 'Cover Drive', enabled: true, sheetId: '1PO6rCjwjbmRhkXb6i68rGwx7H4RNc0w3woLQQ9IVtGY', tab: 'Sponsorships',
         portal: 'https://knplseason7.github.io/knpl7-cover-drive/',
         api: 'https://script.google.com/macros/s/AKfycbzhb0N02RyK_lLfsMxQCooY_BRN1MtGhnVCVc7Wn4w6RtdVdPc30k3QaJs4gzgSkEOF/exec' },
-      { id: 'SPONSOR_FL', code: 'FL', cat: 'Flick', enabled: true, sheetId: '', tab: 'Sponsorships', portal: '', api: '' },
+      { id: 'SPONSOR_FL', code: 'FL', cat: 'The Flick', enabled: true, sheetId: '1FstBAF5vUaw2GkVDefuSqc8GigWchYcBWO3TQ1N1EZY', tab: 'Sponsorships',
+        portal: 'https://knplseason7.github.io/knpl7-cover-drive/flick/', opensAt: '2026-12-01T08:00:00+05:30',
+        api: 'https://script.google.com/macros/s/AKfycby1VzRbBVcU8t_I7YYQqL1E8Hskmt9ZgBZDSpMDOAwudSc0bIzQBlsmZ592Xzc_iSkgyQ/exec' },
       { id: 'SPONSOR_SD', code: 'SD', cat: 'Straight Drive', enabled: true, sheetId: '', tab: 'Sponsorships', portal: '', api: '' }
     ]
   };
@@ -373,6 +375,15 @@ var FinCore = (function () {
   State.prototype.settings = function () {
     var rows = this.t('Settings'), s = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
     rows.forEach(function (r) { if (r.key !== 'seq' && SETTING_KEYS.indexOf(r.key) >= 0 && r.value != null) s[r.key] = r.value; });
+    /* A category saved before its register existed keeps the blanks it was saved with – fill those from the defaults,
+       so a newly connected category (e.g. The Flick) reaches the Finance Desk without re-saving Settings. */
+    if (Array.isArray(s.sponsorCats)) s.sponsorCats = DEFAULT_SETTINGS.sponsorCats.map(function (d0) {
+      var c = s.sponsorCats.filter(function (x) { return x && x.id === d0.id; })[0];
+      if (!c) return JSON.parse(JSON.stringify(d0));
+      ['sheetId', 'portal', 'api', 'opensAt'].forEach(function (k) { if (!c[k] && d0[k]) c[k] = d0[k]; });
+      if (c.cat === 'Flick' && d0.cat === 'The Flick') c.cat = d0.cat;
+      return c;
+    });
     return s;
   };
   State.prototype.setSetting = function (key, value) {
