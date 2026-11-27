@@ -74,6 +74,7 @@ ul.b{margin:0;padding-left:4mm}ul.b li{margin:.5mm 0;font-size:8.2pt;line-height
 .kv td{padding:.5mm 1.6mm}.kv td:first-child{width:19mm;font-weight:700;color:var(--navy);background:#f7f8fc}
 .imgbox{background:#e8ebf1;border:.3mm solid var(--line);border-radius:2.5mm;display:flex;align-items:center;justify-content:center;overflow:hidden}.imgbox img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 .bkrow{display:flex;flex-wrap:wrap;gap:1.2mm;margin-top:1.2mm}.bk{width:22mm;text-align:center}.bk svg{width:100%;height:auto;display:block}.bkrow.tight .bk{width:17mm}.bk.ph{opacity:.4}.bk .bs{font-size:5pt;color:#5b6784;white-space:nowrap;overflow:hidden;margin-top:-.4mm}
+.g3pn{display:grid;grid-template-columns:repeat(3,1fr);gap:0 5mm}.pn{margin:0;padding-left:7mm;font-size:8.6pt;line-height:1.75;font-weight:600}.pn li::marker{color:#e07b1a;font-weight:800;font-size:7.5pt}
 .legend{display:flex;flex-wrap:wrap;gap:.8mm 3mm;margin-top:1.6mm;font-size:7pt}.legend .no{width:3.8mm;height:3.8mm;line-height:3.8mm;font-size:6.4pt;margin-right:.6mm}
 .cr{display:grid;grid-template-columns:25mm 1fr;gap:2mm;align-items:center;padding:.5mm 0;border-bottom:.25mm solid #e6eaf3}.cr:last-child{border-bottom:0}.cr .lh{font-weight:800;color:var(--navy);font-size:7.2pt;line-height:1.25;text-transform:uppercase;letter-spacing:.04em}.cr .lh em{font-style:normal;font-weight:500;text-transform:none;letter-spacing:0;color:var(--mut);font-size:6.6pt}
 .cc{display:inline-flex;align-items:center;gap:1.2mm;margin:.2mm 2.6mm .2mm 0;font-size:6.6pt;line-height:1.2;vertical-align:middle}.cc i{width:4.2mm;height:4.2mm;border-radius:1.2mm;border:.25mm solid #b9c2d6;display:inline-block;flex:none}.cc em{display:block;font-style:normal;color:var(--mut)}.cc b{font-weight:800}
@@ -113,7 +114,7 @@ const pad2 = n => String(n).padStart(2, '0');
 const ROLE = ['Main body', 'Sleeves / panels', 'Trims / lettering', 'Accent'];
 const SIZE_KIDS = [[22,22,11,18],[24,24,12,19],[26,26,13,21],[28,28,14,22],[30,30,15,23],[32,32,16,24],[34,34,17,26],[36,36,18,27]];
 const SIZE_AD = [['M',38,19,28,8,17.5],['L',40,20,29,8.5,18.5],['XL',42,21,30,9,19.5],['XXL',44,22,31,9.5,20.5],['3XL',46,23,32,10,21],['4XL',48,24,33,10.5,22],['5XL',50,25,34,11,22.5]];
-const TOTAL = 18;
+const TOTAL = 19;
 const lum = h => { const n = parseInt(h.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (0.299 * r + 0.587 * g + 0.114 * b) / 255; };
 const contrast = h => lum(h) > 0.62 ? '#0b1a38' : '#ffffff';
 
@@ -295,10 +296,20 @@ function teamPage(key, idx) {
 </div>${FT(idx)}</div>`;
 }
 
+function patternPage(idx) {
+  const L = typeof MM_PATTERN !== 'undefined' ? MM_PATTERN : [], per = Math.ceil(L.length / 3);
+  const cols = [0, 1, 2].map(c => `<ol start="${c * per + 1}" class="pn">${L.slice(c * per, c * per + per).map(x => `<li>${esc(x)}</li>`).join('')}</ol>`).join('');
+  return `<div class="pg"><div class="hd" style="padding:5.5mm 11mm 4mm"><img src="${LOGO}madhura-mavericks.png" alt=""><div><div class="k">Annex to team 01 · Madhura Mavericks</div><h1>NAME PATTERN</h1><div class="s">Names to be printed as the pattern on the jersey</div></div><div class="r">Names<b><span class="chip">${L.length} names</span></b></div></div>
+<div class="bd" style="padding-top:4mm"><h2>Names to print</h2>
+<div class="card" style="padding:2mm 4mm"><div class="g3pn">${cols}</div></div>
+<div style="height:3mm"></div><h2>How to use this list</h2>
+<div class="card" style="padding:1mm 4mm"><ul class="b"><li>The names shown inside the approved design picture are for reference only. Print the names above instead.</li><li>Use the order and spelling exactly as listed, in capitals, as the repeating text pattern of the approved design.</li><li>Placement and colour of the pattern follow the approved design picture. Do not print it over logos, the number, the player name or the sponsor areas. Send a proof to the owner before bulk printing.</li><li>The list is as supplied by the owner; confirm any spelling doubts with him before printing.</li></ul></div>
+</div>${FT(idx)}</div>`;
+}
 function build() {
   const keys = Object.keys(PACK_TEAMS).sort((a, b) => PACK_TEAMS[a].no - PACK_TEAMS[b].no);
-  const pages = [page1(), page2()].concat(keys.map((k, i) => teamPage(k, i + 3)));
-  const names = ['Guidelines', 'Colour-and-approval'].concat(keys.map(k => pad2(PACK_TEAMS[k].no) + '-' + slug(PACK_TEAMS[k].name)));
+  const pages = [page1(), page2(), teamPage(keys[0], 3), patternPage(4)].concat(keys.slice(1).map((k, i) => teamPage(k, i + 5)));
+  const nm = k => pad2(PACK_TEAMS[k].no) + '-' + slug(PACK_TEAMS[k].name); const names = ['Guidelines', 'Colour-and-approval', nm(keys[0]), '01-madhura-name-pattern'].concat(keys.slice(1).map(nm));
   $('sheet').innerHTML = pages.map((p, i) => `<div class="pgwrap" data-name="${names[i]}"><div class="dl"><button data-fmt="png">PNG</button><button data-fmt="jpeg">JPG</button></div>${p}</div>`).join('');
   $('sheet').querySelectorAll('.dl button').forEach(b => b.onclick = async () => { const w = b.closest('.pgwrap'); $('tmsg').className = 'msg'; $('tmsg').textContent = 'Preparing image…'; try { const blob = await shot(w, b.dataset.fmt); save(blob, w.dataset.name + (b.dataset.fmt === 'png' ? '.png' : '.jpg')); $('tmsg').className = 'msg ok'; $('tmsg').textContent = 'Saved ' + w.dataset.name; } catch (e) { $('tmsg').className = 'msg err'; $('tmsg').textContent = 'Could not make the image: ' + e.message; } });
   $('tools').hidden = false;

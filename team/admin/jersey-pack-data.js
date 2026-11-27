@@ -16,6 +16,7 @@ const PACK_TEAMS={
 ]
 ],
 "fixes": [
+"NAME PATTERN: the names shown in the design picture are placeholders. Print the 49 names on the annex page (page 4) as the pattern; keep the order and spelling shown.",
 "Correct the spelling on the front: the mock-up reads \"MAVERICS\"; it must read \"MAVERICKS\".",
 "Remove the third-party mark on the back shoulder.",
 "Keep the sand panels large so the jersey stays clearly different from the blue jerseys of No. 12 and No. 16."
