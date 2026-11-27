@@ -1,0 +1,507 @@
+{
+ "asOf": "27-11-2026",
+ "stage": "After the draft (frozen 27 Nov 2026) – before the Mega Auction",
+ "purse": 100000,
+ "srCap": 560,
+ "squad": 14,
+ "ptsReservePerPlace": 2000,
+ "srReservePerPlace": 19,
+ "teams": [
+  {
+   "team": "JAGUARS OF JHANSI",
+   "players": [
+    {
+     "id": "0059",
+     "n": "HARI T R",
+     "c": "Rising Star Elite",
+     "sr": 26,
+     "pt": 5200,
+     "role": "Owner"
+    },
+    {
+     "id": "0092",
+     "n": "SREERAG NAGERI",
+     "c": "Dominator Core",
+     "sr": 55,
+     "pt": 9600,
+     "role": "Drafted"
+    },
+    {
+     "id": "0228",
+     "n": "NIKHIL NARAYANAN",
+     "c": "Dominator Core",
+     "sr": 55,
+     "pt": 9600,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 24400,
+   "srUsed": 136
+  },
+  {
+   "team": "SPARTANS OF NALANDA",
+   "players": [
+    {
+     "id": "0005",
+     "n": "DILEEP MAMPALLY",
+     "c": "Rising Star Core",
+     "sr": 20,
+     "pt": 2400,
+     "role": "Owner"
+    },
+    {
+     "id": "0062",
+     "n": "MANU SHARMA",
+     "c": "Conqueror Core",
+     "sr": 77,
+     "pt": 18000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0089",
+     "n": "S SIVAKUMAR",
+     "c": "Dominator Core",
+     "sr": 53,
+     "pt": 9200,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 29600,
+   "srUsed": 150
+  },
+  {
+   "team": "GUARDIANS OF KAMBOJA",
+   "players": [
+    {
+     "id": "0002",
+     "n": "SUNIL NARAYANAN",
+     "c": "Rising Star Core",
+     "sr": 15,
+     "pt": 2400,
+     "role": "Owner"
+    },
+    {
+     "id": "0054",
+     "n": "KARTHIK S",
+     "c": "Conqueror Vanguard",
+     "sr": 96,
+     "pt": 24000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0030",
+     "n": "HARIKRISHNAN",
+     "c": "Dominator Apex",
+     "sr": 72,
+     "pt": 14000,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 40400,
+   "srUsed": 183
+  },
+  {
+   "team": "VAMOS VRINDAVAN",
+   "players": [
+    {
+     "id": "0047",
+     "n": "PRAVEEN MUTTAS",
+     "c": "Rising Star Elite",
+     "sr": 49,
+     "pt": 6000,
+     "role": "Owner"
+    },
+    {
+     "id": "0088",
+     "n": "VISWANATHAN G",
+     "c": "Conqueror Core",
+     "sr": 75,
+     "pt": 17500,
+     "role": "Drafted"
+    },
+    {
+     "id": "0049",
+     "n": "KRISHNAPRASAD",
+     "c": "Rising Star Elite",
+     "sr": 44,
+     "pt": 5800,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 29300,
+   "srUsed": 168
+  },
+  {
+   "team": "MADHURA MAVERICKS",
+   "players": [
+    {
+     "id": "0029",
+     "n": "KRISHNADAS M N",
+     "c": "Rising Star Core",
+     "sr": 21,
+     "pt": 2600,
+     "role": "Owner"
+    },
+    {
+     "id": "0008",
+     "n": "VINEETH K V",
+     "c": "Conqueror Vanguard",
+     "sr": 95,
+     "pt": 23500,
+     "role": "Drafted"
+    },
+    {
+     "id": "0022",
+     "n": "HARI VARIKATT",
+     "c": "Dominator Core",
+     "sr": 59,
+     "pt": 9600,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 35700,
+   "srUsed": 175
+  },
+  {
+   "team": "KOMBANS OF PATALEEPUTHRA",
+   "players": [
+    {
+     "id": "0064",
+     "n": "IVISH KUMAR",
+     "c": "Rising Star Elite",
+     "sr": 41,
+     "pt": 5800,
+     "role": "Owner"
+    },
+    {
+     "id": "0081",
+     "n": "VIVEK K V",
+     "c": "Conqueror Core",
+     "sr": 79,
+     "pt": 18000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0009",
+     "n": "AJAY KRISHNAN M",
+     "c": "Dominator Core",
+     "sr": 60,
+     "pt": 9600,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 33400,
+   "srUsed": 180
+  },
+  {
+   "team": "DEVILS OF CHITHRAKOOT",
+   "players": [
+    {
+     "id": "0040",
+     "n": "BALAMURALI E",
+     "c": "Rising Star Core",
+     "sr": 20,
+     "pt": 2400,
+     "role": "Owner"
+    },
+    {
+     "id": "0090",
+     "n": "KAILAS NATHAN",
+     "c": "Conqueror Core",
+     "sr": 76,
+     "pt": 18000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0056",
+     "n": "HARIKRISHNAN K",
+     "c": "Dominator Apex",
+     "sr": 69,
+     "pt": 14000,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 34400,
+   "srUsed": 165
+  },
+  {
+   "team": "PANCHAALA PANTHERS",
+   "players": [
+    {
+     "id": "0020",
+     "n": "MIDHUN PAN",
+     "c": "Rising Star Elite",
+     "sr": 44,
+     "pt": 5800,
+     "role": "Owner"
+    },
+    {
+     "id": "0011",
+     "n": "SREEVAS. PM",
+     "c": "Dominator Apex",
+     "sr": 64,
+     "pt": 13500,
+     "role": "Drafted"
+    },
+    {
+     "id": "0017",
+     "n": "HARIKRISHNAN K K",
+     "c": "Rising Star Elite",
+     "sr": 45,
+     "pt": 5800,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 25100,
+   "srUsed": 153
+  },
+  {
+   "team": "MIGHTY MITHILAS",
+   "players": [
+    {
+     "id": "0069",
+     "n": "HAREESH G",
+     "c": "Dominator Core",
+     "sr": 51,
+     "pt": 9200,
+     "role": "Owner"
+    },
+    {
+     "id": "0012",
+     "n": "MIDHIN M M",
+     "c": "Dominator Core",
+     "sr": 51,
+     "pt": 9200,
+     "role": "Drafted"
+    },
+    {
+     "id": "0173",
+     "n": "NARAYANAN M B",
+     "c": "Rising Star Elite",
+     "sr": 49,
+     "pt": 6000,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 24400,
+   "srUsed": 151
+  },
+  {
+   "team": "KURUKSHETRA YODHAS",
+   "players": [
+    {
+     "id": "0007",
+     "n": "HARIGOVIND NS",
+     "c": "Rising Star Elite",
+     "sr": 36,
+     "pt": 5600,
+     "role": "Owner"
+    },
+    {
+     "id": "0037",
+     "n": "ADITYA NARAYAN",
+     "c": "Rising Star Elite",
+     "sr": 38,
+     "pt": 5600,
+     "role": "Drafted"
+    },
+    {
+     "id": "0001",
+     "n": "UNMESH P N",
+     "c": "Rising Star Elite",
+     "sr": 32,
+     "pt": 5400,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 16600,
+   "srUsed": 106
+  },
+  {
+   "team": "KALINGA UNITED",
+   "players": [
+    {
+     "id": "0018",
+     "n": "HAREESH KUMAR G N",
+     "c": "Rising Star Elite",
+     "sr": 33,
+     "pt": 5400,
+     "role": "Owner"
+    },
+    {
+     "id": "0072",
+     "n": "NIVAS PM",
+     "c": "Conqueror Vanguard",
+     "sr": 99,
+     "pt": 24000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0126",
+     "n": "JAYAKRISHNAN K",
+     "c": "Dominator Core",
+     "sr": 59,
+     "pt": 9600,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 39000,
+   "srUsed": 191
+  },
+  {
+   "team": "KAALIYANZ OF DWARAKA",
+   "players": [
+    {
+     "id": "0091",
+     "n": "JITHU PULLOORMANNA",
+     "c": "Dominator Core",
+     "sr": 51,
+     "pt": 9200,
+     "role": "Owner"
+    },
+    {
+     "id": "0073",
+     "n": "SANDEEP MN",
+     "c": "Conqueror Vanguard",
+     "sr": 90,
+     "pt": 23000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0051",
+     "n": "VAISHNAV O M",
+     "c": "Rising Star Elite",
+     "sr": 46,
+     "pt": 6000,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 38200,
+   "srUsed": 187
+  },
+  {
+   "team": "AYODHYA WARRIORS",
+   "players": [
+    {
+     "id": "0026",
+     "n": "DEEPU M",
+     "c": "Rising Star Elite",
+     "sr": 27,
+     "pt": 5200,
+     "role": "Owner"
+    },
+    {
+     "id": "0057",
+     "n": "PRAVEEN K R",
+     "c": "Dominator Apex",
+     "sr": 69,
+     "pt": 14000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0045",
+     "n": "ANOOP P M",
+     "c": "Rising Star Elite",
+     "sr": 47,
+     "pt": 6000,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 25200,
+   "srUsed": 143
+  },
+  {
+   "team": "GANDHARA GIANTS",
+   "players": [
+    {
+     "id": "0034",
+     "n": "NIKHIL S",
+     "c": "Rising Star Elite",
+     "sr": 49,
+     "pt": 6000,
+     "role": "Owner"
+    },
+    {
+     "id": "0023",
+     "n": "PRAVEEN VT",
+     "c": "Conqueror Core",
+     "sr": 84,
+     "pt": 18500,
+     "role": "Drafted"
+    },
+    {
+     "id": "0150",
+     "n": "SREERAG PS",
+     "c": "Rising Star Elite",
+     "sr": 44,
+     "pt": 5800,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 30300,
+   "srUsed": 177
+  },
+  {
+   "team": "KNIGHTS OF KANCHI",
+   "players": [
+    {
+     "id": "0048",
+     "n": "HARIDAS C.M.P",
+     "c": "Rising Star Core",
+     "sr": 13,
+     "pt": 2400,
+     "role": "Owner"
+    },
+    {
+     "id": "0028",
+     "n": "SREEKANTH CHERUVALLY",
+     "c": "Conqueror Vanguard",
+     "sr": 90,
+     "pt": 23000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0013",
+     "n": "SUDARSAN PN",
+     "c": "Dominator Apex",
+     "sr": 66,
+     "pt": 13500,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 38900,
+   "srUsed": 169
+  },
+  {
+   "team": "VARAHAS OF VIJAYANAGARA",
+   "players": [
+    {
+     "id": "0071",
+     "n": "UMESH K",
+     "c": "Rising Star Elite",
+     "sr": 35,
+     "pt": 5400,
+     "role": "Owner"
+    },
+    {
+     "id": "0063",
+     "n": "PRASANTH PULI",
+     "c": "Dominator Apex",
+     "sr": 73,
+     "pt": 14000,
+     "role": "Drafted"
+    },
+    {
+     "id": "0201",
+     "n": "ARUNDEV K",
+     "c": "Rising Star Elite",
+     "sr": 44,
+     "pt": 5800,
+     "role": "Drafted"
+    }
+   ],
+   "ptsUsed": 25200,
+   "srUsed": 152
+  }
+ ]
+}
