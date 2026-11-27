@@ -12,7 +12,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=19">
+<link rel="stylesheet" href="desk.css?v=20">
 <link rel="stylesheet" href="food/food.css?v=2">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="receipt.js?v=5" defer></script>
@@ -37,6 +37,7 @@
   <div class="tabs" role="tablist">
     <button role="tab" id="tb-live" aria-selected="false" class="livetab"><i class="ldot"></i><span data-t="tabLive"></span></button>
     <button role="tab" id="tb-pay" aria-selected="true" data-t="tabPay"></button>
+    <button role="tab" id="tb-pts" aria-selected="false" data-t="tabPts"></button>
     <button role="tab" id="tb-fix" aria-selected="false" data-t="tabFix"></button>
     <button role="tab" id="tb-jer" aria-selected="false" data-t="tabJer"></button>
     <button role="tab" id="tb-rep" aria-selected="false" data-t="tabRep"></button>
@@ -88,6 +89,8 @@
     </div>
     <iframe id="livefr" title="TENVOX BIDCAST · KNPL-7 Mega Auction Live" loading="lazy" allow="autoplay; clipboard-write; fullscreen"></iframe>
   </div>
+
+  <div id="pg-pts" hidden><div id="ptsbox"></div></div>
 
   <div id="pg-fix" hidden>
     <iframe id="fixfr" title="KNPL-7 Fixture & Ladder" loading="lazy" allow="clipboard-write"></iframe>
@@ -190,6 +193,7 @@
 </main>
 <footer data-t="footer2"></footer>
 <script src="ocr.js?v=1"></script>
-<script src="desk.js?v=28"></script>
+<script src="desk.js?v=29"></script>
+<script src="points.js?v=1"></script>
 <script src="food.js?v=1"></script>
 </body></html>
