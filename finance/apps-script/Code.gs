@@ -35,8 +35,8 @@ function doPost(e) {
   /* Speed: requests that only read (or wait on another system) never take the script lock, and the slow outside
      reads of "Fetch new entries" happen before the lock is taken, so nobody else is held up while they run. */
   try {
-    if (LOCKFREE_[fn]) return json_({ ok: true, result: FinCore.handle(store, ctx, fn, args) });
-    if (fn === 'syncSources') { var early = syncPrepare_(store, ctx, args); if (early) return json_({ ok: true, result: early }); }
+    if (LOCKFREE_[fn]) return json_({ ok: true, result: FinCore.handle(store, ctx, fn, args) }, body.c === 1);
+    if (fn === 'syncSources') { var early = syncPrepare_(store, ctx, args); if (early) return json_({ ok: true, result: early }, body.c === 1); }
   } catch (err0) { return fail_(fn, err0); }
   var lock = LockService.getScriptLock();
   try { lock.waitLock(30000); }
@@ -46,7 +46,7 @@ function doPost(e) {
     var result;
     if (fn === 'sourceColumns') result = sourceColumns_(store, ctx, args);
     else result = FinCore.handle(store, ctx, fn, args);
-    return json_({ ok: true, result: result });
+    return json_({ ok: true, result: result }, body.c === 1);
   } catch (err) {
     return fail_(fn, err);
   } finally {
@@ -77,7 +77,20 @@ function syncPrepare_(store, ctx, args) {
   return null;
 }
 
-function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function json_(o, compact) { return ContentService.createTextOutput(JSON.stringify(compact ? { ok: o.ok, result: compact_(o.result) } : o)).setMimeType(ContentService.MimeType.JSON); }
+
+/** Speed: lists of records that share the same fields are sent as one field list plus value rows (the page rebuilds them), about half the size. */
+function compact_(v) {
+  if (Array.isArray(v)) {
+    if (v.length > 1 && v.every(function (x) { return x && typeof x === 'object' && !Array.isArray(x); })) {
+      var keys = Object.keys(v[0]), k0 = keys.join('\u0001');
+      if (v.every(function (x) { return Object.keys(x).join('\u0001') === k0; })) return { '\u0001k': keys, '\u0001r': v.map(function (x) { return keys.map(function (k) { return compact_(x[k]); }); }) };
+    }
+    return v.map(compact_);
+  }
+  if (v && typeof v === 'object') { var o = {}; Object.keys(v).forEach(function (k) { o[k] = compact_(v[k]); }); return o; }
+  return v;
+}
 
 /* ============================== one-time setup ============================ */
 function setup() {
@@ -150,7 +163,37 @@ SheetStore_.prototype.sheet_ = function (name) {
   return sh;
 };
 /* Speed: one read per sheet (the header comes with the data), and a save writes only the rows that changed. */
+/* Speed: each table is also kept in the script cache (refreshed on every save, dropped when someone edits the sheet by hand). */
+var TCACHE_TTL_ = 600, TCACHE_CHUNK_ = 30000;
+function tcacheGet_(name) {
+  try {
+    var c = CacheService.getScriptCache(), n = Number(c.get('T:' + name + ':n') || 0);
+    if (!n) return null;
+    var keys = []; for (var i = 0; i < n; i++) keys.push('T:' + name + ':' + i);
+    var got = c.getAll(keys), txt = '';
+    for (var j = 0; j < n; j++) { if (got[keys[j]] == null) return null; txt += got[keys[j]]; }
+    return JSON.parse(txt);
+  } catch (e) { return null; }
+}
+function tcachePut_(name, head, rows) {
+  try {
+    var c = CacheService.getScriptCache(), txt = JSON.stringify({ head: head, rows: rows }), n = Math.ceil(txt.length / TCACHE_CHUNK_), o = {};
+    c.remove('T:' + name + ':n');
+    for (var i = 0; i < n; i++) o['T:' + name + ':' + i] = txt.substr(i * TCACHE_CHUNK_, TCACHE_CHUNK_);
+    o['T:' + name + ':n'] = String(n);
+    c.putAll(o, TCACHE_TTL_);
+  } catch (e) { try { CacheService.getScriptCache().remove('T:' + name + ':n'); } catch (e2) {} }
+}
+/** Simple trigger: a hand edit in the Finance sheet drops that table from the cache so the page shows it straight away. */
+function onEdit(e) { try { CacheService.getScriptCache().remove('T:' + e.range.getSheet().getName() + ':n'); } catch (x) {} }
+
 SheetStore_.prototype.get = function (name) {
+  var cached = tcacheGet_(name);
+  if (cached) {
+    this.snap = this.snap || {};
+    this.snap[name] = { head: cached.head, rows: cached.rows };
+    return cached.rows.map(function (r) { var o = {}, any = false; for (var j = 0; j < cached.head.length; j++) { if (!cached.head[j]) continue; var v = r[j]; o[cached.head[j]] = v; if (v !== '') any = true; } return any ? o : null; }).filter(Boolean);
+  }
   var sh = this.ss.getSheetByName(name);
   if (!sh) sh = this.sheet_(name);
   var vals = sh.getDataRange().getValues();
@@ -159,6 +202,7 @@ SheetStore_.prototype.get = function (name) {
   if (head0.filter(String).length === 0 || fields.some(function (f) { return head0.indexOf(f) < 0; })) { this.sheet_(name); vals = sh.getDataRange().getValues(); }
   this.snap = this.snap || {};
   this.snap[name] = { head: vals[0].map(String), rows: vals.slice(1).map(function (r) { return r.map(function (v) { return v instanceof Date ? '\u0000d' : String(v); }); }) };
+  tcachePut_(name, this.snap[name].head, vals.slice(1).map(function (r) { return r.map(function (v) { return v instanceof Date ? Utilities.formatDate(v, 'Asia/Kolkata', 'yyyy-MM-dd') : String(v); }); }));
   if (vals.length < 2) return [];
   var head = vals[0].map(String), out = [];
   for (var i = 1; i < vals.length; i++) {
@@ -196,6 +240,7 @@ SheetStore_.prototype.put = function (name, rows) {
   else runs.forEach(function (r) { var rg = sh.getRange(r[0] + 2, 1, r[1] - r[0], width); rg.setNumberFormat('@'); rg.setValues(data.slice(r[0], r[1])); });
   if (old > data.length + 1) sh.getRange(data.length + 2, 1, old - data.length - 1, width).clearContent();
   if (snap) snap.rows = data;
+  tcachePut_(name, head, data);
 };
 
 /* ============================== files ===================================== */
