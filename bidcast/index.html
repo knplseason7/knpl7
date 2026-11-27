@@ -427,8 +427,20 @@ function renderBid(){
   const ago=STATE.tmy? Math.round((Date.now()-STATE.tmy)/1000) : null;
   $("bMeta").innerHTML= STATE.msg? `<span class="msg">${esc(STATE.msg)}</span>` : (p&&ago!=null&&ago<600&&!STATE.soldout? `<span>last bid ${ago}s ago</span>` : "");
 }
+/* Draft is frozen (27-11-2026): every team starts the auction with its post-draft points and squad (DATA.draft.teams, keyed by team index) */
+const DRAFT=()=>(DATA.draft&&DATA.draft.teams)||{}, PURSE=100000;
+function draftRows(){ const D=DRAFT(); return TEAMS.map(t=>({t,rm:D[t.i]?D[t.i].rm:PURSE,n:D[t.i]?D[t.i].n:0,id:String(t.i)})); }
+// the live feed may or may not already count the drafted players: decide once from the first snapshot (every team already holds its drafted players = included) and remember it
+function spaHasDraft(teams){ const k="bidcast-draftinspa-"+ACTID; try{ const v=localStorage.getItem(k); if(v!=null) return v==="1"; }catch(e){}
+  const D=DRAFT(), ents=Object.entries(teams); if(!ents.length) return true;
+  const inc=ents.every(([tid,v])=>{ const t=spaTeam(tid); return !t||t.i==null||!D[t.i]||v.n>=D[t.i].n; });
+  try{ localStorage.setItem(k,inc?"1":"0"); }catch(e){} return inc; }
+function withDraft(teams){ if(MODE!=="live"||!Object.keys(teams).length) return teams; const D=DRAFT();
+  if(spaHasDraft(teams)) return teams;
+  const out={}; Object.entries(teams).forEach(([tid,v])=>{ const t=spaTeam(tid), d=t&&t.i!=null?D[t.i]:null; out[tid]=d?{rm:v.rm-(PURSE-d.rm),n:v.n+d.n}:v; }); return out; }
 function teamRows(){
-  if(MODE==="pre") return TEAMS.map(t=>({t,rm:null,n:null}));
+  if(MODE==="pre") return draftRows();
+  if(MODE==="live"&&!Object.keys(STATE.teams).length) return draftRows();
   if(MODE==="demo") return TEAMS.map((t,i)=>({t,rm:(STATE.teams[i]||{}).rm,n:(STATE.teams[i]||{}).n,id:String(i)}));
   return Object.entries(STATE.teams).map(([tid,v])=>({t:spaTeam(tid),rm:v.rm,n:v.n,id:tid})).filter(r=>r.t);
 }
@@ -436,7 +448,7 @@ function renderTeams(){
   const rows=teamRows().sort((a,b)=>(b.rm??0)-(a.rm??0)), sq=14;
   $("teams").innerHTML=rows.map(r=>{ const lead=r.id&&String(r.id)===String(STATE.lead), out=STATE.banned.map(String).includes(String(r.id));
     return `<div class="team${lead?" lead":""}${out?" out":""}" title="${esc(r.t.name)}"><img src="${esc(r.t.logo)}" alt=""><div class="tx"><div class="nm">${esc(shortName(r.t))}</div>${r.rm!=null?`<div class="pt">${fmt(r.rm)}</div><div class="sq"><i style="width:${Math.min(100,r.n/sq*100)}%"></i></div><div class="n">${r.n}/${sq}</div>`:""}</div></div>`; }).join("");
-  $("teamsNote").textContent= MODE==="pre"? "16 teams · 14 players each" : "points left · squad";
+  $("teamsNote").textContent= MODE==="pre"? "points available after the draft · squad" : "points left · squad";
 }
 function renderSales(){ const el=$("sales"); if(!el) return; const sold=SALES.filter(s=>s.tid).slice(0,2);
   el.innerHTML= sold.length? `<span class="lk">Last sold</span>`+sold.map(s=>{ const t=spaTeam(s.tid); return `<div class="ls">${t&&t.logo?`<img src="${esc(t.logo)}" alt="">`:""}<b>${esc(s.name)}</b><span>${esc(t?shortName(t):"")}</span><em>${fmt(s.price)}</em></div>`; }).join("") : ""; }
@@ -472,7 +484,8 @@ function setPath(obj,path,data,merge){ const parts=path.split("/").filter(Boolea
 function fromRaw(){
   const r=RAW, prev={...STATE,teams:JSON.parse(JSON.stringify(STATE.teams))};
   const teams={}; Object.entries(r.teamlist||{}).forEach(([tid,v])=>{ if(v&&typeof v==="object") teams[tid]={rm:+v.rmpoint,n:+v.tplayer}; });
-  STATE={pcode:r.pcode!=null?String(r.pcode):null,bid:+r.bidpoint||0,lead:r.bidteam&&r.bidteam!=="0"?String(r.bidteam):null,soldout:+r.soldout||0,teams,
+  const adj=withDraft(teams);
+  STATE={pcode:r.pcode!=null?String(r.pcode):null,bid:+r.bidpoint||0,lead:r.bidteam&&r.bidteam!=="0"?String(r.bidteam):null,soldout:+r.soldout||0,teams:adj,
     banned:Array.isArray(r.bannedteams)?r.bannedteams:Object.values(r.bannedteams||{}),msg:r.msg||"",tmy:+r.tmy||0};
   // a sale: the sold flag turns on, or a team gains a player
   if(prev.pcode!=null){
