@@ -62,7 +62,7 @@ var FinCore = (function () {
   var KINDS = { INCOME: 'Income', EXPENSE: 'Expense', DEPOSIT: 'Deposit (refundable)' };
   var PAY_MODES = ['UPI', 'NEFT', 'IMPS', 'RTGS', 'Cheque', 'Cash'];
   var DEFAULT_HEADS = [
-    ['INC-REG', 'Player Registration Fee', 'INCOME', 248000, '248 pool players × ₹1,000 – set to the final paid count'],
+    ['INC-REG', 'Player Registration Fee', 'INCOME', 232000, '232 players × ₹1,000 (248 completed Phase 2; 16 franchise owners exempted)'],
     ['INC-OWN', 'Franchise Ownership Fee (KNPL-7 instalment)', 'INCOME', 80000, '16 franchises × ₹5,000'],
     ['INC-DRAFT', 'Draft Fee', 'INCOME', 0, 'Set after the draft window closes'],
     ['INC-JERSEY', 'Team Jersey Fee (at actuals)', 'INCOME', 0, 'Teams without a jersey sponsor'],
@@ -98,8 +98,8 @@ var FinCore = (function () {
     sources: [
       { id: 'TEAMDESK', type: 'teamdesk', label: 'Team Desk (franchise payments)', enabled: true, trust: true,
         map: { CD: 'DEP-CD', OWN: 'INC-OWN', DR: 'INC-DRAFT', JER: 'INC-JERSEY' } },
-      /* Player registration fee: every registered player except franchise owners (fee waived) – approved as verified
-         by the committee (decision of 27 Nov 2026), including the players who did not upload a fee receipt. */
+      /* Player registration fee: every player who completed Phase 2 (Status Approved, Auction Joined YES) is recorded as paid
+         and approved; franchise owners are exempted (committee decision of 27 Nov 2026). */
       { id: 'REG', type: 'registration', label: 'Player registration fee (KNPL-7)', enabled: true, trust: true,
         sheetId: '1yLTJPg-2sh2xjuF8jVH6imyHxF99tVRmd8RvdStvZpw', tab: 'Registrations', head: 'INC-REG', fixedAmount: 1000 }
     ],
@@ -1190,7 +1190,10 @@ var FinCore = (function () {
     /* Gives a user a new access code outside a session (Apps Script editor / demo seeding). fixed = optional code to set. */
     issueCode: function (store, ctx, match, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var u = st.t('Users').filter(function (x) { return x.id === match || x.name === match; })[0] || st.t('Users').filter(function (x) { return x.role === match && x.active; })[0]; if (!u) throw new Error('No user ' + match); var c = giveCode(st, ctx, u, fixed); st.log(null, 'USER_NEW_CODE', u.id, u.name + ' – code issued from the script editor'); st.flush(); return c; },
     addUser: function (store, ctx, d) { var st = new State(store); st.now = stamp(ctx.now || new Date()); if (st.t('Users').some(function (x) { return x.name.toLowerCase() === String(d.name).toLowerCase(); })) return null; var u = makeUser(st, { mobile: mobile10(d.mobile), name: d.name, role: d.role }); st.t('Users').push(u); var c = giveCode(st, ctx, u, d.code); st.log(null, 'USER_SAVE', u.id, u.name + ' · ' + u.role + ' · added from the script editor'); st.flush(); return c; },
-    normCode: normCode, sponsorCat: sponsorCat, ROLE_HELP: ROLE_HELP, PROFILE_ORDER: PROFILE_ORDER, canMap: canMap, incomeScope: incomeScope, feeHeads: feeHeads,
+    normCode: normCode, sponsorCat: sponsorCat,
+    /* Script-editor only: runs one change as the Admin profile so it is validated and kept in the audit trail. */
+    runAsAdmin: function (store, ctx, fn, args) { var st = new State(store); st.now = stamp(ctx.now || new Date()); if (!WRITE[fn]) throw new Error('Unknown ' + fn);
+      var r = WRITE[fn].apply(null, [st, ctx, { id: 'SYSTEM', role: 'ADMIN', profile: 'ADMIN', person: 'Krishnadas M N', name: 'Krishnadas M N · Admin (script editor)' }].concat(args || [])); st.flush(); return r; }, ROLE_HELP: ROLE_HELP, PROFILE_ORDER: PROFILE_ORDER, canMap: canMap, incomeScope: incomeScope, feeHeads: feeHeads,
     applyDuties: function (store, ctx) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = applyDuties(st, ctx); st.flush(); return r; },
     ensureProfiles: function (store, ctx, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = ensureProfiles(st, ctx, fixed); st.flush(); return r; },
     coerce: coerce, sha256: sha256, hashPin: hashPin,
