@@ -235,3 +235,20 @@ body.ml .pq li.pqh{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacin
 .ptsyou{font-style:normal;font-size:10.5px;font-weight:800;background:var(--saffron);color:#fff;border-radius:5px;padding:1px 6px;letter-spacing:.08em}
 .ptshow{margin:6px 0 0;padding-left:18px;line-height:1.5}
 @media (max-width:700px){.ptstab th:nth-child(3),.ptstab td:nth-child(3),.ptstab th:nth-child(4),.ptstab td:nth-child(4),.ptstab th:nth-child(6),.ptstab td:nth-child(6),.ptstab th:nth-child(8),.ptstab td:nth-child(8),.ptstab th:nth-child(9),.ptstab td:nth-child(9){display:none}.ptstab td.tm span{white-space:normal}.ptsgrid{grid-template-columns:1fr 1fr}.ptsgrid .ptstile:first-child{grid-column:1/-1}.ptspl{grid-template-columns:1fr auto;}.ptspl .ptsnum{display:none}.ptstile b{font-size:21px}}
+
+/* Auction Pool tab */
+.apchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.apchip{border:1.5px solid var(--k,var(--line));background:var(--surface);color:var(--ink);border-radius:20px;padding:6px 12px;font-weight:700;font-size:13px;cursor:pointer}
+.apchip.on{background:var(--k,var(--navy));border-color:var(--k,var(--navy));color:#fff}
+.apq{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;background:var(--surface);color:var(--ink);margin-bottom:12px}
+.apgrp{margin-bottom:16px}
+.aphd{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--k);color:#fff;border-radius:10px;padding:9px 12px}
+.aphd b{font-size:16px;text-transform:uppercase;letter-spacing:.03em}.aphd span{font-size:12.5px;font-weight:600;opacity:.95}
+.apnote{font-size:12.5px;color:var(--k);font-weight:600;margin:6px 2px 6px}
+.aprow{display:grid;grid-template-columns:28px 38px 1fr auto 44px;gap:10px;align-items:center;padding:7px 6px;border-bottom:1px solid var(--line)}
+.aprow img{width:38px;height:48px;object-fit:cover;border-radius:6px;background:var(--bg)}
+.aprk{color:var(--muted);font-weight:700;text-align:right}
+.apnm b{display:block;font-size:14.5px}.apnm small{color:var(--muted);font-size:12px}
+.apav{font-size:12.5px;color:var(--muted);white-space:nowrap}.apav.part{color:#b45309;font-weight:600}
+.apsr{font-size:18px;font-weight:800;color:var(--k);text-align:right}
+@media (max-width:600px){.aprow{grid-template-columns:24px 34px 1fr 38px}.aprow .apav{grid-column:3;grid-row:2;margin-top:-4px}.aprow img{width:34px;height:43px}}
