@@ -153,7 +153,7 @@
   /* --------------------------------------------------------------- tabs */
   function counts() {
     var me = D.me, c = {};
-    c.income = can('decideIncome') ? D.income.filter(function (i) { return i.status === 'PENDING' && i.createdBy !== me.id && inScope(i); }).length : 0;
+    c.income = can('decideIncome') ? D.income.filter(function (i) { return toApprove(i) && i.createdBy !== me.id && inScope(i); }).length : 0;
     c.expenses = actionExpenses().length;
     c.bank = can('bank') && D.recon ? D.recon.bankOpen : 0;
     return c;
@@ -179,7 +179,7 @@
     var c = counts(), nav = $('tabs'); nav.replaceChildren();
     var list = tabs(); if (!list.some(function (x) { return x[0] === TAB; })) TAB = 'overview';
     list.forEach(function (x) { nav.appendChild(h('button', { role: 'tab', 'aria-selected': TAB === x[0] ? 'true' : 'false', onclick: function () { TAB = x[0]; render(); window.scrollTo({ top: 0 }); } }, x[1], c[x[0]] ? h('span', { class: 'cnt' }, c[x[0]]) : null)); });
-    if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk approvals ↗'));
+    if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk ↗'));
     var v = $('view'), keep = window.scrollY; v.replaceChildren();
     ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
     window.scrollTo({ top: keep });
@@ -203,7 +203,7 @@
       kpi('Deposits held (refundable)', money(T.depHeld), 'Sponsorship caution deposit')));
     var todo = [];
     if (can('decideIncome')) {
-      var pi = D.income.filter(function (i) { return i.status === 'PENDING' && i.createdBy !== me.id && inScope(i); });
+      var pi = D.income.filter(function (i) { return toApprove(i) && i.createdBy !== me.id && inScope(i); });
       if (pi.length) todo.push([pi.length + ' income entr' + (pi.length > 1 ? 'ies' : 'y') + ' to approve (' + money(sum(pi)) + ')', function () { go('income', { inc: 'PENDING' }); }]);
     }
     if (can('decideExpense')) {
@@ -258,7 +258,7 @@
       can('createIncome') ? h('button', { class: 'btn sf', onclick: function () { incomeForm(); } }, '+ Add outbound income') : null));
     c.appendChild(top);
     if (D.lastSync) c.appendChild(h('div', { class: 'small muted' }, 'Last fetch ' + dmy(D.lastSync.at) + ' by ' + D.lastSync.by + ' – ' + D.lastSync.result.read + ' read, ' + D.lastSync.result.added + ' new, ' + D.lastSync.result.autoApproved + ' auto-approved' + (D.lastSync.result.warnings && D.lastSync.result.warnings.length ? ' · ' + D.lastSync.result.warnings.length + ' warning(s)' : '')));
-    c.appendChild(h('p', { class: 'small muted' }, 'Every income needs an approval before it enters the ledger. Team Desk payments approved by Finance on the Team Desk come in already approved; sponsorship, registration and outbound income are approved here. Franchise fees come from the Team Desk: approve them there, then click "Fetch from sources" to post them. All other income is approved here with the Finance code. An entry is never approved with the same code that added it.'));
+    c.appendChild(h('p', { class: 'small muted' }, 'Every income needs an approval before it enters the ledger. Team Desk payments approved by Finance on the Team Desk come in already approved; sponsorship, registration and outbound income are approved here. Click "Fetch from sources" to bring in new payments. Franchise fees are approved here with the Franchise fees code – the decision is also written to the Team Desk, so the owner sees it and gets the Team Desk receipt. All other income is approved with the Finance code. An entry is never approved with the same code that added it.'));
     var F = [['PENDING', 'Awaiting approval'], ['SOURCE_PENDING', 'Awaiting at source'], ['APPROVED', 'Approved'], ['CLOSED', 'Rejected / cancelled'], ['ALL', 'All']];
     c.appendChild(h('div', { class: 'chips' }, F.map(function (f) { var n = D.income.filter(function (i) { return incMatch(i, f[0]); }).length; return h('button', { 'aria-pressed': UI.inc === f[0] ? 'true' : 'false', onclick: function () { UI.inc = f[0]; render(); } }, f[1] + ' (' + n + ')'); })));
     var srcs = {}; D.income.forEach(function (i) { srcs[i.source] = 1; });
@@ -275,10 +275,18 @@
     }
     draw();
   }
-  function incMatch(i, f) { return f === 'ALL' || (f === 'CLOSED' ? ['REJECTED', 'CANCELLED', 'REVERSED'].indexOf(i.status) >= 0 : i.status === f); }
+  function tdPending(i) { return i.source === 'TEAMDESK' && i.status === 'SOURCE_PENDING'; }
+  function toApprove(i) { return i.status === 'PENDING' || tdPending(i); }
+  function incMatch(i, f) {
+    if (f === 'ALL') return true;
+    if (f === 'CLOSED') return ['REJECTED', 'CANCELLED', 'REVERSED'].indexOf(i.status) >= 0;
+    if (f === 'PENDING') return toApprove(i);
+    if (f === 'SOURCE_PENDING') return i.status === 'SOURCE_PENDING' && !tdPending(i);
+    return i.status === f;
+  }
   function srcLabel(s) { return { TEAMDESK: 'Team Desk', SPONSOR: 'Sponsorship portal', REG: 'Registration', MANUAL: 'Outbound (manual)', BANK: 'From bank statement' }[s] || s; }
   function incomeItem(i) {
-    var mine = i.createdBy === D.me.id, canD = can('decideIncome') && i.status === 'PENDING' && !mine && inScope(i);
+    var mine = i.createdBy === D.me.id, td = tdPending(i), canD = can('decideIncome') && toApprove(i) && !mine && inScope(i);
     var it = h('div', { class: 'item' + (canD ? ' hl' : '') },
       h('div', null, h('div', { class: 't1' }, i.party), h('div', null, headName(i.head) + (i.description && i.description !== headName(i.head) ? ' – ' + i.description : '') + (i.team && i.team !== i.party ? ' · ' + i.team : '')),
         h('div', { class: 'd' }, [i.id, srcLabel(i.source), i.mode, i.utr ? 'Ref ' + i.utr : 'No transaction ref', 'paid ' + dmy(i.paidOn), i.srcReceipt ? 'source receipt ' + i.srcReceipt : ''].filter(Boolean).join(' · ')),
@@ -290,16 +298,35 @@
     if (canD) {
       var rm = inp({ placeholder: 'Reason (needed to reject)' }), msg = h('div', { class: 'msg' });
       acts.appendChild(rm);
-      acts.appendChild(h('button', { class: 'btn ok sm', onclick: function (ev) { if (!confirm('Approve ' + i.id + ' – ' + money(i.amount) + ' from ' + i.party + '? It will be posted to the ledger and a receipt number issued.')) return; quiet(run(ev.currentTarget, msg, function () { return act('incomeDecide', i.id, 'APPROVED', ''); }, i.id + ' approved')); } }, 'Approve'));
-      acts.appendChild(h('button', { class: 'btn no sm', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act('incomeDecide', i.id, 'REJECTED', rm.value); }, i.id + ' rejected')); } }, 'Reject'));
+      var fnD = td ? 'teamDeskDecide' : 'incomeDecide';
+      if (td) rm.placeholder = 'Reason (needed to reject – the owner sees it on the Team Desk)';
+      acts.appendChild(h('button', { class: 'btn ok sm', onclick: function (ev) { if (!confirm('Approve ' + i.id + ' – ' + money(i.amount) + ' from ' + i.party + '?' + (td ? ' It is also approved on the Team Desk (the owner gets the receipt) and' : ' It') + ' is posted to the ledger.')) return; quiet(run(ev.currentTarget, msg, function () { return act(fnD, i.id, 'APPROVED', ''); }, i.id + ' approved').then(function (r) { if (td) waOwner(r); })); } }, 'Approve'));
+      acts.appendChild(h('button', { class: 'btn no sm', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act(fnD, i.id, 'REJECTED', rm.value); }, i.id + ' rejected').then(function (r) { if (td) waOwner(r); })); } }, 'Reject'));
       it.appendChild(acts); it.appendChild(h('div', { style: 'grid-column:1/-1' }, msg)); return it;
     }
     if (i.status === 'PENDING' && mine && can('decideIncome')) acts.appendChild(h('span', { class: 'small muted' }, 'Added with this profile – approve it with another profile.'));
     else if (i.status === 'PENDING' && can('decideIncome') && !inScope(i)) acts.appendChild(h('span', { class: 'small muted' }, 'Approved with the ' + (role() === 'FEES' ? 'Finance (other income)' : 'Franchise fees') + ' code.'));
-    if (i.status === 'SOURCE_PENDING') acts.appendChild(h('span', { class: 'small muted' }, i.source === 'TEAMDESK' ? 'Approve it on the Team Desk; the next fetch brings it in.' : 'Waiting for confirmation in the source sheet.'));
+    if (i.status === 'SOURCE_PENDING' && !td) acts.appendChild(h('span', { class: 'small muted' }, 'Waiting for confirmation in the source sheet.'));
+    if (i.source === 'TEAMDESK' && (i.status === 'APPROVED' || i.status === 'REJECTED') && can('decideIncome')) acts.appendChild(h('button', { class: 'btn ghost sm', onclick: function () { waOwner(i); } }, 'WhatsApp owner'));
     if (i.status === 'APPROVED') acts.appendChild(h('button', { class: 'btn ghost sm', onclick: function () { docPreview('Receipt ' + i.receiptNo, FinDocs.receipt(D, i), 'Receipt ' + i.receiptNo.replace(/\//g, '-')); } }, 'Receipt'));
     if (acts.childNodes.length) it.appendChild(acts);
     return it;
+  }
+  /* Bilingual message to the franchise owner (English line, then its Malayalam line), as on the Team Desk. */
+  var ML_TYPE = { CD1: 'Sponsorship Caution Deposit – ഗഡു 1 / 5', CD2: 'Sponsorship Caution Deposit – ഗഡു 2 / 5', CD3: 'Sponsorship Caution Deposit – ഗഡു 3 / 5', CD4: 'Sponsorship Caution Deposit – ഗഡു 4 / 5', CD5: 'Sponsorship Caution Deposit – ഗഡു 5 / 5',
+    OWN1: 'Ownership Fee – ഗഡു 1 / 3 (KNPL-7)', DR1: 'Draft Fee KNPL-7 – ഗഡു 1 / 2', DR2: 'Draft Fee KNPL-7 – ഗഡു 2 / 2', JER: 'Team Jersey Fee' };
+  function waOwner(i) {
+    if (!i) return;
+    var nm = i.contactName || 'Owner', ref = i.utr ? ' · Ref ' + i.utr : '', kind = i.description || headName(i.head), ml = ML_TYPE[i.srcType] || kind, desk = 'https://knplseason7.github.io/knpl7/team/', rno = i.srcReceipt || i.receiptNo;
+    var txt = i.status === 'APPROVED'
+      ? '🏏 *KNPL-7 | Payment approved* ✅\n\nDear ' + nm + ', your payment of ' + money(i.amount) + ' for ' + kind + ref + ' is approved.\nപ്രിയ ' + nm + ', ' + ml + ' – ' + money(i.amount) + ref + ' Approve ചെയ്തു.\n\n' +
+        'Receipt No: ' + rno + '. You can download the receipt now from the Team Desk.\nReceipt No: ' + rno + '. Team Desk-ൽ നിന്ന് ഇപ്പോൾ Receipt Download ചെയ്യാം.\n\n👉 ' + desk + '\nLog in with your Team Draft code.\nTeam Draft code ഉപയോഗിച്ച് Login ചെയ്യുക.\n\n– Team KNPL (Finance)'
+      : '🏏 *KNPL-7 | Payment receipt not approved*\n\nDear ' + nm + ', your receipt for ' + kind + ' (' + money(i.amount) + ref + ') could not be approved.\nപ്രിയ ' + nm + ', ' + ml + ' (' + money(i.amount) + ref + ') Receipt Approve ചെയ്യാനായില്ല.\n\n' +
+        'Reason: ' + i.remarks + '\nകാരണം: ' + i.remarks + '\n\nPlease correct it and upload again on the Team Desk.\nദയവായി തിരുത്തി Team Desk-ൽ വീണ്ടും Upload ചെയ്യുക.\n\n👉 ' + desk + '\n\n– Team KNPL (Finance)';
+    var ph = String(i.contactPhone || '').replace(/\D/g, ''); if (ph.length === 10) ph = '91' + ph;
+    var ta = h('textarea', { style: 'min-height:220px;font-size:14px' }); ta.value = txt;
+    var a = h('a', { class: 'btn ok', target: '_blank', rel: 'noopener' }, 'Send on WhatsApp'); function upd() { a.href = 'https://wa.me/' + ph + '?text=' + encodeURIComponent(ta.value); } ta.oninput = upd; upd();
+    modal('Inform the owner – ' + i.party, h('div', null, h('p', { class: 'small muted' }, 'To: ' + nm + (ph ? ' · WhatsApp +' + ph : ' · number not found – choose the chat yourself')), ta, h('div', { class: 'row', style: 'margin-top:8px' }, a, copyBtn(txt))));
   }
   function syncNow(btn) {
     quiet(run(btn, null, function () { return act('syncSources'); }, function (r) { return r.read + ' read · ' + r.added + ' new · ' + r.updated + ' updated · ' + r.autoApproved + ' auto-approved' + (r.warnings.length ? ' · ' + r.warnings.length + ' warning(s)' : ''); })

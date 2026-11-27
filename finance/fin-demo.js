@@ -2,7 +2,7 @@
  * (saved in localStorage), so the whole workflow can be tried before the Apps Script backend is deployed. */
 (function () {
   'use strict';
-  var KEY = 'knplfin_demo_v4', CK = 'knplfin_demo_cache_v4';
+  var KEY = 'knplfin_demo_v5', CK = 'knplfin_demo_cache_v5';
   var FILES = {};
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -24,7 +24,8 @@
       if (url.length < 350000) return url;
       var id = 'demo-' + Object.keys(FILES).length; FILES[id] = url; return url; // large files kept for this session only
     },
-    fetchSources: function () { return sampleSources(); }
+    fetchSources: function () { return sampleSources(); },
+    teamDeskDecide: function (id, dec, remarks) { return { status: dec, receiptNo: dec === 'APPROVED' ? 'KNPL7-TD-9' + String(Date.now()).slice(-2) : '', remarks: remarks }; }
   };
   function day(n) { var d = new Date(Date.now() + 5.5 * 3600e3 - n * 864e5); return d.toISOString().slice(0, 10); }
   var TEAMS = ['Madhura Mavericks', 'Kalinga United', 'Ayodhya Warriors', 'Knights of Kanchi', 'Spartans of Nalanda', 'Gandhara Giants', 'Vamos Vrindavan', 'Jaguars of Jhansi'];
@@ -32,7 +33,7 @@
     var r = [], i;
     for (i = 0; i < 8; i++) {
       r.push({ source: 'TEAMDESK', sourceRef: 'TD:CD-' + i, head: 'DEP-CD', party: TEAMS[i], team: TEAMS[i], description: 'Sponsorship Caution Deposit 3/5', amount: 3000, mode: 'UPI', utr: String(431200000100 + i), paidOn: day(12 - i), srcStatus: 'APPROVED', srcReceipt: 'KNPL7-TD-' + (101 + i), trust: true, approver: 'Team Desk (Finance)' });
-      if (i < 5) r.push({ source: 'TEAMDESK', sourceRef: 'TD:OWN-' + i, head: 'INC-OWN', party: TEAMS[i], team: TEAMS[i], description: 'Ownership fee 1/3', amount: 5000, mode: 'UPI', utr: String(441200000200 + i), paidOn: day(8 - i), srcStatus: i < 4 ? 'APPROVED' : 'PENDING', srcReceipt: i < 4 ? 'KNPL7-TD-' + (201 + i) : '', trust: true, approver: 'Team Desk (Finance)' });
+      if (i < 5) r.push({ source: 'TEAMDESK', sourceRef: 'TD:OWN-' + i, head: 'INC-OWN', party: TEAMS[i], team: TEAMS[i], description: 'Ownership fee 1/3', amount: 5000, mode: 'UPI', utr: String(441200000200 + i), paidOn: day(8 - i), srcStatus: i < 3 ? 'APPROVED' : 'PENDING', srcReceipt: i < 3 ? 'KNPL7-TD-' + (201 + i) : '', trust: true, approver: 'Team Desk (Finance)', srcType: 'OWN1', contactName: 'Owner of ' + TEAMS[i], contactPhone: '' });
     }
     r.push({ source: 'SPONSOR', sourceRef: 'SP:KNPL7-CD-0004', head: 'INC-SPONS', party: 'Sree Sankara Trust', team: 'Madhura Mavericks', description: 'KNPL-7 Sahayog Sponsor', amount: 25000, mode: 'NEFT', utr: 'SBIN526318882211', paidOn: day(9), srcStatus: 'APPROVED', srcReceipt: 'KNPL7-CD-0004', trust: false });
     r.push({ source: 'SPONSOR', sourceRef: 'SP:KNPL7-CD-0007', head: 'INC-SPONS', party: 'Vaidyaratnam', team: 'Kalinga United', description: 'KNPL-7 Winners Sponsor', amount: 50000, mode: 'NEFT', utr: 'FDRL526319993344', paidOn: day(6), srcStatus: 'APPROVED', srcReceipt: 'KNPL7-CD-0007', trust: false });

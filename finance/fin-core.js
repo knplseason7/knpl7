@@ -16,7 +16,7 @@ var FinCore = (function () {
   var SCHEMA = {
     Users: 'id mobile name role codeHash codeHint pinHash salt active:b mustChange:b createdAt lastLogin',
     Heads: 'code name kind budget:n owner note active:b sort:n',
-    Income: 'id source sourceRef head party team description amount:n mode utr paidOn proof status srcStatus srcReceipt outbound:b note createdBy createdAt decidedBy decidedAt remarks receiptNo ledgerNo bankId',
+    Income: 'id source sourceRef head party team description amount:n mode utr paidOn proof status srcStatus srcReceipt outbound:b note createdBy createdAt decidedBy decidedAt remarks receiptNo ledgerNo bankId srcType contactName contactPhone',
     Expenses: 'id head title description payee invoiceNo invoiceDate amount:n invoiceFile payMethod accName accNo ifsc bank branch upi phone detailsSource budget:n committed:n actual:n overBy:n expKind explanation status createdBy createdAt updatedAt ackBy ackAt approvedBy approvedAt adminBy adminAt remarks paidOn paidMode utr paidProof paidBy paidAt voucherNo ledgerNo history:j',
     Ledger: 'no date dir head refType refId party description amount:n mode utr postedBy postedAt bankId reconType reconBy reconAt reconNote reversedBy reversalOf',
     Bank: 'id date narration ref debit:n credit:n balance:n? hash batch status ledgerNos matchType matchedBy matchedAt note',
@@ -654,6 +654,31 @@ var FinCore = (function () {
     else throw E('Unknown decision.');
     return row;
   }
+  /* Franchise payments are decided HERE and the decision is written back to the Team Desk, so the owner sees the status
+     there and gets the Team Desk receipt; an approval is posted to the ledger at the same time. */
+  function teamDeskDecide(state, ctx, user, id, dec, remarks) {
+    need(user, 'decideIncome');
+    var row = findBy(state.t('Income'), 'id', id);
+    if (!row) throw E('Income entry ' + id + ' not found.');
+    if (row.source !== 'TEAMDESK') throw E(id + ' is not a Team Desk payment.');
+    if (row.status !== 'SOURCE_PENDING' && row.status !== 'PENDING') throw E(id + ' is already ' + row.status.toLowerCase() + '.');
+    if (!incomeScope(user.role, state.settings(), row)) throw E(id + ' is franchise income – it is approved with the Franchise fees code.');
+    remarks = str(remarks, 300);
+    if (dec === 'REJECTED' && remarks.length < 5) throw E('Give the reason for rejecting – the team owner sees it and can upload again.');
+    if (dec !== 'APPROVED' && dec !== 'REJECTED') throw E('Unknown decision.');
+    if (!ctx.teamDeskDecide) throw E('The Team Desk link is not available.');
+    var r = ctx.teamDeskDecide(String(row.sourceRef).replace(/^TD:/, ''), dec, remarks) || {};
+    var st = String(r.status || '').toUpperCase();
+    if (st === 'APPROVED') {
+      row.srcStatus = 'APPROVED'; row.srcReceipt = r.receiptNo || row.srcReceipt; row.receiptNo = row.receiptNo || row.srcReceipt;
+      approveIncome(state, user, row, user.name);
+      state.log(user, 'INCOME_APPROVE', id, 'Team Desk ' + (row.srcReceipt || '') + ' · ' + inr(row.amount) + ' · ' + row.party);
+    } else if (st === 'REJECTED') {
+      row.srcStatus = 'REJECTED'; row.status = 'REJECTED'; row.remarks = r.remarks || remarks; row.decidedBy = user.name; row.decidedAt = state.now; state.touch('Income');
+      state.log(user, 'INCOME_REJECT', id, 'Team Desk · ' + row.remarks);
+    } else throw E('The Team Desk did not confirm the decision (status ' + (st || 'unknown') + '). Fetch from sources and try again.');
+    return row;
+  }
   function syncSources(state, ctx, user) {
     need(user, 'sync');
     var s = state.settings(), recs = ctx.fetchSources(s) || [], inc = state.t('Income'), heads = headMap(state.t('Heads'));
@@ -671,7 +696,7 @@ var FinCore = (function () {
         var ch = false;
         if (r.srcStatus === 'REJECTED' && (ex.status === 'PENDING' || ex.status === 'SOURCE_PENDING')) { ex.status = 'CANCELLED'; ex.remarks = 'Rejected at source'; ch = true; }
         else if (r.srcStatus === 'APPROVED' && (ex.status === 'SOURCE_PENDING' || ex.status === 'CANCELLED')) { ex.status = 'PENDING'; ch = true; }
-        ['party', 'team', 'description', 'mode', 'utr', 'paidOn', 'proof', 'srcReceipt'].forEach(function (k) { if (r[k] != null && String(r[k]) !== ex[k] && ex.status !== 'APPROVED') { ex[k] = String(r[k]); ch = true; } });
+        ['party', 'team', 'description', 'mode', 'utr', 'paidOn', 'proof', 'srcReceipt', 'srcType', 'contactName', 'contactPhone'].forEach(function (k) { if (r[k] != null && String(r[k]) !== ex[k] && ex.status !== 'APPROVED') { ex[k] = String(r[k]); ch = true; } });
         if (Math.abs(ex.amount - amt) > 0.009) { ex.amount = amt; ch = true; }
         ex.srcStatus = r.srcStatus;
         if (ex.status === 'PENDING' && r.trust && r.srcStatus === 'APPROVED') { approveIncome(state, user, ex, r.approver || 'Source approval'); res.autoApproved++; ch = true; }
@@ -682,7 +707,7 @@ var FinCore = (function () {
       var row = { id: 'INC-' + pad(state.next('INC'), 4), source: r.source, sourceRef: r.sourceRef, head: r.head, party: str(r.party, 120) || '(not given)', team: str(r.team, 60),
         description: str(r.description, 200) || heads[r.head].name, amount: amt, mode: str(r.mode, 20), utr: str(r.utr, 40).toUpperCase(), paidOn: validDate(r.paidOn) ? r.paidOn : '', proof: str(r.proof, 500),
         status: r.srcStatus === 'APPROVED' ? 'PENDING' : 'SOURCE_PENDING', srcStatus: r.srcStatus, srcReceipt: str(r.srcReceipt, 40), outbound: false, note: '', createdBy: 'SYNC', createdAt: state.now,
-        decidedBy: '', decidedAt: '', remarks: '', receiptNo: '', ledgerNo: '', bankId: '' };
+        decidedBy: '', decidedAt: '', remarks: '', receiptNo: '', ledgerNo: '', bankId: '', srcType: str(r.srcType, 10), contactName: str(r.contactName, 60), contactPhone: str(r.contactPhone, 15) };
       if (!row.paidOn) row.paidOn = String(state.now).slice(0, 10);
       inc.push(row); state.touch('Income'); res.added++;
       if (r.trust && r.srcStatus === 'APPROVED') { if (r.srcReceipt) row.receiptNo = r.srcReceipt; approveIncome(state, user, row, r.approver || 'Source approval'); res.autoApproved++; }
@@ -1042,7 +1067,7 @@ var FinCore = (function () {
 
   /* --------------------------------------------------------------- router */
   var WRITE = {
-    incomeCreate: incomeCreate, incomeDecide: incomeDecide, syncSources: syncSources,
+    incomeCreate: incomeCreate, incomeDecide: incomeDecide, syncSources: syncSources, teamDeskDecide: teamDeskDecide,
     expenseCreate: expenseCreate, expenseUpdate: expenseUpdate, expenseCancel: expenseCancel, expenseDecide: expenseDecide, expensePay: expensePay,
     ledgerReverse: ledgerReverse, ledgerCashRecon: ledgerCashRecon,
     bankImport: bankImport, bankMatch: bankMatch, bankUnmatch: bankUnmatch, bankIgnore: bankIgnore, bankDeleteBatch: bankDeleteBatch,
