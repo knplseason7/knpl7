@@ -21,6 +21,7 @@ var FinCore = (function () {
     Ledger: 'no date dir head refType refId party description amount:n mode utr postedBy postedAt bankId reconType reconBy reconAt reconNote reversedBy reversalOf',
     Bank: 'id date narration ref debit:n credit:n balance:n? hash batch status ledgerNos matchType matchedBy matchedAt note',
     Payees: 'key name accName accNo ifsc bank branch upi phone updatedAt',
+    Jersey: 'id team url name mime size:n note version:n removed:b at by',
     Audit: 'at by action ref detail',
     Settings: 'key value:j'
   };
@@ -395,7 +396,7 @@ var FinCore = (function () {
   var CAN = {
     viewAll: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_APPROVE', 'PAY', 'VIEWER'], createExpense: ['ADMIN', 'EXP_CREATE'], createIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_CREATE'],
     decideIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], decideExpense: ['ADMIN', 'FIN_OPS', 'EXP_APPROVE'], pay: ['ADMIN', 'FIN_OPS', 'PAY'], bank: ['ADMIN', 'FIN_OPS', 'PAY'], admin: ['ADMIN'], sync: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'],
-    teamView: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], teamFees: ['ADMIN', 'FEES'], teamCredit: ['ADMIN'], food: ['ADMIN', 'FOOD']
+    teamView: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], teamFees: ['ADMIN', 'FEES'], teamCredit: ['ADMIN'], food: ['ADMIN', 'FOOD'], jersey: ['ADMIN']
   };
   function need(user, what) { if (CAN[what].indexOf(user.role) < 0) throw E('The "' + ROLES[user.role] + '" profile cannot do this. Sign in with the right access code.'); }
   function canMap(role) { var m = {}; Object.keys(CAN).forEach(function (k) { m[k] = CAN[k].indexOf(role) >= 0; }); return m; }
@@ -1161,6 +1162,31 @@ var FinCore = (function () {
     };
   }
 
+  /* ----------------------------------------------- jersey: manufacturer's final designs (Admin) */
+  function jerseyFinals(state, ctx, user, fn, a) {
+    var rows = state.t('Jersey');
+    function view() {
+      var teams = [];
+      try { if (ctx.teamDesk) teams = (ctx.teamDesk('teamDeskAdmin', [], false).teams || []).map(function (t) { return String(t.team); }); } catch (e) { teams = []; }
+      rows.forEach(function (r) { if (teams.indexOf(r.team) < 0) teams.push(r.team); });
+      return { teams: teams.sort(), files: rows.filter(function (r) { return !r.removed; }).map(function (r) { return { id: r.id, team: r.team, url: r.url, name: r.name, note: r.note, version: Number(r.version), at: r.at, by: r.by }; }) };
+    }
+    if (fn === 'jerseyFinals') return view();
+    if (fn === 'jerseyFinalRemove') {
+      var x = findBy(rows, 'id', String(a[0] || '')); if (!x || x.removed) throw E('That upload was not found.');
+      x.removed = true; state.touch('Jersey'); state.log(user, 'JERSEY_FINAL_REMOVE', x.team, 'Removed final design v' + x.version + ' (' + x.name + ')'); state.flush(); return view();
+    }
+    var team = str(a[0], 80), f = a[1], note = str(a[2], 300);
+    if (!team) throw E('Choose the team.');
+    if (!f || !f.data || !/^(image\/(jpeg|png|webp|svg\+xml)|application\/pdf)$/.test(f.mime || '')) throw E('The final design must be a JPG, PNG, WEBP, SVG or PDF file.');
+    if (f.data.length > 15 * 1024 * 1024 * 1.37) throw E('The file is larger than 15 MB.');
+    var ver = rows.filter(function (r) { return r.team === team; }).reduce(function (m, r) { return Math.max(m, Number(r.version) || 0); }, 0) + 1;
+    var url = ctx.saveFile(f, 'Jersey final ' + team + ' v' + ver);
+    rows.push({ id: String(ctx.uuid()).replace(/-/g, '').slice(0, 8), team: team, url: url, name: str(f.name, 80), mime: f.mime, size: Math.round(f.data.length / 1.37), note: note, version: ver, removed: false, at: state.now, by: user.name });
+    state.touch('Jersey'); state.log(user, 'JERSEY_FINAL', team, 'Manufacturer final design v' + ver + ' uploaded (' + str(f.name, 80) + ')'); state.flush();
+    return view();
+  }
+
   /* --------------------------------------------------------------- router */
   var WRITE = {
     incomeCreate: incomeCreate, incomeDecide: incomeDecide, syncSources: syncSources, teamDeskDecide: teamDeskDecide,
@@ -1182,6 +1208,15 @@ var FinCore = (function () {
     var user = session(state, ctx, args[0]), rest = args.slice(1);
     if (fn === 'boot') return boot(state, user);
     if (fn === 'foodAuth') { need(user, 'food'); return { person: user.person, role: user.role, profile: user.profile }; }   // lets the Food backend trust a Finance Desk sign-in
+    if (fn === 'jerseyFinals' || fn === 'jerseyFinalUpload' || fn === 'jerseyFinalRemove') { need(user, 'jersey'); return jerseyFinals(state, ctx, user, fn, rest); }
+    if (fn === 'jerseyList' || fn === 'jerseyUpload' || fn === 'jerseySave') {              // Jersey designs: Admin only, passed on to the Team Desk's jersey admin
+      need(user, 'jersey'); if (!ctx.jersey) throw E('The Team Desk jersey link is not available.');
+      if (fn === 'jerseyList') return ctx.jersey('jerseyAdmin', []);
+      if (fn === 'jerseyUpload') return ctx.jersey('jerseyAdminUpload', [String(rest[0] || ''), String(rest[1] || ''), rest[2]]);
+      var jr = ctx.jersey('jerseyAdminSave', [rest[0]]);
+      state.log(user, 'JERSEY_SAVE', String((rest[0] || {}).team || ''), 'Jersey designs saved as No. ' + (((jr || {}).saved || {}).order || '?')); state.flush();
+      return jr;
+    }
     if (!WRITE[fn]) throw E('Unknown request: ' + fn);
     if (user.role === 'VIEWER') throw E('Viewers cannot change anything.');
     if (user.role === 'FOOD') throw E('The Food management profile can only use the Food tab.');

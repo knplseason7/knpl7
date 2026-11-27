@@ -97,3 +97,9 @@ Expense creation CRTE-DEMO · Viewer VWER-DEMO · Food management FOOD-DEMO. *Re
 ## Food tab (Food Arrangement committee page)
 The *Food management – Vishal AN* profile (and Admin) sees a **Food** tab: Yes/No collection status per team, meal-by-meal counter allotment, buffer, daily used-vs-given record and a change log with names. The FOOD profile sees no finance data and cannot change anything else.
 Go-live: deploy `FoodApi.gs` (see its header), then paste its `/exec` URL into `FOOD_API_URL` in `config.js`. Redeploy the Finance script too (it gained the `foodAuth` check), and re-run `setup` once to create the Food profile code.
+
+
+## Jersey tab (Admin only)
+- **Final design from the manufacturer:** pick the team, attach the file (JPG/PNG/WEBP/SVG/PDF, up to 15 MB) and upload. Each upload is a new version (older ones stay listed, can be removed from the list; the file stays in Drive). Stored in the `Jersey` sheet table + the Bills & Proofs Drive folder; every upload/removal is in the Audit trail.
+- **Designs received from the teams (Choice 1 / Choice 2 / logo):** the committee Jersey Admin page, passed through to the Team Desk.
+- Script property required: `JERSEY_ADMIN_PIN` (the Team Desk Jersey Admin PIN, format `JA7-XXXX-XXXX`).

@@ -33,6 +33,13 @@
       save('knplfin_demo_td', T);
       return { role: 'admin', teams: TEAMS.map(function (t) { return { team: t.toUpperCase() }; }), fees: T.fees, splits: T.splits };
     },
+    jersey: function (fn, args) {
+      var J = load('knplfin_demo_jersey') || {};
+      if (fn === 'jerseyAdmin') return { maxMb: 10, teams: TEAMS.map(function (t) { return { team: t.toUpperCase(), saved: J[t.toUpperCase()] || null }; }) };
+      if (fn === 'jerseyAdminUpload') return { id: 'demo-' + args[1] };
+      var p = args[0], tn = p.team; J[tn] = { order: Number(p.no), at: new Date().toISOString().slice(0, 16).replace('T', ' '), logo: !!(p.logo && p.logo.id) };
+      save('knplfin_demo_jersey', J); return { saved: J[tn] };
+    },
     regList: function () { return REGP; },
     sponsorDecide: function (cat, no, status) { return { status: status }; },
     teamDeskDecide: function (id, dec, remarks) { return { status: dec, receiptNo: dec === 'APPROVED' ? 'KNPL7-TD-9' + String(Date.now()).slice(-2) : '', remarks: remarks }; }

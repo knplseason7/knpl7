@@ -98,6 +98,7 @@ function ctx_() {
     sponsorDecide: sponsorDecide_,
     regList: regList_,
     teamDesk: function (fn, args, admin) { return teamDeskCall_(fn, args, admin); },
+    jersey: function (fn, args) { return jerseyCall_(fn, args); },
     teamDeskAdminPin: !!PropertiesService.getScriptProperties().getProperty('TEAMDESK_ADMIN_PIN')
   };
 }
@@ -191,6 +192,15 @@ function teamDeskCall_(fn, args, admin) {
   var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: JSON.stringify({ fn: fn, args: [pin].concat(args || []) }), muteHttpExceptions: true, followRedirects: true });
   var j; try { j = JSON.parse(res.getContentText() || '{}'); } catch (err) { j = { ok: false, error: 'unexpected reply' }; }
   if (!j.ok) { var e = new Error('Team Desk: ' + String(j.error || 'request failed').split('\n')[0]); e.user = true; throw e; }
+  return j.result;
+}
+/** Jersey designs (Admin tab): calls the Team Desk jersey admin functions with the script property JERSEY_ADMIN_PIN (the PIN of the Jersey Admin page, e.g. JA7-XXXX-XXXX). */
+function jerseyCall_(fn, args) {
+  var props = PropertiesService.getScriptProperties(), url = props.getProperty('TEAMDESK_API') || TEAMDESK_API_DEFAULT, pin = props.getProperty('JERSEY_ADMIN_PIN');
+  if (!pin) { var e0 = new Error('Jersey: set the script property JERSEY_ADMIN_PIN (the Jersey Admin page PIN).'); e0.user = true; throw e0; }
+  var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: JSON.stringify({ fn: fn, args: [pin].concat(args || []) }), muteHttpExceptions: true, followRedirects: true });
+  var j; try { j = JSON.parse(res.getContentText() || '{}'); } catch (err) { j = { ok: false, error: 'unexpected reply' }; }
+  if (!j.ok) { var e = new Error('Jersey: ' + String(j.error || 'request failed').split('\n')[0]); e.user = true; throw e; }
   return j.result;
 }
 /** Writes an approve / reject decision to the Team Desk (same as the Approve / Reject buttons there) and returns the payment's new state. */

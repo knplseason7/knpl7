@@ -134,7 +134,7 @@
       $('gCode').value = ''; return load();
     }).catch(function () {});
   }
-  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); if (window.FinFood) window.FinFood.reset(); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
+  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); if (window.FinFood) window.FinFood.reset(); if (window.FinJersey) window.FinJersey.reset(); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
   function load() {
     return api('boot', TOKEN).then(function (d) {
       D = d; $('gate').hidden = true; $('who').hidden = false;
@@ -176,6 +176,7 @@
     if (can('teamView')) t.push(['teams', 'Team accounts']);
     if (can('viewAll')) t.push(['bank', 'Bank & Reconcile'], ['reports', 'Ledger & Statements'], ['audit', 'Audit trail']);
     if (can('admin')) t.push(['settings', 'Settings']);
+    if (can('jersey')) t.push(['jersey', 'Jersey']);
     if (can('food')) t.push(['food', 'Food']);
     return t;
   }
@@ -186,8 +187,15 @@
     list.forEach(function (x) { nav.appendChild(h('button', { role: 'tab', 'aria-selected': TAB === x[0] ? 'true' : 'false', onclick: function () { TAB = x[0]; render(); window.scrollTo({ top: 0 }); } }, x[1], c[x[0]] ? h('span', { class: 'cnt' }, c[x[0]]) : null)); });
     if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk ↗'));
     var v = $('view'), keep = window.scrollY; v.replaceChildren();
-    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, sponsors: vSponsors, regs: vRegs, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings, food: vFood })[TAB](v);
+    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, sponsors: vSponsors, regs: vRegs, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings, jersey: vJersey, food: vFood })[TAB](v);
     window.scrollTo({ top: keep });
+  }
+  function vJersey(v) {
+    if (!window.FinJersey) { v.appendChild(h('div', { class: 'card muted' }, 'The Jersey module did not load. Refresh the page.')); return; }
+    window.FinJersey.mount(v, function (fn) {
+      var a = Array.prototype.slice.call(arguments, 1);
+      return api.apply(null, [fn, TOKEN].concat(a)).then(function (r) { return r && r.result !== undefined && r.data ? r.result : r; }).catch(function (e) { if (e.code === 'SESSION') signOut(e.message); throw e; });
+    });
   }
   function vFood(v) {
     if (!window.FinFood) { v.appendChild(h('div', { class: 'card muted' }, 'The Food module did not load. Refresh the page.')); return; }
