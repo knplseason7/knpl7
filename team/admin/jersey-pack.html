@@ -254,7 +254,7 @@ function teamPage(key, idx) {
   const cards = base.map(p => { const j = byId[p.id]; const nmv = j && j.name ? esc(String(j.name).toUpperCase()) : '', nu = j && j.num !== '' && j.num != null ? esc(j.num) : ''; return `<div class="bk"><div class="bn">${nmv || '<span class="ph">NAME</span>'}</div><div class="bu">${nu || '<span class="ph">00</span>'}</div><div class="bs">${esc(p.name)}</div></div>`; }).join('');
   const status = LIVE ? `<span class="chip ${done === base.length ? '' : 'w'}">${done} of ${base.length} submitted</span>` : `<span class="chip w">Live data not loaded</span>`;
   const sp = sponsorsFor(nm);
-  const spHtml = sp == null ? '<span class="blank">Sponsor list not loaded.</span>' : sp.length ? sp.map(s => `<b>${esc(s.name)}</b> <span class="chip ${s.confirmed ? '' : 'w'}">${s.confirmed ? 'Confirmed' : 'Awaiting confirmation'}</span>${s.team && nk(s.team) !== nk(nm) ? ' <span style="color:#5b6784">via ' + esc(title(s.team)) + '</span>' : ''}`).join(' &nbsp;·&nbsp; ') : '<span class="blank">No jersey sponsor yet. Sponsor areas stay plain.</span>';
+  const spHtml = sp == null ? '<span class="blank">Sponsor list not loaded.</span>' : sp.length ? sp.map(s => `<b>${esc(s.name)}</b>${s.city ? ' · ' + esc(s.city) : ''} <span class="chip ${s.confirmed ? '' : 'w'}">${s.confirmed ? 'Confirmed' : 'Awaiting confirmation'}</span>${s.team && nk(s.team) !== nk(nm) ? ' <span style="color:#5b6784">via ' + esc(title(s.team)) + '</span>' : ''}`).join(' &nbsp;·&nbsp; ') : '<span class="blank">No jersey sponsor yet. Sponsor areas stay plain.</span>';
   const fixes = t.fixes.map(f => `<li>${esc(f)}</li>`).join('');
   const rec = t.suggest ? `<div class="warn" style="margin-top:1.4mm"><b>Colour suggestion on the Jersey page (confirm with the owner before printing):</b> ${esc(t.suggest)}</div>` : '';
   const kv = [
@@ -286,7 +286,7 @@ function teamPage(key, idx) {
 <div class="bkrow">${cards}</div>
 <div style="height:1.4mm"></div>
 <h2>Jersey sponsor</h2>
-<div class="card" style="padding:1.6mm 3.2mm;font-size:8.2pt">${spHtml}<div class="cap" style="margin-top:.4mm">Logo files come from the Core Committee; print only what the approved proof shows.</div></div>
+<div class="card" style="padding:1.6mm 3.2mm;font-size:8.2pt">${spHtml}<div class="cap" style="margin-top:.4mm">${sp && sp.length ? (sp.some(x => x.logo) ? 'Sponsor logo supplied (Cover Drive sheet); the committee sends the file.' : 'No sponsor logo uploaded yet: print the name only, or wait for the logo from the committee.') : 'Print only what the approved proof shows.'}</div></div>
 <div style="height:1.8mm"></div>
 <h2>Notes specific to this team</h2><div class="card" style="padding:.8mm 3.4mm"><ul class="b" style="font-size:${t.fixes.length>3?7.4:7.8}pt">${fixes}</ul></div>${rec}
 </div>${FT(idx)}</div>`;
@@ -333,7 +333,7 @@ async function load(live) {
       const dt = new Date(); STAMP.at = dt.toLocaleString('en-IN', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true});
       try { sessionStorage.setItem('knpl_jp', pin); } catch (e) {}
     } else { LIVE = {jersey: PACK_SNAPSHOT}; STAMP.at = '28 Nov 2026, 1:15 am (sheet snapshot)'; }
-    SPN = null; try { SPN = await loadSponsors(); } catch (e) { SPN = null; }
+    SPN = PACK_SPONSORS; try { SPN = await loadSponsors(); } catch (e) { SPN = PACK_SPONSORS; }
     build(); $('gate').hidden = true; m.textContent = '';
     $('tmsg').className = 'msg ok'; $('tmsg').textContent = LIVE ? LIVE.jersey.length + ' jersey entries loaded.' : 'Built from the sheet snapshot (' + LIVE.jersey.length + ' entries). Use live data for the latest.';
   } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
