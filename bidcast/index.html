@@ -495,8 +495,10 @@ function setOnAir(s){ const el=$("onair"); el.className="onair"+(s==="live"?" li
 /* ===================== DEMO (simulated bids for preview) ===================== */
 function startDemo(){
   $("demoBanner").hidden=false; setOnAir("demo");
-  const order=[...DATA.players].filter(p=>p.s!=null).sort((a,b)=>b.s-a.s).slice(0,60);
-  TEAMS.forEach((t,i)=>STATE.teams[i]={rm:100000-Math.round(10000+Math.random()*25000),n:3});
+  // drafted players and owners are already with their teams (draft frozen 27-11-2026), so the demo auctions only the auction pool
+  const order=[...DATA.players].filter(p=>p.s!=null&&p.dt==null).sort((a,b)=>b.s-a.s).slice(0,60);
+  const DR=(DATA.draft&&DATA.draft.teams)||{};
+  TEAMS.forEach((t,i)=>STATE.teams[i]=DR[i]?{rm:DR[i].rm,n:DR[i].n}:{rm:100000-Math.round(10000+Math.random()*25000),n:3});
   let i=0;
   const next=()=>{ const p=order[i++%order.length]; STATE={...STATE,pcode:p.id,bid:0,lead:null,soldout:0,msg:"",tmy:0}; renderAll(); setTimeout(()=>bidStep(p,0),1800); };
   const bidStep=(p,k)=>{ const base=+p.bt||2000, cur=STATE.bid||0, inc=cur<4000?100:cur<6000?200:cur<8000?250:cur<10000?400:500;
