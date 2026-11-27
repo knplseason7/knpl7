@@ -98,10 +98,10 @@ var FinCore = (function () {
     sources: [
       { id: 'TEAMDESK', type: 'teamdesk', label: 'Team Desk (franchise payments)', enabled: true, trust: true,
         map: { CD: 'DEP-CD', OWN: 'INC-OWN', DR: 'INC-DRAFT', JER: 'INC-JERSEY' } },
-      { id: 'REG', type: 'sheet', label: 'Player registration fee (Phase 2)', enabled: false, trust: false,
-        sheetId: '1yLTJPg-2sh2xjuF8jVH6imyHxF99tVRmd8RvdStvZpw', tab: '', head: 'INC-REG', group: false, fixedAmount: 1000,
-        cols: { key: '', party: '', amount: '', utr: '', date: '', proof: '', mode: '', status: '', team: '', desc: '' },
-        approved: 'Approved', rejected: 'Rejected' }
+      /* Player registration fee: every registered player except franchise owners (fee waived) – approved as verified
+         by the committee (decision of 27 Nov 2026), including the players who did not upload a fee receipt. */
+      { id: 'REG', type: 'registration', label: 'Player registration fee (KNPL-7)', enabled: true, trust: true,
+        sheetId: '1yLTJPg-2sh2xjuF8jVH6imyHxF99tVRmd8RvdStvZpw', tab: 'Registrations', head: 'INC-REG', fixedAmount: 1000 }
     ],
     /* Sponsorship categories – each has its own portal and register sheet (same format as the Cover Drive portal).
        Requests are approved / rejected on the Finance Desk; the decision is written back to the register, so the sponsor
@@ -787,7 +787,7 @@ var FinCore = (function () {
       if (r.srcStatus === 'REJECTED') { res.skipped++; return; }
       var row = { id: 'INC-' + pad(state.next('INC'), 4), source: r.source, sourceRef: r.sourceRef, head: r.head, party: str(r.party, 120) || '(not given)', team: str(r.team, 60),
         description: str(r.description, 200) || heads[r.head].name, amount: amt, mode: str(r.mode, 20), utr: str(r.utr, 40).toUpperCase(), paidOn: validDate(r.paidOn) ? r.paidOn : '', proof: str(r.proof, 500),
-        status: r.srcStatus === 'APPROVED' ? 'PENDING' : 'SOURCE_PENDING', srcStatus: r.srcStatus, srcReceipt: str(r.srcReceipt, 40), outbound: false, note: '', createdBy: 'SYNC', createdAt: state.now,
+        status: r.srcStatus === 'APPROVED' ? 'PENDING' : 'SOURCE_PENDING', srcStatus: r.srcStatus, srcReceipt: str(r.srcReceipt, 40), outbound: false, note: str(r.note, 200), createdBy: 'SYNC', createdAt: state.now,
         decidedBy: '', decidedAt: '', remarks: '', receiptNo: '', ledgerNo: '', bankId: '', srcType: str(r.srcType, 12), contactName: str(r.contactName, 60), contactPhone: str(r.contactPhone, 15) };
       if (!row.paidOn) row.paidOn = String(state.now).slice(0, 10);
       inc.push(row); state.touch('Income'); res.added++;
@@ -1160,7 +1160,8 @@ var FinCore = (function () {
   /* --------------------------------------------------------------- router */
   var WRITE = {
     incomeCreate: incomeCreate, incomeDecide: incomeDecide, syncSources: syncSources, teamDeskDecide: teamDeskDecide,
-    teamDeskInfo: teamDeskInfo, sponsorDecide: sponsorDecide, teamDeskFee: teamDeskFee, teamDeskSplit: teamDeskSplit, teamDeskSplitDelete: teamDeskSplitDelete,
+    teamDeskInfo: teamDeskInfo, sponsorDecide: sponsorDecide,
+    regList: function (state, ctx, user) { need(user, 'viewAll'); if (!ctx.regList) throw E('The registration sheet link is not available.'); var s = (state.settings().sources || []).filter(function (x) { return x.id === 'REG'; })[0]; return ctx.regList(s || {}); }, teamDeskFee: teamDeskFee, teamDeskSplit: teamDeskSplit, teamDeskSplitDelete: teamDeskSplitDelete,
     expenseCreate: expenseCreate, expenseUpdate: expenseUpdate, expenseCancel: expenseCancel, expenseDecide: expenseDecide, expensePay: expensePay,
     ledgerReverse: ledgerReverse, ledgerCashRecon: ledgerCashRecon,
     bankImport: bankImport, bankMatch: bankMatch, bankUnmatch: bankUnmatch, bankIgnore: bankIgnore, bankDeleteBatch: bankDeleteBatch,

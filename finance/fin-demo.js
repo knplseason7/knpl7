@@ -2,7 +2,7 @@
  * (saved in localStorage), so the whole workflow can be tried before the Apps Script backend is deployed. */
 (function () {
   'use strict';
-  var KEY = 'knplfin_demo_v6', CK = 'knplfin_demo_cache_v5';
+  var KEY = 'knplfin_demo_v7', CK = 'knplfin_demo_cache_v5';
   var FILES = {};
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -33,9 +33,12 @@
       save('knplfin_demo_td', T);
       return { role: 'admin', teams: TEAMS.map(function (t) { return { team: t.toUpperCase() }; }), fees: T.fees, splits: T.splits };
     },
+    regList: function () { return REGP; },
     sponsorDecide: function (cat, no, status) { return { status: status }; },
     teamDeskDecide: function (id, dec, remarks) { return { status: dec, receiptNo: dec === 'APPROVED' ? 'KNPL7-TD-9' + String(Date.now()).slice(-2) : '', remarks: remarks }; }
   };
+  var REGP = [['KNPL7-0001', 'Krishnadas M N', 1, 'Madhura Mavericks'], ['KNPL7-0021', 'Arjun N'], ['KNPL7-0022', 'Vishnu P'], ['KNPL7-0023', 'Hari M', 0, '', 1], ['KNPL7-0024', 'Sreeraj K'], ['KNPL7-0025', 'Nikhil V'], ['KNPL7-0026', 'Adarsh T', 0, '', 1], ['KNPL7-0002', 'Unnikrishnan S', 1, 'Kalinga United']]
+    .map(function (x, k) { return { id: x[0], name: x[1], owner: !!x[2], ownerTeam: x[3] || '', receipt: !x[2] && !x[4], pool: k > 5 ? 'WAITING LIST' : 'MAIN', category: ['Conqueror', 'Dominator', 'Rising Star'][k % 3], date: '' }; });
   function day(n) { var d = new Date(Date.now() + 5.5 * 3600e3 - n * 864e5); return d.toISOString().slice(0, 10); }
   var TEAMS = ['Madhura Mavericks', 'Kalinga United', 'Ayodhya Warriors', 'Knights of Kanchi', 'Spartans of Nalanda', 'Gandhara Giants', 'Vamos Vrindavan', 'Jaguars of Jhansi'];
   function sampleSources() {
@@ -50,7 +53,7 @@
     sp('SPONSOR', 'KNPL7-CD-0009', 'Demo Traders', 'Ayodhya Warriors', 'Cover Drive: KNPL-7 Lunch Sponsor × 2', 10000, 'UPI', '452266117788', 3, 'APPROVED', 'Rajesh', '9000000003');
     sp('SPONSOR', 'KNPL7-CD-0011', 'Kerala Ayur Mart', 'Madhura Mavericks', 'Cover Drive: KNPL Team Jersey Sponsor – Madhura Mavericks', 7500, 'UPI', '462288119900', 1, 'PENDING', 'Suresh K', '9000000004');
     sp('SPONSOR_FL', 'KNPL7-FL-0002', 'Annapoorna Caterers', 'Knights of Kanchi', 'Flick: Match Day Sponsor', 12000, 'UPI', '462299001122', 2, 'PENDING', 'Vinod', '9000000005');
-    for (i = 0; i < 6; i++) r.push({ source: 'REG', sourceRef: 'REG:KNPL7-' + ('000' + (21 + i)).slice(-4), head: 'INC-REG', party: ['Arjun N', 'Vishnu P', 'Hari M', 'Sreeraj K', 'Nikhil V', 'Adarsh T'][i], description: 'Registration fee – KNPL7-' + ('000' + (21 + i)).slice(-4), amount: 1000, mode: 'UPI', utr: i === 5 ? '' : String(462200000300 + i), paidOn: day(10 - i), srcStatus: 'APPROVED', trust: false });
+    REGP.forEach(function (p, k) { if (!p.owner) r.push({ source: 'REG', sourceRef: 'REG:' + p.id, head: 'INC-REG', party: p.name, description: 'Player registration fee – ' + p.id, amount: 1000, mode: 'UPI', utr: '', paidOn: day(10 - k), srcStatus: 'APPROVED', trust: true, approver: 'Registration committee (fee verified)', srcType: 'REG', contactName: p.name, proof: p.receipt ? 'https://example.org/receipt' : '', note: p.receipt ? '' : 'Fee receipt not uploaded – marked verified by the committee (27 Nov 2026)' }); });
     return r;
   }
   function slots(id) {

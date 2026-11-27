@@ -134,7 +134,7 @@
       $('gCode').value = ''; return load();
     }).catch(function () {});
   }
-  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
+  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
   function load() {
     return api('boot', TOKEN).then(function (d) {
       D = d; $('gate').hidden = true; $('who').hidden = false;
@@ -171,7 +171,7 @@
   }
   function tabs() {
     var t = [['overview', 'Overview'], ['income', 'Income'], ['expenses', 'Expenses'], ['budget', 'Budget']];
-    if (can('viewAll')) t.push(['sponsors', 'Sponsorships']);
+    if (can('viewAll')) t.push(['sponsors', 'Sponsorships'], ['regs', 'Registrations']);
     if (can('teamView')) t.push(['teams', 'Team accounts']);
     if (can('viewAll')) t.push(['bank', 'Bank & Reconcile'], ['reports', 'Ledger & Statements'], ['audit', 'Audit trail']);
     if (can('admin')) t.push(['settings', 'Settings']);
@@ -184,7 +184,7 @@
     list.forEach(function (x) { nav.appendChild(h('button', { role: 'tab', 'aria-selected': TAB === x[0] ? 'true' : 'false', onclick: function () { TAB = x[0]; render(); window.scrollTo({ top: 0 }); } }, x[1], c[x[0]] ? h('span', { class: 'cnt' }, c[x[0]]) : null)); });
     if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk ↗'));
     var v = $('view'), keep = window.scrollY; v.replaceChildren();
-    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, sponsors: vSponsors, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
+    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, sponsors: vSponsors, regs: vRegs, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
     window.scrollTo({ top: keep });
   }
   function go(tab, patch) { TAB = tab; Object.assign(UI, patch || {}); render(); window.scrollTo({ top: 0 }); }
@@ -845,6 +845,50 @@
     draw();
   }
 
+  /* -------------------------------------------------------- registrations */
+  var REGL = null, REGL_ERR = '', REGL_LOADING = false;
+  function regLoad(force) {
+    if (REGL_LOADING || ((REGL || REGL_ERR) && !force)) return;
+    REGL_LOADING = true; REGL_ERR = '';
+    api('regList', TOKEN).then(function (r) { REGL = r.result; D = r.data; }).catch(function (e) { if (e.code === 'SESSION') return signOut(e.message); REGL_ERR = e.message || String(e); })
+      .then(function () { REGL_LOADING = false; if (TAB === 'regs') render(); });
+  }
+  function vRegs(v) {
+    if (!UI.regF) UI.regF = 'ALL'; if (UI.regQ == null) UI.regQ = '';
+    var inc = {}; D.income.forEach(function (i) { if (i.source === 'REG') inc[String(i.sourceRef).replace(/^REG:/, '')] = i; });
+    var head = h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Player registration fees'), h('div', { class: 'row' },
+      can('sync') ? h('button', { class: 'btn', onclick: function (ev) { syncNow(ev.currentTarget); } }, '⟳ Fetch from sources') : null,
+      h('button', { class: 'btn ghost sm', onclick: function () { regLoad(true); render(); } }, '⟳ Reload player list')));
+    var card = h('div', { class: 'card' }, head, h('p', { class: 'small muted' }, 'Every registered player from the KNPL-7 registration sheet. Franchise owners have the fee waived; every other player is recorded as paid at the registration fee and approved (committee decision, 27 Nov 2026). Players who did not upload a receipt are marked "verified by committee".'));
+    v.appendChild(card);
+    if (!REGL) { regLoad(); card.appendChild(REGL_ERR ? h('div', { class: 'msg err' }, REGL_ERR) : h('p', { class: 'muted' }, h('span', { class: 'spin' }), ' Reading the registration sheet…')); return; }
+    var paying = REGL.filter(function (p) { return !p.owner; }), got = paying.filter(function (p) { return inc[p.id] && inc[p.id].status === 'APPROVED'; });
+    card.appendChild(h('div', { class: 'grid g4' },
+      kpi('Registered players', String(REGL.length), paying.length + ' pay · ' + (REGL.length - paying.length) + ' owners (waived)'),
+      kpi('Fees in the ledger', money(sum(got.map(function (p) { return inc[p.id]; }))), got.length + ' of ' + paying.length + ' players'),
+      kpi('Not yet fetched', String(paying.length - got.length), paying.length - got.length ? 'Click "Fetch from sources"' : 'All recorded', paying.length - got.length > 0),
+      kpi('No receipt uploaded', String(paying.filter(function (p) { return !p.receipt; }).length), 'Verified by committee')));
+    var F = [['ALL', 'All'], ['PAID', 'Fee recorded'], ['NORCPT', 'No receipt uploaded'], ['WAIVED', 'Owners – waived'], ['MISSING', 'Not yet fetched']];
+    function st(p) { return p.owner ? 'WAIVED' : inc[p.id] && inc[p.id].status === 'APPROVED' ? 'PAID' : 'MISSING'; }
+    function match(p, f) { return f === 'ALL' || (f === 'NORCPT' ? !p.owner && !p.receipt : st(p) === f); }
+    var q = inp({ placeholder: 'Search Reg ID or name…', value: UI.regQ, oninput: function () { UI.regQ = q.value; draw(); } }), tw = h('div', { class: 'tw', style: 'margin-top:8px' });
+    card.appendChild(h('div', { class: 'chips' }, F.map(function (f) { return h('button', { 'aria-pressed': UI.regF === f[0] ? 'true' : 'false', onclick: function () { UI.regF = f[0]; render(); } }, f[1] + ' (' + REGL.filter(function (p) { return match(p, f[0]); }).length + ')'); })));
+    card.appendChild(q); card.appendChild(tw);
+    function draw() {
+      var qq = UI.regQ.toLowerCase(), t = h('table', { class: 't' }, h('tr', null, h('th', null, 'Reg ID'), h('th', null, 'Player'), h('th', null, 'Pool'), h('th', null, 'Category'), h('th', null, 'Fee'), h('th', null, 'Receipt upload'), h('th', null, 'Finance receipt'), h('th', null, '')));
+      REGL.filter(function (p) { return match(p, UI.regF) && (!qq || (p.id + ' ' + p.name).toLowerCase().indexOf(qq) >= 0); }).forEach(function (p) {
+        var i = inc[p.id], s = st(p);
+        t.appendChild(h('tr', null, h('td', { class: 'mono' }, p.id), h('td', null, p.name, p.owner && p.ownerTeam ? h('div', { class: 'small muted' }, 'Owner – ' + p.ownerTeam) : null), h('td', null, p.pool), h('td', null, p.category || '–'),
+          h('td', null, s === 'WAIVED' ? pill('Waived – owner', 'info') : s === 'PAID' ? pill(money(i.amount) + ' approved', 'ok') : pill('Not yet fetched', 'warn')),
+          h('td', null, p.owner ? '–' : p.receipt ? (i && i.proof ? link(i.proof, 'View ↗') : 'Uploaded') : h('span', { class: 'small muted' }, 'Not uploaded – verified by committee')),
+          h('td', { class: 'mono' }, i && i.receiptNo ? i.receiptNo : '–'),
+          h('td', null, i && i.status === 'APPROVED' ? h('button', { class: 'btn ghost sm', onclick: function () { docPreview('Receipt ' + i.receiptNo, FinDocs.receipt(D, i), 'Receipt ' + i.receiptNo.replace(/\//g, '-')); } }, 'Receipt') : '')));
+      });
+      tw.replaceChildren(t);
+    }
+    draw();
+  }
+
   /* --------------------------------------------------------- sponsorships */
   var SLOTS = {}, SLOTS_ERR = {};
   function loadSlots(c) {
@@ -1021,7 +1065,11 @@
     srcs.forEach(function (s) {
       var box = h('div', { class: 'item', style: 'display:block' }, h('div', { class: 'row sp-b' }, h('b', null, s.label), h('span', { class: 'small muted mono' }, s.id)));
       box.appendChild(h('div', { class: 'row' }, h('label', { class: 'row' }, h('input', { type: 'checkbox', checked: s.enabled, onchange: function (ev) { s.enabled = ev.target.checked; } }), ' Enabled'), h('label', { class: 'row' }, h('input', { type: 'checkbox', checked: s.trust, onchange: function (ev) { s.trust = ev.target.checked; } }), ' Source approval counts as Finance approval')));
-      if (s.type === 'teamdesk') {
+      if (s.type === 'registration') {
+        box.appendChild(h('p', { class: 'small muted' }, 'Reads the "' + s.tab + '" tab of the KNPL-7 registration sheet. Every registered player except franchise owners (fee waived) comes in at the fixed fee and is approved straight away (committee decision of 27 Nov 2026); players without an uploaded receipt carry a note.'));
+        var fa = inp({ type: 'number', value: s.fixedAmount }); fa.oninput = function () { s.fixedAmount = Number(fa.value) || 0; };
+        box.appendChild(h('div', { class: 'grid g4' }, field('Registration fee (₹)', fa)));
+      } else if (s.type === 'teamdesk') {
         box.appendChild(h('p', { class: 'small muted' }, 'Reads the Team Desk payments (caution deposit, ownership fee, draft fee, jersey fee) with the Finance PIN stored in the Apps Script properties (TEAMDESK_PIN). Season-replacement requests carry no payment and are skipped.'));
         box.appendChild(h('div', { class: 'grid g4' }, [['CD', 'Caution deposit →'], ['OWN', 'Ownership fee →'], ['DR', 'Draft fee →'], ['JER', 'Jersey fee →']].map(function (k) { var x = sel(incHeads, (s.map || {})[k[0]]); x.onchange = function () { s.map = s.map || {}; s.map[k[0]] = x.value; }; return field(k[1], x); })));
       } else {
