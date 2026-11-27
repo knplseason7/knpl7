@@ -1,5 +1,5 @@
 /* KNPL-7 Food Arrangement: connection to the Food Apps Script (see FoodApi.gs). Paste the deployed /exec URL below. */
-window.FOOD_API_URL = 'https://script.google.com/macros/s/AKfycbxZ2mM6CMTLb9rJN18I6EF77K_5usfJxjjt3lFlilAMqkNvwW6nlzq_W97rB--a8mDtDA/exec';
+window.FOOD_API_URL = 'https://knpl7-finance-api.sobhapremierleague2020.workers.dev/food';
 window.FOOD_CLOSES = '2027-02-09T18:30:00+05:30';
 async function foodApi(fn, args) {
   if (!window.FOOD_API_URL) throw new Error('Food Arrangement is not switched on yet.\nFood Arrangement ഇതുവരെ ആരംഭിച്ചിട്ടില്ല.');

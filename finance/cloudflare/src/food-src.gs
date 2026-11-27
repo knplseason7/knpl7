@@ -156,8 +156,13 @@ function setupTriggers() {
 /* ---------- owner (Team Desk) ---------- */
 function ownerLogin_(a) {
   var code = String(a.code || '').trim(); if (!code) fail_('Enter your Team Desk code.', 'Team Desk കോഡ് നൽകുക.');
-  var r = UrlFetchApp.fetch(FOOD.TEAMDESK_API, { method: 'post', contentType: 'text/plain', payload: JSON.stringify({ fn: 'teamDeskLogin', args: [code] }), muteHttpExceptions: true, followRedirects: true });
-  var j = JSON.parse(r.getContentText()); if (!j.ok) fail_(j.error || 'Team code not recognised.');
+  var cc = CacheService.getScriptCache(), ck = 'tdl_' + code, nm = cc.get(ck), j;
+  if (nm) j = { ok: true, result: { team: nm } };                     // a recognised Team Desk code is remembered for 6 hours (saves a slow call to the Team Desk)
+  else {
+    var r = UrlFetchApp.fetch(FOOD.TEAMDESK_API, { method: 'post', contentType: 'text/plain', payload: JSON.stringify({ fn: 'teamDeskLogin', args: [code] }), muteHttpExceptions: true, followRedirects: true });
+    j = JSON.parse(r.getContentText()); if (!j.ok) fail_(j.error || 'Team code not recognised.');
+    cc.put(ck, j.result.team, 21600);
+  }
   var fx = fx_(), t = teamByName_(fx, j.result.team);
   if (!t) fail_('Your team is not in the fixture yet.', 'നിങ്ങളുടെ ടീം ഫിക്സ്ചറിൽ ഇതുവരെ ഇല്ല.');
   return { token: tok_('owner', { teamId: t.id, team: t.name }), team: t.name };
