@@ -472,7 +472,7 @@
     var hl = actionExpenses().indexOf(x) >= 0;
     return h('div', { class: 'item' + (hl ? ' hl' : '') },
       h('div', null, h('div', { class: 't1' }, x.title), h('div', null, x.payee + ' · ' + headName(x.head)),
-        h('div', { class: 'd' }, [x.id, 'Bill ' + x.invoiceNo + ' of ' + dmy(x.invoiceDate), 'raised by ' + nameOf(x.createdBy) + ' · ' + dmy(x.createdAt), x.voucherNo].filter(Boolean).join(' · ')),
+        h('div', { class: 'd' }, [x.id, 'Bill ' + x.invoiceNo + ' of ' + dmy(x.invoiceDate), 'raised by ' + (x.raisedBy ? x.raisedBy + ' · ' : '') + nameOf(x.createdBy) + ' · ' + dmy(x.createdAt), x.voucherNo].filter(Boolean).join(' · ')),
         x.status === 'QUERY' || x.status === 'REJECTED' || x.status === 'CANCELLED' ? h('div', { class: 'd', style: 'color:var(--red)' }, 'Remarks: ' + x.remarks) : null),
       h('div', { class: 'right' }, h('div', { class: 'amt' }, money(x.amount)), stPill(x.status, 'exp'), x.expKind ? h('div', null, pill(x.expKind === 'OVER' ? 'Over budget ' + money(x.overBy) : 'Outbound', 'bad')) : null),
       h('div', { class: 'acts' }, h('button', { class: 'btn sm' + (hl ? ' sf' : ''), onclick: function () { expenseView(x.id); } }, hl ? 'Open & act' : 'Open'),
@@ -495,6 +495,7 @@
     var heads = D.heads.filter(function (x) { return x.active && x.kind !== 'INCOME'; });
     var f = {
       head: sel([['', 'Choose…']].concat(heads.map(function (x) { return [x.code, (x.kind === 'DEPOSIT' ? 'Refund – ' : '') + x.name]; })), e.head || ''),
+      raisedBy: inp({ placeholder: 'Your name', value: e.raisedBy || (function () { try { return localStorage.getItem('knplfin_name') || ''; } catch (x) { return ''; } })(), maxlength: '40', autocomplete: 'name' }),
       title: inp({ placeholder: 'What is it for? e.g. Trophies for KNPL-7 awards', value: e.title || '' }), description: h('textarea', { placeholder: 'Details – quantity, rate, event, who asked for it (optional)', style: 'min-height:64px' }),
       payee: inp({ list: 'payeeList', placeholder: 'Vendor / person to be paid', value: e.payee || '' }), invoiceNo: inp({ placeholder: 'as on the bill', value: e.invoiceNo || '' }),
       invoiceDate: inp({ type: 'date', max: today(), value: e.invoiceDate || '' }), amount: inp({ type: 'number', min: '1', step: '0.01', value: e.amount || '' }),
@@ -581,7 +582,7 @@
     };
     var body = h('div', { class: 'steps' }, dl,
       e.status === 'QUERY' ? h('div', { class: 'note warn' }, h('b', null, 'Query from ' + (e.history || []).slice(-1).map(function (x) { return x.by; })[0] + ': '), e.remarks) : null,
-      h('section', null, h('h3', null, 'Basic details'), h('div', { class: 'grid g2' }, field('Budget head', f.head, true), field('Title', f.title, true), field('Payee', f.payee, true), field('Amount (₹)', f.amount, true), field('Invoice / bill no.', f.invoiceNo, true), field('Invoice / bill date', f.invoiceDate, true)), field('Description', f.description)),
+      h('section', null, h('h3', null, 'Basic details'), h('div', { class: 'grid g2' }, field('Your name', f.raisedBy, true), field('Budget head', f.head, true), field('Title', f.title, true), field('Payee', f.payee, true), field('Amount (₹)', f.amount, true), field('Invoice / bill no.', f.invoiceNo, true), field('Invoice / bill date', f.invoiceDate, true)), field('Description', f.description)),
       h('section', null, h('h3', null, 'Invoice / bill'), field(existing ? 'Replace the bill (optional)' : 'Upload the bill', f.file, !existing, 'Photo or PDF. Bank account / IFSC / UPI on the bill are read automatically.'), readBox, existing && e.invoiceFile ? h('div', { class: 'small' }, 'Current bill: ', link(e.invoiceFile, 'open ↗')) : null),
       h('section', null, h('h3', null, 'Payee payment details'), savedBox, rad, srcNote, bankBox, upiBox),
       h('section', null, h('h3', null, 'Budget check'), bc, expWrap),
@@ -591,7 +592,8 @@
       quiet(run(btn, msg, function () {
         var file = f.file.files[0];
         return (file ? readFile(file) : Promise.resolve(null)).then(function (pf) {
-          var d = { head: f.head.value, title: f.title.value, description: f.description.value, payee: f.payee.value, invoiceNo: f.invoiceNo.value, invoiceDate: f.invoiceDate.value, amount: f.amount.value, payMethod: method,
+          try { localStorage.setItem('knplfin_name', f.raisedBy.value.trim()); } catch (x0) {}
+          var d = { raisedBy: f.raisedBy.value, head: f.head.value, title: f.title.value, description: f.description.value, payee: f.payee.value, invoiceNo: f.invoiceNo.value, invoiceDate: f.invoiceDate.value, amount: f.amount.value, payMethod: method,
             accName: f.accName.value, accNo: f.accNo.value, ifsc: f.ifsc.value, bank: f.bank.value, branch: f.branch.value, upi: f.upi.value, phone: f.phone.value, detailsSource: source, explanation: f.explanation.value, invoiceFile: pf, reply: f.reply.value };
           if (method === 'BANK' && source === 'MANUAL') d.accNo2 = f.accNo2.value;
           var r = liveCheck(d.head, Number(d.amount) || 0, e.id);
@@ -612,7 +614,7 @@
     var body = h('div', null,
       h('div', { class: 'row sp-b' }, h('div', null, stPill(x.status, 'exp'), ' ', x.expKind ? pill(x.expKind === 'OVER' ? 'Over budget by ' + money(x.overBy) : 'Outbound – not budgeted', 'bad') : pill('Within budget', 'ok')), h('div', { class: 'amt', style: 'font:800 26px var(--display)' }, money(x.amount))),
       h('dl', { class: 'kv', style: 'margin-top:10px' }, h('dt', null, 'Title'), h('dd', null, x.title), x.description ? [h('dt', null, 'Description'), h('dd', null, x.description)] : null, h('dt', null, 'Head'), h('dd', null, headName(x.head)), h('dt', null, 'Payee'), h('dd', null, x.payee),
-        h('dt', null, 'Bill'), h('dd', null, x.invoiceNo + ' dated ' + dmy(x.invoiceDate) + ' · ', link(x.invoiceFile, 'Open bill ↗')), h('dt', null, 'Raised by'), h('dd', null, nameOf(x.createdBy) + ' · ' + dmy(x.createdAt)),
+        h('dt', null, 'Bill'), h('dd', null, x.invoiceNo + ' dated ' + dmy(x.invoiceDate) + ' · ', link(x.invoiceFile, 'Open bill ↗')), h('dt', null, 'Raised by'), h('dd', null, (x.raisedBy ? x.raisedBy + ' · ' : '') + nameOf(x.createdBy) + ' · ' + dmy(x.createdAt)),
         h('dt', null, 'Payment details'), h('dd', null, { AUTO: 'Read from the bill', SAVED: 'Saved payee', MANUAL: 'Entered by hand' }[x.detailsSource] || x.detailsSource),
         x.voucherNo ? [h('dt', null, 'Voucher / ledger'), h('dd', null, x.voucherNo + ' · ' + x.ledgerNo + ' · ' + x.paidMode + (x.utr ? ' · ' + x.utr : '') + ' · ' + dmy(x.paidOn))] : null, x.paidProof ? [h('dt', null, 'Payment proof'), h('dd', null, link(x.paidProof))] : null),
       h('h3', { style: 'margin-top:12px' }, 'Payee details'), pay,

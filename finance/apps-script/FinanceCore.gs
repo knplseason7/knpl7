@@ -17,7 +17,7 @@ var FinCore = (function () {
     Users: 'id mobile name role codeHash codeHint pinHash salt active:b mustChange:b createdAt lastLogin',
     Heads: 'code name kind budget:n owner note active:b sort:n',
     Income: 'id source sourceRef head party team description amount:n mode utr paidOn proof status srcStatus srcReceipt outbound:b note createdBy createdAt decidedBy decidedAt remarks receiptNo ledgerNo bankId srcType contactName contactPhone',
-    Expenses: 'id head title description payee invoiceNo invoiceDate amount:n invoiceFile payMethod accName accNo ifsc bank branch upi phone detailsSource budget:n committed:n actual:n overBy:n expKind explanation status createdBy createdAt updatedAt ackBy ackAt approvedBy approvedAt adminBy adminAt remarks paidOn paidMode utr paidProof paidBy paidAt voucherNo ledgerNo history:j',
+    Expenses: 'id head title description payee invoiceNo invoiceDate amount:n invoiceFile payMethod accName accNo ifsc bank branch upi phone detailsSource budget:n committed:n actual:n overBy:n expKind explanation status createdBy raisedBy createdAt updatedAt ackBy ackAt approvedBy approvedAt adminBy adminAt remarks paidOn paidMode utr paidProof paidBy paidAt voucherNo ledgerNo history:j',
     Ledger: 'no date dir head refType refId party description amount:n mode utr postedBy postedAt bankId reconType reconBy reconAt reconNote reversedBy reversalOf',
     Bank: 'id date narration ref debit:n credit:n balance:n? hash batch status ledgerNos matchType matchedBy matchedAt note',
     Payees: 'key name accName accNo ifsc bank branch upi phone updatedAt',
@@ -824,8 +824,10 @@ var FinCore = (function () {
     var x = {
       head: h.code, title: str(d.title, 120), description: text(d.description, 800), payee: str(d.payee, 120), invoiceNo: str(d.invoiceNo, 40), invoiceDate: str(d.invoiceDate, 10),
       amount: r2(d.amount), payMethod: str(d.payMethod, 10), accName: str(d.accName, 120), accNo: String(d.accNo || '').replace(/\s/g, ''), ifsc: String(d.ifsc || '').replace(/\s/g, '').toUpperCase(),
-      bank: str(d.bank, 80), branch: str(d.branch, 120), upi: str(d.upi, 80), phone: mobile10(d.phone), detailsSource: d.detailsSource === 'AUTO' || d.detailsSource === 'SAVED' ? d.detailsSource : 'MANUAL', explanation: text(d.explanation, 2000)
+      bank: str(d.bank, 80), branch: str(d.branch, 120), upi: str(d.upi, 80), phone: mobile10(d.phone), detailsSource: d.detailsSource === 'AUTO' || d.detailsSource === 'SAVED' ? d.detailsSource : 'MANUAL', explanation: text(d.explanation, 2000),
+      raisedBy: str(d.raisedBy, 40) || (existing && existing.raisedBy) || ''
     };
+    if (x.raisedBy.length < 3) throw E('Enter your name (the person raising this expense).');
     if (x.title.length < 4) throw E('Enter what the expense is for (title).');
     if (x.payee.length < 2) throw E('Enter the payee (vendor / person to be paid).');
     if (!(x.amount > 0) || x.amount > 1e8) throw E('Enter a valid amount.');
@@ -866,7 +868,7 @@ var FinCore = (function () {
     need(user, 'createExpense');
     var x = readExpense(state, ctx, user, d, null);
     x.id = 'EXP-' + pad(state.next('EXP'), 4); x.status = 'SUBMITTED'; x.createdBy = user.id; x.createdAt = state.now; x.updatedAt = state.now; x.history = [];
-    hist(x, user, 'Submitted', x.expKind ? (x.expKind === 'OVER' ? 'Over budget by ' + inr(x.overBy) : 'Outbound (unbudgeted)') : 'Within budget', state.now);
+    hist(x, { name: x.raisedBy + ' · ' + user.name, role: user.role }, 'Submitted', x.expKind ? (x.expKind === 'OVER' ? 'Over budget by ' + inr(x.overBy) : 'Outbound (unbudgeted)') : 'Within budget', state.now);
     state.t('Expenses').push(coerce('Expenses', x)); state.touch('Expenses');
     state.log(user, 'EXPENSE_CREATE', x.id, x.payee + ' · ' + inr(x.amount) + (x.expKind ? ' · ' + x.expKind : ''));
     return findBy(state.t('Expenses'), 'id', x.id);
