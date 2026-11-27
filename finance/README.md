@@ -103,3 +103,12 @@ Go-live: deploy `FoodApi.gs` (see its header), then paste its `/exec` URL into `
 - **Final design from the manufacturer:** pick the team, attach the file (JPG/PNG/WEBP/SVG/PDF, up to 15 MB) and upload. Each upload is a new version (older ones stay listed, can be removed from the list; the file stays in Drive). Stored in the `Jersey` sheet table + the Bills & Proofs Drive folder; every upload/removal is in the Audit trail.
 - **Designs received from the teams (Choice 1 / Choice 2 / logo):** the committee Jersey Admin page, passed through to the Team Desk.
 - Script property required: `JERSEY_ADMIN_PIN` (the Team Desk Jersey Admin PIN, format `JA7-XXXX-XXXX`).
+
+## Backend now runs on Cloudflare (from 27 Nov 2026)
+
+The page talks to a Cloudflare Worker (`cloudflare/`, worker name `knpl7-finance-api`, URL in `config.js`). It keeps every table in a
+Durable Object (SQLite) and runs the same `fin-core.js` rules, so calls answer in ~0.1 s instead of 2-3 s. The Google Sheet and Apps Script
+are no longer the live store; they remain as a backup and as a **bridge** (Drive file saving, Team Desk / jersey links, registration and sponsorship
+sheets) protected by the script property `BRIDGE_SECRET`. Worker secrets: `BRIDGE_URL`, `BRIDGE_SECRET`, `ADMIN_SECRET`.
+Deploys: pushing to GitHub builds `finance/cloudflare` automatically (root directory `finance/cloudflare`). Keep `cloudflare/src/core.js` and
+`cloudflare/dist/worker.js` in step with `fin-core.js` (`npm run sync-core`, then rebuild the bundle).
