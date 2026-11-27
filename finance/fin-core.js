@@ -44,18 +44,21 @@ var FinCore = (function () {
   /* -------------------------------------------------------------- defaults */
   /* Access profiles – one access code per profile (job), shared by whoever does that job. The person also types
      their name at sign-in, so every approval and the audit trail show "Name · Profile". */
-  var ROLES = { ADMIN: 'Admin', FEES: 'Franchise fees', INCOME: 'Other income', EXP_APPROVE: 'Expense approval', EXP_CREATE: 'Expense creation',
-    PAY: 'Payments & bank', VIEWER: 'Viewer / Auditor' };
+  var ROLES = { ADMIN: 'Admin', FEES: 'Franchise fees', FIN_OPS: 'Other income, expense approval & payments', EXP_CREATE: 'Expense creation', VIEWER: 'Viewer / Auditor',
+    INCOME: 'Other income', EXP_APPROVE: 'Expense approval', PAY: 'Payments & bank' };
   var ROLE_HELP = {
     ADMIN: 'Everything: settings, budget, access codes, second approval of large / outbound expenses, reversals',
     FEES: 'Fetch Team Desk payments; approve franchise income (ownership, caution deposit, draft, jersey fees)',
+    FIN_OPS: 'Approve sponsorship, registration and other income; verify expense orders against the budget and accept explanations; pay approved orders; import the bank statement and reconcile',
     INCOME: 'Fetch sources; approve sponsorship, registration and other / outbound income',
     EXP_APPROVE: 'Verify expense orders against the budget, acknowledge explanations, approve / query / reject',
     EXP_CREATE: 'Raise expense orders with bills; add outbound income for approval',
     PAY: 'Pay approved orders and record the transaction; import the bank statement and reconcile',
     VIEWER: 'Read-only: dashboard, ledger, statements, audit trail'
   };
-  var PROFILE_ORDER = ['ADMIN', 'FEES', 'INCOME', 'EXP_APPROVE', 'EXP_CREATE', 'PAY', 'VIEWER'];
+  /* The KNPL-7 duty split: one code each. INCOME / EXP_APPROVE / PAY remain available as separate profile types if the work is split later. */
+  var PROFILE_ORDER = ['ADMIN', 'FEES', 'FIN_OPS', 'EXP_CREATE', 'VIEWER'];
+  var PROFILE_NAMES = { ADMIN: 'Admin – Krishnadas M N', FEES: 'Franchise fees – Unnikrishnan S', FIN_OPS: 'Finance – Vineeth Kannath', EXP_CREATE: 'Expense creation (committee)', VIEWER: 'Viewer / Auditor' };
   var KINDS = { INCOME: 'Income', EXPENSE: 'Expense', DEPOSIT: 'Deposit (refundable)' };
   var PAY_MODES = ['UPI', 'NEFT', 'IMPS', 'RTGS', 'Cheque', 'Cash'];
   var DEFAULT_HEADS = [
@@ -383,8 +386,8 @@ var FinCore = (function () {
 
   /* ------------------------------------------------------------ permissions */
   var CAN = {
-    viewAll: ['ADMIN', 'FEES', 'INCOME', 'EXP_APPROVE', 'PAY', 'VIEWER'], createExpense: ['ADMIN', 'EXP_CREATE'], createIncome: ['ADMIN', 'FEES', 'INCOME', 'EXP_CREATE'],
-    decideIncome: ['ADMIN', 'FEES', 'INCOME'], decideExpense: ['ADMIN', 'EXP_APPROVE'], pay: ['ADMIN', 'PAY'], bank: ['ADMIN', 'PAY'], admin: ['ADMIN'], sync: ['ADMIN', 'FEES', 'INCOME']
+    viewAll: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_APPROVE', 'PAY', 'VIEWER'], createExpense: ['ADMIN', 'EXP_CREATE'], createIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_CREATE'],
+    decideIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], decideExpense: ['ADMIN', 'FIN_OPS', 'EXP_APPROVE'], pay: ['ADMIN', 'FIN_OPS', 'PAY'], bank: ['ADMIN', 'FIN_OPS', 'PAY'], admin: ['ADMIN'], sync: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME']
   };
   function need(user, what) { if (CAN[what].indexOf(user.role) < 0) throw E('The "' + ROLES[user.role] + '" profile cannot do this. Sign in with the right access code.'); }
   function canMap(role) { var m = {}; Object.keys(CAN).forEach(function (k) { m[k] = CAN[k].indexOf(role) >= 0; }); return m; }
@@ -393,7 +396,7 @@ var FinCore = (function () {
   function incomeScope(role, s, row) {
     if (role === 'ADMIN') return true;
     var fee = row.source === 'TEAMDESK' || feeHeads(s).indexOf(row.head) >= 0;
-    return role === 'FEES' ? fee : role === 'INCOME' ? !fee : false;
+    return role === 'FEES' ? fee : (role === 'INCOME' || role === 'FIN_OPS') ? !fee : false;
   }
 
   /* ---------------------------------------------------------- calculations */
@@ -510,6 +513,20 @@ var FinCore = (function () {
     return out.slice(0, 4) + '-' + out.slice(4);
   }
   function publicUser(u) { return { id: u.id, name: u.name, mobile: u.mobile, role: u.role, roleName: ROLES[u.role], roleHelp: ROLE_HELP[u.role], active: u.active, hasCode: !!u.codeHash, codeHint: u.codeHint, lastLogin: u.lastLogin, createdAt: u.createdAt }; }
+  /* Applies the KNPL-7 duty split to existing data: switches off profiles whose type is not in PROFILE_ORDER
+     (their old codes stop working), renames the kept ones with their holder, and creates + codes any missing one. */
+  function applyDuties(state, ctx) {
+    var users = state.t('Users'), off = [];
+    users.forEach(function (u) {
+      if (!u.active) return;
+      if (PROFILE_ORDER.indexOf(u.role) < 0) { u.active = false; off.push(u.name); }
+      else if (u.codeHash && PROFILE_NAMES[u.role] && users.filter(function (x) { return x.role === u.role && x.active && x.codeHash; })[0] === u) u.name = PROFILE_NAMES[u.role];
+    });
+    state.touch('Users');
+    var made = ensureProfiles(state, ctx);
+    state.log(null, 'DUTIES', '', 'Switched off: ' + (off.join(', ') || 'none') + '; new: ' + (made.map(function (x) { return x.profile; }).join(', ') || 'none'));
+    return { switchedOff: off, created: made };
+  }
   /* Creates any missing default profile (one per type) and gives a code to profiles without one.
      A legacy row of that type without a code (e.g. a person added before profiles) is turned into the profile. */
   function ensureProfiles(state, ctx, fixed) {
@@ -519,8 +536,8 @@ var FinCore = (function () {
       var row = have.filter(function (u) { return u.codeHash; })[0];
       if (row) return;
       row = have[0];
-      if (row) row.name = ROLES[role]; else { row = makeUser(state, { name: ROLES[role], role: role }); users.push(row); }
-      out.push({ profile: ROLES[role], role: role, code: giveCode(state, ctx, row, fixed && fixed[role]) });
+      if (row) row.name = PROFILE_NAMES[role]; else { row = makeUser(state, { name: PROFILE_NAMES[role], role: role }); users.push(row); }
+      out.push({ profile: PROFILE_NAMES[role], role: role, code: giveCode(state, ctx, row, fixed && fixed[role]) });
     });
     if (out.length) state.log(null, 'PROFILES', '', out.map(function (x) { return x.profile; }).join(', ') + ' – access codes issued');
     return out;
@@ -629,8 +646,8 @@ var FinCore = (function () {
     var row = findBy(state.t('Income'), 'id', id);
     if (!row) throw E('Income entry ' + id + ' not found.');
     if (row.status !== 'PENDING') throw E(id + ' is not waiting for approval (now ' + row.status + ').');
-    if (!incomeScope(user.role, state.settings(), row)) throw E(id + ' (' + row.head + ') is approved by the "' + (user.role === 'FEES' ? ROLES.INCOME : ROLES.FEES) + '" profile.');
-    if (row.createdBy === user.id) throw E('This entry was added with your profile\'s code, so it must be approved with another profile (Admin or the other income profile).');
+    if (!incomeScope(user.role, state.settings(), row)) throw E(id + ' (' + row.head + ') is ' + (user.role === 'FEES' ? 'not franchise income – it is approved with the Finance (other income) code.' : 'franchise income – it is approved with the Franchise fees code.'));
+    if (row.createdBy === user.id) throw E('This entry was added with your profile\'s code, so it must be approved with another code (Admin, or the other income profile).');
     remarks = str(remarks, 300);
     if (dec === 'APPROVED') { approveIncome(state, user, row); state.log(user, 'INCOME_APPROVE', id, row.receiptNo + ' · ' + inr(row.amount)); }
     else if (dec === 'REJECTED') { if (remarks.length < 5) throw E('Give the reason for rejecting.'); row.status = 'REJECTED'; row.remarks = remarks; row.decidedBy = user.name; row.decidedAt = state.now; state.touch('Income'); state.log(user, 'INCOME_REJECT', id, remarks); }
@@ -758,7 +775,7 @@ var FinCore = (function () {
     need(user, 'decideExpense');
     var ex = findBy(state.t('Expenses'), 'id', id), s = state.settings();
     if (!ex) throw E('Expense order ' + id + ' not found.');
-    if (ex.createdBy === user.id) throw E(id + ' was raised with this profile\'s code, so it must be verified with the Expense approval profile.');
+    if (ex.createdBy === user.id) throw E(id + ' was raised with this profile\'s code, so it must be verified with another code.');
     remarks = str(remarks, 400);
     var stage = ex.status === 'SUBMITTED' ? 'FIN' : ex.status === 'AWAITING_ADMIN' ? 'ADM' : '';
     if (!stage) throw E(id + ' is not waiting for a decision (now ' + ex.status + ').');
@@ -1052,9 +1069,10 @@ var FinCore = (function () {
     VERSION: VERSION, SCHEMA: SCHEMA, FIELDS: FIELDS, ROLES: ROLES, KINDS: KINDS, PAY_MODES: PAY_MODES, DEFAULT_SETTINGS: DEFAULT_SETTINGS,
     handle: handle, ensureSetup: function (store, ctx, admin) { var st = new State(store); st.now = stamp(ctx.now || new Date()); st.ctx = ctx; var r = ensureSetup(st, admin); st.flush(); return r; },
     /* Gives a user a new access code outside a session (Apps Script editor / demo seeding). fixed = optional code to set. */
-    issueCode: function (store, ctx, match, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var u = st.t('Users').filter(function (x) { return x.id === match || x.name === match; })[0]; if (!u) throw new Error('No user ' + match); var c = giveCode(st, ctx, u, fixed); st.log(null, 'USER_NEW_CODE', u.id, u.name + ' – code issued from the script editor'); st.flush(); return c; },
+    issueCode: function (store, ctx, match, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var u = st.t('Users').filter(function (x) { return x.id === match || x.name === match; })[0] || st.t('Users').filter(function (x) { return x.role === match && x.active; })[0]; if (!u) throw new Error('No user ' + match); var c = giveCode(st, ctx, u, fixed); st.log(null, 'USER_NEW_CODE', u.id, u.name + ' – code issued from the script editor'); st.flush(); return c; },
     addUser: function (store, ctx, d) { var st = new State(store); st.now = stamp(ctx.now || new Date()); if (st.t('Users').some(function (x) { return x.name.toLowerCase() === String(d.name).toLowerCase(); })) return null; var u = makeUser(st, { mobile: mobile10(d.mobile), name: d.name, role: d.role }); st.t('Users').push(u); var c = giveCode(st, ctx, u, d.code); st.log(null, 'USER_SAVE', u.id, u.name + ' · ' + u.role + ' · added from the script editor'); st.flush(); return c; },
     normCode: normCode, ROLE_HELP: ROLE_HELP, PROFILE_ORDER: PROFILE_ORDER, canMap: canMap, incomeScope: incomeScope, feeHeads: feeHeads,
+    applyDuties: function (store, ctx) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = applyDuties(st, ctx); st.flush(); return r; },
     ensureProfiles: function (store, ctx, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = ensureProfiles(st, ctx, fixed); st.flush(); return r; },
     coerce: coerce, sha256: sha256, hashPin: hashPin,
     checkExplanation: checkExplanation, parsePayee: parsePayee, validIfsc: validIfsc, validAcc: validAcc, validUpi: validUpi,

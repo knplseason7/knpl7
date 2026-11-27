@@ -2,7 +2,7 @@
  * (saved in localStorage), so the whole workflow can be tried before the Apps Script backend is deployed. */
 (function () {
   'use strict';
-  var KEY = 'knplfin_demo_v3', CK = 'knplfin_demo_cache_v3';
+  var KEY = 'knplfin_demo_v4', CK = 'knplfin_demo_cache_v4';
   var FILES = {};
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -43,10 +43,9 @@
   function call(fn, args) { return FinCore.handle(store, ctx, fn, args); }
   function seed() {
     db = {}; cache = {}; save(KEY, db); save(CK, cache);
-    FinCore.ensureSetup(store, ctx, { codes: { ADMIN: 'ADMN-DEMO', FEES: 'FEES-DEMO', INCOME: 'INCM-DEMO', EXP_APPROVE: 'APRV-DEMO', EXP_CREATE: 'CRTE-DEMO', PAY: 'PAYS-DEMO', VIEWER: 'VWER-DEMO' } });
+    FinCore.ensureSetup(store, ctx, { codes: { ADMIN: 'ADMN-DEMO', FEES: 'FEES-DEMO', FIN_OPS: 'FNCE-DEMO', EXP_CREATE: 'CRTE-DEMO', VIEWER: 'VWER-DEMO' } });
     var A = call('login', ['ADMN-DEMO', 'Krishnadas M N']).token;
-    var FE = call('login', ['FEES-DEMO', 'Unnikrishnan S']).token, IN = call('login', ['INCM-DEMO', 'Unnikrishnan S']).token;
-    var AP = call('login', ['APRV-DEMO', 'Unnikrishnan S']).token, PY = call('login', ['PAYS-DEMO', 'Unnikrishnan S']).token;
+    var FE = call('login', ['FEES-DEMO', 'Unnikrishnan S']).token, IN = call('login', ['FNCE-DEMO', 'Vineeth Kannath']).token, AP = IN, PY = IN;
     var M = call('login', ['CRTE-DEMO', 'Ivish Kumar']).token, F = AP;
     call('settingsSave', [A, { bankName: 'Demo Bank', bankAccount: 'XXXXXXXX4417', bankIfsc: 'DEMO0001234', upiId: 'knpl7@demo', sources: FinCore.DEFAULT_SETTINGS.sources.map(function (s) { var c = JSON.parse(JSON.stringify(s)); c.enabled = true; return c; }) }]);
     call('syncSources', [FE]);
@@ -86,6 +85,6 @@
     api: function (fn, args) { return new Promise(function (res, rej) { setTimeout(function () { try { res(call(fn, args)); } catch (e) { rej(e); } }, 120); }); },
     reset: function () { seed(); },
     sampleStatement: function () { return 'Txn Date,Description,Ref No,Debit,Credit,Balance\n'; },
-    logins: [['Admin', 'ADMN-DEMO'], ['Franchise fees', 'FEES-DEMO'], ['Other income', 'INCM-DEMO'], ['Expense approval', 'APRV-DEMO'], ['Expense creation', 'CRTE-DEMO'], ['Payments & bank', 'PAYS-DEMO'], ['Viewer / auditor', 'VWER-DEMO']]
+    logins: [['Admin', 'ADMN-DEMO'], ['Franchise fees', 'FEES-DEMO'], ['Finance (income, expense approval, payments)', 'FNCE-DEMO'], ['Expense creation (committee)', 'CRTE-DEMO'], ['Viewer / auditor', 'VWER-DEMO']]
   };
 })();

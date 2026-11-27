@@ -26,7 +26,7 @@ The page also uses `../team/ocr.js` (bill / receipt reader) and `../team/a/knpl.
 2. In the KNPL Google account (knplone@gmail.com), **create a new Google Sheet** named `KNPL-7 Finance Ledger`.
 3. **Extensions ▸ Apps Script**. Replace `Code.gs` with `apps-script/Code.gs`; add a script file `FinanceCore` and paste `apps-script/FinanceCore.gs`.
 4. **Project Settings ▸ Script properties** – add `TEAMDESK_PIN` = the Team Desk **Finance** PIN (lets the Finance Desk read franchise payments).
-5. Run **`setup`** once (allow the permissions). The execution log shows the **access codes of the 7 profiles**.
+5. Run **`setup`** once (allow the permissions). The execution log shows the **access codes of the 5 profiles**.
    The sheet now has the tabs Users, Heads, Income, Expenses, Ledger, Bank, Payees, Audit and Settings.
 6. **Deploy ▸ New deployment ▸ Web app** – Execute as: *Me* · Who has access: *Anyone*. Copy the web app URL.
 7. Put the URL in `finance/config.js` → `API_URL: 'https://script.google.com/macros/s/…/exec'` and upload it.
@@ -41,10 +41,13 @@ When `fin-core.js` changes, paste it again into `FinanceCore.gs` and **Deploy �
 
 ## How it works
 
-**Access profiles** – one access code per job, shared by whoever does that job:
-Admin (everything, settings, budget, codes, second approval, reversals) · Franchise fees (Team Desk income) ·
-Other income (sponsorship, registration, outbound income) · Expense approval (verify against budget, acknowledge explanations) ·
-Expense creation (raise orders with bills) · Payments & bank (pay, import statement, reconcile) · Viewer / Auditor (read-only).
+**Access profiles** – one access code per duty (KNPL-7):
+Admin – Krishnadas M N (everything: settings, budget, codes, second approval, reversals) ·
+Franchise fees – Unnikrishnan S (Team Desk income) ·
+Finance – Vineeth Kannath (other income approval, expense approval incl. explanations, payments, bank reconciliation) ·
+Expense creation – any committee member with the code (raise orders with bills, outbound income) ·
+Viewer / Auditor – anyone with the code (read-only). Separate Other income / Expense approval / Payments & bank profiles can be
+added in Settings if the work is split later.
 At sign-in each person enters the code **and their name**, so approvals and the audit trail read "Name · Profile".
 Codes are stored only as a hash; "New code" replaces a code and ends every session that used the old one; 30 wrong codes in
 15 minutes pause sign-in; sessions end after 6 hours. Nothing is approved with the same code that created it.
@@ -81,5 +84,5 @@ Every action is in the **Audit trail**.
 
 ## Demo
 
-Open the page with `?demo=1` (or an empty `API_URL`). Demo codes: Admin ADMN-DEMO · Franchise fees FEES-DEMO · Other income INCM-DEMO ·
-Expense approval APRV-DEMO · Expense creation CRTE-DEMO · Payments & bank PAYS-DEMO · Viewer VWER-DEMO. *Reset demo data* in the yellow bar restores the sample set.
+Open the page with `?demo=1` (or an empty `API_URL`). Demo codes: Admin ADMN-DEMO · Franchise fees FEES-DEMO · Finance FNCE-DEMO ·
+Expense creation CRTE-DEMO · Viewer VWER-DEMO. *Reset demo data* in the yellow bar restores the sample set.

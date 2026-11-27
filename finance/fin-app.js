@@ -138,7 +138,7 @@
   function load() {
     return api('boot', TOKEN).then(function (d) {
       D = d; $('gate').hidden = true; $('who').hidden = false;
-      $('whoName').replaceChildren(h('b', null, D.me.person), ' · ' + D.me.roleName + ' profile');
+      $('whoName').replaceChildren(h('b', null, D.me.person), ' · ' + D.me.profile);
       $('app').hidden = false;
       if (!UI.inc) UI.inc = can('decideIncome') ? 'PENDING' : 'ALL';
       if (!UI.exp) UI.exp = is('EXP_CREATE') ? 'MINE' : (can('decideExpense') || can('pay')) ? 'ACTION' : 'ALL';
@@ -295,7 +295,7 @@
       it.appendChild(acts); it.appendChild(h('div', { style: 'grid-column:1/-1' }, msg)); return it;
     }
     if (i.status === 'PENDING' && mine && can('decideIncome')) acts.appendChild(h('span', { class: 'small muted' }, 'Added with this profile – approve it with another profile.'));
-    else if (i.status === 'PENDING' && can('decideIncome') && !inScope(i)) acts.appendChild(h('span', { class: 'small muted' }, 'Approved with the ' + (role() === 'FEES' ? 'Other income' : 'Franchise fees') + ' code.'));
+    else if (i.status === 'PENDING' && can('decideIncome') && !inScope(i)) acts.appendChild(h('span', { class: 'small muted' }, 'Approved with the ' + (role() === 'FEES' ? 'Finance (other income)' : 'Franchise fees') + ' code.'));
     if (i.status === 'SOURCE_PENDING') acts.appendChild(h('span', { class: 'small muted' }, i.source === 'TEAMDESK' ? 'Approve it on the Team Desk; the next fetch brings it in.' : 'Waiting for confirmation in the source sheet.'));
     if (i.status === 'APPROVED') acts.appendChild(h('button', { class: 'btn ghost sm', onclick: function () { docPreview('Receipt ' + i.receiptNo, FinDocs.receipt(D, i), 'Receipt ' + i.receiptNo.replace(/\//g, '-')); } }, 'Receipt'));
     if (acts.childNodes.length) it.appendChild(acts);
@@ -358,7 +358,7 @@
   function vExpenses(v) {
     var c = h('div', { class: 'card' });
     c.appendChild(h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Expense orders'), can('createExpense') ? h('button', { class: 'btn sf', onclick: function () { expenseForm(); } }, '+ New expense order') : null));
-    c.appendChild(h('p', { class: 'small muted' }, 'Expense creation raises the order with the bill → Expense approval verifies it against the budget (and reviews the explanation if it is over budget or not budgeted) → Admin gives a second approval for large or outbound orders → Payments & bank pays and records the transaction.'));
+    c.appendChild(h('p', { class: 'small muted' }, 'A committee member raises the order with the bill (Expense creation code) → Finance verifies it against the budget and reviews the explanation if it is over budget or not budgeted → Admin gives a second approval for large or outbound orders → Finance pays and records the transaction.'));
     var F = EF.filter(function (f) { return !(f[0] === 'ACTION' && !(can('decideExpense') || can('pay') || is('ADMIN', 'EXP_CREATE'))) && !(f[0] === 'MINE' && !can('createExpense')); });
     c.appendChild(h('div', { class: 'chips' }, F.map(function (f) { var n = D.expenses.filter(function (x) { return expMatch(x, f[0]); }).length; return h('button', { 'aria-pressed': UI.exp === f[0] ? 'true' : 'false', onclick: function () { UI.exp = f[0]; render(); } }, f[1] + ' (' + n + ')'); })));
     var q = inp({ placeholder: 'Search payee, title, bill no, voucher…', value: UI.expQ, oninput: function () { UI.expQ = q.value; draw(); } });
