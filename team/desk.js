@@ -105,6 +105,10 @@ window.TX = {
  paidOn:['paid','അടച്ചത്'],ref:['Ref','Ref'],
  newRcpt:['{n} new receipt(s) downloaded: {l}.','{n} പുതിയ Receipt Download ചെയ്തു: {l}.'],
  rcptFail:['The receipt tool did not load. Check your connection and reload the page.','Receipt tool ലോഡ് ആയില്ല. ഇന്റർനെറ്റ് പരിശോധിച്ച് പേജ് Reload ചെയ്യുക.'],
+szTitle:['Jersey size chart','Jersey Size Chart'],szIntro:['Check your size before you enter it below. All measurements are of the jersey itself (flat), in inches – not your body. If you are between two sizes, choose the bigger one.','താഴെ Size നൽകുന്നതിന് മുമ്പ് ഇവിടെ നോക്കുക. എല്ലാ അളവുകളും Jersey-യുടേതാണ് (പരത്തിവെച്ച്), ഇഞ്ചിൽ – ശരീരത്തിന്റെ അളവല്ല. രണ്ട് Size-ന് ഇടയിലാണെങ്കിൽ വലിയ Size തിരഞ്ഞെടുക്കുക.'],
+szM1:['Chest','Chest'],szM1d:['Full round of the chest (= 2 × Width)','നെഞ്ചിന് ചുറ്റുമുള്ള മുഴുവൻ അളവ് (= 2 × Width)'],szM2:['Width','Width'],szM2d:['Flat width across the chest','നെഞ്ചിന് കുറുകെ പരത്തിയ വീതി'],szM3:['Length','Length'],szM3d:['Top of shoulder to bottom hem','തോളിന്റെ മുകൾ മുതൽ താഴത്തെ അറ്റം വരെ'],szM4:['Sleeve & shoulder','Sleeve & Shoulder'],szM4d:['Sleeve length · edge-to-edge shoulder width','കൈയുടെ നീളം · തോൾ മുതൽ തോൾ വരെയുള്ള വീതി'],
+szKids:['Kids · 22–36','കുട്ടികൾ · 22–36'],szAdult:['Adults · M–5XL','മുതിർന്നവർ · M–5XL'],szSize:['Size','Size'],szChest:['Chest','Chest'],szWidth:['Width','Width'],szLen:['Length','Length'],szSlv:['Sleeve','Sleeve'],szShd:['Shoulder','Shoulder'],
+szNote:['All values in inches. Sleeve length and shoulder width are given for adult sizes only. Small differences of up to 1 inch are normal in stitching.','എല്ലാ അളവുകളും ഇഞ്ചിൽ. Sleeve, Shoulder അളവുകൾ മുതിർന്നവരുടെ Size-ന് മാത്രം. തയ്യലിൽ 1 ഇഞ്ച് വരെ ചെറിയ വ്യത്യാസം സാധാരണമാണ്.'],szPdf:['Download size chart (PDF)','Size Chart ഡൗൺലോഡ് ചെയ്യുക (PDF)'],
  jerTitle:['Jersey details','Jersey Details'],
  jerIntro:['Each player enters his own jersey details using your team link. You can also enter or correct them here until each player\'s last date. The committee supplies the jersey only.','ഓരോ കളിക്കാരനും ടീം Link ഉപയോഗിച്ച് സ്വന്തം Jersey Details നൽകാം. ഓരോരുത്തരുടെയും അവസാന തീയതി വരെ നിങ്ങൾക്ക് ഇവിടെയും നൽകാം / തിരുത്താം. കമ്മിറ്റി Jersey മാത്രമാണ് നൽകുന്നത്.'],
  shareTitle:['Your team\'s jersey link','നിങ്ങളുടെ ടീമിന്റെ Jersey Link'],
@@ -614,6 +618,15 @@ function renderContacts() {
     const r = el('div', 'row'), a = el('a', 'btn sm', t('call')), w = el('a', 'btn ok sm', t('wa'));
     a.href = 'tel:' + telOf(c.ph); w.href = 'https://wa.me/' + waOf(c.ph); w.target = '_blank'; w.rel = 'noopener'; r.append(a, w); d.append(r); box.append(d); });
 }
+/* ---------- size chart ---------- */
+const SZ_KIDS = [[22,22,11,18],[24,24,12,19],[26,26,13,21],[28,28,14,22],[30,30,15,23],[32,32,16,24],[34,34,17,26],[36,36,18,27]];
+const SZ_ADULT = [['M',38,19,28,8,17.5],['L',40,20,29,8.5,18.5],['XL',42,21,30,9,19.5],['XXL',44,22,31,9.5,20.5],['3XL',46,23,32,10,21],['4XL',48,24,33,10.5,22],['5XL',50,25,34,11,22.5]];
+function paintSizeChart() {
+  const fill = (id, rows) => { const tb = $(id); tb.replaceChildren(); rows.forEach(r => { const tr = el('tr'); r.forEach((v, i) => tr.append(el(i ? 'td' : 'th', null, String(v)))); tb.append(tr); }); };
+  fill('szKidsT', SZ_KIDS); fill('szAdultT', SZ_ADULT);
+  const pick = k => { $('szKids').hidden = k !== 'kids'; $('szAdult').hidden = k !== 'adult'; $('szKidsB').setAttribute('aria-selected', k === 'kids'); $('szAdultB').setAttribute('aria-selected', k === 'adult'); };
+  $('szKidsB').onclick = () => pick('kids'); $('szAdultB').onclick = () => pick('adult');
+}
 /* ---------- jersey designs ---------- */
 let TEAMS_INFO = null, DESIGN_IMG = undefined;
 async function renderDesigns() {
@@ -654,7 +667,7 @@ $('spCopy').onclick = async () => { try { await navigator.clipboard.writeText($(
 $('spMsgCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spMsg').value); } catch (e) { $('spMsg').select(); document.execCommand('copy'); } $('spMsgCopy').textContent = t('copied'); setTimeout(() => $('spMsgCopy').textContent = t('shCopyMsg'), 1500); };
 $('spMsg').oninput = () => { $('spMsg').dataset.edited = '1'; $('spWa').href = 'https://wa.me/?text=' + encodeURIComponent($('spMsg').value); };
 $('out').onclick = () => { try { sessionStorage.removeItem('knpl_td'); } catch (e) {} location.reload(); };
-applyStatic(); renderContacts();
+applyStatic(); renderContacts(); paintSizeChart();
 (async () => {
   try { const s = await api('teamDeskStatus'); if (!s.open) { $('gmsg').className = 'msg'; $('gmsg').textContent = t('opensOn', {d: s.opens}); } } catch (e) {}
   try { const c = sessionStorage.getItem('knpl_td'); if (c) { $('code').value = c; login(); } } catch (e) {}

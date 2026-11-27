@@ -12,7 +12,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=22">
+<link rel="stylesheet" href="desk.css?v=25">
 <link rel="stylesheet" href="food/food.css?v=2">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="receipt.js?v=5" defer></script>
@@ -117,6 +117,40 @@
       </div>
       <ul class="dl"><li data-t="jd1"></li><li data-t="jd2"></li><li data-t="jd3"></li><li data-t="jd4"></li></ul>
     </div>
+    <div class="card sizechart" id="szcard">
+      <h2 data-t="szTitle"></h2>
+      <p class="muted" data-t="szIntro"></p>
+      <div class="szTop">
+        <svg class="szfig" viewBox="0 0 300 260" role="img" aria-label="Jersey measurement diagram">
+          <defs><marker id="szA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#e07a1f"/></marker></defs>
+          <path class="szbody" d="M105 38 L72 52 L30 96 L52 124 L78 106 L78 232 Q150 244 222 232 L222 106 L248 124 L270 96 L228 52 L195 38 Q150 66 105 38Z"/>
+          <path class="szneck" d="M105 38 Q150 66 195 38" />
+          <g stroke="#e07a1f" stroke-width="2" fill="none" marker-start="url(#szA)" marker-end="url(#szA)">
+            <line x1="72" y1="26" x2="228" y2="26"/>
+            <line x1="82" y1="150" x2="218" y2="150"/>
+            <line x1="150" y1="72" x2="150" y2="228"/>
+            <line x1="236" y1="62" x2="266" y2="92"/>
+          </g>
+          <g class="szlbl" text-anchor="middle">
+            <text x="150" y="16">SHOULDER</text>
+            <text x="116" y="142">CHEST</text>
+            <text x="172" y="196" transform="rotate(-90 172 196)">LENGTH</text>
+            <text x="264" y="58">SLEEVE</text>
+          </g>
+        </svg>
+        <div class="szkey">
+          <div><b data-t="szM1"></b><span data-t="szM1d"></span></div>
+          <div><b data-t="szM2"></b><span data-t="szM2d"></span></div>
+          <div><b data-t="szM3"></b><span data-t="szM3d"></span></div>
+          <div><b data-t="szM4"></b><span data-t="szM4d"></span></div>
+        </div>
+      </div>
+      <div class="szTabs" role="tablist"><button type="button" id="szKidsB" aria-selected="false" data-t="szKids"></button><button type="button" id="szAdultB" aria-selected="true" data-t="szAdult"></button></div>
+      <div class="szwrap" id="szAdult"><table class="szt"><thead><tr><th data-t="szSize"></th><th data-t="szChest"></th><th data-t="szWidth"></th><th data-t="szLen"></th><th data-t="szSlv"></th><th data-t="szShd"></th></tr></thead><tbody id="szAdultT"></tbody></table></div>
+      <div class="szwrap" id="szKids" hidden><table class="szt"><thead><tr><th data-t="szSize"></th><th data-t="szChest"></th><th data-t="szWidth"></th><th data-t="szLen"></th></tr></thead><tbody id="szKidsT"></tbody></table></div>
+      <p class="small muted" data-t="szNote"></p>
+      <div class="row"><a class="btn ghost sm" href="size-chart.pdf" target="_blank" rel="noopener" data-t="szPdf"></a></div>
+    </div>
     <div class="card">
       <h3 data-t="jerList"></h3>
       <p class="small muted" data-t="jerListNote"></p>
@@ -195,7 +229,7 @@
 </main>
 <footer data-t="footer2"></footer>
 <script src="ocr.js?v=1"></script>
-<script src="desk.js?v=30"></script>
+<script src="desk.js?v=32"></script>
 <script src="points.js?v=1"></script>
 <script src="apool.js?v=1"></script>
 <script src="tabnav.js?v=1"></script>
