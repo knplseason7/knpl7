@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>KNPL-7 Finance Desk</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b1a38">
+<link rel="icon" href="../team/a/knpl.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="fin.css?v=1">
+</head><body>
+<header class="top"><div class="wrap">
+  <img class="hlogo" src="../team/a/knpl.png" alt="KNPL" onerror="this.style.display='none'">
+  <div class="sp"><div class="kick">KNPL-7 · Restricted · Core Committee &amp; Finance</div><h1>Finance Desk</h1></div>
+  <div class="who" id="who" hidden><span id="whoName"></span><button class="btn ghost sm" id="pinBtn" style="color:#fff;border-color:#3a4a72">Change PIN</button><button class="btn ghost sm" id="outBtn" style="color:#fff;border-color:#3a4a72">Sign out</button></div>
+</div></header>
+<div class="demo" id="demoBar" hidden>DEMO MODE – sample data, saved only in this browser. Connect the Apps Script backend in <b>config.js</b> to go live. <button class="btn link" id="demoReset">Reset demo data</button></div>
+<main class="wrap">
+  <section class="card gate" id="gate" hidden>
+    <h2>Sign in</h2>
+    <p class="small muted">Only Core Committee members and the Finance team have access. Use your registered mobile number and 6-digit PIN.</p>
+    <label class="fl" for="gMob">Mobile number</label><input id="gMob" inputmode="numeric" autocomplete="username" maxlength="14" placeholder="10-digit mobile">
+    <label class="fl" for="gPin">PIN</label><input id="gPin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" placeholder="6 digits">
+    <div class="row" style="margin-top:12px"><button class="btn sf" id="gGo">Sign in</button></div>
+    <div class="msg err" id="gMsg"></div>
+    <div id="demoLogins" class="note info small" hidden></div>
+  </section>
+  <section class="card gate" id="pinCard" hidden>
+    <h2>Set your own PIN</h2>
+    <p class="small muted" id="pinWhy">You signed in with a temporary PIN. Choose your own 6-digit PIN to continue.</p>
+    <label class="fl" for="pOld">Current / temporary PIN</label><input id="pOld" type="password" inputmode="numeric" maxlength="6" autocomplete="current-password">
+    <label class="fl" for="pNew">New PIN</label><input id="pNew" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password">
+    <label class="fl" for="pNew2">Re-enter new PIN</label><input id="pNew2" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password">
+    <div class="row" style="margin-top:12px"><button class="btn sf" id="pGo">Save PIN</button><button class="btn ghost" id="pCancel" hidden>Cancel</button></div>
+    <div class="msg err" id="pMsg"></div>
+  </section>
+  <section id="app" hidden>
+    <nav class="tabs" id="tabs" role="tablist"></nav>
+    <div id="view"></div>
+  </section>
+</main>
+<div id="modalRoot"></div>
+<script src="config.js?v=1"></script>
+<script src="fin-core.js?v=1"></script>
+<script>if (!(window.FIN_CONFIG && window.FIN_CONFIG.API_URL) || /[?&]demo=1/.test(location.search)) document.write('<script src="fin-demo.js?v=1"><\/script>');</script>
+<script src="fin-docs.js?v=1"></script>
+<script src="../team/ocr.js?v=1"></script>
+<script src="fin-app.js?v=1"></script>
+</body></html>
