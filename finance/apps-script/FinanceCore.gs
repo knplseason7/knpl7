@@ -47,8 +47,8 @@ var FinCore = (function () {
   var ROLES = { ADMIN: 'Admin', FEES: 'Franchise fees', FIN_OPS: 'Other income, expense approval & payments', EXP_CREATE: 'Expense creation', VIEWER: 'Viewer / Auditor',
     INCOME: 'Other income', EXP_APPROVE: 'Expense approval', PAY: 'Payments & bank' };
   var ROLE_HELP = {
-    ADMIN: 'Everything: settings, budget, access codes, second approval of large / outbound expenses, reversals',
-    FEES: 'Fetch Team Desk payments; approve franchise income (ownership, caution deposit, draft, jersey fees)',
+    ADMIN: 'Everything: settings, budget, access codes, second approval of large / outbound expenses, reversals, sponsorship credit between teams',
+    FEES: 'Fetch Team Desk payments; approve franchise income (ownership, caution deposit, draft, jersey fees); set each team\'s jersey fee',
     FIN_OPS: 'Approve sponsorship, registration and other income; verify expense orders against the budget and accept explanations; pay approved orders; import the bank statement and reconcile',
     INCOME: 'Fetch sources; approve sponsorship, registration and other / outbound income',
     EXP_APPROVE: 'Verify expense orders against the budget, acknowledge explanations, approve / query / reject',
@@ -387,7 +387,8 @@ var FinCore = (function () {
   /* ------------------------------------------------------------ permissions */
   var CAN = {
     viewAll: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_APPROVE', 'PAY', 'VIEWER'], createExpense: ['ADMIN', 'EXP_CREATE'], createIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_CREATE'],
-    decideIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], decideExpense: ['ADMIN', 'FIN_OPS', 'EXP_APPROVE'], pay: ['ADMIN', 'FIN_OPS', 'PAY'], bank: ['ADMIN', 'FIN_OPS', 'PAY'], admin: ['ADMIN'], sync: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME']
+    decideIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], decideExpense: ['ADMIN', 'FIN_OPS', 'EXP_APPROVE'], pay: ['ADMIN', 'FIN_OPS', 'PAY'], bank: ['ADMIN', 'FIN_OPS', 'PAY'], admin: ['ADMIN'], sync: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'],
+    teamView: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], teamFees: ['ADMIN', 'FEES'], teamCredit: ['ADMIN']
   };
   function need(user, what) { if (CAN[what].indexOf(user.role) < 0) throw E('The "' + ROLES[user.role] + '" profile cannot do this. Sign in with the right access code.'); }
   function canMap(role) { var m = {}; Object.keys(CAN).forEach(function (k) { m[k] = CAN[k].indexOf(role) >= 0; }); return m; }
@@ -678,6 +679,50 @@ var FinCore = (function () {
       state.log(user, 'INCOME_REJECT', id, 'Team Desk · ' + row.remarks);
     } else throw E('The Team Desk did not confirm the decision (status ' + (st || 'unknown') + '). Fetch from sources and try again.');
     return row;
+  }
+  /* Team Desk finance settings worked from here: team jersey fee (at actuals) and sponsorship credit moved between teams.
+     Both are written to the Team Desk (which stays the record the owners see); every change is also kept in the audit trail. */
+  function tdLink(ctx) { if (!ctx.teamDesk) throw E('The Team Desk link is not available.'); return ctx.teamDesk; }
+  function tdTitle(t) { return String(t || '').toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/\bOf\b/g, 'of'); }
+  function tdView(d, ctx) {
+    d = d || {};
+    var fees = {}; Object.keys(d.fees || {}).forEach(function (k) { var f = d.fees[k] || {}; fees[k] = { amount: Number(f.amount) || 0, note: String(f.note || '') }; });
+    return {
+      role: String(d.role || ''), creditReady: String(d.role || '') === 'admin' || !!(ctx && ctx.teamDeskAdminPin),
+      teams: (d.teams || []).map(function (t) { return String(t.team); }).sort(), fees: fees,
+      splits: (d.splits || []).map(function (x) { return { row: x.row, sponsor: String(x.sponsor || ''), from: String(x.from || ''), to: String(x.to || ''), amount: Number(x.amount) || 0, note: String(x.note || ''), at: String(x.at || '') }; })
+    };
+  }
+  function teamDeskInfo(state, ctx, user) { need(user, 'teamView'); return tdView(tdLink(ctx)('teamDeskAdmin', [], !!ctx.teamDeskAdminPin), ctx); }
+  function tdTeam(info, team) { if (info.teams.length && info.teams.indexOf(team) < 0) throw E('Unknown team ' + team + '.'); return team; }
+  function teamDeskFee(state, ctx, user, team, amount, note) {
+    need(user, 'teamFees');
+    team = str(team, 80); note = str(note, 200); amount = r2(Number(amount || 0));
+    if (!team) throw E('Choose the team.');
+    if (!(amount >= 0) || amount > 500000) throw E('Enter the jersey fee in rupees (0 removes it).');
+    if (amount > 0 && note.length < 3) throw E('Add how the amount was worked out, e.g. "14 jerseys × ₹350".');
+    var d = tdLink(ctx)('teamDeskAdminFee', [team, amount, note]);
+    state.log(user, 'TEAM_JERSEY_FEE', tdTitle(team), amount ? inr(amount) + ' · ' + note : 'removed');
+    return tdView(d, ctx);
+  }
+  function teamDeskSplit(state, ctx, user, x) {
+    need(user, 'teamCredit');
+    x = x || {};
+    var sp = str(x.sponsor, 120), from = str(x.from, 80), to = str(x.to, 80), amt = r2(Number(x.amount || 0)), note = str(x.note, 300);
+    if (sp.length < 3) throw E('Name the sponsor / item, e.g. "Ever-Rolling Trophy – 1/3 share".');
+    if (!from || !to || from === to) throw E('Choose two different teams.');
+    if (!(amt > 0) || amt > 5000000) throw E('Enter the amount to move.');
+    if (note.length < 5) throw E('Add a note – why the credit is moved (the committee decision).');
+    var d = tdLink(ctx)('teamDeskAdminSplit', [{ sponsor: sp, from: from, to: to, amount: amt, note: note }], true);
+    state.log(user, 'TEAM_CREDIT_MOVE', sp, inr(amt) + ' · ' + tdTitle(from) + ' → ' + tdTitle(to) + ' · ' + note);
+    return tdView(d, ctx);
+  }
+  function teamDeskSplitDelete(state, ctx, user, row, label) {
+    need(user, 'teamCredit');
+    if (row == null || row === '') throw E('Which credit move?');
+    var d = tdLink(ctx)('teamDeskAdminSplitDelete', [row], true);
+    state.log(user, 'TEAM_CREDIT_CANCEL', String(row), str(label, 300));
+    return tdView(d, ctx);
   }
   function syncSources(state, ctx, user) {
     need(user, 'sync');
@@ -1068,6 +1113,7 @@ var FinCore = (function () {
   /* --------------------------------------------------------------- router */
   var WRITE = {
     incomeCreate: incomeCreate, incomeDecide: incomeDecide, syncSources: syncSources, teamDeskDecide: teamDeskDecide,
+    teamDeskInfo: teamDeskInfo, teamDeskFee: teamDeskFee, teamDeskSplit: teamDeskSplit, teamDeskSplitDelete: teamDeskSplitDelete,
     expenseCreate: expenseCreate, expenseUpdate: expenseUpdate, expenseCancel: expenseCancel, expenseDecide: expenseDecide, expensePay: expensePay,
     ledgerReverse: ledgerReverse, ledgerCashRecon: ledgerCashRecon,
     bankImport: bankImport, bankMatch: bankMatch, bankUnmatch: bankUnmatch, bankIgnore: bankIgnore, bankDeleteBatch: bankDeleteBatch,

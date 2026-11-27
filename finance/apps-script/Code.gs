@@ -10,6 +10,7 @@
  *   2. Extensions ▸ Apps Script ▸ add the two files.
  *   3. Project Settings ▸ Script properties:
  *        TEAMDESK_PIN    <the Team Desk Finance PIN>        (to read franchise payments)
+ *        TEAMDESK_ADMIN_PIN <optional – the Team Desk admin PIN>   (to move sponsorship credit between teams from here)
  *        TEAMDESK_API    <optional – Team Desk web app URL; defaults to the one below>
  *   4. Run setup() once and read the ACCESS CODES of the 5 profiles in the execution log.
  *   5. Deploy ▸ New deployment ▸ Web app · Execute as: Me · Who has access: Anyone.
@@ -93,7 +94,9 @@ function ctx_() {
     uuid: function () { return Utilities.getUuid(); },
     saveFile: saveFile_,
     fetchSources: fetchSources_,
-    teamDeskDecide: teamDeskDecide_
+    teamDeskDecide: teamDeskDecide_,
+    teamDesk: function (fn, args, admin) { return teamDeskCall_(fn, args, admin); },
+    teamDeskAdminPin: !!PropertiesService.getScriptProperties().getProperty('TEAMDESK_ADMIN_PIN')
   };
 }
 
@@ -173,8 +176,10 @@ function fetchSources_(settings) {
   return out;
 }
 
-function teamDeskCall_(fn, args) {
-  var props = PropertiesService.getScriptProperties(), pin = props.getProperty('TEAMDESK_PIN'), url = props.getProperty('TEAMDESK_API') || TEAMDESK_API_DEFAULT;
+/* admin = true: use TEAMDESK_ADMIN_PIN (the Team Desk committee admin PIN) when it is set – needed for sponsorship credit moves. */
+function teamDeskCall_(fn, args, admin) {
+  var props = PropertiesService.getScriptProperties(), url = props.getProperty('TEAMDESK_API') || TEAMDESK_API_DEFAULT;
+  var pin = (admin && props.getProperty('TEAMDESK_ADMIN_PIN')) || props.getProperty('TEAMDESK_PIN');
   if (!pin) { var e0 = new Error('Team Desk: set the script property TEAMDESK_PIN (the Finance PIN of the Team Desk).'); e0.user = true; throw e0; }
   var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: JSON.stringify({ fn: fn, args: [pin].concat(args || []) }), muteHttpExceptions: true, followRedirects: true });
   var j; try { j = JSON.parse(res.getContentText() || '{}'); } catch (err) { j = { ok: false, error: 'unexpected reply' }; }
@@ -182,6 +187,13 @@ function teamDeskCall_(fn, args) {
   return j.result;
 }
 /** Writes an approve / reject decision to the Team Desk (same as the Approve / Reject buttons there) and returns the payment's new state. */
+/** Run from the editor: shows what the Finance Desk can reach on the Team Desk with the PIN(s) set. */
+function checkTeamDesk() {
+  var a = teamDeskCall_('teamDeskAdmin', []);
+  console.log('TEAMDESK_PIN → Team Desk role: ' + a.role + ' · teams ' + (a.teams || []).length + ' · payments ' + (a.payments || []).length + ' · jersey fees ' + Object.keys(a.fees || {}).length + ' · credit moves ' + (a.splits ? a.splits.length : 'not shown'));
+  if (PropertiesService.getScriptProperties().getProperty('TEAMDESK_ADMIN_PIN')) { var b = teamDeskCall_('teamDeskAdmin', [], true); console.log('TEAMDESK_ADMIN_PIN → Team Desk role: ' + b.role); }
+  else console.log('TEAMDESK_ADMIN_PIN is not set (needed only if the Team Desk allows credit moves to its admin alone).');
+}
 function teamDeskDecide_(paymentId, dec, remarks) {
   var d = teamDeskCall_('teamDeskAdminDecide', [paymentId, dec, remarks || '']);
   var p = ((d && d.payments) || []).filter(function (x) { return String(x.id) === String(paymentId); })[0];
