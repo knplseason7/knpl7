@@ -72,13 +72,14 @@ ul.b{margin:0;padding-left:4mm}ul.b li{margin:.5mm 0;font-size:8.2pt;line-height
 .swc b{font-size:8pt;display:block}.swc .c{font-weight:800;color:var(--navy);font-size:7.4pt}
 .kv td{padding:.5mm 1.6mm}.kv td:first-child{width:19mm;font-weight:700;color:var(--navy);background:#f7f8fc}
 .imgbox{background:#e8ebf1;border:.3mm solid var(--line);border-radius:2.5mm;display:flex;align-items:center;justify-content:center;overflow:hidden}.imgbox img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.bkrow{display:flex;flex-wrap:wrap;gap:1.4mm;margin-top:1.2mm}.bk{width:21.5mm;height:19mm;border:.3mm solid #c9d1e2;border-radius:1.6mm;background:linear-gradient(#f4f6fa,#e6ebf4);text-align:center;position:relative;overflow:hidden}.bk .bn{font:800 6.4pt 'Saira Condensed','Arial Narrow',sans-serif;letter-spacing:.06em;color:#13213f;margin-top:1.6mm;white-space:nowrap}.bk .bu{font:900 17pt/1 'Saira Condensed','Arial Narrow',sans-serif;color:#13213f;margin-top:.6mm}.bk .bs{position:absolute;bottom:.8mm;left:0;right:0;font-size:4.8pt;color:#5b6784;white-space:nowrap;overflow:hidden}.bk .ph{color:#b9c2d6}
 .legend{display:flex;flex-wrap:wrap;gap:.8mm 3mm;margin-top:1.6mm;font-size:7pt}.legend .no{width:3.8mm;height:3.8mm;line-height:3.8mm;font-size:6.4pt;margin-right:.6mm}
 .cr{display:grid;grid-template-columns:25mm 1fr;gap:2mm;align-items:center;padding:.5mm 0;border-bottom:.25mm solid #e6eaf3}.cr:last-child{border-bottom:0}.cr .lh{font-weight:800;color:var(--navy);font-size:7.2pt;line-height:1.25;text-transform:uppercase;letter-spacing:.04em}.cr .lh em{font-style:normal;font-weight:500;text-transform:none;letter-spacing:0;color:var(--mut);font-size:6.6pt}
 .cc{display:inline-flex;align-items:center;gap:1.2mm;margin:.2mm 2.6mm .2mm 0;font-size:6.6pt;line-height:1.2;vertical-align:middle}.cc i{width:4.2mm;height:4.2mm;border-radius:1.2mm;border:.25mm solid #b9c2d6;display:inline-block;flex:none}.cc em{display:block;font-style:normal;color:var(--mut)}.cc b{font-weight:800}
 h2 .sub{font-weight:500;letter-spacing:0;text-transform:none;color:#5b6784;font-size:7pt}
 .lc{display:grid;grid-template-columns:1.1fr 1fr;gap:3mm;font-size:6.8pt}.lc .lh{display:block;font-weight:800;color:var(--navy);letter-spacing:.06em;text-transform:uppercase;font-size:6.4pt;margin-bottom:.6mm}
 .lcc{display:inline-flex;align-items:center;gap:1mm;margin:0 2.4mm .8mm 0;white-space:nowrap}.lcc i{width:4mm;height:4mm;border-radius:1mm;border:.25mm solid #b9c2d6;display:inline-block}
-.pl th{font-size:6.8pt}.pl td{font-size:8.2pt;height:5.8mm;vertical-align:middle}
+.pl th{font-size:6.8pt}.pl td{font-size:8pt;height:5mm;vertical-align:middle}
 .pl td.f{font-weight:800;letter-spacing:.02em}
 .blank{color:#b4bccd}
 .chip{display:inline-block;border-radius:5mm;padding:.4mm 2.4mm;font-weight:800;font-size:7pt;background:#e5f5ec;color:#1f8a5b}
@@ -249,6 +250,7 @@ function teamPage(key, idx) {
     const cell = (v, cls) => `<td class="${cls || ''}">${v !== '' && v != null && ok ? esc(v) : '<span class="blank">&nbsp;</span>'}</td>`;
     return `<tr><td><b>${esc(p.name)}</b></td><td>KNPL7-${esc(p.id)}</td><td>${p.role}</td>${cell(j && j.size)}${cell(j && j.sleeve)}${cell(j && j.name && String(j.name).toUpperCase(), 'f')}${cell(j && j.num, 'f')}</tr>`;
   }).join('');
+  const cards = base.map(p => { const j = byId[p.id]; const nmv = j && j.name ? esc(String(j.name).toUpperCase()) : '', nu = j && j.num !== '' && j.num != null ? esc(j.num) : ''; return `<div class="bk"><div class="bn">${nmv || '<span class="ph">NAME</span>'}</div><div class="bu">${nu || '<span class="ph">00</span>'}</div><div class="bs">${esc(p.name)}</div></div>`; }).join('');
   const status = LIVE ? `<span class="chip ${done === base.length ? '' : 'w'}">${done} of ${base.length} submitted</span>` : `<span class="chip w">Live data not loaded</span>`;
   const sp = sponsorsFor(nm);
   const spHtml = sp == null ? '<span class="blank">Sponsor list not loaded.</span>' : sp.length ? sp.map(s => `<b>${esc(s.name)}</b> <span class="chip ${s.confirmed ? '' : 'w'}">${s.confirmed ? 'Confirmed' : 'Awaiting confirmation'}</span>${s.team && nk(s.team) !== nk(nm) ? ' <span style="color:#5b6784">via ' + esc(title(s.team)) + '</span>' : ''}`).join(' &nbsp;·&nbsp; ') : '<span class="blank">No jersey sponsor yet. Sponsor areas stay plain.</span>';
@@ -258,30 +260,30 @@ function teamPage(key, idx) {
     ['Fabric', 'Super Saleena polyester 180–220 GSM, full sublimation (CMYK), one batch. Quote exact GSM.'],
     ['Cut', 'Polo collar, 2-button placket, raglan half sleeves, rib cuffs, side vents; accent-colour collar, placket, cuffs, 3 mm gold tipping.'],
     ['Front name', `<b>${esc(up)}</b> as registered. ${esc(ft.note)}.`],
-    ['Font', 'Saira Condensed: names ExtraBold, numbers Black; colour contrasting with the body.'],
-    ['Back', 'Sponsor area 26 × 7 cm at top, number 21 cm, name 5.5 cm.'],
-    ['Sleeves', 'Sponsor area 8 × 6 cm on both outer sleeves, 3 cm above the cuff.'],
+    ['Font', 'Saira Condensed: names ExtraBold, numbers Black, contrasting colour.'],
+    ['Back & sleeves', 'Back sponsor 26 × 7 cm at top, number 21 cm, name 5.5 cm; sleeve sponsor 8 × 6 cm on both sleeves, 3 cm above the cuff.'],
   ].map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`);
   const dims = [[1, 'KNPL logo 9 cm'], [2, 'Team logo 9 cm'], [3, 'Name 5 cm'], [4, 'Number 21 cm'], [5, 'Player 5.5 cm'], [6, 'Back sponsor 26×7'], [7, 'Sleeve sponsor 8×6']].map(([a, b]) => `<span><span class="no">${a}</span> ${b}</span>`).join('');
   return `<div class="pg"><div class="hd" style="padding:5.5mm 11mm 4mm"><img src="${LOGO}${sl}.png" alt=""><div><div class="k">Team ${pad2(n)} of 16 · Approved jersey · KNPL-7</div><h1>${esc(up)}</h1><div class="s">Production sheet for the jersey manufacturer · one page per team</div></div><div class="r">Jersey details<b>${status}</b>${LIVE ? 'as on ' + esc(STAMP.at) : ''}</div></div>
 <div class="bd" style="padding-top:3.4mm">
-<div class="dz" style="grid-template-columns:1.2fr 1fr"><div><h2>Approved design · Choice 1</h2><div class="imgbox" style="height:54mm"><img src="${DES}${pad2(n)}-c1.jpg" alt=""></div><div class="cap">Choice 1 is approved for every team; the corrections under Notes apply. Logos and text in the picture are artwork only: print from the supplied files.</div></div>
-<div><h2>Print positions</h2><div class="card soft" style="padding:1.2mm 1.6mm .4mm"><div class="g2" style="gap:.6mm"><div class="flat">${flatF}<img src="${KNPL}" style="left:30.5%;top:29.5%;width:11.4%" alt=""><img src="${LOGO}${sl}.png" style="left:58.2%;top:29.5%;width:11.4%;object-fit:contain" alt=""></div><div class="flat">${flatB}</div></div></div>
-<div class="legend">${dims}</div><div class="cap">Schematic. Adult S–XXL; XS and kids 10% smaller.</div></div></div>
-<div style="height:2mm"></div>
+<div class="dz" style="grid-template-columns:1.2fr 1fr"><div><h2>Approved design · Choice 1</h2><div class="imgbox" style="height:36mm"><img src="${DES}${pad2(n)}-c1.jpg" alt=""></div><div class="cap">Choice 1 is approved for every team; the corrections under Notes apply. Logos and text in the picture are artwork only: print from the supplied files.</div></div>
+<div><h2>Print positions</h2><div class="card soft" style="padding:.8mm 9mm .2mm"><div class="g2" style="gap:.6mm"><div class="flat">${flatF}<img src="${KNPL}" style="left:30.5%;top:29.5%;width:11.4%" alt=""><img src="${LOGO}${sl}.png" style="left:58.2%;top:29.5%;width:11.4%;object-fit:contain" alt=""></div><div class="flat">${flatB}</div></div></div>
+<div class="legend">${dims}</div></div></div>
+<div style="height:1.2mm"></div>
 <h2>Colours (CMYK) <span class="sub">· indicative; the team signs off a printed swatch, and logo files are used as supplied</span></h2>
 <div class="card" style="padding:1mm 3mm"><div class="cr"><span class="lh">Print colours<br><em>set on the Jersey page</em></span><div>${chips(printCols, true)}</div></div>
 <div class="cr"><span class="lh">Approved design<br><em>from Choice 1 artwork</em></span><div>${chips(dcol(n))}</div></div>
 <div class="cr"><span class="lh">Team logo<br><em>from the logo file</em></span><div>${chips(lcol(sl))}</div></div>
 <div class="cr"><span class="lh">KNPL logo<br><em>from the logo file</em></span><div>${chips(lcol('knpl').slice(0,4))}</div></div></div>
-<div style="height:2mm"></div>
+<div style="height:1.4mm"></div>
 <h2>Production specification</h2>
 <div class="g2" style="gap:3mm"><table class="kv">${kv.slice(0, 3).join('')}</table><table class="kv">${kv.slice(3).join('')}</table></div>
 <div style="height:2mm"></div>
 <h2>Owner, drafted players and jersey details</h2>
 <table class="pl"><tr><th>Player</th><th>KNPL ID</th><th>Role</th><th>Size</th><th>Sleeve</th><th>Name to print</th><th>No.</th></tr>${rows}</table>
-<div class="cap">From the Jersey page; blank = not submitted yet. Names in capitals, up to 12 characters; numbers 0–99, unique in the team.</div>
-<div style="height:1.8mm"></div>
+<div class="cap">Back print pattern shown below each table; blank = not submitted yet. Names in capitals, up to 12 characters; numbers 0–99, unique in the team.</div>
+<div class="bkrow">${cards}</div>
+<div style="height:1.4mm"></div>
 <h2>Jersey sponsor</h2>
 <div class="card" style="padding:1.6mm 3.2mm;font-size:8.2pt">${spHtml}<div class="cap" style="margin-top:.4mm">Logo files come from the Core Committee; print only what the approved proof shows.</div></div>
 <div style="height:1.8mm"></div>
