@@ -255,6 +255,7 @@ function teamPage(key, idx) {
   const bodyC = pal[0] ? pal[0][1] : '#1c2b5a', slvC = pal[1] ? pal[1][1] : bodyC, inkC = contrast(bodyC);
   const cards = base.map(p => { const j = byId[p.id]; const nmv = j && j.name ? String(j.name).toUpperCase() : 'NAME', nu = j && j.num !== '' && j.num != null ? String(j.num) : '00', ph = !(j && j.name);
     let svg = flatSvg('b', bodyC, slvC, slvC, inkC).replace('>10<', '>' + esc(nu) + '<').replace('>PLAYER NAME<', ' textLength="' + Math.min(150, 15 * nmv.length + 10) + '" lengthAdjust="spacingAndGlyphs">' + esc(nmv) + '<').replace('>SPONSOR<', '><');
+    if (key === 'MADHURA MAVERICKS') svg = svg.replace(/(<text[^>]*font-size="(?:70|19)"[^>]*?)fill="[^"]*"/g, '$1fill="#D7B078" stroke="#030C28" stroke-width="4" paint-order="stroke"');
     return `<div class="bk${ph ? ' ph' : ''}">${svg}<div class="bs">${esc(p.name)}</div></div>`; }).join('');
   const status = LIVE ? `<span class="chip ${done === base.length ? '' : 'w'}">${done} of ${base.length} submitted</span>` : `<span class="chip w">Live data not loaded</span>`;
   const sp = sponsorsFor(nm);

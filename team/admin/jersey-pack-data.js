@@ -5,20 +5,21 @@ const PACK_TEAMS={
 "name": "Madhura Mavericks",
 "pal": [
 [
-"Navy",
-"#1C2B5A",
-"100 80 20 40"
+"Mavericks Navy",
+"#030C28",
+"93 70 2 84"
 ],
 [
-"Sand",
-"#D8BD8C",
-"10 20 45 0"
+"Mavericks Sand",
+"#D7B078",
+"12 28 51 4"
 ]
 ],
 "fixes": [
 "NAME PATTERN: the names shown in the design picture are placeholders. Print the 49 names on the annex page (page 4) as the pattern; keep the order and spelling shown.",
 "Correct the spelling on the front: the mock-up reads \"MAVERICS\"; it must read \"MAVERICKS\".",
 "Remove the third-party mark on the back shoulder.",
+"PLAYER NAME AND NUMBER: print in Mavericks Sand (C12 M28 Y51 K4) with a thick border in Mavericks Navy (C93 M70 Y2 K84).",
 "Keep the sand panels large so the jersey stays clearly different from the blue jerseys of No. 12 and No. 16."
 ],
 "suggest": ""
