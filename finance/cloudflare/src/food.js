@@ -61,6 +61,8 @@ export class FoodDO extends DurableObject {
         getUuid: () => crypto.randomUUID()
       },
       UrlFetchApp: { fetch: (url, opts) => {
+        const hit = url === 'internal:finance' ? null : kvGet('X:' + url + '|' + (opts && opts.payload || ''));   // answers kept for 2 minutes even if the request that fetched them failed (and was rolled back)
+        if (hit !== null) return { getContentText: () => hit };
         const i = n++;
         if (i < results.length) { const r = results[i]; if (r.ok) return { getContentText: () => r.text }; throw new Error(r.error); }
         throw new NeedExternal(url, opts);
@@ -83,7 +85,9 @@ export class FoodDO extends DurableObject {
       return JSON.stringify(res);
     }
     const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body, redirect: 'follow' });
-    return await r.text();
+    const text = await r.text();
+    try { if (JSON.parse(text).ok) this.sql.exec('INSERT OR REPLACE INTO fkv (k, v, exp) VALUES (?, ?, ?)', 'X:' + url + '|' + (body || ''), text, Date.now() + 120000); } catch (e) { /* not JSON: not kept */ }
+    return text;
   }
   async replay(work) {
     const results = [];
