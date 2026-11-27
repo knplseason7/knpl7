@@ -29,6 +29,9 @@
   function nameOf(id) { return (D.names || {})[id] || (id === 'SYNC' ? 'Source sync' : id); }
   function role() { return D.me.role; }
   function is() { return Array.prototype.indexOf.call(arguments, role()) >= 0; }
+  function can(k) { return !!(D && D.me.can && D.me.can[k]); }
+  function inScope(i) { return FinCore.incomeScope(role(), D.settings, i); }
+  function samePerson(a) { return String(a || '').split(' · ')[0].toLowerCase() === String(D.me.person || '').toLowerCase(); }
   function today() { return FinCore.isoDate(new Date()); }
   function toast(msg, err) { var t = h('div', { class: 'toast' + (err ? ' err' : '') }, msg); document.body.appendChild(t); setTimeout(function () { t.remove(); }, err ? 6000 : 3200); }
   function field(label, input, req, hint) { var id = input.id || ('f' + Math.random().toString(36).slice(2, 8)); input.id = id; return h('div', null, h('label', { class: 'fl', for: id }, label, req ? h('span', { class: 'req' }, ' *') : null), input, hint ? h('div', { class: 'small muted' }, hint) : null); }
@@ -118,68 +121,57 @@
 
   /* ------------------------------------------------------------- session */
   function showGate(msg) {
-    $('app').hidden = true; $('who').hidden = true; $('pinCard').hidden = true; $('gate').hidden = false; $('gMsg').textContent = msg || '';
+    $('app').hidden = true; $('who').hidden = true; $('gate').hidden = false; $('gMsg').textContent = msg || '';
     if (DEMO) { var b = $('demoLogins'); b.hidden = false; b.replaceChildren(h('b', null, 'Demo sign-ins'), h('br'));
-      window.FinDemo.logins.forEach(function (l) { b.appendChild(h('div', null, h('button', { class: 'btn link', onclick: function () { $('gMob').value = l[1]; $('gPin').value = l[2]; signIn(); } }, l[0]), ' – ' + l[1] + ' / PIN ' + l[2])); }); }
+      window.FinDemo.logins.forEach(function (l) { b.appendChild(h('div', null, h('button', { class: 'btn link', onclick: function () { $('gCode').value = l[1]; if (!$('gName').value) $('gName').value = 'Demo user'; signIn(); } }, l[0]), ' – code ' + l[1])); }); }
+    try { if (!$('gName').value) $('gName').value = localStorage.getItem('knplfin_name') || ''; } catch (e) {}
   }
   function signIn() {
     var b = $('gGo');
-    run(b, $('gMsg'), function () { return api('login', $('gMob').value, $('gPin').value); }).then(function (r) {
+    try { localStorage.setItem('knplfin_name', $('gName').value.trim()); } catch (e) {}
+    run(b, $('gMsg'), function () { return api('login', $('gCode').value, $('gName').value); }).then(function (r) {
       TOKEN = r.token; try { sessionStorage.setItem('knplfin_tok', TOKEN); } catch (e) {}
-      $('gPin').value = ''; return load();
+      $('gCode').value = ''; return load();
     }).catch(function () {});
   }
   function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); TOKEN = null; D = null; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
   function load() {
     return api('boot', TOKEN).then(function (d) {
       D = d; $('gate').hidden = true; $('who').hidden = false;
-      $('whoName').replaceChildren(h('b', null, D.me.name), ' · ' + D.me.roleName);
-      if (D.me.mustChange) { pinScreen(true); return; }
-      $('pinCard').hidden = true; $('app').hidden = false;
-      if (!UI.inc) UI.inc = is('ADMIN', 'FINANCE') ? 'PENDING' : 'ALL';
-      if (!UI.exp) UI.exp = is('MEMBER') ? 'MINE' : is('VIEWER') ? 'ALL' : 'ACTION';
+      $('whoName').replaceChildren(h('b', null, D.me.person), ' · ' + D.me.roleName + ' profile');
+      $('app').hidden = false;
+      if (!UI.inc) UI.inc = can('decideIncome') ? 'PENDING' : 'ALL';
+      if (!UI.exp) UI.exp = is('EXP_CREATE') ? 'MINE' : (can('decideExpense') || can('pay')) ? 'ACTION' : 'ALL';
       render();
     }).catch(function (e) { if (e.code === 'SESSION' || /session/i.test(e.message)) signOut(); else showGate(e.message); });
   }
-  function pinScreen(forced) {
-    $('app').hidden = true; $('pinCard').hidden = false; $('pCancel').hidden = forced; $('pinWhy').textContent = forced ? 'You signed in with a temporary PIN. Choose your own 6-digit PIN to continue.' : 'Change your 6-digit PIN.';
-    ['pOld', 'pNew', 'pNew2'].forEach(function (i) { $(i).value = ''; }); $('pMsg').textContent = '';
-  }
-  $('pGo').onclick = function () {
-    if ($('pNew').value !== $('pNew2').value) { $('pMsg').textContent = 'The two new PINs do not match.'; return; }
-    var p = FinCore.pinProblem($('pNew').value); if (p) { $('pMsg').textContent = p; return; }
-    run($('pGo'), $('pMsg'), function () { return api('changePin', TOKEN, $('pOld').value, $('pNew').value); }, 'PIN changed').then(function () { $('pinCard').hidden = true; load(); }).catch(function () {});
-  };
-  $('pCancel').onclick = function () { $('pinCard').hidden = true; $('app').hidden = false; };
-  $('pinBtn').onclick = function () { pinScreen(false); };
   $('outBtn').onclick = function () { signOut(); };
   $('gGo').onclick = signIn;
-  $('gPin').addEventListener('keydown', function (e) { if (e.key === 'Enter') signIn(); });
-  $('gMob').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('gPin').focus(); });
+  $('gCode').addEventListener('keydown', function (e) { if (e.key === 'Enter') signIn(); });
   if (DEMO) { $('demoBar').hidden = false; $('demoReset').onclick = function () { if (confirm('Reset all demo data to the sample set?')) { window.FinDemo.reset(); signOut('Demo data reset. Sign in again.'); } }; }
 
   /* --------------------------------------------------------------- tabs */
   function counts() {
     var me = D.me, c = {};
-    c.income = is('ADMIN', 'FINANCE') ? D.income.filter(function (i) { return i.status === 'PENDING' && i.createdBy !== me.id; }).length : 0;
+    c.income = can('decideIncome') ? D.income.filter(function (i) { return i.status === 'PENDING' && i.createdBy !== me.id && inScope(i); }).length : 0;
     c.expenses = actionExpenses().length;
-    c.bank = D.recon ? D.recon.bankOpen : 0;
+    c.bank = can('bank') && D.recon ? D.recon.bankOpen : 0;
     return c;
   }
   function actionExpenses() {
     var me = D.me;
     return D.expenses.filter(function (x) {
-      if (is('ADMIN', 'FINANCE') && x.createdBy !== me.id && x.status === 'SUBMITTED') return true;
-      if (is('ADMIN') && x.status === 'AWAITING_ADMIN' && x.createdBy !== me.id && x.approvedBy !== me.name) return true;
-      if (is('ADMIN', 'FINANCE') && x.status === 'APPROVED') return true;
+      if (can('decideExpense') && x.createdBy !== me.id && x.status === 'SUBMITTED') return true;
+      if (is('ADMIN') && x.status === 'AWAITING_ADMIN' && x.createdBy !== me.id && !samePerson(x.approvedBy)) return true;
+      if (can('pay') && x.status === 'APPROVED') return true;
       if (x.createdBy === me.id && x.status === 'QUERY') return true;
       return false;
     });
   }
   function tabs() {
     var t = [['overview', 'Overview'], ['income', 'Income'], ['expenses', 'Expenses'], ['budget', 'Budget']];
-    if (is('ADMIN', 'FINANCE', 'VIEWER')) t.push(['bank', 'Bank & Reconcile'], ['reports', 'Ledger & Statements'], ['audit', 'Audit trail']);
-    if (is('ADMIN')) t.push(['settings', 'Settings']);
+    if (can('viewAll')) t.push(['bank', 'Bank & Reconcile'], ['reports', 'Ledger & Statements'], ['audit', 'Audit trail']);
+    if (can('admin')) t.push(['settings', 'Settings']);
     return t;
   }
   function render() {
@@ -187,7 +179,7 @@
     var c = counts(), nav = $('tabs'); nav.replaceChildren();
     var list = tabs(); if (!list.some(function (x) { return x[0] === TAB; })) TAB = 'overview';
     list.forEach(function (x) { nav.appendChild(h('button', { role: 'tab', 'aria-selected': TAB === x[0] ? 'true' : 'false', onclick: function () { TAB = x[0]; render(); window.scrollTo({ top: 0 }); } }, x[1], c[x[0]] ? h('span', { class: 'cnt' }, c[x[0]]) : null)); });
-    if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FINANCE')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk approvals ↗'));
+    if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk approvals ↗'));
     var v = $('view'), keep = window.scrollY; v.replaceChildren();
     ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
     window.scrollTo({ top: keep });
@@ -210,21 +202,27 @@
       kpi('Balance in books', R ? money(R.bookBalance) : money(T.netOperating + T.depHeld), R ? (R.bankBalance == null ? 'No bank statement yet' : 'Bank ' + money(R.bankBalance) + (R.difference ? ' · difference ' + money(R.difference) : R.complete ? ' · fully reconciled' : ' · reconciles after open items')) : 'Income − expenses + deposits'),
       kpi('Deposits held (refundable)', money(T.depHeld), 'Sponsorship caution deposit')));
     var todo = [];
-    if (is('ADMIN', 'FINANCE')) {
-      var pi = D.income.filter(function (i) { return i.status === 'PENDING' && i.createdBy !== me.id; });
+    if (can('decideIncome')) {
+      var pi = D.income.filter(function (i) { return i.status === 'PENDING' && i.createdBy !== me.id && inScope(i); });
       if (pi.length) todo.push([pi.length + ' income entr' + (pi.length > 1 ? 'ies' : 'y') + ' to approve (' + money(sum(pi)) + ')', function () { go('income', { inc: 'PENDING' }); }]);
+    }
+    if (can('decideExpense')) {
       var sv = D.expenses.filter(function (x) { return x.status === 'SUBMITTED' && x.createdBy !== me.id; });
       if (sv.length) todo.push([sv.length + ' expense order(s) to verify (' + money(sum(sv)) + ')' + (sv.some(function (x) { return x.expKind; }) ? ' – some need explanation review' : ''), function () { go('expenses', { exp: 'SUBMITTED' }); }]);
+    }
+    if (can('pay')) {
       var tp = D.expenses.filter(function (x) { return x.status === 'APPROVED'; });
       if (tp.length) todo.push([tp.length + ' approved order(s) to pay (' + money(sum(tp)) + ')', function () { go('expenses', { exp: 'APPROVED' }); }]);
-      if (R && R.bankOpen) todo.push([R.bankOpen + ' bank line(s) to reconcile', function () { go('bank', { bank: 'OPEN' }); }]);
-      if (R && R.unreconciled) todo.push([R.unreconciled + ' ledger entr' + (R.unreconciled > 1 ? 'ies' : 'y') + ' not yet seen in the bank', function () { go('bank'); }]);
     }
-    if (is('ADMIN')) { var aw = D.expenses.filter(function (x) { return x.status === 'AWAITING_ADMIN' && x.createdBy !== me.id && x.approvedBy !== me.name; }); if (aw.length) todo.push([aw.length + ' order(s) need your Admin approval (' + money(sum(aw)) + ')', function () { go('expenses', { exp: 'AWAITING_ADMIN' }); }]); }
+    if (can('bank') && R) {
+      if (R.bankOpen) todo.push([R.bankOpen + ' bank line(s) to reconcile', function () { go('bank', { bank: 'OPEN' }); }]);
+      if (R.unreconciled) todo.push([R.unreconciled + ' ledger entr' + (R.unreconciled > 1 ? 'ies' : 'y') + ' not yet seen in the bank', function () { go('bank'); }]);
+    }
+    if (is('ADMIN')) { var aw = D.expenses.filter(function (x) { return x.status === 'AWAITING_ADMIN' && x.createdBy !== me.id && !samePerson(x.approvedBy); }); if (aw.length) todo.push([aw.length + ' order(s) need your Admin approval (' + money(sum(aw)) + ')', function () { go('expenses', { exp: 'AWAITING_ADMIN' }); }]); }
     var q = D.expenses.filter(function (x) { return x.createdBy === me.id && x.status === 'QUERY'; });
     if (q.length) todo.push([q.length + ' of your orders were sent back with a query', function () { go('expenses', { exp: 'QUERY' }); }]);
     v.appendChild(h('div', { class: 'card' }, h('h3', null, 'Needs your action'), todo.length ? h('div', null, todo.map(function (t) { return h('div', { class: 'row', style: 'padding:6px 0;border-bottom:1px solid var(--line)' }, h('span', { class: 'grow' }, '• ' + t[0]), h('button', { class: 'btn sm', onclick: t[1] }, 'Open')); })) : h('p', { class: 'muted', style: 'margin:0' }, 'Nothing is waiting for you.'),
-      h('div', { class: 'row', style: 'margin-top:10px' }, is('VIEWER') ? null : h('button', { class: 'btn sf', onclick: function () { expenseForm(); } }, '+ New expense order'), is('VIEWER') ? null : h('button', { class: 'btn ghost', onclick: function () { incomeForm(); } }, '+ Outbound income'))));
+      h('div', { class: 'row', style: 'margin-top:10px' }, can('createExpense') ? h('button', { class: 'btn sf', onclick: function () { expenseForm(); } }, '+ New expense order') : null, can('createIncome') ? h('button', { class: 'btn ghost', onclick: function () { incomeForm(); } }, '+ Outbound income') : null)));
     // budget gap
     var gap = h('div', { class: 'card' }, h('div', { class: 'row sp-b' }, h('h3', null, 'Budget gap'), h('button', { class: 'btn ghost sm', onclick: function () { go('budget'); } }, 'Full budget →')),
       h('div', { class: 'grid g3' },
@@ -256,11 +254,11 @@
   function vIncome(v) {
     var c = h('div', { class: 'card' });
     var top = h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Income'), h('div', { class: 'row' },
-      is('ADMIN', 'FINANCE') ? h('button', { class: 'btn', id: 'syncBtn', onclick: function (ev) { syncNow(ev.currentTarget); } }, '⟳ Fetch from sources') : null,
-      is('VIEWER') ? null : h('button', { class: 'btn sf', onclick: function () { incomeForm(); } }, '+ Add outbound income')));
+      can('sync') ? h('button', { class: 'btn', id: 'syncBtn', onclick: function (ev) { syncNow(ev.currentTarget); } }, '⟳ Fetch from sources') : null,
+      can('createIncome') ? h('button', { class: 'btn sf', onclick: function () { incomeForm(); } }, '+ Add outbound income') : null));
     c.appendChild(top);
     if (D.lastSync) c.appendChild(h('div', { class: 'small muted' }, 'Last fetch ' + dmy(D.lastSync.at) + ' by ' + D.lastSync.by + ' – ' + D.lastSync.result.read + ' read, ' + D.lastSync.result.added + ' new, ' + D.lastSync.result.autoApproved + ' auto-approved' + (D.lastSync.result.warnings && D.lastSync.result.warnings.length ? ' · ' + D.lastSync.result.warnings.length + ' warning(s)' : '')));
-    c.appendChild(h('p', { class: 'small muted' }, 'Every income needs an approval before it enters the ledger. Team Desk payments approved by Finance on the Team Desk come in already approved; sponsorship, registration and outbound income are approved here. The person who adds an entry cannot approve it.'));
+    c.appendChild(h('p', { class: 'small muted' }, 'Every income needs an approval before it enters the ledger. Team Desk payments approved by Finance on the Team Desk come in already approved; sponsorship, registration and outbound income are approved here. Franchise fees are approved with the Franchise fees code, all other income with the Other income code. An entry is never approved with the same code that added it.'));
     var F = [['PENDING', 'Awaiting approval'], ['SOURCE_PENDING', 'Awaiting at source'], ['APPROVED', 'Approved'], ['CLOSED', 'Rejected / cancelled'], ['ALL', 'All']];
     c.appendChild(h('div', { class: 'chips' }, F.map(function (f) { var n = D.income.filter(function (i) { return incMatch(i, f[0]); }).length; return h('button', { 'aria-pressed': UI.inc === f[0] ? 'true' : 'false', onclick: function () { UI.inc = f[0]; render(); } }, f[1] + ' (' + n + ')'); })));
     var srcs = {}; D.income.forEach(function (i) { srcs[i.source] = 1; });
@@ -280,8 +278,8 @@
   function incMatch(i, f) { return f === 'ALL' || (f === 'CLOSED' ? ['REJECTED', 'CANCELLED', 'REVERSED'].indexOf(i.status) >= 0 : i.status === f); }
   function srcLabel(s) { return { TEAMDESK: 'Team Desk', SPONSOR: 'Sponsorship portal', REG: 'Registration', MANUAL: 'Outbound (manual)', BANK: 'From bank statement' }[s] || s; }
   function incomeItem(i) {
-    var mine = i.createdBy === D.me.id, can = is('ADMIN', 'FINANCE') && i.status === 'PENDING' && !mine;
-    var it = h('div', { class: 'item' + (can ? ' hl' : '') },
+    var mine = i.createdBy === D.me.id, canD = can('decideIncome') && i.status === 'PENDING' && !mine && inScope(i);
+    var it = h('div', { class: 'item' + (canD ? ' hl' : '') },
       h('div', null, h('div', { class: 't1' }, i.party), h('div', null, headName(i.head) + (i.description && i.description !== headName(i.head) ? ' – ' + i.description : '') + (i.team && i.team !== i.party ? ' · ' + i.team : '')),
         h('div', { class: 'd' }, [i.id, srcLabel(i.source), i.mode, i.utr ? 'Ref ' + i.utr : 'No transaction ref', 'paid ' + dmy(i.paidOn), i.srcReceipt ? 'source receipt ' + i.srcReceipt : ''].filter(Boolean).join(' · ')),
         i.note ? h('div', { class: 'd' }, 'Note: ' + i.note) : null, i.remarks ? h('div', { class: 'd' }, 'Remarks: ' + i.remarks) : null,
@@ -289,14 +287,15 @@
       h('div', { class: 'right' }, h('div', { class: 'amt' }, money(i.amount)), stPill(i.status), i.outbound ? h('div', null, pill('Outbound', 'sf')) : null));
     var acts = h('div', { class: 'acts' });
     if (i.proof) acts.appendChild(link(i.proof, 'Payment proof ↗'));
-    if (can) {
+    if (canD) {
       var rm = inp({ placeholder: 'Reason (needed to reject)' }), msg = h('div', { class: 'msg' });
       acts.appendChild(rm);
       acts.appendChild(h('button', { class: 'btn ok sm', onclick: function (ev) { if (!confirm('Approve ' + i.id + ' – ' + money(i.amount) + ' from ' + i.party + '? It will be posted to the ledger and a receipt number issued.')) return; quiet(run(ev.currentTarget, msg, function () { return act('incomeDecide', i.id, 'APPROVED', ''); }, i.id + ' approved')); } }, 'Approve'));
       acts.appendChild(h('button', { class: 'btn no sm', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act('incomeDecide', i.id, 'REJECTED', rm.value); }, i.id + ' rejected')); } }, 'Reject'));
       it.appendChild(acts); it.appendChild(h('div', { style: 'grid-column:1/-1' }, msg)); return it;
     }
-    if (i.status === 'PENDING' && mine && is('ADMIN', 'FINANCE')) acts.appendChild(h('span', { class: 'small muted' }, 'You added this – another Finance / Admin member approves it.'));
+    if (i.status === 'PENDING' && mine && can('decideIncome')) acts.appendChild(h('span', { class: 'small muted' }, 'Added with this profile – approve it with another profile.'));
+    else if (i.status === 'PENDING' && can('decideIncome') && !inScope(i)) acts.appendChild(h('span', { class: 'small muted' }, 'Approved with the ' + (role() === 'FEES' ? 'Other income' : 'Franchise fees') + ' code.'));
     if (i.status === 'SOURCE_PENDING') acts.appendChild(h('span', { class: 'small muted' }, i.source === 'TEAMDESK' ? 'Approve it on the Team Desk; the next fetch brings it in.' : 'Waiting for confirmation in the source sheet.'));
     if (i.status === 'APPROVED') acts.appendChild(h('button', { class: 'btn ghost sm', onclick: function () { docPreview('Receipt ' + i.receiptNo, FinDocs.receipt(D, i), 'Receipt ' + i.receiptNo.replace(/\//g, '-')); } }, 'Receipt'));
     if (acts.childNodes.length) it.appendChild(acts);
@@ -358,9 +357,9 @@
   }
   function vExpenses(v) {
     var c = h('div', { class: 'card' });
-    c.appendChild(h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Expense orders'), is('VIEWER') ? null : h('button', { class: 'btn sf', onclick: function () { expenseForm(); } }, '+ New expense order')));
-    c.appendChild(h('p', { class: 'small muted' }, 'Raise an order with the bill → Finance verifies against the budget (and reviews the explanation if it is over budget or not budgeted) → Admin gives a second approval for large or outbound orders → Finance pays and records the transaction. Nobody approves their own order.'));
-    var F = EF.filter(function (f) { return !(is('VIEWER') && (f[0] === 'ACTION' || f[0] === 'MINE')) && !(is('MEMBER') && f[0] === 'ACTION'); });
+    c.appendChild(h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Expense orders'), can('createExpense') ? h('button', { class: 'btn sf', onclick: function () { expenseForm(); } }, '+ New expense order') : null));
+    c.appendChild(h('p', { class: 'small muted' }, 'Expense creation raises the order with the bill → Expense approval verifies it against the budget (and reviews the explanation if it is over budget or not budgeted) → Admin gives a second approval for large or outbound orders → Payments & bank pays and records the transaction.'));
+    var F = EF.filter(function (f) { return !(f[0] === 'ACTION' && !(can('decideExpense') || can('pay') || is('ADMIN', 'EXP_CREATE'))) && !(f[0] === 'MINE' && !can('createExpense')); });
     c.appendChild(h('div', { class: 'chips' }, F.map(function (f) { var n = D.expenses.filter(function (x) { return expMatch(x, f[0]); }).length; return h('button', { 'aria-pressed': UI.exp === f[0] ? 'true' : 'false', onclick: function () { UI.exp = f[0]; render(); } }, f[1] + ' (' + n + ')'); })));
     var q = inp({ placeholder: 'Search payee, title, bill no, voucher…', value: UI.expQ, oninput: function () { UI.expQ = q.value; draw(); } });
     c.appendChild(q);
@@ -528,7 +527,7 @@
         x.ackBy ? h('div', { class: 'small', style: 'margin-top:6px;color:var(--ok)' }, '✓ Acknowledged by ' + x.ackBy + ' on ' + dmy(x.ackAt)) : null) : null,
       h('h3', { style: 'margin-top:12px' }, 'Trail'), h('ul', { class: 'timeline' }, (x.history || []).map(function (k) { return h('li', null, h('b', null, k.action), ' – ' + k.by + ' · ' + dmy(k.at), k.note ? h('div', { class: 'small muted' }, k.note) : null); })));
     var acts = h('div', { style: 'border-top:2px solid var(--line);margin-top:12px;padding-top:10px' });
-    var stage = x.status === 'SUBMITTED' && is('ADMIN', 'FINANCE') && !mine ? 'FIN' : x.status === 'AWAITING_ADMIN' && is('ADMIN') && !mine && x.approvedBy !== me.name ? 'ADM' : '';
+    var stage = x.status === 'SUBMITTED' && can('decideExpense') && !mine ? 'FIN' : x.status === 'AWAITING_ADMIN' && is('ADMIN') && !mine && !samePerson(x.approvedBy) ? 'ADM' : '';
     if (stage) {
       var nowOver = live && live.kind === 'EXPENSE' && live.expKind && !x.expKind;
       var ack = h('input', { type: 'checkbox', id: 'ackBox' }), rm = inp({ placeholder: stage === 'FIN' ? 'Remarks (needed to send back or reject)' : 'Remarks' });
@@ -543,14 +542,14 @@
       acts.appendChild(h('div', { class: 'row', style: 'margin-top:8px' }, ok,
         h('button', { class: 'btn', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act('expenseDecide', x.id, 'QUERY', rm.value, false); }, x.id + ' sent back').then(function () { closeV(); })); } }, 'Send back with query'),
         h('button', { class: 'btn no', onclick: function (ev) { if (!confirm('Reject ' + x.id + '? This cannot be undone; the creator must raise a new order.')) return; quiet(run(ev.currentTarget, msg, function () { return act('expenseDecide', x.id, 'REJECT', rm.value, false); }, x.id + ' rejected').then(function () { closeV(); })); } }, 'Reject')));
-    } else if (x.status === 'SUBMITTED' && mine && is('ADMIN', 'FINANCE')) acts.appendChild(h('p', { class: 'small muted' }, 'You raised this order, so another Finance / Admin member verifies it.'));
-    else if (x.status === 'AWAITING_ADMIN' && is('ADMIN') && (mine || x.approvedBy === me.name)) acts.appendChild(h('p', { class: 'small muted' }, 'The second approval must come from a different Admin.'));
-    if (x.status === 'APPROVED' && is('ADMIN', 'FINANCE')) acts.appendChild(payPanel(x, msg));
+    } else if (x.status === 'SUBMITTED' && mine && can('decideExpense')) acts.appendChild(h('p', { class: 'small muted' }, 'This order was raised with this profile, so it is verified with the Expense approval code.'));
+    else if (x.status === 'AWAITING_ADMIN' && is('ADMIN') && (mine || samePerson(x.approvedBy))) acts.appendChild(h('p', { class: 'small muted' }, 'The Admin approval must come from a different person than the one who verified it.'));
+    if (x.status === 'APPROVED' && can('pay')) acts.appendChild(payPanel(x, msg));
     if (mine && (x.status === 'SUBMITTED' || x.status === 'QUERY')) acts.appendChild(h('div', { class: 'row', style: 'margin-top:8px' }, h('button', { class: 'btn sf', onclick: function () { closeV(); expenseForm(x); } }, x.status === 'QUERY' ? 'Answer the query & resubmit' : 'Edit')));
-    if ((mine || is('ADMIN')) && ['SUBMITTED', 'QUERY', 'AWAITING_ADMIN', 'APPROVED'].indexOf(x.status) >= 0) acts.appendChild(h('div', { class: 'row', style: 'margin-top:8px' }, h('button', { class: 'btn ghost sm', onclick: function (ev) { var r = prompt('Reason for cancelling ' + x.id + '?'); if (r == null) return; quiet(run(ev.currentTarget, msg, function () { return act('expenseCancel', x.id, r); }, x.id + ' cancelled').then(function () { closeV(); })); } }, 'Cancel this order')));
+    if ((mine || can('admin')) && ['SUBMITTED', 'QUERY', 'AWAITING_ADMIN', 'APPROVED'].indexOf(x.status) >= 0) acts.appendChild(h('div', { class: 'row', style: 'margin-top:8px' }, h('button', { class: 'btn ghost sm', onclick: function (ev) { var r = prompt('Reason for cancelling ' + x.id + '?'); if (r == null) return; quiet(run(ev.currentTarget, msg, function () { return act('expenseCancel', x.id, r); }, x.id + ' cancelled').then(function () { closeV(); })); } }, 'Cancel this order')));
     if (x.status === 'PAID') { var l = D.ledger.filter(function (k) { return k.no === x.ledgerNo; })[0];
       acts.appendChild(h('div', { class: 'row' }, h('button', { class: 'btn sf', onclick: function () { voucherDoc(x); } }, 'Payment voucher'),
-        is('ADMIN') && l && !l.reversedBy && l.reconType !== 'BANK' ? h('button', { class: 'btn ghost sm', onclick: function (ev) { var r = prompt('Reason for reversing payment ' + x.voucherNo + ' (e.g. payment failed / returned)?'); if (r == null) return; quiet(run(ev.currentTarget, msg, function () { return act('ledgerReverse', x.ledgerNo, r); }, 'Payment reversed').then(function () { closeV(); })); } }, 'Reverse payment') : null)); }
+        can('admin') && l && !l.reversedBy && l.reconType !== 'BANK' ? h('button', { class: 'btn ghost sm', onclick: function (ev) { var r = prompt('Reason for reversing payment ' + x.voucherNo + ' (e.g. payment failed / returned)?'); if (r == null) return; quiet(run(ev.currentTarget, msg, function () { return act('ledgerReverse', x.ledgerNo, r); }, 'Payment reversed').then(function () { closeV(); })); } }, 'Reverse payment') : null)); }
     acts.appendChild(msg); body.appendChild(acts);
     var closeV = modal(x.id + ' · ' + x.title, body, true);
   }
@@ -586,7 +585,7 @@
       if (k[0] === 'INCOME') ['Target', 'Received', 'Awaiting approval', 'Gap'].forEach(function (x) { hd.appendChild(h('th', { class: 'num' }, x)); });
       else if (k[0] === 'EXPENSE') { ['Budget', 'Spent', 'Committed'].forEach(function (x) { hd.appendChild(h('th', { class: 'num' }, x)); }); hd.appendChild(h('th', { style: 'min-width:130px' }, 'Utilisation')); hd.appendChild(h('th', { class: 'num' }, 'Available')); }
       else ['Expected', 'Received', 'Refunded', 'Held'].forEach(function (x) { hd.appendChild(h('th', { class: 'num' }, x)); });
-      if (is('ADMIN')) hd.appendChild(h('th', null, '')); t.appendChild(hd);
+      if (can('admin')) hd.appendChild(h('th', null, '')); t.appendChild(hd);
       var tot = { b: 0, a: 0, c: 0, p: 0, i: 0, o: 0 };
       rows.forEach(function (r) {
         var head = D.heads.filter(function (x) { return x.code === r.code; })[0];
@@ -595,14 +594,14 @@
         if (k[0] === 'INCOME') [r.budget, r.actual, r.pending, r.gap].forEach(function (x, j) { tr.appendChild(h('td', { class: 'num', style: j === 3 && x > 0 ? 'color:var(--amber)' : '' }, money(x))); });
         else if (k[0] === 'EXPENSE') { [r.budget, r.actual, r.committed].forEach(function (x) { tr.appendChild(h('td', { class: 'num' }, money(x))); }); tr.appendChild(h('td', null, meter(r.actual, r.committed, r.budget, r.name), h('div', { class: 'meterlbl' }, r.util == null ? 'Not budgeted' : r.util + '%'))); tr.appendChild(h('td', { class: 'num', style: r.available < 0 ? 'color:var(--red);font-weight:700' : '' }, money(r.available))); }
         else [r.budget, r.inflow, r.outflow, r.held].forEach(function (x) { tr.appendChild(h('td', { class: 'num' }, money(x))); });
-        if (is('ADMIN')) tr.appendChild(h('td', null, h('button', { class: 'btn ghost sm', onclick: function () { headForm(head); } }, 'Edit')));
+        if (can('admin')) tr.appendChild(h('td', null, h('button', { class: 'btn ghost sm', onclick: function () { headForm(head); } }, 'Edit')));
         t.appendChild(tr);
       });
       var tr = h('tr', { class: 'tot' }, h('td', null, ''), h('td', null, 'Total'));
       (k[0] === 'INCOME' ? [tot.b, tot.a, tot.p, tot.b - tot.a] : k[0] === 'EXPENSE' ? [tot.b, tot.a, tot.c] : [tot.b, tot.i, tot.o, tot.i - tot.o]).forEach(function (x) { tr.appendChild(h('td', { class: 'num' }, money(x))); });
       if (k[0] === 'EXPENSE') { tr.appendChild(h('td', null, '')); tr.appendChild(h('td', { class: 'num' }, money(tot.b - tot.a - tot.c))); }
-      if (is('ADMIN')) tr.appendChild(h('td', null, '')); t.appendChild(tr);
-      v.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sp-b' }, h('h3', null, k[1]), is('ADMIN') && k[0] === 'EXPENSE' ? h('button', { class: 'btn sm sf', onclick: function () { headForm(null); } }, '+ Add head') : null), h('div', { class: 'tw' }, t)));
+      if (can('admin')) tr.appendChild(h('td', null, '')); t.appendChild(tr);
+      v.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sp-b' }, h('h3', null, k[1]), can('admin') && k[0] === 'EXPENSE' ? h('button', { class: 'btn sm sf', onclick: function () { headForm(null); } }, '+ Add head') : null), h('div', { class: 'tw' }, t)));
     });
     v.appendChild(h('p', { class: 'small muted' }, 'Committed = orders raised, verified or approved but not yet paid. An expense head with budget ₹0 treats every order as outbound (explanation + Admin approval). Budget changes are recorded in the audit trail.'));
   }
@@ -618,7 +617,7 @@
 
   /* ----------------------------------------------------------------- bank */
   function vBank(v) {
-    var R = D.recon, canB = is('ADMIN', 'FINANCE');
+    var R = D.recon, canB = can('bank');
     v.appendChild(h('div', { class: 'grid g4', style: 'margin-bottom:12px' },
       kpi('Balance as per books', money(R.bookBalance), 'Cash held outside bank ' + money(R.cashNet)),
       kpi('Balance as per bank', R.bankBalance == null ? '–' : money(R.bankBalance), R.bankLines + ' statement lines imported'),
@@ -663,7 +662,7 @@
     v.appendChild(h('div', { class: 'card' }, h('h3', null, 'Ledger entries not matched with the bank'), h('p', { class: 'small muted' }, 'Entries that are not in the bank yet, and cash entries that will never appear in the bank.'), un.length ? h('div', { class: 'tw' }, t2) : h('div', { class: 'empty' }, '✓ Every ledger entry is matched with the bank.')));
     // batches
     var batches = {}; D.bank.forEach(function (b) { batches[b.batch] = batches[b.batch] || { n: 0, open: 0 }; batches[b.batch].n++; if (b.status === 'OPEN') batches[b.batch].open++; });
-    if (is('ADMIN') && Object.keys(batches).length) v.appendChild(h('div', { class: 'card' }, h('h3', null, 'Imported statements'), Object.keys(batches).map(function (k) {
+    if (can('admin') && Object.keys(batches).length) v.appendChild(h('div', { class: 'card' }, h('h3', null, 'Imported statements'), Object.keys(batches).map(function (k) {
       return h('div', { class: 'row', style: 'padding:4px 0;border-bottom:1px solid var(--line)' }, h('span', { class: 'grow' }, k + ' – ' + batches[k].n + ' lines (' + batches[k].open + ' open)'),
         batches[k].open === batches[k].n ? h('button', { class: 'btn ghost sm', onclick: function (ev) { if (!confirm('Delete the whole import "' + k + '"?')) return; quiet(run(ev.currentTarget, null, function () { return act('bankDeleteBatch', k); }, 'Import deleted')); } }, 'Delete import') : h('span', { class: 'small muted' }, 'has matched lines'));
     })));
@@ -767,7 +766,7 @@
         var doc = null;
         if (l.refType === 'INCOME') { var i = D.income.filter(function (x) { return x.id === l.refId; })[0]; if (i && i.receiptNo) doc = h('button', { class: 'btn ghost sm', onclick: function () { docPreview('Receipt', FinDocs.receipt(D, i), 'Receipt ' + i.receiptNo.replace(/\//g, '-')); } }, 'Receipt'); }
         if (l.refType === 'EXPENSE') { var x = D.expenses.filter(function (k) { return k.id === l.refId; })[0]; if (x && x.voucherNo) doc = h('button', { class: 'btn ghost sm', onclick: function () { voucherDoc(x); } }, 'Voucher'); }
-        var rev = is('ADMIN') && !l.reversedBy && !l.reversalOf && l.reconType !== 'BANK' ? h('button', { class: 'btn ghost sm', style: 'margin-left:4px', onclick: function (ev) { var r = prompt('Reason for reversing ' + l.no + '?'); if (r == null) return; quiet(run(ev.currentTarget, null, function () { return act('ledgerReverse', l.no, r); }, 'Reversal posted')); } }, 'Reverse') : null;
+        var rev = can('admin') && !l.reversedBy && !l.reversalOf && l.reconType !== 'BANK' ? h('button', { class: 'btn ghost sm', style: 'margin-left:4px', onclick: function (ev) { var r = prompt('Reason for reversing ' + l.no + '?'); if (r == null) return; quiet(run(ev.currentTarget, null, function () { return act('ledgerReverse', l.no, r); }, 'Reversal posted')); } }, 'Reverse') : null;
         t.appendChild(h('tr', null, h('td', { class: 'nowrap' }, dmy(l.date)), h('td', { class: 'mono' }, l.no, h('div', { class: 'small muted' }, l.refId)), h('td', null, headName(l.head)), h('td', null, l.party, h('div', { class: 'small muted' }, l.description)), h('td', { class: 'small' }, l.mode, l.utr ? h('div', { class: 'mono' }, l.utr) : null),
           h('td', { class: 'num' }, l.dir === 'IN' ? money(l.amount) : ''), h('td', { class: 'num' }, l.dir === 'OUT' ? money(l.amount) : ''),
           h('td', null, l.reversedBy ? pill('Reversed by ' + l.reversedBy, 'bad') : l.reversalOf ? pill('Reversal', 'bad') : l.reconType === 'BANK' ? pill('✓ ' + l.bankId, 'ok') : l.reconType === 'CASH' ? pill('Cash', 'info') : pill('Open', 'warn')), h('td', { class: 'nowrap' }, doc, rev)));
@@ -833,20 +832,28 @@
     sc.appendChild(h('div', { class: 'row' }, h('button', { class: 'btn sf', onclick: function (ev) { quiet(run(ev.currentTarget, smsg, function () { return act('settingsSave', { sources: srcs }); }, 'Sources saved')); } }, 'Save sources')));
     sc.appendChild(smsg); v.appendChild(sc);
     // users
-    var ut = h('table', { class: 't' }, h('tr', null, h('th', null, 'Name'), h('th', null, 'Mobile'), h('th', null, 'Role'), h('th', null, 'Status'), h('th', null, 'Last sign-in'), h('th', null, '')));
-    D.users.forEach(function (u) { ut.appendChild(h('tr', null, h('td', null, u.name), h('td', { class: 'mono' }, u.mobile), h('td', null, u.roleName), h('td', null, u.active ? (u.mustChange ? pill('Temporary PIN', 'warn') : pill('Active', 'ok')) : pill('Inactive')), h('td', null, u.lastLogin ? dmy(u.lastLogin) : '–'),
-      h('td', { class: 'nowrap' }, h('button', { class: 'btn ghost sm', onclick: function () { userForm(u); } }, 'Edit'), h('button', { class: 'btn ghost sm', style: 'margin-left:4px', onclick: function (ev) { if (!confirm('Issue a new temporary PIN for ' + u.name + '?')) return; quiet(run(ev.currentTarget, null, function () { return act('userResetPin', u.id); }).then(function (r) { showPin(r); })); } }, 'Reset PIN')))); });
-    v.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Users & roles'), h('button', { class: 'btn sf sm', onclick: function () { userForm(null); } }, '+ Add user')),
-      h('p', { class: 'small muted' }, 'Admin: everything incl. settings, budget and second approvals · Finance: approve income, verify & pay expenses, reconcile · Committee member: raise expense orders and outbound income · Viewer: read-only (auditor). Keep at least two Admins so large orders raised by one Admin can be approved by the other.'),
+    var ut = h('table', { class: 't' }, h('tr', null, h('th', null, 'Profile'), h('th', null, 'What it can do'), h('th', null, 'Access code'), h('th', null, 'Status'), h('th', null, 'Last used'), h('th', null, '')));
+    D.users.forEach(function (u) { ut.appendChild(h('tr', null, h('td', null, h('b', null, u.name), u.name !== u.roleName ? h('div', { class: 'small muted' }, u.roleName) : null), h('td', { class: 'small' }, u.roleHelp), h('td', { class: 'mono' }, u.hasCode ? '••••-••' + (u.codeHint || '') : '–'), h('td', null, u.active ? pill('Active', 'ok') : pill('Switched off')), h('td', { class: 'small' }, u.lastLogin ? dmy(u.lastLogin) : 'never'),
+      h('td', { class: 'nowrap' }, h('button', { class: 'btn ghost sm', onclick: function () { userForm(u); } }, 'Edit'), h('button', { class: 'btn ghost sm', style: 'margin-left:4px', onclick: function (ev) { if (!confirm('Issue a NEW access code for ' + u.name + '? The current code stops working at once.')) return; quiet(run(ev.currentTarget, null, function () { return act('userNewCode', u.id); }).then(function (r) { showCode(r); if (r.self) toast('Your own code changed – use the new code next time you sign in.'); })); } }, 'New code')))); });
+    v.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Access profiles & codes'), h('button', { class: 'btn sf sm', onclick: function () { userForm(null); } }, '+ Add profile')),
+      h('p', { class: 'small muted' }, 'One access code per profile. Give each code only to the people who do that job; they also type their own name when signing in, so every approval shows the person and the profile. "New code" replaces a leaked code at once and signs out everyone using the old one. Add an extra profile of the same type if a group needs its own code (e.g. a second Expense creation code for the ground committee).'),
       h('div', { class: 'tw' }, ut)));
   }
-  function showPin(r) { modal('Temporary PIN', h('div', null, h('p', null, 'Share this temporary PIN with ', h('b', null, r.user.name), ' (' + r.user.mobile + ') personally. They must set their own PIN when they first sign in.'), h('div', { style: 'font:800 40px var(--display);letter-spacing:.2em' }, r.tempPin), copyBtn(r.tempPin), h('p', { class: 'small muted' }, 'This PIN is shown only now.'))); }
+  function showCode(r) {
+    var u = r.user, link = location.origin + location.pathname, ph = String(u.mobile || '').replace(/\D/g, '');
+    var msg = '🏏 *KNPL-7 Finance Desk*\n\nAccess code for the *' + u.name + '* profile: *' + r.code + '*\nYou can: ' + u.roleHelp + '.\n\nSign in here: ' + link + '\nEnter the code and your own name.\nKeep this code private – it works like a password.\n\n– Team KNPL (Finance)';
+    modal('Access code – ' + u.name, h('div', null,
+      h('p', null, 'Share this code only with the people who do the ', h('b', null, u.name), ' work. It is shown only now – the Finance Desk keeps just a scrambled copy.'),
+      h('div', { class: 'row' }, h('div', { style: 'font:800 40px var(--mono);letter-spacing:.12em' }, r.code), copyBtn(r.code)),
+      h('div', { class: 'row', style: 'margin-top:12px' }, h('a', { class: 'btn ok', target: '_blank', rel: 'noopener', href: 'https://wa.me/' + (ph ? (ph.length === 10 ? '91' + ph : ph) : '') + '?text=' + encodeURIComponent(msg) }, 'Send on WhatsApp'), h('span', { class: 'small muted' }, ph ? 'Opens a chat with ' + u.mobile : 'Choose the person / group in WhatsApp'))));
+  }
   function userForm(u) {
-    u = u || { id: '', name: '', mobile: '', role: 'MEMBER', active: true };
-    var f = { name: inp({ value: u.name }), mobile: inp({ value: u.mobile, inputmode: 'numeric', maxlength: '10' }), role: sel(Object.keys(D.roles).map(function (k) { return [k, D.roles[k]]; }), u.role), active: h('input', { type: 'checkbox', checked: u.active }) };
+    u = u || { id: '', name: '', mobile: '', role: 'EXP_CREATE', active: true };
+    var f = { name: inp({ value: u.name, placeholder: 'e.g. Expense creation – Ground committee' }), mobile: inp({ value: u.mobile, inputmode: 'numeric', maxlength: '10', placeholder: 'optional' }), role: sel(Object.keys(D.roles).map(function (k) { return [k, D.roles[k]]; }), u.role), active: h('input', { type: 'checkbox', checked: u.active }) };
     var msg = h('div', { class: 'msg' });
-    var close = modal(u.id ? 'Edit ' + u.name : 'Add user', h('div', null, h('div', { class: 'grid g3' }, field('Name', f.name, true), field('Mobile', f.mobile, true), field('Role', f.role, true)), u.id ? h('label', { class: 'row', style: 'margin-top:10px' }, f.active, ' Active') : null,
-      h('div', { class: 'row', style: 'margin-top:12px' }, h('button', { class: 'btn sf', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act('userSave', { id: u.id, name: f.name.value, mobile: f.mobile.value, role: f.role.value, active: f.active.checked }); }, 'User saved').then(function (r) { close(); if (r.tempPin) showPin(r); })); } }, 'Save')), msg));
+    var help = h('div', { class: 'note info small' }); function sh() { help.textContent = D.roleHelp[f.role.value] || ''; } f.role.onchange = sh; sh();
+    var close = modal(u.id ? 'Edit profile ' + u.name : 'Add access profile', h('div', null, h('div', { class: 'grid g3' }, field('Profile name', f.name, true), field('Type', f.role, true), field('WhatsApp no. to send the code (optional)', f.mobile)), help, u.id ? h('label', { class: 'row', style: 'margin-top:10px' }, f.active, ' Active (untick to switch this code off)') : h('p', { class: 'small muted' }, 'The access code is created when you save.'),
+      h('div', { class: 'row', style: 'margin-top:12px' }, h('button', { class: 'btn sf', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act('userSave', { id: u.id, name: f.name.value, mobile: f.mobile.value, role: f.role.value, active: f.active.checked }); }, 'User saved').then(function (r) { close(); if (r.code) showCode(r); })); } }, 'Save')), msg));
   }
 
   /* ---------------------------------------------------------------- start */

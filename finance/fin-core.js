@@ -14,7 +14,7 @@ var FinCore = (function () {
 
   /* ---------------------------------------------------------------- schema */
   var SCHEMA = {
-    Users: 'id mobile name role pinHash salt active:b mustChange:b createdAt lastLogin',
+    Users: 'id mobile name role codeHash codeHint pinHash salt active:b mustChange:b createdAt lastLogin',
     Heads: 'code name kind budget:n owner note active:b sort:n',
     Income: 'id source sourceRef head party team description amount:n mode utr paidOn proof status srcStatus srcReceipt outbound:b note createdBy createdAt decidedBy decidedAt remarks receiptNo ledgerNo bankId',
     Expenses: 'id head title description payee invoiceNo invoiceDate amount:n invoiceFile payMethod accName accNo ifsc bank branch upi phone detailsSource budget:n committed:n actual:n overBy:n expKind explanation status createdBy createdAt updatedAt ackBy ackAt approvedBy approvedAt adminBy adminAt remarks paidOn paidMode utr paidProof paidBy paidAt voucherNo ledgerNo history:j',
@@ -42,7 +42,20 @@ var FinCore = (function () {
   }
 
   /* -------------------------------------------------------------- defaults */
-  var ROLES = { ADMIN: 'Admin', FINANCE: 'Finance', MEMBER: 'Committee member', VIEWER: 'Viewer / Auditor' };
+  /* Access profiles – one access code per profile (job), shared by whoever does that job. The person also types
+     their name at sign-in, so every approval and the audit trail show "Name · Profile". */
+  var ROLES = { ADMIN: 'Admin', FEES: 'Franchise fees', INCOME: 'Other income', EXP_APPROVE: 'Expense approval', EXP_CREATE: 'Expense creation',
+    PAY: 'Payments & bank', VIEWER: 'Viewer / Auditor' };
+  var ROLE_HELP = {
+    ADMIN: 'Everything: settings, budget, access codes, second approval of large / outbound expenses, reversals',
+    FEES: 'Fetch Team Desk payments; approve franchise income (ownership, caution deposit, draft, jersey fees)',
+    INCOME: 'Fetch sources; approve sponsorship, registration and other / outbound income',
+    EXP_APPROVE: 'Verify expense orders against the budget, acknowledge explanations, approve / query / reject',
+    EXP_CREATE: 'Raise expense orders with bills; add outbound income for approval',
+    PAY: 'Pay approved orders and record the transaction; import the bank statement and reconcile',
+    VIEWER: 'Read-only: dashboard, ledger, statements, audit trail'
+  };
+  var PROFILE_ORDER = ['ADMIN', 'FEES', 'INCOME', 'EXP_APPROVE', 'EXP_CREATE', 'PAY', 'VIEWER'];
   var KINDS = { INCOME: 'Income', EXPENSE: 'Expense', DEPOSIT: 'Deposit (refundable)' };
   var PAY_MODES = ['UPI', 'NEFT', 'IMPS', 'RTGS', 'Cheque', 'Cash'];
   var DEFAULT_HEADS = [
@@ -162,12 +175,7 @@ var FinCore = (function () {
     return out;
   }
   function hashPin(pin, salt) { var h = salt + ':' + pin; for (var i = 0; i < 300; i++) h = sha256(h + ':' + salt); return h; }
-  function pinProblem(pin) {
-    pin = String(pin || '');
-    if (!/^\d{6}$/.test(pin)) return 'The PIN must be exactly 6 digits.';
-    if (/^(\d)\1{5}$/.test(pin) || '0123456789'.indexOf(pin) >= 0 || '9876543210'.indexOf(pin) >= 0) return 'Choose a PIN that is not a simple sequence or the same digit repeated.';
-    return '';
-  }
+
 
   /* --------------------------------------------- explanation quality check */
   var STOP = ('a an the to for of and or but in on at by with from as is was were are be been has have had will would should can could ' +
@@ -368,17 +376,25 @@ var FinCore = (function () {
     return r.value[kind];
   };
   State.prototype.log = function (user, action, ref, detail) {
-    this.t('Audit').push({ at: this.now, by: user ? user.name + ' (' + user.role + ')' : 'System', action: action, ref: ref || '', detail: str(detail, 500) });
+    this.t('Audit').push({ at: this.now, by: user ? user.name : 'System', action: action, ref: ref || '', detail: str(detail, 500) });
     this.touch('Audit');
   };
   function findBy(rows, k, v) { for (var i = 0; i < rows.length; i++) if (rows[i][k] === v) return rows[i]; return null; }
 
   /* ------------------------------------------------------------ permissions */
   var CAN = {
-    viewAll: ['ADMIN', 'FINANCE', 'VIEWER'], createExpense: ['ADMIN', 'FINANCE', 'MEMBER'], createIncome: ['ADMIN', 'FINANCE', 'MEMBER'],
-    decide: ['ADMIN', 'FINANCE'], pay: ['ADMIN', 'FINANCE'], bank: ['ADMIN', 'FINANCE'], admin: ['ADMIN'], sync: ['ADMIN', 'FINANCE']
+    viewAll: ['ADMIN', 'FEES', 'INCOME', 'EXP_APPROVE', 'PAY', 'VIEWER'], createExpense: ['ADMIN', 'EXP_CREATE'], createIncome: ['ADMIN', 'FEES', 'INCOME', 'EXP_CREATE'],
+    decideIncome: ['ADMIN', 'FEES', 'INCOME'], decideExpense: ['ADMIN', 'EXP_APPROVE'], pay: ['ADMIN', 'PAY'], bank: ['ADMIN', 'PAY'], admin: ['ADMIN'], sync: ['ADMIN', 'FEES', 'INCOME']
   };
-  function need(user, what) { if (CAN[what].indexOf(user.role) < 0) throw E('You do not have permission for this (' + ROLES[user.role] + ').'); }
+  function need(user, what) { if (CAN[what].indexOf(user.role) < 0) throw E('The "' + ROLES[user.role] + '" profile cannot do this. Sign in with the right access code.'); }
+  function canMap(role) { var m = {}; Object.keys(CAN).forEach(function (k) { m[k] = CAN[k].indexOf(role) >= 0; }); return m; }
+  /* Franchise heads = the heads Team Desk payments are mapped to. FEES approves only these; INCOME only the others. */
+  function feeHeads(s) { var src = (s.sources || []).filter(function (x) { return x.type === 'teamdesk'; })[0] || {}, m = src.map || {}; return Object.keys(m).map(function (k) { return m[k]; }); }
+  function incomeScope(role, s, row) {
+    if (role === 'ADMIN') return true;
+    var fee = row.source === 'TEAMDESK' || feeHeads(s).indexOf(row.head) >= 0;
+    return role === 'FEES' ? fee : role === 'INCOME' ? !fee : false;
+  }
 
   /* ---------------------------------------------------------- calculations */
   function activeLedger(l) { return !l.reversedBy && !l.reversalOf; }
@@ -483,35 +499,66 @@ var FinCore = (function () {
   }
 
   /* ------------------------------------------------------------------ auth */
-  function publicUser(u) { return { id: u.id, name: u.name, mobile: u.mobile, role: u.role, roleName: ROLES[u.role], active: u.active, mustChange: u.mustChange, lastLogin: u.lastLogin, createdAt: u.createdAt }; }
-  function login(state, ctx, mob, pin) {
-    mob = mobile10(mob);
-    if (!/^\d{10}$/.test(mob)) throw E('Enter your 10-digit mobile number.');
-    var fk = 'fail:' + mob, fails = Number(ctx.cache.get(fk) || 0);
-    if (fails >= 5) throw E('Too many wrong PINs. Try again after 15 minutes.');
-    var u = state.t('Users').filter(function (x) { return x.mobile === mob && x.active; })[0];
-    if (!u || hashPin(String(pin || ''), u.salt) !== u.pinHash) {
-      ctx.cache.put(fk, String(fails + 1), 900);
-      throw E('Mobile number or PIN is not correct.' + (fails + 1 >= 3 ? ' ' + (5 - fails - 1) + ' attempt(s) left.' : ''));
-    }
-    ctx.cache.remove(fk);
+  /* Sign-in is by a personal ACCESS CODE (8 characters, shown as XXXX-XXXX). Only a hash of the code is stored;
+     the Admin issues / re-issues codes in Settings ▸ Users and shares them personally. */
+  var CODE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';           // no 0/O, 1/I/L confusion
+  function normCode(c) { return String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+  function codeHash(c) { return hashPin(normCode(c), 'KNPL7-FIN'); }
+  function newCode(ctx) {
+    var hex = (String(ctx.uuid()) + String(ctx.uuid())).replace(/[^0-9a-f]/gi, ''), out = '';
+    for (var i = 0; out.length < 8; i += 2) out += CODE_ABC[parseInt(hex.substr(i, 2), 16) % 32];
+    return out.slice(0, 4) + '-' + out.slice(4);
+  }
+  function publicUser(u) { return { id: u.id, name: u.name, mobile: u.mobile, role: u.role, roleName: ROLES[u.role], roleHelp: ROLE_HELP[u.role], active: u.active, hasCode: !!u.codeHash, codeHint: u.codeHint, lastLogin: u.lastLogin, createdAt: u.createdAt }; }
+  /* Creates any missing default profile (one per type) and gives a code to profiles without one.
+     A legacy row of that type without a code (e.g. a person added before profiles) is turned into the profile. */
+  function ensureProfiles(state, ctx, fixed) {
+    var users = state.t('Users'), out = [];
+    PROFILE_ORDER.forEach(function (role) {
+      var have = users.filter(function (u) { return u.role === role && u.active; });
+      var row = have.filter(function (u) { return u.codeHash; })[0];
+      if (row) return;
+      row = have[0];
+      if (row) row.name = ROLES[role]; else { row = makeUser(state, { name: ROLES[role], role: role }); users.push(row); }
+      out.push({ profile: ROLES[role], role: role, code: giveCode(state, ctx, row, fixed && fixed[role]) });
+    });
+    if (out.length) state.log(null, 'PROFILES', '', out.map(function (x) { return x.profile; }).join(', ') + ' – access codes issued');
+    return out;
+  }
+  function login(state, ctx, code, person) {
+    var c = normCode(code); person = str(person, 40);
+    if (person.length < 3) throw E('Enter your name – it is recorded with everything you approve or change.');
+    if (c.length !== 8) throw E('Enter your 8-character access code (e.g. 7KQ3-PXM9).');
+    var fk = 'fail:codes', fails = Number(ctx.cache.get(fk) || 0);
+    if (fails >= 30) throw E('Too many wrong codes were tried. Please try again after 15 minutes.');
+    var h = codeHash(c), u = state.t('Users').filter(function (x) { return x.codeHash && x.codeHash === h; })[0];
+    if (!u) { ctx.cache.put(fk, String(fails + 1), 900); throw E('This access code is not valid. Check it and try again.'); }
+    if (!u.active) throw E('This access code has been switched off. Contact the Finance Desk Admin.');
     var token = String(ctx.uuid()).replace(/-/g, '') + String(ctx.uuid()).replace(/-/g, '').slice(0, 8);
-    ctx.cache.put('sess:' + token, u.id, 6 * 3600);
-    u.lastLogin = state.now; state.touch('Users');
+    ctx.cache.put('sess:' + token, JSON.stringify({ id: u.id, k: u.codeHash.slice(0, 16), p: person }), 6 * 3600);
+    u.lastLogin = state.now + ' · ' + person; state.touch('Users');
     return { token: token, user: publicUser(u) };
   }
   function session(state, ctx, token) {
-    var id = token ? ctx.cache.get('sess:' + token) : null;
-    var u = id ? findBy(state.t('Users'), 'id', id) : null;
-    if (!u || !u.active) { var e = E('Your session has ended. Please sign in again.'); e.code = 'SESSION'; throw e; }
-    ctx.cache.put('sess:' + token, u.id, 6 * 3600);
-    return u;
+    var v = token ? ctx.cache.get('sess:' + token) : null, o = null;
+    try { o = v ? JSON.parse(v) : null; } catch (e0) { o = null; }
+    var u = o ? findBy(state.t('Users'), 'id', o.id) : null;
+    if (!u || !u.active || !u.codeHash || o.k !== u.codeHash.slice(0, 16)) { var e = E('Your session has ended. Please sign in again.'); e.code = 'SESSION'; throw e; }
+    ctx.cache.put('sess:' + token, v, 6 * 3600);              // sessions end when the profile's code is replaced
+    // the acting user: the profile, named after the person who signed in with it
+    return { id: u.id, role: u.role, profile: u.name, person: o.p, name: o.p + ' · ' + u.name, active: true, _row: u };
   }
-  function makeUser(state, d, pin) {
-    var salt = sha256(String(Math.random()) + d.mobile + state.now).slice(0, 16);
-    return { id: 'U' + pad(state.next('U'), 3), mobile: d.mobile, name: d.name, role: d.role, salt: salt, pinHash: hashPin(pin, salt), active: true, mustChange: true, createdAt: state.now, lastLogin: '' };
+  function giveCode(state, ctx, u, fixed) {
+    var users = state.t('Users'), code, h, tries = 0;
+    do { code = fixed || newCode(ctx); h = codeHash(code); tries++; } while (!fixed && tries < 20 && users.some(function (x) { return x !== u && x.codeHash === h; }));
+    if (users.some(function (x) { return x !== u && x.codeHash === h; })) throw E('That code is already in use.');
+    u.codeHash = h; u.codeHint = normCode(code).slice(-2); u.pinHash = ''; u.salt = ''; u.mustChange = false;
+    state.touch('Users');
+    return code;
   }
-  function tempPin() { var p; do { p = String(Math.floor(100000 + Math.random() * 900000)); } while (pinProblem(p)); return p; }
+  function makeUser(state, d) {
+    return { id: 'U' + pad(state.next('U'), 3), mobile: d.mobile || '', name: d.name, role: d.role, codeHash: '', codeHint: '', pinHash: '', salt: '', active: true, mustChange: false, createdAt: state.now, lastLogin: '' };
+  }
 
   /* --------------------------------------------------------------- setup */
   function ensureSetup(state, admin) {
@@ -520,11 +567,7 @@ var FinCore = (function () {
       DEFAULT_HEADS.forEach(function (h, i) { state.t('Heads').push({ code: h[0], name: h[1], kind: h[2], budget: h[3], owner: '', note: h[4], active: true, sort: (i + 1) * 10 }); });
       state.touch('Heads'); res.heads = DEFAULT_HEADS.length;
     }
-    if (!state.t('Users').length && admin) {
-      var pin = admin.pin || tempPin(); var u = makeUser(state, { mobile: mobile10(admin.mobile), name: admin.name, role: 'ADMIN' }, pin);
-      state.t('Users').push(u); state.touch('Users'); res.admin = { mobile: u.mobile, pin: pin };
-      state.log(null, 'SETUP', u.id, 'Finance Desk set up; first admin ' + admin.name);
-    }
+    res.profiles = ensureProfiles(state, state.ctx, admin && admin.codes);
     return res;
   }
 
@@ -534,9 +577,9 @@ var FinCore = (function () {
     var all = CAN.viewAll.indexOf(user.role) >= 0;
     var mine = function (x) { return x.createdBy === user.id; };
     var users = state.t('Users');
-    var names = {}; users.forEach(function (u) { names[u.id] = u.name; });
+    var names = {}; users.forEach(function (u) { names[u.id] = u.name; });  // profile names (the person is in the history / decidedBy)
     var out = {
-      version: VERSION, now: state.now, me: publicUser(user), settings: s, roles: ROLES, kinds: KINDS, payModes: PAY_MODES,
+      version: VERSION, now: state.now, me: { id: user.id, role: user.role, roleName: ROLES[user.role], profile: user.profile, person: user.person, name: user.name, can: canMap(user.role), feeHeads: feeHeads(s) }, settings: s, roleHelp: ROLE_HELP, roles: ROLES, kinds: KINDS, payModes: PAY_MODES,
       heads: heads, summary: summary(heads, inc, exp, led), names: names,
       income: all ? inc : inc.filter(mine), expenses: all ? exp : exp.filter(mine),
       ledger: all ? led : [], bank: all ? bank : [], payees: state.t('Payees'),
@@ -567,7 +610,7 @@ var FinCore = (function () {
     var proof = takeFile(ctx, d.proof, 'payment proof', mode !== 'Cash' && !bankId);
     var row = { id: 'INC-' + pad(state.next('INC'), 4), source: bankId ? 'BANK' : 'MANUAL', sourceRef: bankId ? 'BANK:' + bankId : '', head: h.code, party: party, team: str(d.team, 60),
       description: str(d.description || h.name, 200), amount: amount, mode: mode, utr: utr, paidOn: paidOn, proof: proof, status: 'PENDING', srcStatus: '', srcReceipt: '',
-      outbound: true, note: note, createdBy: user.id, createdAt: state.now, decidedBy: '', decidedAt: '', remarks: '', receiptNo: '', ledgerNo: '', bankId: bankId };
+      outbound: true, note: note + ' (added by ' + user.person + ')', createdBy: user.id, createdAt: state.now, decidedBy: '', decidedAt: '', remarks: '', receiptNo: '', ledgerNo: '', bankId: bankId };
     state.t('Income').push(row); state.touch('Income');
     state.log(user, 'INCOME_CREATE', row.id, party + ' · ' + inr(amount) + ' · ' + h.name);
     return row;
@@ -582,11 +625,12 @@ var FinCore = (function () {
     return l;
   }
   function incomeDecide(state, ctx, user, id, dec, remarks) {
-    need(user, 'decide');
+    need(user, 'decideIncome');
     var row = findBy(state.t('Income'), 'id', id);
     if (!row) throw E('Income entry ' + id + ' not found.');
     if (row.status !== 'PENDING') throw E(id + ' is not waiting for approval (now ' + row.status + ').');
-    if (row.createdBy === user.id) throw E('You created this entry, so another Finance / Admin member must approve it.');
+    if (!incomeScope(user.role, state.settings(), row)) throw E(id + ' (' + row.head + ') is approved by the "' + (user.role === 'FEES' ? ROLES.INCOME : ROLES.FEES) + '" profile.');
+    if (row.createdBy === user.id) throw E('This entry was added with your profile\'s code, so it must be approved with another profile (Admin or the other income profile).');
     remarks = str(remarks, 300);
     if (dec === 'APPROVED') { approveIncome(state, user, row); state.log(user, 'INCOME_APPROVE', id, row.receiptNo + ' · ' + inr(row.amount)); }
     else if (dec === 'REJECTED') { if (remarks.length < 5) throw E('Give the reason for rejecting.'); row.status = 'REJECTED'; row.remarks = remarks; row.decidedBy = user.name; row.decidedAt = state.now; state.touch('Income'); state.log(user, 'INCOME_REJECT', id, remarks); }
@@ -711,15 +755,15 @@ var FinCore = (function () {
   }
   function needsAdmin(s, ex) { return (Number(s.dualAbove) > 0 && ex.amount >= Number(s.dualAbove)) || (s.dualForOutbound && ex.expKind === 'OUTBOUND'); }
   function expenseDecide(state, ctx, user, id, action, remarks, ack) {
-    need(user, 'decide');
+    need(user, 'decideExpense');
     var ex = findBy(state.t('Expenses'), 'id', id), s = state.settings();
     if (!ex) throw E('Expense order ' + id + ' not found.');
-    if (ex.createdBy === user.id) throw E('You created ' + id + ', so another Finance / Admin member must verify it.');
+    if (ex.createdBy === user.id) throw E(id + ' was raised with this profile\'s code, so it must be verified with the Expense approval profile.');
     remarks = str(remarks, 400);
     var stage = ex.status === 'SUBMITTED' ? 'FIN' : ex.status === 'AWAITING_ADMIN' ? 'ADM' : '';
     if (!stage) throw E(id + ' is not waiting for a decision (now ' + ex.status + ').');
     if (stage === 'ADM' && user.role !== 'ADMIN') throw E('This order needs the second approval by an Admin.');
-    if (stage === 'ADM' && ex.approvedBy === user.name) throw E('The second approval must be by a different person.');
+    if (stage === 'ADM' && String(ex.approvedBy).split(' · ')[0].toLowerCase() === String(user.person).toLowerCase()) throw E('The second approval must be by a different person than the one who verified it.');
     if (action === 'REJECT' || action === 'QUERY') {
       if (remarks.length < 5) throw E(action === 'REJECT' ? 'Give the reason for rejecting.' : 'Write the question / what must be corrected.');
       ex.status = action === 'REJECT' ? 'REJECTED' : 'QUERY'; ex.remarks = remarks; ex.updatedAt = state.now;
@@ -900,34 +944,27 @@ var FinCore = (function () {
   function userSave(state, ctx, user, d) {
     need(user, 'admin');
     var users = state.t('Users'), mob = mobile10(d.mobile), name = str(d.name, 60), role = String(d.role || '');
-    if (!/^[6-9]\d{9}$/.test(mob)) throw E('Enter a valid 10-digit mobile number.');
+    if (mob && !/^[6-9]\d{9}$/.test(mob)) throw E('The mobile number (optional, used to send the code on WhatsApp) must have 10 digits.');
     if (name.length < 3) throw E('Enter the name.'); if (!ROLES[role]) throw E('Choose the role.');
-    var ex = d.id ? findBy(users, 'id', d.id) : null, clash = users.filter(function (u) { return u.mobile === mob && (!ex || u.id !== ex.id); })[0];
-    if (clash) throw E('This mobile number is already used by ' + clash.name + '.');
-    var pin = null;
-    if (!ex) { pin = tempPin(); ex = makeUser(state, { mobile: mob, name: name, role: role }, pin); users.push(ex); }
+    var ex = d.id ? findBy(users, 'id', d.id) : null;
+    var clash = users.filter(function (u) { return u.name.toLowerCase() === name.toLowerCase() && (!ex || u.id !== ex.id); })[0];
+    if (clash) throw E('A profile named "' + name + '" already exists.');
+    var code = null;
+    if (!ex) { ex = makeUser(state, { mobile: mob, name: name, role: role }); users.push(ex); code = giveCode(state, ctx, ex); }
     else {
-      if (ex.id === user.id && (role !== 'ADMIN' || d.active === false)) throw E('You cannot remove your own Admin access.');
+      if (ex.id === user.id && (role !== 'ADMIN' || d.active === false)) throw E('You cannot switch off or change the Admin profile you are signed in with.');
       ex.mobile = mob; ex.name = name; ex.role = role; ex.active = d.active !== false;
     }
     if (!users.some(function (u) { return u.role === 'ADMIN' && u.active; })) throw E('At least one active Admin is needed.');
-    state.touch('Users'); state.log(user, 'USER_SAVE', ex.id, name + ' · ' + role + (ex.active ? '' : ' · inactive'));
-    return { user: publicUser(ex), tempPin: pin };
+    state.touch('Users'); state.log(user, 'USER_SAVE', ex.id, name + ' · ' + role + (ex.active ? '' : ' · switched off') + (code ? ' · code issued' : ''));
+    return { user: publicUser(ex), code: code };
   }
-  function userResetPin(state, ctx, user, id) {
+  function userNewCode(state, ctx, user, id) {
     need(user, 'admin');
     var u = findBy(state.t('Users'), 'id', id); if (!u) throw E('User not found.');
-    var pin = tempPin(); u.salt = sha256(String(Math.random()) + u.id + state.now).slice(0, 16); u.pinHash = hashPin(pin, u.salt); u.mustChange = true;
-    state.touch('Users'); state.log(user, 'USER_PIN_RESET', u.id, u.name);
-    return { user: publicUser(u), tempPin: pin };
-  }
-  function changePin(state, ctx, user, oldPin, newPin) {
-    if (hashPin(String(oldPin || ''), user.salt) !== user.pinHash) throw E('The current PIN is not correct.');
-    var p = pinProblem(newPin); if (p) throw E(p);
-    if (String(oldPin) === String(newPin)) throw E('The new PIN must be different.');
-    user.salt = sha256(String(Math.random()) + user.id + state.now).slice(0, 16); user.pinHash = hashPin(String(newPin), user.salt); user.mustChange = false;
-    state.touch('Users'); state.log(user, 'PIN_CHANGE', user.id, '');
-    return true;
+    var code = giveCode(state, ctx, u);
+    state.log(user, 'USER_NEW_CODE', u.id, u.name + ' – new access code issued, old code stopped');
+    return { user: publicUser(u), code: code, self: u.id === user.id };
   }
   function settingsSave(state, ctx, user, obj) {
     need(user, 'admin');
@@ -993,7 +1030,7 @@ var FinCore = (function () {
     ledgerReverse: ledgerReverse, ledgerCashRecon: ledgerCashRecon,
     bankImport: bankImport, bankMatch: bankMatch, bankUnmatch: bankUnmatch, bankIgnore: bankIgnore, bankDeleteBatch: bankDeleteBatch,
     bankAutoMatch: function (state, ctx, user) { need(user, 'bank'); var n = autoMatch(state, user); state.log(user, 'BANK_AUTOMATCH', '', n + ' matched'); return n; },
-    headSave: headSave, userSave: userSave, userResetPin: userResetPin, changePin: changePin, settingsSave: settingsSave
+    headSave: headSave, userSave: userSave, userNewCode: userNewCode, settingsSave: settingsSave
   };
   function handle(store, ctx, fn, args) {
     args = args || [];
@@ -1003,10 +1040,9 @@ var FinCore = (function () {
     if (fn === 'logout') { if (args[0]) ctx.cache.remove('sess:' + args[0]); return true; }
     if (fn === 'ping') return { ok: true, version: VERSION };
     var user = session(state, ctx, args[0]), rest = args.slice(1);
-    if (user.mustChange && fn !== 'changePin' && fn !== 'boot') throw E('Change your temporary PIN first.');
     if (fn === 'boot') return boot(state, user);
     if (!WRITE[fn]) throw E('Unknown request: ' + fn);
-    if (user.role === 'VIEWER' && fn !== 'changePin') throw E('Viewers cannot change anything.');
+    if (user.role === 'VIEWER') throw E('Viewers cannot change anything.');
     result = WRITE[fn].apply(null, [state, ctx, user].concat(rest));
     state.flush();
     return { result: result, data: boot(state, user) };
@@ -1014,8 +1050,13 @@ var FinCore = (function () {
 
   return {
     VERSION: VERSION, SCHEMA: SCHEMA, FIELDS: FIELDS, ROLES: ROLES, KINDS: KINDS, PAY_MODES: PAY_MODES, DEFAULT_SETTINGS: DEFAULT_SETTINGS,
-    handle: handle, ensureSetup: function (store, ctx, admin) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = ensureSetup(st, admin); st.flush(); return r; },
-    coerce: coerce, sha256: sha256, hashPin: hashPin, pinProblem: pinProblem,
+    handle: handle, ensureSetup: function (store, ctx, admin) { var st = new State(store); st.now = stamp(ctx.now || new Date()); st.ctx = ctx; var r = ensureSetup(st, admin); st.flush(); return r; },
+    /* Gives a user a new access code outside a session (Apps Script editor / demo seeding). fixed = optional code to set. */
+    issueCode: function (store, ctx, match, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var u = st.t('Users').filter(function (x) { return x.id === match || x.name === match; })[0]; if (!u) throw new Error('No user ' + match); var c = giveCode(st, ctx, u, fixed); st.log(null, 'USER_NEW_CODE', u.id, u.name + ' – code issued from the script editor'); st.flush(); return c; },
+    addUser: function (store, ctx, d) { var st = new State(store); st.now = stamp(ctx.now || new Date()); if (st.t('Users').some(function (x) { return x.name.toLowerCase() === String(d.name).toLowerCase(); })) return null; var u = makeUser(st, { mobile: mobile10(d.mobile), name: d.name, role: d.role }); st.t('Users').push(u); var c = giveCode(st, ctx, u, d.code); st.log(null, 'USER_SAVE', u.id, u.name + ' · ' + u.role + ' · added from the script editor'); st.flush(); return c; },
+    normCode: normCode, ROLE_HELP: ROLE_HELP, PROFILE_ORDER: PROFILE_ORDER, canMap: canMap, incomeScope: incomeScope, feeHeads: feeHeads,
+    ensureProfiles: function (store, ctx, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = ensureProfiles(st, ctx, fixed); st.flush(); return r; },
+    coerce: coerce, sha256: sha256, hashPin: hashPin,
     checkExplanation: checkExplanation, parsePayee: parsePayee, validIfsc: validIfsc, validAcc: validAcc, validUpi: validUpi,
     splitCsv: splitCsv, detectStatement: detectStatement, mapHeader: mapHeader, statementLines: statementLines, parseDateAny: parseDateAny, parseAmount: parseAmount, parseSigned: parseSigned,
     summary: summary, budgetCheck: budgetCheck, reconStatus: function (ledger, bank, settings) { return reconStatus({ ledger: ledger, bank: bank }, settings); },

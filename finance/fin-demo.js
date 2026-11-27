@@ -2,7 +2,7 @@
  * (saved in localStorage), so the whole workflow can be tried before the Apps Script backend is deployed. */
 (function () {
   'use strict';
-  var KEY = 'knplfin_demo_v1', CK = 'knplfin_demo_cache_v1';
+  var KEY = 'knplfin_demo_v3', CK = 'knplfin_demo_cache_v3';
   var FILES = {};
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -43,20 +43,19 @@
   function call(fn, args) { return FinCore.handle(store, ctx, fn, args); }
   function seed() {
     db = {}; cache = {}; save(KEY, db); save(CK, cache);
-    FinCore.ensureSetup(store, ctx, { name: 'Krishnadas M N', mobile: '9000000001', pin: '135246' });
-    var A = call('login', ['9000000001', '135246']).token; call('changePin', [A, '135246', '111222']);
-    function person(m, n, role, pin) { var r = call('userSave', [A, { mobile: m, name: n, role: role }]).result; var t = call('login', [m, r.tempPin]).token; call('changePin', [t, r.tempPin, pin]); return call('login', [m, pin]).token; }
-    var F = person('9000000002', 'Unnikrishnan S', 'FINANCE', '222333');
-    var M = person('9000000003', 'Ivish Kumar', 'MEMBER', '333444');
-    person('9000000004', 'Auditor (read-only)', 'VIEWER', '444555');
+    FinCore.ensureSetup(store, ctx, { codes: { ADMIN: 'ADMN-DEMO', FEES: 'FEES-DEMO', INCOME: 'INCM-DEMO', EXP_APPROVE: 'APRV-DEMO', EXP_CREATE: 'CRTE-DEMO', PAY: 'PAYS-DEMO', VIEWER: 'VWER-DEMO' } });
+    var A = call('login', ['ADMN-DEMO', 'Krishnadas M N']).token;
+    var FE = call('login', ['FEES-DEMO', 'Unnikrishnan S']).token, IN = call('login', ['INCM-DEMO', 'Unnikrishnan S']).token;
+    var AP = call('login', ['APRV-DEMO', 'Unnikrishnan S']).token, PY = call('login', ['PAYS-DEMO', 'Unnikrishnan S']).token;
+    var M = call('login', ['CRTE-DEMO', 'Ivish Kumar']).token, F = AP;
     call('settingsSave', [A, { bankName: 'Demo Bank', bankAccount: 'XXXXXXXX4417', bankIfsc: 'DEMO0001234', upiId: 'knpl7@demo', sources: FinCore.DEFAULT_SETTINGS.sources.map(function (s) { var c = JSON.parse(JSON.stringify(s)); c.enabled = true; return c; }) }]);
-    call('syncSources', [F]);
-    var data = call('boot', [F]);
-    data.income.filter(function (i) { return i.status === 'PENDING' && (i.source === 'SPONSOR' && i.party !== 'Demo Traders' || i.source === 'REG' && i.utr); }).slice(0, 6).forEach(function (i) { call('incomeDecide', [F, i.id, 'APPROVED', '']); });
+    call('syncSources', [FE]);
+    var data = call('boot', [A]);
+    data.income.filter(function (i) { return i.status === 'PENDING' && (i.source === 'SPONSOR' && i.party !== 'Demo Traders' || i.source === 'REG' && i.utr); }).slice(0, 6).forEach(function (i) { call('incomeDecide', [IN, i.id, 'APPROVED', '']); });
     var pdf = { name: 'bill.pdf', mime: 'application/pdf', data: 'JVBERi0xLjQKJcfsj6IKMSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PgplbmRvYmoKMiAwIG9iago8PC9UeXBlL1BhZ2VzL0tpZHNbXS9Db3VudCAwPj4KZW5kb2JqCnRyYWlsZXIKPDwvUm9vdCAxIDAgUj4+CiUlRU9G' };
     var e1 = call('expenseCreate', [M, { head: 'EXP-TECH', title: 'Custom KNPL bidding page', description: 'Bidding page that switches off Bid-up at points / Skill Rating / category caps', payee: 'TENVOX Web Studio', invoiceNo: 'TWS-0112', invoiceDate: day(5), amount: 9500, payMethod: 'UPI', upi: 'tenvoxweb@okaxis', invoiceFile: pdf }]).result;
     call('expenseDecide', [F, e1.id, 'APPROVE', 'Checked against quotation', false]);
-    call('expensePay', [F, e1.id, { mode: 'UPI', date: day(2), utr: '533118827364' }]);
+    call('expensePay', [PY, e1.id, { mode: 'UPI', date: day(2), utr: '533118827364' }]);
     var e2 = call('expenseCreate', [M, { head: 'EXP-AUCTION', title: 'Mega Auction – LEGION boards (16 teams)', description: 'Acrylic KNPL LEGION field boards with player blocks', payee: 'Kochi Acrylic Works', invoiceNo: 'KAW/26/431', invoiceDate: day(3), amount: 48000, payMethod: 'BANK', accName: 'Kochi Acrylic Works', accNo: '50200011223344', accNo2: '50200011223344', ifsc: 'HDFC0001234', bank: 'HDFC Bank', branch: 'Kochi', invoiceFile: pdf }]).result;
     call('expenseDecide', [F, e2.id, 'APPROVE', 'Rates match the quotation', false]);
     call('expenseCreate', [M, { head: 'EXP-AUCTION', title: 'Auction hall decoration and sound', description: 'Stage, lights and sound at Chola Farm Resorts', payee: 'Angamaly Events', invoiceNo: 'AE-77', invoiceDate: day(1), amount: 32000, payMethod: 'UPI', phone: '9847012345', invoiceFile: pdf,
@@ -66,7 +65,7 @@
     call('expenseCreate', [M, { head: 'EXP-PRINT', title: 'Registration posters printing', description: 'Phase 1 posters', payee: 'Thrissur Prints', invoiceNo: 'TP-9', invoiceDate: day(4), amount: 2400, payMethod: 'CASH', invoiceFile: pdf,
       explanation: 'Posters were needed for the registration drive before the printing budget was set; the committee asked for them at short notice for the Phase 1 rounds.' }]);
     call('incomeCreate', [M, { head: 'INC-OTHER', party: 'Well-wisher (cash)', amount: 2000, mode: 'Cash', paidOn: day(2), note: 'Cash donation received at the Playbook session for KNPL-7' }]);
-    data = call('boot', [F]);
+    data = call('boot', [A]);
     var L = data.ledger.filter(function (l) { return l.mode !== 'Cash'; }), csv = 'Txn Date,Description,Ref No,Debit,Credit,Balance\n', bal = 0;
     L.slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; }).forEach(function (l, i) {
       if (i === 3) return; // one receipt not yet in the bank → stays unreconciled
@@ -78,8 +77,8 @@
     bal += 5000; csv += day(0).split('-').reverse().join('/') + ',UPI CR 9846XXXXXX GOPAN NAMBOODIRI,,,5000,' + bal.toFixed(2) + '\n';
     bal -= 17.7; csv += day(0).split('-').reverse().join('/') + ',SMS CHARGES QTR,,17.70,,' + bal.toFixed(2) + '\n';
     var det = FinCore.detectStatement(FinCore.splitCsv(csv));
-    call('bankImport', [F, det.lines, 'Demo statement']);
-    ['fail:9000000001', 'fail:9000000002', 'fail:9000000003', 'fail:9000000004'].forEach(function (k) { ctx.cache.remove(k); });
+    call('bankImport', [PY, det.lines, 'Demo statement']);
+    ctx.cache.remove('fail:codes');
     Object.keys(cache).forEach(function (k) { if (k.indexOf('sess:') === 0) delete cache[k]; }); save(CK, cache);
   }
   if (!db.Users || !db.Users.length) { try { seed(); } catch (e) { console.error('Demo seed failed', e); } }
@@ -87,6 +86,6 @@
     api: function (fn, args) { return new Promise(function (res, rej) { setTimeout(function () { try { res(call(fn, args)); } catch (e) { rej(e); } }, 120); }); },
     reset: function () { seed(); },
     sampleStatement: function () { return 'Txn Date,Description,Ref No,Debit,Credit,Balance\n'; },
-    logins: [['Admin', '9000000001', '111222'], ['Finance', '9000000002', '222333'], ['Committee member', '9000000003', '333444'], ['Viewer / auditor', '9000000004', '444555']]
+    logins: [['Admin', 'ADMN-DEMO'], ['Franchise fees', 'FEES-DEMO'], ['Other income', 'INCM-DEMO'], ['Expense approval', 'APRV-DEMO'], ['Expense creation', 'CRTE-DEMO'], ['Payments & bank', 'PAYS-DEMO'], ['Viewer / auditor', 'VWER-DEMO']]
   };
 })();
