@@ -8,6 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
 <script src="../common.js?v=4"></script>
+<script src="jersey-pack-snapshot.js?v=1"></script>
 <script src="jersey-pack-data.js?v=1"></script>
 <script src="jersey-pack-logo-colours.js?v=1"></script>
 <style>
@@ -94,7 +95,7 @@ h2 .sub{font-weight:500;letter-spacing:0;text-transform:none;color:#5b6784;font-
 <section class="gate" id="gate">
   <p style="margin:0 0 10px">Enter the committee PIN (the same one used on the Team Desk – Committee page). The pack is built from the latest approved designs and the jersey details the owners and drafted players have submitted. Players who have not submitted are left blank.</p>
   <input type="password" id="pin" autocomplete="off" placeholder="Committee PIN">
-  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn or" id="go">Build pack with live data</button><button class="btn ghost" id="blank">Build without live data (all blank)</button></div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn or" id="go">Build pack with live data</button><button class="btn ghost" id="blank">Build from sheet snapshot (28 Nov, 1:15 am)</button></div>
   <div class="msg" id="gmsg" role="status"></div>
 </section>
 <section class="tools" id="tools" hidden>
@@ -266,7 +267,7 @@ function teamPage(key, idx) {
   const dims = [[1, 'KNPL logo 9 cm'], [2, 'Team logo 9 cm'], [3, 'Name 5 cm'], [4, 'Number 21 cm'], [5, 'Player 5.5 cm'], [6, 'Back sponsor 26×7'], [7, 'Sleeve sponsor 8×6']].map(([a, b]) => `<span><span class="no">${a}</span> ${b}</span>`).join('');
   return `<div class="pg"><div class="hd" style="padding:5.5mm 11mm 4mm"><img src="${LOGO}${sl}.png" alt=""><div><div class="k">Team ${pad2(n)} of 16 · Approved jersey · KNPL-7</div><h1>${esc(up)}</h1><div class="s">Production sheet for the jersey manufacturer · one page per team</div></div><div class="r">Jersey details<b>${status}</b>${LIVE ? 'as on ' + esc(STAMP.at) : ''}</div></div>
 <div class="bd" style="padding-top:3.4mm">
-<div class="dz" style="grid-template-columns:1.2fr 1fr"><div><h2>Approved design · Choice 1</h2><div class="imgbox" style="height:${t.fixes.length>3?40:46}mm"><img src="${DES}${pad2(n)}-c1.jpg" alt=""></div><div class="cap">Choice 1 is approved for every team; the corrections under Notes apply. Logos and text in the picture are artwork only: print from the supplied files.</div></div>
+<div class="dz" style="grid-template-columns:1.2fr 1fr"><div><h2>Approved design · Choice 1</h2><div class="imgbox" style="height:${t.suggest?34:t.fixes.length>3?40:46}mm"><img src="${DES}${pad2(n)}-c1.jpg" alt=""></div><div class="cap">Choice 1 is approved for every team; the corrections under Notes apply. Logos and text in the picture are artwork only: print from the supplied files.</div></div>
 <div><h2>Print positions</h2><div class="card soft" style="padding:.8mm 9mm .2mm"><div class="g2" style="gap:.6mm"><div class="flat">${flatF}<img src="${KNPL}" style="left:30.5%;top:29.5%;width:11.4%" alt=""><img src="${LOGO}${sl}.png" style="left:58.2%;top:29.5%;width:11.4%;object-fit:contain" alt=""></div><div class="flat">${flatB}</div></div></div>
 <div class="legend">${dims}</div></div></div>
 <div style="height:1.2mm"></div>
@@ -331,10 +332,10 @@ async function load(live) {
       const d = await api('teamDeskAdmin', pin); LIVE = {jersey: d.jersey || []};
       const dt = new Date(); STAMP.at = dt.toLocaleString('en-IN', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true});
       try { sessionStorage.setItem('knpl_jp', pin); } catch (e) {}
-    } else { LIVE = null; STAMP.at = ''; }
+    } else { LIVE = {jersey: PACK_SNAPSHOT}; STAMP.at = '28 Nov 2026, 1:15 am (sheet snapshot)'; }
     SPN = null; try { SPN = await loadSponsors(); } catch (e) { SPN = null; }
     build(); $('gate').hidden = true; m.textContent = '';
-    $('tmsg').className = 'msg ok'; $('tmsg').textContent = LIVE ? LIVE.jersey.length + ' jersey entries loaded.' : 'Built without live data: jersey details are blank.';
+    $('tmsg').className = 'msg ok'; $('tmsg').textContent = LIVE ? LIVE.jersey.length + ' jersey entries loaded.' : 'Built from the sheet snapshot (' + LIVE.jersey.length + ' entries). Use live data for the latest.';
   } catch (e) { m.className = 'msg err'; m.textContent = msgOf(e); }
 }
 $('go').onclick = () => load(true); $('blank').onclick = () => load(false); $('refresh').onclick = () => { load(true); window.scrollTo(0, 0); };
