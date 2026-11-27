@@ -31,21 +31,50 @@ function doPost(e) {
   catch (err) { return json_({ ok: false, error: 'Bad request.' }); }
   var fn = String(body.fn || ''), args = Array.isArray(body.args) ? body.args : [];
   if (fn === 'ping') return json_({ ok: true, result: FinCore.handle(null, ctx_(), 'ping', []) });
+  var store = new SheetStore_(), ctx = ctx_();
+  /* Speed: requests that only read (or wait on another system) never take the script lock, and the slow outside
+     reads of "Fetch new entries" happen before the lock is taken, so nobody else is held up while they run. */
+  try {
+    if (LOCKFREE_[fn]) return json_({ ok: true, result: FinCore.handle(store, ctx, fn, args) });
+    if (fn === 'syncSources') { var early = syncPrepare_(store, ctx, args); if (early) return json_({ ok: true, result: early }); }
+  } catch (err0) { return fail_(fn, err0); }
   var lock = LockService.getScriptLock();
   try { lock.waitLock(30000); }
   catch (err) { return json_({ ok: false, error: 'The Finance Desk is busy. Please try again in a few seconds.' }); }
   try {
-    var store = new SheetStore_(), ctx = ctx_(), result;
+    ctx.now = new Date();
+    var result;
     if (fn === 'sourceColumns') result = sourceColumns_(store, ctx, args);
     else result = FinCore.handle(store, ctx, fn, args);
     return json_({ ok: true, result: result });
   } catch (err) {
-    var msg = err && err.user ? err.message : 'Server error: ' + (err && err.message ? err.message : err);
-    if (!(err && err.user)) console.error(fn, err && err.stack ? err.stack : err);
-    return json_({ ok: false, error: msg, code: err && err.code ? err.code : '' });
+    return fail_(fn, err);
   } finally {
     lock.releaseLock();
   }
+}
+
+var LOCKFREE_ = { regList: 1, teamDeskInfo: 1, jerseyList: 1, jerseyFinals: 1 };
+var SYNC_GAP_MS_ = 120000;   // automatic "fetch new entries" from open pages runs at most once in 2 minutes; the Fetch button always runs
+
+function fail_(fn, err) {
+  var msg = err && err.user ? err.message : 'Server error: ' + (err && err.message ? err.message : err);
+  if (!(err && err.user)) console.error(fn, err && err.stack ? err.stack : err);
+  return json_({ ok: false, error: msg, code: err && err.code ? err.code : '' });
+}
+
+/** Before the lock: checks the sign-in, skips an automatic fetch that ran a moment ago, and otherwise reads the outside sources now. */
+function syncPrepare_(store, ctx, args) {
+  var token = String(args[0] || ''), manual = args[1] === 'manual';
+  FinCore.requireSync(store, ctx, token);
+  var cache = CacheService.getScriptCache(), last = Number(cache.get('syncAt') || 0), now = Date.now();
+  if (!manual && now - last < SYNC_GAP_MS_) {
+    return { result: { read: 0, added: 0, updated: 0, autoApproved: 0, skipped: 0, warnings: [], throttled: true }, data: FinCore.handle(store, ctx, 'boot', [token]) };
+  }
+  cache.put('syncAt', String(now), 600);
+  var recs = fetchSources_(FinCore.settingsOf(store));
+  ctx.fetchSources = function () { return recs; };
+  return null;
 }
 
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
@@ -120,10 +149,18 @@ SheetStore_.prototype.sheet_ = function (name) {
   }
   return sh;
 };
+/* Speed: one read per sheet (the header comes with the data), and a save writes only the rows that changed. */
 SheetStore_.prototype.get = function (name) {
-  var sh = this.sheet_(name), last = sh.getLastRow(), width = sh.getLastColumn();
-  if (last < 2) return [];
-  var vals = sh.getRange(1, 1, last, width).getValues(), head = vals[0].map(String), out = [];
+  var sh = this.ss.getSheetByName(name);
+  if (!sh) sh = this.sheet_(name);
+  var vals = sh.getDataRange().getValues();
+  var fields = FinCore.FIELDS[name].map(function (f) { return f.name; });
+  var head0 = (vals[0] || []).map(String);
+  if (head0.filter(String).length === 0 || fields.some(function (f) { return head0.indexOf(f) < 0; })) { this.sheet_(name); vals = sh.getDataRange().getValues(); }
+  this.snap = this.snap || {};
+  this.snap[name] = { head: vals[0].map(String), rows: vals.slice(1).map(function (r) { return r.map(function (v) { return v instanceof Date ? '\u0000d' : String(v); }); }) };
+  if (vals.length < 2) return [];
+  var head = vals[0].map(String), out = [];
   for (var i = 1; i < vals.length; i++) {
     var r = vals[i], o = {}, any = false;
     for (var j = 0; j < head.length; j++) { if (!head[j]) continue; var v = r[j]; if (v instanceof Date) v = Utilities.formatDate(v, 'Asia/Kolkata', 'yyyy-MM-dd'); o[head[j]] = v; if (v !== '' && v != null) any = true; }
@@ -132,7 +169,9 @@ SheetStore_.prototype.get = function (name) {
   return out;
 };
 SheetStore_.prototype.put = function (name, rows) {
-  var sh = this.sheet_(name), width = sh.getLastColumn(), head = sh.getRange(1, 1, 1, width).getValues()[0].map(String);
+  var sh = this.ss.getSheetByName(name) || this.sheet_(name), snap = this.snap && this.snap[name], width, head;
+  if (snap) { head = snap.head; width = head.length; }
+  else { width = sh.getLastColumn(); head = sh.getRange(1, 1, 1, width).getValues()[0].map(String); }
   var types = {}; FinCore.FIELDS[name].forEach(function (f) { types[f.name] = f.type; });
   var data = rows.map(function (r) {
     return head.map(function (h) {
@@ -143,9 +182,20 @@ SheetStore_.prototype.put = function (name, rows) {
       return String(v);
     });
   });
-  var old = sh.getLastRow();
-  if (data.length) { var rg = sh.getRange(2, 1, data.length, width); rg.setNumberFormat('@'); rg.setValues(data); }
+  var prev = snap ? snap.rows : null, old = prev ? prev.length + 1 : sh.getLastRow();
+  var runs = [];
+  if (prev) {                                              // rows that differ from what was read (or are new), as runs of neighbouring rows
+    for (var i = 0; i < data.length; i++) {
+      var same = i < prev.length && prev[i].length === width;
+      for (var j = 0; same && j < width; j++) if (prev[i][j] !== data[i][j]) same = false;
+      if (same) continue;
+      if (runs.length && runs[runs.length - 1][1] === i) runs[runs.length - 1][1] = i + 1; else runs.push([i, i + 1]);
+    }
+  }
+  if (!prev || runs.length > 8) { if (data.length) { var rg = sh.getRange(2, 1, data.length, width); rg.setNumberFormat('@'); rg.setValues(data); } }
+  else runs.forEach(function (r) { var rg = sh.getRange(r[0] + 2, 1, r[1] - r[0], width); rg.setNumberFormat('@'); rg.setValues(data.slice(r[0], r[1])); });
   if (old > data.length + 1) sh.getRange(data.length + 2, 1, old - data.length - 1, width).clearContent();
+  if (snap) snap.rows = data;
 };
 
 /* ============================== files ===================================== */

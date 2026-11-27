@@ -389,7 +389,7 @@
     waModal('Inform the sponsor – ' + i.party, nm, i.contactPhone, txt);
   }
   function syncNow(btn) {
-    quiet(run(btn, null, function () { return act('syncSources'); }, function (r) { return r.read + ' read · ' + r.added + ' new · ' + r.updated + ' updated · ' + r.autoApproved + ' auto-approved' + (r.warnings.length ? ' · ' + r.warnings.length + ' warning(s)' : ''); })
+    quiet(run(btn, null, function () { return act('syncSources', 'manual'); }, function (r) { return r.read + ' read · ' + r.added + ' new · ' + r.updated + ' updated · ' + r.autoApproved + ' auto-approved' + (r.warnings.length ? ' · ' + r.warnings.length + ' warning(s)' : ''); })
       .then(function (r) { if (r.warnings.length) modal('Fetch warnings', h('div', null, r.warnings.map(function (w) { return h('div', { class: 'note warn' }, w); }))); }));
   }
   function incomeForm(prefill) {
