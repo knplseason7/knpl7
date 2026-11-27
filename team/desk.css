@@ -252,3 +252,34 @@ body.ml .pq li.pqh{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacin
 .apav{font-size:12.5px;color:var(--muted);white-space:nowrap}.apav.part{color:#b45309;font-weight:600}
 .apsr{font-size:18px;font-weight:800;color:var(--k);text-align:right}
 @media (max-width:600px){.aprow{grid-template-columns:24px 34px 1fr 38px}.aprow .apav{grid-column:3;grid-row:2;margin-top:-4px}.aprow img{width:34px;height:43px}}
+
+/* Tab icons + mobile tab bar with "All tabs" sheet */
+.tabs button[role=tab]::before{display:inline-block;margin-right:6px;font-size:1.05em;line-height:1;text-transform:none}
+#tb-pay::before{content:"💳"}#tb-pts::before{content:"📊"}#tb-pool::before{content:"🏏"}#tb-fix::before{content:"🗓️"}#tb-jer::before{content:"👕"}#tb-rep::before{content:"🔄"}#tb-spo::before{content:"🤝"}#tb-food::before{content:"🍽️"}#tb-help::before{content:"📞"}
+#tb-live::before{content:none}
+.tic::before{font-size:22px}.ic-live::before{content:"🔴"}.ic-pay::before{content:"💳"}.ic-pts::before{content:"📊"}.ic-pool::before{content:"🏏"}.ic-fix::before{content:"🗓️"}.ic-jer::before{content:"👕"}.ic-rep::before{content:"🔄"}.ic-spo::before{content:"🤝"}.ic-food::before{content:"🍽️"}.ic-help::before{content:"📞"}
+.tabmore{display:none}
+@media (max-width:700px){
+  .tabnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:6px;background:var(--bg);margin:0 -14px 12px;padding:8px 10px 8px 14px;box-shadow:0 6px 12px -8px rgba(11,26,56,.35)}
+  .tabnav .tabs,.tabnav .tabs.mini{position:relative;top:auto;flex:1;min-width:0;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;margin:0;padding:2px 2px 2px 0;background:none;grid-template-columns:none;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 26px),transparent)}
+  .tabnav.atend .tabs{-webkit-mask-image:none;mask-image:none}
+  .tabnav .tabs::-webkit-scrollbar{display:none}
+  .tabnav .tabs button,.tabnav .tabs.mini button{flex:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;font-size:13px;letter-spacing:.03em;padding:9px 13px;border-radius:22px;scroll-snap-align:center;grid-column:auto}
+  body.ml .tabnav .tabs button{font-size:12.5px}
+  .tabnav .tabs button[aria-selected=true]{box-shadow:0 3px 10px rgba(11,26,56,.25);transform:scale(1.03)}
+  .tabnav .tabs .livetab{grid-column:auto}
+  .tabmore{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;border:0;background:var(--saffron);color:#fff;box-shadow:0 3px 10px rgba(224,122,31,.4);cursor:pointer}
+  body.fixmode #fixfr{height:calc(100vh - 70px);height:calc(100svh - 70px)}
+}
+.tabsheet{position:fixed;inset:0;z-index:60;background:rgba(8,16,31,0);display:flex;align-items:flex-end;justify-content:center;transition:background .2s}
+.tabsheet.in{background:rgba(8,16,31,.55)}
+.tabpane{width:100%;max-width:560px;max-height:82vh;max-height:82svh;overflow:auto;background:var(--surface);border-radius:18px 18px 0 0;padding:14px 14px 20px;transform:translateY(100%);transition:transform .2s ease-out}
+.tabsheet.in .tabpane{transform:none}
+.tabsheethd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.tabsheethd b{font-size:18px}
+.tabx{border:0;background:var(--bg);color:var(--ink);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer}
+.tabfind{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;background:var(--bg);color:var(--ink);margin-bottom:10px}
+.tablist{display:flex;flex-direction:column;gap:6px}
+.tabitem{display:flex;align-items:center;gap:12px;text-align:left;width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--ink);cursor:pointer}
+.tabitem.on{border-color:var(--saffron);background:var(--saffron-soft)}
+.tabitem .ttx b{display:block;font-size:15px}.tabitem .ttx small{color:var(--muted);font-size:12.5px}
+.tabitem .tic{width:30px;text-align:center;flex:none}
