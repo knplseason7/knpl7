@@ -96,6 +96,7 @@ function ctx_() {
     fetchSources: fetchSources_,
     teamDeskDecide: teamDeskDecide_,
     sponsorDecide: sponsorDecide_,
+    regList: regList_,
     teamDesk: function (fn, args, admin) { return teamDeskCall_(fn, args, admin); },
     teamDeskAdminPin: !!PropertiesService.getScriptProperties().getProperty('TEAMDESK_ADMIN_PIN')
   };
@@ -170,6 +171,7 @@ function fetchSources_(settings) {
     if (!s.enabled) return;
     try {
       if (s.type === 'teamdesk') out = out.concat(teamDesk_(s, errors));
+      else if (s.type === 'registration') out = out.concat(regSource_(s));
       else if (s.type === 'sheet' && s.id !== 'SPONSOR') out = out.concat(sheetSource_(s, errors));   // SPONSOR: now read below
     } catch (e) { errors.push(s.label + ': ' + (e && e.message ? e.message : e)); }
   });
@@ -226,6 +228,37 @@ function teamDesk_(s, errors) {
   });
   return rows;
 }
+
+/* ======================= player registration fee ======================= */
+var REG_DEFAULT_ = { sheetId: '1yLTJPg-2sh2xjuF8jVH6imyHxF99tVRmd8RvdStvZpw', tab: 'Registrations', fixedAmount: 1000 };
+function regRows_(s) {
+  var sh = SpreadsheetApp.openById(s.sheetId || REG_DEFAULT_.sheetId).getSheetByName(s.tab || REG_DEFAULT_.tab);
+  if (!sh) { var e = new Error('Registration sheet: tab "' + (s.tab || REG_DEFAULT_.tab) + '" not found.'); e.user = true; throw e; }
+  var vals = sh.getDataRange().getValues(), head = vals[0].map(function (x) { return String(x).trim(); });
+  function col(n) { return head.indexOf(n); }
+  var ix = { ts: col('Timestamp'), id: col('Reg ID'), name: col('Player Name'), wa: col('WhatsApp'), feeR: col('Fee Receipt'), feeV: col('Fee Verified'), code: col('Code Type'), owner: col('Owner Franchise'),
+    joinedOn: col('Auction Joined On'), pool: col('Pool'), cat: col('Category'), status: col('Status') };
+  if (ix.id < 0 || ix.name < 0) { var e2 = new Error('Registration sheet: "Reg ID" / "Player Name" columns not found.'); e2.user = true; throw e2; }
+  function v(r, k) { var i = ix[k]; if (i < 0) return ''; var x = r[i]; return x instanceof Date ? Utilities.formatDate(x, 'Asia/Kolkata', 'yyyy-MM-dd') : String(x == null ? '' : x).trim(); }
+  var out = [];
+  for (var n = 1; n < vals.length; n++) {
+    var r = vals[n], id = v(r, 'id'); if (!id) continue;
+    var owner = v(r, 'code').toUpperCase() === 'OWNER' || /waived/i.test(v(r, 'feeR'));
+    out.push({ id: id, name: v(r, 'name'), wa: v(r, 'wa').replace(/\D/g, '').slice(-10), receipt: /^https?:/.test(v(r, 'feeR')) ? v(r, 'feeR') : '', feeVerified: v(r, 'feeV'),
+      owner: owner, ownerTeam: v(r, 'owner'), joinedOn: v(r, 'joinedOn'), date: v(r, 'joinedOn') || v(r, 'ts').slice(0, 10), pool: v(r, 'pool'), category: v(r, 'cat') });
+  }
+  return out;
+}
+function regSource_(s) {
+  var fee = Number(s.fixedAmount) || REG_DEFAULT_.fixedAmount;
+  return regRows_(s).filter(function (p) { return !p.owner; }).map(function (p) {
+    return { source: 'REG', sourceRef: 'REG:' + p.id, head: s.head || 'INC-REG', party: p.name, team: '', description: 'Player registration fee – ' + p.id,
+      amount: fee, mode: 'UPI', utr: '', paidOn: FinCore.parseDateAny(p.date) || '', proof: p.receipt, srcStatus: 'APPROVED', srcReceipt: '', trust: true,
+      approver: 'Registration committee (fee verified)', srcType: 'REG', contactName: p.name, contactPhone: p.wa,
+      note: p.receipt ? '' : 'Fee receipt not uploaded – marked verified by the committee (27 Nov 2026)' };
+  });
+}
+function regList_(s) { return regRows_(s).map(function (p) { return { id: p.id, name: p.name, owner: p.owner, ownerTeam: p.ownerTeam, receipt: !!p.receipt, pool: p.pool, category: p.category, date: p.date }; }); }
 
 /* ======================= sponsorship registers (portal sheets) ======================= */
 var SP_COLS_ = { ts: 'Timestamp', no: 'Receipt No', status: 'Status', code: 'Item Code', item: 'Sponsorship', qty: 'Qty', amount: 'Amount (Rs)', total: 'Receipt Total (Rs)',
