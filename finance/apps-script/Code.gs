@@ -164,7 +164,7 @@ SheetStore_.prototype.sheet_ = function (name) {
 };
 /* Speed: one read per sheet (the header comes with the data), and a save writes only the rows that changed. */
 /* Speed: each table is also kept in the script cache (refreshed on every save, dropped when someone edits the sheet by hand). */
-var TCACHE_TTL_ = 600, TCACHE_CHUNK_ = 30000;
+var TCACHE_TTL_ = 7200, TCACHE_CHUNK_ = 30000;
 function tcacheGet_(name) {
   try {
     var c = CacheService.getScriptCache(), n = Number(c.get('T:' + name + ':n') || 0);
