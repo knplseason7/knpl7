@@ -1,0 +1,13 @@
+{
+  "name": "knpl7-finance-api",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "sync-core": "cp ../fin-core.js src/core.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

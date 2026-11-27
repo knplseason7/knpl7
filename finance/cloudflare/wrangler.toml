@@ -1,0 +1,20 @@
+name = "knpl7-finance-api"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+# One Durable Object (SQLite) holds every Finance Desk table. It serialises requests, so no locks are needed.
+[[durable_objects.bindings]]
+name = "FIN"
+class_name = "FinanceDO"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["FinanceDO"]
+
+# Secrets (set once in the Cloudflare dashboard, never in this file):
+#   BRIDGE_URL     - the existing Finance Apps Script web app URL (.../exec)
+#   BRIDGE_SECRET  - same value as the Apps Script property BRIDGE_SECRET
+#   ADMIN_SECRET   - long random value that allows the one-time data import
+[vars]
+ALLOWED_ORIGIN = "https://knplseason7.github.io"
+TEAMDESK_ADMIN_PIN_SET = "1"   # the Team Desk admin PIN is set on the Apps Script side (lets Finance move sponsorship credit)

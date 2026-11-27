@@ -30,6 +30,7 @@ function doPost(e) {
   try { body = JSON.parse((e && e.postData && e.postData.contents) || '{}'); }
   catch (err) { return json_({ ok: false, error: 'Bad request.' }); }
   var fn = String(body.fn || ''), args = Array.isArray(body.args) ? body.args : [];
+  if (fn === 'bridge') return json_(bridge_(args));   // used by the Cloudflare backend for the few things that stay on Google
   if (fn === 'ping') return json_({ ok: true, result: FinCore.handle(null, ctx_(), 'ping', []) });
   var store = new SheetStore_(), ctx = ctx_();
   /* Speed: requests that only read (or wait on another system) never take the script lock, and the slow outside
@@ -75,6 +76,32 @@ function syncPrepare_(store, ctx, args) {
   var recs = fetchSources_(FinCore.settingsOf(store));
   ctx.fetchSources = function () { return recs; };
   return null;
+}
+
+/* ===================== bridge for the Cloudflare backend ===================== */
+/** The Cloudflare Finance Desk keeps its data itself; it calls here only for Drive file saving, the Team Desk / jersey links
+ *  and the registration / sponsorship register sheets. Protected by the script property BRIDGE_SECRET. */
+var BRIDGE_ = {
+  saveFile: function (a) { return saveFile_(a[0], a[1]); },
+  fetchSources: function (a) { return fetchSources_(a[0]); },
+  teamDeskDecide: function (a) { return teamDeskDecide_(a[0], a[1], a[2]); },
+  sponsorDecide: function (a) { return sponsorDecide_(a[0], a[1], a[2], a[3]); },
+  regList: function (a) { return regList_(a[0]); },
+  teamDesk: function (a) { return teamDeskCall_(a[0], a[1], a[2]); },
+  jersey: function (a) { return jerseyCall_(a[0], a[1]); },
+  exportAll: function () {                                  // every table as it is in the sheet now (one-time move to Cloudflare)
+    var s = new SheetStore_(), c = CacheService.getScriptCache(), t = {};
+    Object.keys(FinCore.FIELDS).forEach(function (n) { c.remove('T:' + n + ':n'); t[n] = s.get(n); });
+    return { tables: t };
+  }
+};
+function bridge_(args) {
+  var secret = PropertiesService.getScriptProperties().getProperty('BRIDGE_SECRET');
+  if (!secret || String(args[0]) !== secret) return { ok: false, error: 'Not allowed.' };
+  var f = BRIDGE_[String(args[1])];
+  if (!f) return { ok: false, error: 'Unknown call.' };
+  try { return { ok: true, result: f(args[2] || []) }; }
+  catch (e) { return { ok: false, error: e && e.user ? e.message : 'Server error: ' + (e && e.message ? e.message : e) }; }
 }
 
 function json_(o, compact) { return ContentService.createTextOutput(JSON.stringify(compact ? { ok: o.ok, result: compact_(o.result) } : o)).setMimeType(ContentService.MimeType.JSON); }
