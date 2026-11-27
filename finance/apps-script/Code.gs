@@ -11,7 +11,7 @@
  *   3. Project Settings ▸ Script properties:
  *        TEAMDESK_PIN    <the Team Desk Finance PIN>        (to read franchise payments)
  *        TEAMDESK_API    <optional – Team Desk web app URL; defaults to the one below>
- *   4. Run setup() once and read the ACCESS CODES of the 7 profiles in the execution log.
+ *   4. Run setup() once and read the ACCESS CODES of the 5 profiles in the execution log.
  *   5. Deploy ▸ New deployment ▸ Web app · Execute as: Me · Who has access: Anyone.
  *   6. Put the web app URL in finance/config.js (API_URL).
  */
@@ -64,9 +64,18 @@ function setup() {
 /** Creates any missing access profile and issues codes to profiles that have none (safe to run again). */
 function issueProfileCodes() { logCodes_(FinCore.ensureProfiles(new SheetStore_(), ctx_())); }
 
+/** KNPL-7 duty split: Admin (Krishnadas M N) · Franchise fees (Unnikrishnan S) · Finance = other income + expense approval
+ *  + payments & bank (Vineeth Kannath) · Expense creation (any committee member) · Viewer / Auditor. Switches off any other
+ *  profile and logs the code of every newly created profile. Safe to run again. */
+function applyDuties() {
+  var r = FinCore.applyDuties(new SheetStore_(), ctx_());
+  if (r.switchedOff.length) console.log('Switched off (old codes no longer work): ' + r.switchedOff.join(', '));
+  logCodes_(r.created);
+}
+
 /** Emergency: new code for the Admin profile (the old Admin code stops working at once). */
 function newAdminCode() {
-  console.log('New ADMIN access code: ' + FinCore.issueCode(new SheetStore_(), ctx_(), 'Admin'));
+  console.log('New ADMIN access code: ' + FinCore.issueCode(new SheetStore_(), ctx_(), 'ADMIN'));
   CacheService.getScriptCache().remove('fail:codes');
 }
 
