@@ -95,6 +95,7 @@ function ctx_() {
     saveFile: saveFile_,
     fetchSources: fetchSources_,
     teamDeskDecide: teamDeskDecide_,
+    sponsorDecide: sponsorDecide_,
     teamDesk: function (fn, args, admin) { return teamDeskCall_(fn, args, admin); },
     teamDeskAdminPin: !!PropertiesService.getScriptProperties().getProperty('TEAMDESK_ADMIN_PIN')
   };
@@ -169,8 +170,12 @@ function fetchSources_(settings) {
     if (!s.enabled) return;
     try {
       if (s.type === 'teamdesk') out = out.concat(teamDesk_(s, errors));
-      else if (s.type === 'sheet') out = out.concat(sheetSource_(s, errors));
+      else if (s.type === 'sheet' && s.id !== 'SPONSOR') out = out.concat(sheetSource_(s, errors));   // SPONSOR: now read below
     } catch (e) { errors.push(s.label + ': ' + (e && e.message ? e.message : e)); }
+  });
+  (settings.sponsorCats || []).forEach(function (c) {
+    if (!c.enabled || !c.sheetId) return;
+    try { out = out.concat(sponsorSource_(c)); } catch (e) { errors.push(c.cat + ' register: ' + (e && e.message ? e.message : e)); }
   });
   out.errors = errors;
   return out;
@@ -220,6 +225,70 @@ function teamDesk_(s, errors) {
     });
   });
   return rows;
+}
+
+/* ======================= sponsorship registers (portal sheets) ======================= */
+var SP_COLS_ = { ts: 'Timestamp', no: 'Receipt No', status: 'Status', code: 'Item Code', item: 'Sponsorship', qty: 'Qty', amount: 'Amount (Rs)', total: 'Receipt Total (Rs)',
+  sponsor: 'Sponsor / Company Name', display: 'Name to Advertise', contact: 'Contact Person', mobile: 'Mobile', email: 'Email', team: 'Promoter Team', mode: 'Payment Mode',
+  utr: 'Transaction Ref / UTR', payDate: 'Payment Date', proof: 'Payment Proof URL', logo: 'Logo URL', jersey: 'Jersey Team', at: 'Approved / Rejected At', by: 'Approved / Rejected By' };
+function sponsorSheet_(c) {
+  var ss; try { ss = SpreadsheetApp.openById(c.sheetId); } catch (e) { var e1 = new Error('cannot open the register sheet – share it with ' + Session.getEffectiveUser().getEmail() + ' as Editor.'); e1.user = true; throw e1; }
+  var sh = ss.getSheetByName(c.tab || 'Sponsorships'); if (!sh) { var e2 = new Error('tab "' + (c.tab || 'Sponsorships') + '" not found in the register.'); e2.user = true; throw e2; }
+  var vals = sh.getDataRange().getValues(), head = (vals[0] || []).map(function (x) { return String(x).trim(); }), ix = {};
+  Object.keys(SP_COLS_).forEach(function (k) { ix[k] = head.indexOf(SP_COLS_[k]); });
+  if (ix.no < 0 || ix.status < 0) { var e3 = new Error('the register has no "Receipt No" / "Status" columns.'); e3.user = true; throw e3; }
+  return { sh: sh, vals: vals, ix: ix };
+}
+function sponsorRows_(c) {
+  var S = sponsorSheet_(c), out = [];
+  for (var n = 1; n < S.vals.length; n++) {
+    var r = S.vals[n], o = { row: n + 1 };
+    Object.keys(SP_COLS_).forEach(function (k) { var i = S.ix[k], v = i >= 0 ? r[i] : ''; o[k] = v instanceof Date ? Utilities.formatDate(v, 'Asia/Kolkata', 'yyyy-MM-dd') : String(v == null ? '' : v).replace(/^'/, '').trim(); });
+    if (o.no) out.push(o);
+  }
+  return out;
+}
+function sponsorSource_(c) {
+  var by = {}, order = [];
+  sponsorRows_(c).forEach(function (o) {
+    var st = o.status === 'Confirmed' ? 'APPROVED' : o.status === 'Rejected' ? 'REJECTED' : 'PENDING', line = o.item + (o.jersey ? ' – ' + o.jersey : '') + (Number(o.qty) > 1 ? ' × ' + o.qty : '');
+    var rec = by[o.no];
+    if (rec) { rec.description += ' + ' + line; if (st === 'REJECTED') rec.srcStatus = 'REJECTED'; else if (st === 'PENDING' && rec.srcStatus === 'APPROVED') rec.srcStatus = 'PENDING'; return; }
+    var ph = String(o.mobile).replace(/\D/g, ''); if (ph.length > 10) ph = ph.slice(-10);
+    by[o.no] = { source: c.id, sourceRef: c.id + ':' + o.no, head: 'INC-SPONS', party: o.display || o.sponsor, team: title_(o.team), description: c.cat + ': ' + line,
+      amount: FinCore.parseAmount(o.total) || FinCore.parseAmount(o.amount) || 0, mode: modeOf_(o.mode), utr: o.utr, paidOn: FinCore.parseDateAny(o.payDate) || String(o.ts).slice(0, 10),
+      proof: o.proof, srcStatus: st, srcReceipt: o.no, trust: false, approver: c.cat + ' register', srcType: c.code, contactName: o.contact, contactPhone: ph };
+    order.push(o.no);
+  });
+  return order.map(function (k) { return by[k]; });
+}
+/** Writes Confirmed / Rejected for every row of one request (same as KNPL Admin ▸ Approve / Reject in the register). */
+function sponsorDecide_(c, receiptNo, newStatus, byName) {
+  var S = sponsorSheet_(c), ix = S.ix, rows = [];
+  for (var n = 1; n < S.vals.length; n++) if (String(S.vals[n][ix.no]).trim() === String(receiptNo)) rows.push(n);
+  if (!rows.length) { var e = new Error(receiptNo + ' is not in the ' + c.cat + ' register any more.'); e.user = true; throw e; }
+  if (newStatus === 'Confirmed') rows.forEach(function (n) {
+    var r = S.vals[n]; if (String(r[ix.status]) !== 'Rejected' || ix.code < 0) return;
+    var clash = S.vals.some(function (x, j) { return j > 0 && j !== n && String(x[ix.no]) !== String(receiptNo) && x[ix.code] === r[ix.code] && String(x[ix.status]) !== 'Rejected' && ix.jersey >= 0 && String(x[ix.jersey]) && String(x[ix.jersey]) === String(r[ix.jersey]); });
+    if (clash) { var e2 = new Error(receiptNo + ' was rejected earlier and its slot is now taken by another sponsor.'); e2.user = true; throw e2; }
+  });
+  var now = new Date();
+  rows.forEach(function (n) {
+    S.sh.getRange(n + 1, ix.status + 1).setValue(newStatus);
+    if (ix.at >= 0) S.sh.getRange(n + 1, ix.at + 1).setValue(now);
+    if (ix.by >= 0) S.sh.getRange(n + 1, ix.by + 1).setValue(byName + ' (Finance Desk)');
+  });
+  SpreadsheetApp.flush();
+  return { status: newStatus };
+}
+/** Run from the editor: checks every sponsorship register set in Settings. */
+function checkSponsorRegisters() {
+  var cats = FinCore.DEFAULT_SETTINGS.sponsorCats;
+  new SheetStore_().get('Settings').forEach(function (r) { if (r.key === 'sponsorCats' && r.value) { try { cats = typeof r.value === 'string' ? JSON.parse(r.value) : r.value; } catch (e) {} } });
+  cats.forEach(function (c) {
+    if (!c.sheetId) { console.log(c.cat + ': register sheet not set'); return; }
+    try { var r = sponsorRows_(c); console.log(c.cat + ': ' + r.length + ' rows · ' + sponsorSource_(c).length + ' requests'); } catch (e) { console.log(c.cat + ': ' + e.message); }
+  });
 }
 
 function sheetSource_(s, errors) {
