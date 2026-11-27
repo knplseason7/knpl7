@@ -63,6 +63,31 @@
     if (!FS.plan) return null; const nowMs = Date.now(), today = FS.plan.filter(p => p.startsAt && p.locked && p.ground && nowMs >= Date.parse(p.startsAt) - 60000 && nowMs < Date.parse(p.startsAt) + 90 * 60000 + 60000);
     return today[today.length - 1] || null;
   }
+  /* What the franchise owner has to do - shown above the rules, open until the rules are accepted */
+  const GUIDE = {
+    title: ['What you need to do · Food Arrangement (opens 5 Feb 2027)', 'നിങ്ങൾ ചെയ്യേണ്ടത് · Food Arrangement (2027 ഫെബ്രുവരി 5-ന് തുറക്കും)'],
+    why: ['Why this is needed: so that every player gets food at the right counter, the caterer prepares only the quantity that is needed (no shortage, no wastage), and there is a clear record if any doubt comes up later.',
+      'എന്തിന്: എല്ലാ കളിക്കാർക്കും ശരിയായ കൗണ്ടറിൽ ഭക്ഷണം ലഭിക്കാനും, ആവശ്യത്തിനു മാത്രം ഭക്ഷണം തയ്യാറാക്കി കുറവും പാഴാക്കലും ഒഴിവാക്കാനും, പിന്നീട് എന്തെങ്കിലും സംശയം വന്നാൽ വ്യക്തമായ കണക്ക് ഉണ്ടാകാനും.'],
+    stepsH: ['Your steps, one by one', 'നിങ്ങളുടെ ഘട്ടങ്ങൾ, ഓരോന്നായി'],
+    steps: () => [
+      [['On 5 Feb 2027, open this Food tab.', '2027 ഫെബ്രുവരി 5-ന് ഈ Food ടാബ് തുറക്കുക.'], ['You can read the rules below right now. The code and the Yes/No link switch on from 5 Feb.', 'താഴെയുള്ള നിയമങ്ങൾ ഇപ്പോൾത്തന്നെ വായിക്കാം. കോഡും Yes/No ലിങ്കും ഫെബ്രുവരി 5 മുതലാണ് ലഭിക്കുക.']],
+      [['Accept the rules.', 'നിയമങ്ങൾ അംഗീകരിക്കുക.'], ['The franchise owner enters their name and ticks the acceptance box. Your 5-digit Food Team Code and the Yes/No link for your players then appear here.', 'ഫ്രാഞ്ചൈസി ഉടമ പേര് നൽകി അംഗീകാര ബോക്സ് ടിക്ക് ചെയ്യണം. തുടർന്ന് നിങ്ങളുടെ 5 അക്ക Food Team Code-ഉം കളിക്കാർക്കുള്ള Yes/No ലിങ്കും ഇവിടെ കാണിക്കും.']],
+      [['Send the code and link to your players.', 'കോഡും ലിങ്കും കളിക്കാർക്ക് അയക്കുക.'], ['Use the WhatsApp button. The message is ready and you can edit it. Share it only with your own team, never with another team.', 'WhatsApp ബട്ടൺ ഉപയോഗിക്കുക. സന്ദേശം തയ്യാറാണ്, മാറ്റം വരുത്താം. സ്വന്തം ടീമിന് മാത്രം പങ്കുവെക്കുക, മറ്റൊരു ടീമിന് ഒരിക്കലും നൽകരുത്.']],
+      [['Get every player to answer Yes or No before ' + fmtClose() + '.', fmtClose() + '-ന് മുൻപ് എല്ലാ കളിക്കാരും Yes അല്ലെങ്കിൽ No രേഖപ്പെടുത്തണം.'], ['Each player answers for every day and every meal (Breakfast, Lunch, Tea). Watch the "players answered" count here and remind those who have not answered. Food is prepared from this Yes count, and after the closing time only the Core Committee can change it.', 'ഓരോ കളിക്കാരനും ഓരോ ദിവസത്തെയും ഓരോ നേരത്തെയും (Breakfast, Lunch, Tea) ഉത്തരം നൽകണം. "ഉത്തരം നൽകിയ കളിക്കാർ" എണ്ണം ഇവിടെ നോക്കി, ഉത്തരം നൽകാത്തവരെ ഓർമ്മിപ്പിക്കുക. ഈ Yes എണ്ണം നോക്കിയാണ് ഭക്ഷണം തയ്യാറാക്കുന്നത്; സമയം കഴിഞ്ഞാൽ Core Committee-ക്ക് മാത്രമേ മാറ്റം വരുത്താനാകൂ.']],
+      [['On match days (11–14 Feb), check this tab each morning.', 'മത്സര ദിവസങ്ങളിൽ (ഫെബ്രുവരി 11–14) എല്ലാ ദിവസവും രാവിലെ ഈ ടാബ് നോക്കുക.'], ['Your counter for each meal appears here by itself: Breakfast at 7:30 AM, Lunch at 12:00 noon and Tea at 3:00 PM. Tell your players which ground to go to.', 'ഓരോ നേരത്തെയും കൗണ്ടർ ഇവിടെ തനിയെ കാണിക്കും: Breakfast രാവിലെ 7:30, Lunch ഉച്ചയ്ക്ക് 12:00, Tea വൈകുന്നേരം 3:00. ഏത് ഗ്രൗണ്ടിലേക്ക് പോകണമെന്ന് കളിക്കാരെ അറിയിക്കുക.']],
+      [['At the counter, every player says the Food Team Code.', 'കൗണ്ടറിൽ ഓരോ കളിക്കാരനും Food Team Code പറയണം.'], ['The staff records each person, and each person is served once per meal.', 'ജീവനക്കാർ ഓരോരുത്തരെയും രേഖപ്പെടുത്തും; ഓരോ നേരത്തും ഒരാൾക്ക് ഒരിക്കൽ മാത്രം വിളമ്പും.']],
+      [['Check the daily record.', 'ദിവസേനയുള്ള കണക്ക് പരിശോധിക്കുക.'], ['At the end of each day you can see here how many were served against your Yes count.', 'ഓരോ ദിവസത്തിന്റെയും അവസാനം നിങ്ങളുടെ Yes എണ്ണത്തിനെതിരെ എത്ര പേർക്ക് വിളമ്പി എന്ന് ഇവിടെ കാണാം.']]
+    ],
+    outcome: ['What you can expect: your players are served without confusion at the right counter, the food prepared matches your Yes count, and you have a day-by-day record to settle any doubt.',
+      'പ്രതീക്ഷിക്കുന്ന ഫലം: നിങ്ങളുടെ കളിക്കാർക്ക് ആശയക്കുഴപ്പമില്ലാതെ ശരിയായ കൗണ്ടറിൽ ഭക്ഷണം ലഭിക്കും; നിങ്ങളുടെ Yes എണ്ണത്തിന് അനുസരിച്ച് ഭക്ഷണം തയ്യാറാകും; ഏത് സംശയവും തീർക്കാൻ ദിവസംതോറുമുള്ള കണക്ക് ഉണ്ടാകും.']
+  };
+  function guideHtml() {
+    const i = LANG === 'ml' ? 1 : 0, done = FS && FS.open && FS.consent;
+    return '<details class="card"' + (done ? '' : ' open') + '><summary style="cursor:pointer;font-weight:800;font-size:17px">' + esc(GUIDE.title[i]) + '</summary>' +
+      '<p style="margin:10px 0">' + esc(GUIDE.why[i]) + '</p><h3 style="margin:12px 0 6px">' + esc(GUIDE.stepsH[i]) + '</h3>' +
+      '<ol class="rules">' + GUIDE.steps().map(st => '<li><b>' + esc(st[0][i]) + '</b><br>' + esc(st[1][i]) + '</li>').join('') + '</ol>' +
+      '<div class="note">' + esc(GUIDE.outcome[i]) + '</div></details>';
+  }
   function rulesHtml() { return '<div class="card"><h3>' + esc(t('fdRulesH')) + '</h3><ol class="rules">' + RULES.map(r => '<li>' + esc(r[LANG === 'ml' ? 1 : 0]) + '</li>').join('') + '</ol></div>'; }
   function paintFood() {
     const box = $('foodbox'); if (!box) return;
@@ -72,6 +97,7 @@
     if (FS && !FS.open) h += '<div class="note">' + esc(t('fdNotOpen', {d: dmy('2027-02-05')})) + '</div>';
     if (!FS && !FLOAD && !window.FOOD_API_URL) h += '<div class="note">' + esc(t('fdNotOn')) + '</div>';
     h += '</div>';
+    h += guideHtml();
     if (FS && FS.open && FS.consent) {
       const nr = nowRow();
       if (nr) h += '<div class="fnow"><div class="kick2">' + esc(t('fdNowH')) + '</div>' + esc(t('fdNowTxt', {m: MEAL[nr.meal][0]})) + '<b class="g">' + esc(nr.ground) + '</b><div class="small" style="margin-top:6px">' + esc(win(nr.meal)) + '</div><div class="row" style="margin-top:10px"><button class="btn or sm" id="fdNowCopy">' + esc(t('fdCopyMsg')) + '</button><a class="btn ok sm" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(mealMessage(nr)) + '">' + esc(t('fdWa')) + '</a></div></div>';
