@@ -18,7 +18,7 @@ const PACK_TEAMS={
 "fixes": [
 "NAME PATTERN: names in the picture are placeholders; print the 49 names on page 4 as the pattern.",
 "Front spelling: mock-up reads \"MAVERICS\"; must read \"MAVERICKS\". Remove the third-party mark on the back shoulder.",
-"NAME + NUMBER: Mavericks Sand (C12 M28 Y51 K4), thick Mavericks Navy (C93 M70 Y2 K84) border.",
+"FRONT TEAM NAME, PLAYER NAME + NUMBER: Mavericks Sand (C12 M28 Y51 K4), thick Mavericks Navy (C93 M70 Y2 K84) border.",
 "Keep the sand panels large so it stays distinct from the blue jerseys of No. 12 and No. 16."
 ],
 "suggest": ""

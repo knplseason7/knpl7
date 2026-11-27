@@ -237,7 +237,8 @@ function sponsorsFor(nm) {
 function teamPage(key, idx) {
   const t = PACK_TEAMS[key], n = t.no, nm = t.name, up = nm.toUpperCase(), sl = slug(nm), ft = frontText(nm);
   const pal = t.pal;
-  const flatF = flatSvg('f', '#f4f6fa', '#dfe4ee', '#c9d1e2', '#13213f', ft.l1, {t: ft.l2, small: ft.small}), flatB = flatSvg('b', '#f4f6fa', '#dfe4ee', '#c9d1e2', '#13213f');
+  let flatF = flatSvg('f', '#f4f6fa', '#dfe4ee', '#c9d1e2', '#13213f', ft.l1, {t: ft.l2, small: ft.small}), flatB = flatSvg('b', '#f4f6fa', '#dfe4ee', '#c9d1e2', '#13213f');
+  if (key === 'MADHURA MAVERICKS') flatF = flatF.replace(/(<text[^>]*font-size="22"[^>]*?)fill="[^"]*"/g, '$1fill="#D7B078" stroke="#030C28" stroke-width="4" paint-order="stroke"');
   const printCols = pal.map(([c, h, cm]) => ({name: c, hex: h, cmyk: cmykOf(cm)}));
   // players: owner + drafted + anyone else of the team who has submitted jersey details
   const jr = (LIVE ? LIVE.jersey : []).filter(j => nk(j.team) === nk(key));
