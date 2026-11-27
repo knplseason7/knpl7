@@ -191,3 +191,18 @@ body.ml .pq li.pqh{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacin
 
 #fixfr{display:block;width:100%;height:calc(100vh - 150px);height:calc(100dvh - 150px);min-height:520px;border:0;border-radius:12px;background:#fff}
 @media (max-width:600px){.tabs.mini{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:4px;margin-bottom:6px;scrollbar-width:none}.tabs.mini::-webkit-scrollbar{display:none}.tabs.mini button{flex:none;font-size:11.5px;padding:6px 10px;border-radius:8px;letter-spacing:.02em}body.ml .tabs.mini button{font-size:11px}body.fixmode #fixfr{height:calc(100vh - 64px);height:calc(100svh - 64px);min-height:0}html.fixmode,body.fixmode{overflow:hidden;height:100%}body.fixmode header,body.fixmode .teambar,body.fixmode footer,body.fixmode .foot{display:none}body.fixmode main.wrap{padding-top:6px;padding-bottom:0}}
+
+/* Auction LIVE tab (TENVOX BIDCAST) */
+.tabs .livetab{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:#061028;color:#7ef2b6;border-color:#27d07e}
+.tabs .livetab[aria-selected=true]{background:#27d07e;color:#04221a;border-color:#27d07e}
+.ldot{width:9px;height:9px;border-radius:50%;background:#ff3b4f;box-shadow:0 0 0 0 #ff3b4f88;animation:ldot 1.4s infinite;flex:none}
+@keyframes ldot{70%{box-shadow:0 0 0 7px #ff3b4f00}100%{box-shadow:0 0 0 0 #ff3b4f00}}
+.livebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#061028;color:#eef5ff;border-radius:12px;padding:10px 12px;margin-bottom:8px;border:1px solid #27d07e}
+.livebar .lvt{flex:1;min-width:180px;line-height:1.2}.livebar .lvt b{display:block;font:800 18px var(--display);letter-spacing:.08em;color:#27d07e}.livebar .lvt span{font-size:12.5px;color:#b9cbe8}
+.lvbtns{display:flex;gap:6px;flex-wrap:wrap}
+#livefr{display:block;width:100%;height:calc(100vh - 92px);height:calc(100dvh - 92px);min-height:480px;border:0;border-radius:12px;background:#061028}
+@media (max-width:600px){
+  .tabs:not(.mini) .livetab{grid-column:1/-1}
+  .livebar{padding:6px 8px;gap:6px;margin-bottom:6px}.livebar .lvt{display:none}.lvbtns{width:100%;flex-wrap:nowrap}.lvbtns .btn{flex:1;padding:9px 6px;font-size:13px;text-align:center}
+  body.livemode #livefr{height:calc(100vh - 124px);height:calc(100svh - 124px);min-height:0;border-radius:10px}
+}

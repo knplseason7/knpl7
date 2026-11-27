@@ -12,7 +12,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=17">
+<link rel="stylesheet" href="desk.css?v=18">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="receipt.js?v=5" defer></script>
 <script src="common.js?v=4"></script>
@@ -33,6 +33,7 @@
 <section id="app" hidden>
   <div class="teambar"><span id="tlogo"></span><div class="sp"><b id="tname"></b><span class="muted small" id="towner"></span></div><button class="btn ghost sm" id="out" data-t="logout"></button></div>
   <div class="tabs" role="tablist">
+    <button role="tab" id="tb-live" aria-selected="false" class="livetab"><i class="ldot"></i><span data-t="tabLive"></span></button>
     <button role="tab" id="tb-pay" aria-selected="true" data-t="tabPay"></button>
     <button role="tab" id="tb-fix" aria-selected="false" data-t="tabFix"></button>
     <button role="tab" id="tb-jer" aria-selected="false" data-t="tabJer"></button>
@@ -75,6 +76,14 @@
     <div class="card"><div class="cardhead"><h3 data-t="schedTitle"></h3><button class="btn or sm" id="upAny" data-t="uploadAny"></button></div><div class="sched" id="sched"></div>
       <details class="small" style="margin-top:10px"><summary data-t="draftBreak"></summary><table class="brk" id="dbrk"></table></details></div>
     <div class="card"><h3 data-t="histTitle"></h3><ul class="hist" id="hist"></ul></div>
+  </div>
+
+  <div id="pg-live" hidden>
+    <div class="livebar">
+      <div class="lvt"><b>TENVOX BIDCAST</b><span data-t="lvNote"></span></div>
+      <div class="lvbtns"><button class="btn sm" id="lvCopy" data-t="copy"></button><a class="btn ok sm" id="lvWa" target="_blank" rel="noopener" data-t="lvShare"></a><a class="btn or sm" id="lvOpen" target="_blank" rel="noopener" data-t="lvOpen"></a></div>
+    </div>
+    <iframe id="livefr" title="TENVOX BIDCAST · KNPL-7 Mega Auction Live" loading="lazy" allow="autoplay; clipboard-write; fullscreen"></iframe>
   </div>
 
   <div id="pg-fix" hidden>
@@ -176,5 +185,5 @@
 </main>
 <footer data-t="footer2"></footer>
 <script src="ocr.js?v=1"></script>
-<script src="desk.js?v=25"></script>
+<script src="desk.js?v=26"></script>
 </body></html>
