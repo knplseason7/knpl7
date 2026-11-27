@@ -237,7 +237,7 @@ function regRows_(s) {
   var vals = sh.getDataRange().getValues(), head = vals[0].map(function (x) { return String(x).trim(); });
   function col(n) { return head.indexOf(n); }
   var ix = { ts: col('Timestamp'), id: col('Reg ID'), name: col('Player Name'), wa: col('WhatsApp'), feeR: col('Fee Receipt'), feeV: col('Fee Verified'), code: col('Code Type'), owner: col('Owner Franchise'),
-    joinedOn: col('Auction Joined On'), pool: col('Pool'), cat: col('Category'), status: col('Status') };
+    joinedOn: col('Auction Joined On'), joined: col('Auction Joined'), pool: col('Pool'), cat: col('Category'), status: col('Status') };
   if (ix.id < 0 || ix.name < 0) { var e2 = new Error('Registration sheet: "Reg ID" / "Player Name" columns not found.'); e2.user = true; throw e2; }
   function v(r, k) { var i = ix[k]; if (i < 0) return ''; var x = r[i]; return x instanceof Date ? Utilities.formatDate(x, 'Asia/Kolkata', 'yyyy-MM-dd') : String(x == null ? '' : x).trim(); }
   var out = [];
@@ -245,20 +245,26 @@ function regRows_(s) {
     var r = vals[n], id = v(r, 'id'); if (!id) continue;
     var owner = v(r, 'code').toUpperCase() === 'OWNER' || /waived/i.test(v(r, 'feeR'));
     out.push({ id: id, name: v(r, 'name'), wa: v(r, 'wa').replace(/\D/g, '').slice(-10), receipt: /^https?:/.test(v(r, 'feeR')) ? v(r, 'feeR') : '', feeVerified: v(r, 'feeV'),
-      owner: owner, ownerTeam: v(r, 'owner'), joinedOn: v(r, 'joinedOn'), date: v(r, 'joinedOn') || v(r, 'ts').slice(0, 10), pool: v(r, 'pool'), category: v(r, 'cat') });
+      owner: owner, ownerTeam: v(r, 'owner'), joinedOn: v(r, 'joinedOn'), phase2: v(r, 'status') === 'Approved' && v(r, 'joined').toUpperCase() === 'YES', regStatus: v(r, 'status'), date: v(r, 'joinedOn') || v(r, 'ts').slice(0, 10), pool: v(r, 'pool'), category: v(r, 'cat') });
   }
   return out;
 }
 function regSource_(s) {
   var fee = Number(s.fixedAmount) || REG_DEFAULT_.fixedAmount;
-  return regRows_(s).filter(function (p) { return !p.owner; }).map(function (p) {
+  return regRows_(s).filter(function (p) { return p.phase2 && !p.owner; }).map(function (p) {   // 16 owners exempted; rejected / not joined left out
     return { source: 'REG', sourceRef: 'REG:' + p.id, head: s.head || 'INC-REG', party: p.name, team: '', description: 'Player registration fee – ' + p.id,
       amount: fee, mode: 'UPI', utr: '', paidOn: FinCore.parseDateAny(p.date) || '', proof: p.receipt, srcStatus: 'APPROVED', srcReceipt: '', trust: true,
       approver: 'Registration committee (fee verified)', srcType: 'REG', contactName: p.name, contactPhone: p.wa,
       note: p.receipt ? '' : 'Fee receipt not uploaded – marked verified by the committee (27 Nov 2026)' };
   });
 }
-function regList_(s) { return regRows_(s).map(function (p) { return { id: p.id, name: p.name, owner: p.owner, ownerTeam: p.ownerTeam, receipt: !!p.receipt, pool: p.pool, category: p.category, date: p.date }; }); }
+function regList_(s) { return regRows_(s).map(function (p) { return { id: p.id, name: p.name, owner: p.owner, phase2: p.phase2, regStatus: p.regStatus, ownerTeam: p.ownerTeam, receipt: !!p.receipt, pool: p.pool, category: p.category, date: p.date }; }); }
+
+/** One-off (27 Nov 2026): Registration Fee budget = 232 paying players × ₹1,000; 16 owners exempted. Kept in the audit trail. */
+function setRegistrationBudget() {
+  var r = FinCore.runAsAdmin(new SheetStore_(), ctx_(), 'headSave', [{ code: 'INC-REG', name: 'Player Registration Fee', kind: 'INCOME', budget: 232000, note: '232 players × ₹1,000 (248 completed Phase 2; 16 franchise owners exempted)', active: true }]);
+  console.log('Registration fee budget set to ₹2,32,000');
+}
 
 /* ======================= sponsorship registers (portal sheets) ======================= */
 var SP_COLS_ = { ts: 'Timestamp', no: 'Receipt No', status: 'Status', code: 'Item Code', item: 'Sponsorship', qty: 'Qty', amount: 'Amount (Rs)', total: 'Receipt Total (Rs)',
