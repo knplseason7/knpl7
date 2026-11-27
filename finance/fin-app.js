@@ -156,6 +156,7 @@
     c.income = can('decideIncome') ? D.income.filter(function (i) { return toApprove(i) && i.createdBy !== me.id && inScope(i); }).length : 0;
     c.expenses = actionExpenses().length;
     c.bank = can('bank') && D.recon ? D.recon.bankOpen : 0;
+    c.sponsors = can('decideIncome') ? D.income.filter(function (i) { return spCat(i) && toApprove(i) && i.createdBy !== me.id && inScope(i); }).length : 0;
     return c;
   }
   function actionExpenses() {
@@ -170,6 +171,7 @@
   }
   function tabs() {
     var t = [['overview', 'Overview'], ['income', 'Income'], ['expenses', 'Expenses'], ['budget', 'Budget']];
+    if (can('viewAll')) t.push(['sponsors', 'Sponsorships']);
     if (can('teamView')) t.push(['teams', 'Team accounts']);
     if (can('viewAll')) t.push(['bank', 'Bank & Reconcile'], ['reports', 'Ledger & Statements'], ['audit', 'Audit trail']);
     if (can('admin')) t.push(['settings', 'Settings']);
@@ -182,7 +184,7 @@
     list.forEach(function (x) { nav.appendChild(h('button', { role: 'tab', 'aria-selected': TAB === x[0] ? 'true' : 'false', onclick: function () { TAB = x[0]; render(); window.scrollTo({ top: 0 }); } }, x[1], c[x[0]] ? h('span', { class: 'cnt' }, c[x[0]]) : null)); });
     if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk ↗'));
     var v = $('view'), keep = window.scrollY; v.replaceChildren();
-    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
+    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, sponsors: vSponsors, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
     window.scrollTo({ top: keep });
   }
   function go(tab, patch) { TAB = tab; Object.assign(UI, patch || {}); render(); window.scrollTo({ top: 0 }); }
@@ -276,7 +278,9 @@
     }
     draw();
   }
-  function tdPending(i) { return i.source === 'TEAMDESK' && i.status === 'SOURCE_PENDING'; }
+  function spCat(i) { return FinCore.sponsorCat(D.settings, typeof i === 'string' ? i : i.source); }
+  /* Team Desk payments and portal sponsorships are decided here even while they wait at the source. */
+  function tdPending(i) { return i.status === 'SOURCE_PENDING' && (i.source === 'TEAMDESK' || !!spCat(i)); }
   function toApprove(i) { return i.status === 'PENDING' || tdPending(i); }
   function incMatch(i, f) {
     if (f === 'ALL') return true;
@@ -285,7 +289,7 @@
     if (f === 'SOURCE_PENDING') return i.status === 'SOURCE_PENDING' && !tdPending(i);
     return i.status === f;
   }
-  function srcLabel(s) { return { TEAMDESK: 'Team Desk', SPONSOR: 'Sponsorship portal', REG: 'Registration', MANUAL: 'Outbound (manual)', BANK: 'From bank statement' }[s] || s; }
+  function srcLabel(s) { var c = FinCore.sponsorCat(D.settings, s); if (c) return c.cat + ' sponsorship'; return { TEAMDESK: 'Team Desk', SPONSOR: 'Sponsorship portal', REG: 'Registration', MANUAL: 'Outbound (manual)', BANK: 'From bank statement' }[s] || s; }
   function incomeItem(i) {
     var mine = i.createdBy === D.me.id, td = tdPending(i), canD = can('decideIncome') && toApprove(i) && !mine && inScope(i);
     var it = h('div', { class: 'item' + (canD ? ' hl' : '') },
@@ -299,15 +303,17 @@
     if (canD) {
       var rm = inp({ placeholder: 'Reason (needed to reject)' }), msg = h('div', { class: 'msg' });
       acts.appendChild(rm);
-      var fnD = td ? 'teamDeskDecide' : 'incomeDecide';
-      if (td) rm.placeholder = 'Reason (needed to reject – the owner sees it on the Team Desk)';
-      acts.appendChild(h('button', { class: 'btn ok sm', onclick: function (ev) { if (!confirm('Approve ' + i.id + ' – ' + money(i.amount) + ' from ' + i.party + '?' + (td ? ' It is also approved on the Team Desk (the owner gets the receipt) and' : ' It') + ' is posted to the ledger.')) return; quiet(run(ev.currentTarget, msg, function () { return act(fnD, i.id, 'APPROVED', ''); }, i.id + ' approved').then(function (r) { if (td) waOwner(r); })); } }, 'Approve'));
-      acts.appendChild(h('button', { class: 'btn no sm', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act(fnD, i.id, 'REJECTED', rm.value); }, i.id + ' rejected').then(function (r) { if (td) waOwner(r); })); } }, 'Reject'));
+      var sp = !!spCat(i), fnD = sp ? 'sponsorDecide' : td ? 'teamDeskDecide' : 'incomeDecide', after = sp ? waSponsor : td ? waOwner : null;
+      if (td && !sp) rm.placeholder = 'Reason (needed to reject – the owner sees it on the Team Desk)';
+      if (sp) rm.placeholder = 'Reason (needed to reject – goes in the message to the sponsor)';
+      acts.appendChild(h('button', { class: 'btn ok sm', onclick: function (ev) { if (!confirm('Approve ' + i.id + ' – ' + money(i.amount) + ' from ' + i.party + '?' + (sp ? ' It is marked Confirmed in the ' + spCat(i).cat + ' register (the sponsor can download the receipt and poster) and' : td ? ' It is also approved on the Team Desk (the owner gets the receipt) and' : ' It') + ' is posted to the ledger.')) return; quiet(run(ev.currentTarget, msg, function () { return act(fnD, i.id, 'APPROVED', ''); }, i.id + ' approved').then(function (r) { if (after) after(r); })); } }, 'Approve'));
+      acts.appendChild(h('button', { class: 'btn no sm', onclick: function (ev) { quiet(run(ev.currentTarget, msg, function () { return act(fnD, i.id, 'REJECTED', rm.value); }, i.id + ' rejected').then(function (r) { if (after) after(r); })); } }, 'Reject'));
       it.appendChild(acts); it.appendChild(h('div', { style: 'grid-column:1/-1' }, msg)); return it;
     }
     if (i.status === 'PENDING' && mine && can('decideIncome')) acts.appendChild(h('span', { class: 'small muted' }, 'Added with this profile – approve it with another profile.'));
     else if (i.status === 'PENDING' && can('decideIncome') && !inScope(i)) acts.appendChild(h('span', { class: 'small muted' }, 'Approved with the ' + (role() === 'FEES' ? 'Finance (other income)' : 'Franchise fees') + ' code.'));
     if (i.status === 'SOURCE_PENDING' && !td) acts.appendChild(h('span', { class: 'small muted' }, 'Waiting for confirmation in the source sheet.'));
+    if (spCat(i) && (i.status === 'APPROVED' || i.status === 'REJECTED') && can('decideIncome')) acts.appendChild(h('button', { class: 'btn ghost sm', onclick: function () { waSponsor(i); } }, 'WhatsApp sponsor'));
     if (i.source === 'TEAMDESK' && (i.status === 'APPROVED' || i.status === 'REJECTED') && can('decideIncome')) acts.appendChild(h('button', { class: 'btn ghost sm', onclick: function () { waOwner(i); } }, 'WhatsApp owner'));
     if (i.status === 'APPROVED') acts.appendChild(h('button', { class: 'btn ghost sm', onclick: function () { docPreview('Receipt ' + i.receiptNo, FinDocs.receipt(D, i), 'Receipt ' + i.receiptNo.replace(/\//g, '-')); } }, 'Receipt'));
     if (acts.childNodes.length) it.appendChild(acts);
@@ -328,6 +334,28 @@
     var ta = h('textarea', { style: 'min-height:220px;font-size:14px' }); ta.value = txt;
     var a = h('a', { class: 'btn ok', target: '_blank', rel: 'noopener' }, 'Send on WhatsApp'); function upd() { a.href = 'https://wa.me/' + ph + '?text=' + encodeURIComponent(ta.value); } ta.oninput = upd; upd();
     modal('Inform the owner – ' + i.party, h('div', null, h('p', { class: 'small muted' }, 'To: ' + nm + (ph ? ' · WhatsApp +' + ph : ' · number not found – choose the chat yourself')), ta, h('div', { class: 'row', style: 'margin-top:8px' }, a, copyBtn(txt))));
+  }
+  function waModal(title, to, phone, txt) {
+    var ph = String(phone || '').replace(/\D/g, ''); if (ph.length === 10) ph = '91' + ph;
+    var ta = h('textarea', { style: 'min-height:240px;font-size:14px' }); ta.value = txt;
+    var a = h('a', { class: 'btn ok', target: '_blank', rel: 'noopener' }, 'Send on WhatsApp'); function upd() { a.href = 'https://wa.me/' + ph + '?text=' + encodeURIComponent(ta.value); } ta.oninput = upd; upd();
+    modal(title, h('div', null, h('p', { class: 'small muted' }, 'To: ' + to + (ph ? ' · WhatsApp +' + ph : ' · number not found – choose the chat yourself')), ta, h('div', { class: 'row', style: 'margin-top:8px' }, a, copyBtn(txt))));
+  }
+  /* Bilingual message to the sponsor – each English line followed by its Malayalam line. */
+  function waSponsor(i) {
+    if (!i) return;
+    var c = spCat(i) || { cat: 'KNPL-7', portal: '' }, nm = i.contactName || 'Sir / Madam', no = i.srcReceipt, amt = money(i.amount);
+    var link = c.portal ? c.portal + (c.portal.indexOf('?') < 0 ? '?' : '&') + 'receipt=' + encodeURIComponent(no) : '';
+    var txt = i.status === 'APPROVED'
+      ? '🏏 *KNPL-7 | Sponsorship confirmed* ✅\n\nDear ' + nm + ', thank you! The KNPL-7 "' + c.cat + '" sponsorship of ' + i.party + ' (' + no + ', ' + amt + ') is confirmed.\n' +
+        'പ്രിയ ' + nm + ', നന്ദി! ' + i.party + '-ന്റെ KNPL-7 "' + c.cat + '" Sponsorship (' + no + ', ' + amt + ') Confirm ചെയ്തു.\n\n' +
+        (link ? 'Download your receipt and sponsor poster here with your request number and mobile number.\nRequest Number-ഉം Mobile Number-ഉം നൽകി Receipt-ഉം Sponsor Poster-ഉം ഇവിടെ Download ചെയ്യാം.\n👉 ' + link + '\n\n' : '') +
+        'We warmly welcome you to KNPL-7, 11–14 Feb 2027, Angamaly.\n11–14 Feb 2027, അങ്കമാലിയിൽ നടക്കുന്ന KNPL-7-ലേക്ക് ഹൃദയപൂർവ്വം സ്വാഗതം.\n\n– KNPL Core Group'
+      : '🏏 *KNPL-7 | Sponsorship request*\n\nDear ' + nm + ', the KNPL-7 "' + c.cat + '" sponsorship request ' + no + ' (' + amt + ') could not be confirmed.\n' +
+        'പ്രിയ ' + nm + ', KNPL-7 "' + c.cat + '" Sponsorship Request ' + no + ' (' + amt + ') Confirm ചെയ്യാനായില്ല.\n\n' +
+        'Reason: ' + i.remarks + '\nകാരണം: ' + i.remarks + '\n\n' +
+        'Please contact your promoter team or the KNPL Core Group.\nദയവായി Promoter Team-നെയോ KNPL Core Group-നെയോ ബന്ധപ്പെടുക.\n\n– KNPL Core Group';
+    waModal('Inform the sponsor – ' + i.party, nm, i.contactPhone, txt);
   }
   function syncNow(btn) {
     quiet(run(btn, null, function () { return act('syncSources'); }, function (r) { return r.read + ' read · ' + r.added + ' new · ' + r.updated + ' updated · ' + r.autoApproved + ' auto-approved' + (r.warnings.length ? ' · ' + r.warnings.length + ' warning(s)' : ''); })
@@ -817,6 +845,88 @@
     draw();
   }
 
+  /* --------------------------------------------------------- sponsorships */
+  var SLOTS = {}, SLOTS_ERR = {};
+  function loadSlots(c) {
+    if (DEMO && window.FinDemo.slots && !SLOTS[c.id]) { SLOTS[c.id] = { at: Date.now(), items: window.FinDemo.slots(c.id) }; return; }
+    if (!c.api || SLOTS[c.id] === 'loading' || (SLOTS[c.id] && SLOTS[c.id].at > Date.now() - 120000)) return;
+    SLOTS[c.id] = 'loading';
+    fetch(c.api, { redirect: 'follow' }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw new Error(j.error || 'no data'); SLOTS[c.id] = { at: Date.now(), items: j.items || [] }; delete SLOTS_ERR[c.id]; })
+      .catch(function (e) { SLOTS[c.id] = null; SLOTS_ERR[c.id] = 'Could not read the ' + c.cat + ' portal (' + (e.message || e) + ').'; })
+      .then(function () { if (TAB === 'sponsors') render(); });
+  }
+  function vSponsors(v) {
+    var cats = (D.settings.sponsorCats || []).filter(function (c) { return c.enabled; }), tgt = Number(D.settings.sponsorTarget) || 0;
+    if (!UI.spCat) UI.spCat = 'ALL'; if (!UI.spF) UI.spF = 'PENDING';
+    var all = D.income.filter(function (i) { return i.head === 'INC-SPONS' && ['APPROVED', 'PENDING', 'SOURCE_PENDING', 'REJECTED', 'CANCELLED', 'REVERSED'].indexOf(i.status) >= 0; });
+    function catOf(i) { var c = spCat(i); return c ? c.id : 'OTHER'; }
+    var list = all.filter(function (i) { return UI.spCat === 'ALL' || catOf(i) === UI.spCat; });
+    var ok = list.filter(function (i) { return i.status === 'APPROVED'; }), wait = list.filter(toApprove);
+    var top = h('div', { class: 'card' }, h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Sponsorships'), h('div', { class: 'row' },
+        can('sync') ? h('button', { class: 'btn', onclick: function (ev) { syncNow(ev.currentTarget); } }, '⟳ Fetch from portals') : null,
+        can('createIncome') ? h('button', { class: 'btn ghost', onclick: function () { incomeForm({ head: 'INC-SPONS' }); } }, '+ Sponsorship received directly') : null)),
+      h('p', { class: 'small muted' }, 'All sponsorship categories in one place. Requests from the portals are approved or rejected here with the Finance code: an approval marks the request Confirmed in that category\'s register (the sponsor can then download the receipt and poster) and posts it to the ledger; a rejection releases the slot. Sponsorship paid outside the portals is added with "+ Sponsorship received directly" and approved the same way.'),
+      h('div', { class: 'chips' }, [['ALL', 'All categories']].concat(cats.map(function (c) { return [c.id, c.cat]; })).concat([['OTHER', 'Direct / other']]).map(function (f) {
+        var n = all.filter(function (i) { return f[0] === 'ALL' || catOf(i) === f[0]; }).filter(toApprove).length;
+        return h('button', { 'aria-pressed': UI.spCat === f[0] ? 'true' : 'false', onclick: function () { UI.spCat = f[0]; render(); } }, f[1], n ? ' (' + n + ' to approve)' : '');
+      })),
+      h('div', { class: 'grid g4', style: 'margin-top:10px' },
+        kpi('Confirmed', money(sum(ok)), ok.length + ' sponsorship' + (ok.length === 1 ? '' : 's') + ' in the ledger'),
+        kpi('Awaiting approval', money(sum(wait)), wait.length + ' request' + (wait.length === 1 ? '' : 's')),
+        kpi('Total if all approved', money(sum(ok) + sum(wait)), UI.spCat === 'ALL' && tgt ? 'Target ' + money(tgt * 16) + ' (16 × ' + money(tgt) + ')' : ''),
+        kpi('Rejected / released', String(list.filter(function (i) { return i.status === 'REJECTED' || i.status === 'CANCELLED'; }).length), 'requests')));
+    // category status
+    var ct = h('table', { class: 't' }, h('tr', null, h('th', null, 'Category'), h('th', null, 'Register'), h('th', { class: 'num' }, 'Confirmed'), h('th', { class: 'num' }, 'Awaiting'), h('th', null, 'Portal')));
+    cats.forEach(function (c) {
+      var x = all.filter(function (i) { return i.source === c.id; });
+      ct.appendChild(h('tr', null, h('td', null, h('b', null, c.cat)), h('td', null, c.sheetId ? pill('Connected', 'ok') : pill('Not connected yet', 'warn')),
+        h('td', { class: 'num' }, money(sum(x.filter(function (i) { return i.status === 'APPROVED'; })))), h('td', { class: 'num' }, money(sum(x.filter(toApprove)))), h('td', null, c.portal ? link(c.portal, 'Open portal ↗') : h('span', { class: 'muted' }, 'Not opened yet'))));
+    });
+    var o2 = all.filter(function (i) { return catOf(i) === 'OTHER'; });
+    ct.appendChild(h('tr', null, h('td', null, h('b', null, 'Direct / other')), h('td', null, h('span', { class: 'muted' }, 'Entered here')), h('td', { class: 'num' }, money(sum(o2.filter(function (i) { return i.status === 'APPROVED'; })))), h('td', { class: 'num' }, money(sum(o2.filter(toApprove)))), h('td', null, '')));
+    top.appendChild(h('div', { class: 'tw', style: 'margin-top:12px' }, ct));
+    if (cats.some(function (c) { return !c.sheetId; })) top.appendChild(h('p', { class: 'small muted' }, 'A category is connected in Settings ▸ Sponsorship categories (Admin) by giving its register sheet, shared with knplone@gmail.com as Editor.'));
+    v.appendChild(top);
+    // promoter teams
+    var byT = {}; all.forEach(function (i) { if (!(i.status === 'APPROVED' || toApprove(i))) return; var t = i.team || '(no team)'; byT[t] = byT[t] || { ok: 0, wait: 0 }; byT[t][i.status === 'APPROVED' ? 'ok' : 'wait'] += i.amount; });
+    var tt = h('table', { class: 't' }, h('tr', null, h('th', null, 'Promoter team'), h('th', { class: 'num' }, 'Confirmed'), h('th', { class: 'num' }, 'Awaiting'), h('th', { style: 'min-width:150px' }, 'Towards ' + money(tgt)), h('th', { class: 'num' }, 'Still to raise')));
+    TEAMS.slice().sort().concat(Object.keys(byT).filter(function (t) { return TEAMS.indexOf(t) < 0; })).forEach(function (t) {
+      var x = byT[t] || { ok: 0, wait: 0 };
+      tt.appendChild(h('tr', null, h('td', null, t), h('td', { class: 'num' }, x.ok ? money(x.ok) : '–'), h('td', { class: 'num' }, x.wait ? money(x.wait) : '–'),
+        h('td', null, meter(x.ok, x.wait, tgt, t), h('div', { class: 'meterlbl' }, tgt ? Math.round((x.ok) / tgt * 100) + '% confirmed' : '')), h('td', { class: 'num', style: x.ok >= tgt ? 'color:var(--ok)' : '' }, money(Math.max(0, tgt - x.ok)))));
+    });
+    v.appendChild(h('div', { class: 'card' }, h('h3', null, 'By promoter team'), h('p', { class: 'small muted' }, 'All categories together, as booked in the portals. Credit moved between teams on the Team Desk (see Team accounts) is not included here.'), h('div', { class: 'tw' }, tt)));
+    // slots per category (from the portal)
+    cats.filter(function (c) { return c.api && (UI.spCat === 'ALL' || UI.spCat === c.id); }).forEach(function (c) {
+      loadSlots(c);
+      var S = SLOTS[c.id], card = h('div', { class: 'card' }, h('div', { class: 'row sp-b' }, h('h3', { style: 'margin:0' }, c.cat + ' – slots'), h('button', { class: 'btn ghost sm', onclick: function () { SLOTS[c.id] = null; loadSlots(c); render(); } }, '⟳ Refresh')));
+      if (!S || S === 'loading') card.appendChild(SLOTS_ERR[c.id] ? h('div', { class: 'msg err' }, SLOTS_ERR[c.id]) : h('p', { class: 'muted' }, h('span', { class: 'spin' }), ' Reading the portal…'));
+      else {
+        var st = h('table', { class: 't' }, h('tr', null, h('th', null, 'Sponsorship'), h('th', { class: 'num' }, 'Rate'), h('th', { class: 'num' }, 'Slots'), h('th', { class: 'num' }, 'Booked'), h('th', { class: 'num' }, 'Free'), h('th', null, 'Sponsors (✓ confirmed)')));
+        var tot = { slots: 0, taken: 0, val: 0, bk: 0 };
+        S.items.forEach(function (it) {
+          tot.slots += it.slots; tot.taken += it.taken; tot.val += it.slots * it.rate; tot.bk += it.taken * it.rate;
+          st.appendChild(h('tr', null, h('td', null, it.name), h('td', { class: 'num' }, money(it.rate)), h('td', { class: 'num' }, String(it.slots)), h('td', { class: 'num' }, String(it.taken)),
+            h('td', { class: 'num', style: it.slots - it.taken ? '' : 'color:var(--muted)' }, String(it.slots - it.taken)),
+            h('td', { class: 'small' }, (it.sponsors || []).map(function (s) { return (s.confirmed ? '✓ ' : '⏳ ') + s.name + (s.jerseyTeam ? ' (' + s.jerseyTeam + ' jersey)' : '') + (s.qty > 1 ? ' × ' + s.qty : '') + ' – via ' + s.team; }).join(' · ') || '–')));
+        });
+        st.appendChild(h('tr', { class: 'tot' }, h('td', null, 'Total'), h('td', null, ''), h('td', { class: 'num' }, String(tot.slots)), h('td', { class: 'num' }, String(tot.taken)), h('td', { class: 'num' }, String(tot.slots - tot.taken)), h('td', { class: 'small' }, 'Booked ' + money(tot.bk) + ' of ' + money(tot.val) + ' on offer')));
+        card.appendChild(h('div', { class: 'tw' }, st));
+      }
+      v.appendChild(card);
+    });
+    // requests
+    var F = [['PENDING', 'Awaiting approval'], ['APPROVED', 'Confirmed'], ['CLOSED', 'Rejected / released'], ['ALL', 'All']];
+    var box = h('div', { style: 'margin-top:10px' });
+    v.appendChild(h('div', { class: 'card' }, h('h3', null, 'Requests'), h('div', { class: 'chips' }, F.map(function (f) {
+      var n = list.filter(function (i) { return incMatch(i, f[0]); }).length;
+      return h('button', { 'aria-pressed': UI.spF === f[0] ? 'true' : 'false', onclick: function () { UI.spF = f[0]; render(); } }, f[1] + ' (' + n + ')');
+    })), box));
+    var rows = list.filter(function (i) { return incMatch(i, UI.spF); }).slice().reverse();
+    if (!rows.length) box.appendChild(h('div', { class: 'empty' }, 'Nothing here.'));
+    rows.forEach(function (i) { box.appendChild(incomeItem(i)); });
+  }
+
   /* -------------------------------------------------------- team accounts */
   var TDI = null, TDI_LOADING = false, TDI_ERR = '';
   function tdTitle(t) { return String(t || '').toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/\bOf\b/g, 'of'); }
@@ -891,6 +1001,19 @@
         var o = {}; Object.keys(F).forEach(function (k) { o[k] = F[k].type === 'checkbox' ? F[k].checked : F[k].value; });
         quiet(run(ev.currentTarget, msg, function () { return act('settingsSave', o); }, 'Settings saved'));
       } }, 'Save settings')), msg));
+    // sponsorship categories
+    var cats = JSON.parse(JSON.stringify(S.sponsorCats || [])), cmsg = h('div', { class: 'msg' }), tgtIn = inp({ type: 'number', min: 0, value: S.sponsorTarget });
+    var cc = h('div', { class: 'card' }, h('h2', null, 'Sponsorship categories'),
+      h('p', { class: 'small muted' }, 'Each category has its own portal and register sheet (same format as the Cover Drive portal). Share the register sheet with knplone@gmail.com as Editor and paste its link here. Requests are then fetched with "Fetch from sources", and approving or rejecting one here writes Confirmed / Rejected in the register.'),
+      field('Sponsorship target per franchise (₹)', tgtIn));
+    cats.forEach(function (c) {
+      var g = h('div', { class: 'grid g4' });
+      function t(k, label, hint) { var x = inp({ value: c[k] || '' }); x.oninput = function () { c[k] = x.value; }; g.appendChild(field(label, x, false, hint)); }
+      t('sheetId', 'Register sheet (link or ID)', 'Shared with knplone@gmail.com as Editor'); t('tab', 'Register tab'); t('portal', 'Portal address', 'Used in the message to the sponsor'); t('api', 'Portal web app (…/exec)', 'Shows the slot status');
+      cc.appendChild(h('div', { class: 'item', style: 'display:block' }, h('div', { class: 'row sp-b' }, h('b', null, c.cat), h('label', { class: 'row' }, h('input', { type: 'checkbox', checked: c.enabled, onchange: function (ev) { c.enabled = ev.target.checked; } }), ' Show')), g));
+    });
+    cc.appendChild(h('div', { class: 'row' }, h('button', { class: 'btn sf', onclick: function (ev) { quiet(run(ev.currentTarget, cmsg, function () { return act('settingsSave', { sponsorCats: cats, sponsorTarget: tgtIn.value }); }, 'Sponsorship categories saved')); } }, 'Save categories')));
+    cc.appendChild(cmsg); v.appendChild(cc);
     // sources
     var sc = h('div', { class: 'card' }, h('h2', null, 'Income sources'), h('p', { class: 'small muted' }, '"Fetch from sources" on the Income tab reads these. With "Source approval counts" on, entries approved at the source (e.g. by Finance on the Team Desk) go straight to the ledger; otherwise they wait for approval here.'));
     var srcs = JSON.parse(JSON.stringify(S.sources || [])), smsg = h('div', { class: 'msg' });

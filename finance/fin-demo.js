@@ -2,7 +2,7 @@
  * (saved in localStorage), so the whole workflow can be tried before the Apps Script backend is deployed. */
 (function () {
   'use strict';
-  var KEY = 'knplfin_demo_v5', CK = 'knplfin_demo_cache_v5';
+  var KEY = 'knplfin_demo_v6', CK = 'knplfin_demo_cache_v5';
   var FILES = {};
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -33,6 +33,7 @@
       save('knplfin_demo_td', T);
       return { role: 'admin', teams: TEAMS.map(function (t) { return { team: t.toUpperCase() }; }), fees: T.fees, splits: T.splits };
     },
+    sponsorDecide: function (cat, no, status) { return { status: status }; },
     teamDeskDecide: function (id, dec, remarks) { return { status: dec, receiptNo: dec === 'APPROVED' ? 'KNPL7-TD-9' + String(Date.now()).slice(-2) : '', remarks: remarks }; }
   };
   function day(n) { var d = new Date(Date.now() + 5.5 * 3600e3 - n * 864e5); return d.toISOString().slice(0, 10); }
@@ -43,11 +44,21 @@
       r.push({ source: 'TEAMDESK', sourceRef: 'TD:CD-' + i, head: 'DEP-CD', party: TEAMS[i], team: TEAMS[i], description: 'Sponsorship Caution Deposit 3/5', amount: 3000, mode: 'UPI', utr: String(431200000100 + i), paidOn: day(12 - i), srcStatus: 'APPROVED', srcReceipt: 'KNPL7-TD-' + (101 + i), trust: true, approver: 'Team Desk (Finance)' });
       if (i < 5) r.push({ source: 'TEAMDESK', sourceRef: 'TD:OWN-' + i, head: 'INC-OWN', party: TEAMS[i], team: TEAMS[i], description: 'Ownership fee 1/3', amount: 5000, mode: 'UPI', utr: String(441200000200 + i), paidOn: day(8 - i), srcStatus: i < 3 ? 'APPROVED' : 'PENDING', srcReceipt: i < 3 ? 'KNPL7-TD-' + (201 + i) : '', trust: true, approver: 'Team Desk (Finance)', srcType: 'OWN1', contactName: 'Owner of ' + TEAMS[i], contactPhone: '' });
     }
-    r.push({ source: 'SPONSOR', sourceRef: 'SP:KNPL7-CD-0004', head: 'INC-SPONS', party: 'Sree Sankara Trust', team: 'Madhura Mavericks', description: 'KNPL-7 Sahayog Sponsor', amount: 25000, mode: 'NEFT', utr: 'SBIN526318882211', paidOn: day(9), srcStatus: 'APPROVED', srcReceipt: 'KNPL7-CD-0004', trust: false });
-    r.push({ source: 'SPONSOR', sourceRef: 'SP:KNPL7-CD-0007', head: 'INC-SPONS', party: 'Vaidyaratnam', team: 'Kalinga United', description: 'KNPL-7 Winners Sponsor', amount: 50000, mode: 'NEFT', utr: 'FDRL526319993344', paidOn: day(6), srcStatus: 'APPROVED', srcReceipt: 'KNPL7-CD-0007', trust: false });
-    r.push({ source: 'SPONSOR', sourceRef: 'SP:KNPL7-CD-0009', head: 'INC-SPONS', party: 'Demo Traders', team: 'Ayodhya Warriors', description: 'KNPL-7 Lunch Sponsor × 2', amount: 10000, mode: 'UPI', utr: '452266117788', paidOn: day(3), srcStatus: 'APPROVED', srcReceipt: 'KNPL7-CD-0009', trust: false });
+    function sp(src, no, party, team, desc, amt, mode, utr, d, st, cn, ph) { r.push({ source: src, sourceRef: src + ':' + no, head: 'INC-SPONS', party: party, team: team, description: desc, amount: amt, mode: mode, utr: utr, paidOn: day(d), srcStatus: st, srcReceipt: no, trust: false, srcType: src === 'SPONSOR' ? 'CD' : 'FL', contactName: cn, contactPhone: ph, proof: '' }); }
+    sp('SPONSOR', 'KNPL7-CD-0004', 'Sree Sankara Trust', 'Madhura Mavericks', 'Cover Drive: KNPL-7 Sahayog Sponsor', 25000, 'NEFT', 'SBIN526318882211', 9, 'APPROVED', 'Trust Secretary', '9000000001');
+    sp('SPONSOR', 'KNPL7-CD-0007', 'Vaidyaratnam', 'Kalinga United', 'Cover Drive: KNPL-7 Winners Sponsor', 50000, 'NEFT', 'FDRL526319993344', 6, 'APPROVED', 'Manager', '9000000002');
+    sp('SPONSOR', 'KNPL7-CD-0009', 'Demo Traders', 'Ayodhya Warriors', 'Cover Drive: KNPL-7 Lunch Sponsor × 2', 10000, 'UPI', '452266117788', 3, 'APPROVED', 'Rajesh', '9000000003');
+    sp('SPONSOR', 'KNPL7-CD-0011', 'Kerala Ayur Mart', 'Madhura Mavericks', 'Cover Drive: KNPL Team Jersey Sponsor – Madhura Mavericks', 7500, 'UPI', '462288119900', 1, 'PENDING', 'Suresh K', '9000000004');
+    sp('SPONSOR_FL', 'KNPL7-FL-0002', 'Annapoorna Caterers', 'Knights of Kanchi', 'Flick: Match Day Sponsor', 12000, 'UPI', '462299001122', 2, 'PENDING', 'Vinod', '9000000005');
     for (i = 0; i < 6; i++) r.push({ source: 'REG', sourceRef: 'REG:KNPL7-' + ('000' + (21 + i)).slice(-4), head: 'INC-REG', party: ['Arjun N', 'Vishnu P', 'Hari M', 'Sreeraj K', 'Nikhil V', 'Adarsh T'][i], description: 'Registration fee – KNPL7-' + ('000' + (21 + i)).slice(-4), amount: 1000, mode: 'UPI', utr: i === 5 ? '' : String(462200000300 + i), paidOn: day(10 - i), srcStatus: 'APPROVED', trust: false });
     return r;
+  }
+  function slots(id) {
+    if (id === 'SPONSOR') return [{ code: 'CD01', name: 'KNPL Champions Everolling Trophy', slots: 1, rate: 150000, taken: 0, sponsors: [] }, { code: 'CD02', name: 'KNPL-7 Winners Sponsor', slots: 1, rate: 50000, taken: 1, sponsors: [{ name: 'Vaidyaratnam', team: 'Kalinga United', qty: 1, confirmed: true }] },
+      { code: 'CD04', name: 'KNPL-7 Sahayog Sponsor', slots: 2, rate: 25000, taken: 1, sponsors: [{ name: 'Sree Sankara Trust', team: 'Madhura Mavericks', qty: 1, confirmed: true }] },
+      { code: 'CD07', name: 'KNPL Team Jersey Sponsor', slots: 16, rate: 7500, taken: 1, sponsors: [{ name: 'Kerala Ayur Mart', team: 'Madhura Mavericks', jerseyTeam: 'Madhura Mavericks', qty: 1, confirmed: false }] },
+      { code: 'CD08', name: 'KNPL-7 Lunch Sponsor', slots: 20, rate: 5000, taken: 2, sponsors: [{ name: 'Demo Traders', team: 'Ayodhya Warriors', qty: 2, confirmed: false }] }];
+    return [];
   }
   function call(fn, args) { return FinCore.handle(store, ctx, fn, args); }
   function seed() {
@@ -56,7 +67,7 @@
     var A = call('login', ['ADMN-DEMO', 'Krishnadas M N']).token;
     var FE = call('login', ['FEES-DEMO', 'Unnikrishnan S']).token, IN = call('login', ['FNCE-DEMO', 'Vineeth Kannath']).token, AP = IN, PY = IN;
     var M = call('login', ['CRTE-DEMO', 'Ivish Kumar']).token, F = AP;
-    call('settingsSave', [A, { bankName: 'Demo Bank', bankAccount: 'XXXXXXXX4417', bankIfsc: 'DEMO0001234', upiId: 'knpl7@demo', sources: FinCore.DEFAULT_SETTINGS.sources.map(function (s) { var c = JSON.parse(JSON.stringify(s)); c.enabled = true; return c; }) }]);
+    call('settingsSave', [A, { sponsorCats: FinCore.DEFAULT_SETTINGS.sponsorCats.map(function (c) { var o = JSON.parse(JSON.stringify(c)); if (c.code !== 'SD') o.sheetId = 'demo-register-' + c.code; if (c.code === 'FL') o.portal = 'https://example.org/flick/'; return o; }), bankName: 'Demo Bank', bankAccount: 'XXXXXXXX4417', bankIfsc: 'DEMO0001234', upiId: 'knpl7@demo', sources: FinCore.DEFAULT_SETTINGS.sources.map(function (s) { var c = JSON.parse(JSON.stringify(s)); c.enabled = true; return c; }) }]);
     call('syncSources', [FE]);
     var data = call('boot', [A]);
     data.income.filter(function (i) { return i.status === 'PENDING' && (i.source === 'SPONSOR' && i.party !== 'Demo Traders' || i.source === 'REG' && i.utr); }).slice(0, 6).forEach(function (i) { call('incomeDecide', [IN, i.id, 'APPROVED', '']); });
@@ -93,6 +104,7 @@
   window.FinDemo = {
     api: function (fn, args) { return new Promise(function (res, rej) { setTimeout(function () { try { res(call(fn, args)); } catch (e) { rej(e); } }, 120); }); },
     reset: function () { seed(); },
+    slots: slots,
     sampleStatement: function () { return 'Txn Date,Description,Ref No,Debit,Credit,Balance\n'; },
     logins: [['Admin', 'ADMN-DEMO'], ['Franchise fees', 'FEES-DEMO'], ['Finance (income, expense approval, payments)', 'FNCE-DEMO'], ['Expense creation (committee)', 'CRTE-DEMO'], ['Viewer / auditor', 'VWER-DEMO']]
   };

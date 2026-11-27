@@ -98,15 +98,21 @@ var FinCore = (function () {
     sources: [
       { id: 'TEAMDESK', type: 'teamdesk', label: 'Team Desk (franchise payments)', enabled: true, trust: true,
         map: { CD: 'DEP-CD', OWN: 'INC-OWN', DR: 'INC-DRAFT', JER: 'INC-JERSEY' } },
-      { id: 'SPONSOR', type: 'sheet', label: 'Cover Drive sponsorship portal', enabled: false, trust: false,
-        sheetId: '', tab: 'Sponsorships', head: 'INC-SPONS', group: true, fixedAmount: 0,
-        cols: { key: 'Receipt No', party: 'Sponsor / Company Name', amount: 'Receipt Total (Rs)', utr: 'Transaction Ref / UTR',
-          date: 'Payment Date', proof: 'Payment Proof URL', mode: 'Payment Mode', status: 'Status', team: 'Promoter Team', desc: 'Sponsorship' },
-        approved: 'Confirmed', rejected: 'Rejected' },
       { id: 'REG', type: 'sheet', label: 'Player registration fee (Phase 2)', enabled: false, trust: false,
         sheetId: '1yLTJPg-2sh2xjuF8jVH6imyHxF99tVRmd8RvdStvZpw', tab: '', head: 'INC-REG', group: false, fixedAmount: 1000,
         cols: { key: '', party: '', amount: '', utr: '', date: '', proof: '', mode: '', status: '', team: '', desc: '' },
         approved: 'Approved', rejected: 'Rejected' }
+    ],
+    /* Sponsorship categories – each has its own portal and register sheet (same format as the Cover Drive portal).
+       Requests are approved / rejected on the Finance Desk; the decision is written back to the register, so the sponsor
+       can download the receipt and poster from the portal. */
+    sponsorTarget: 50000,
+    sponsorCats: [
+      { id: 'SPONSOR', code: 'CD', cat: 'Cover Drive', enabled: true, sheetId: '1PO6rCjwjbmRhkXb6i68rGwx7H4RNc0w3woLQQ9IVtGY', tab: 'Sponsorships',
+        portal: 'https://knplseason7.github.io/knpl7-cover-drive/',
+        api: 'https://script.google.com/macros/s/AKfycbzhb0N02RyK_lLfsMxQCooY_BRN1MtGhnVCVc7Wn4w6RtdVdPc30k3QaJs4gzgSkEOF/exec' },
+      { id: 'SPONSOR_FL', code: 'FL', cat: 'Flick', enabled: true, sheetId: '', tab: 'Sponsorships', portal: '', api: '' },
+      { id: 'SPONSOR_SD', code: 'SD', cat: 'Straight Drive', enabled: true, sheetId: '', tab: 'Sponsorships', portal: '', api: '' }
     ]
   };
   var SETTING_KEYS = Object.keys(DEFAULT_SETTINGS);
@@ -724,6 +730,36 @@ var FinCore = (function () {
     state.log(user, 'TEAM_CREDIT_CANCEL', String(row), str(label, 300));
     return tdView(d, ctx);
   }
+  function sponsorCat(s, source) { return (s.sponsorCats || []).filter(function (c) { return c.id === source; })[0] || null; }
+  /* Sponsorship requests are approved / rejected HERE; the decision is written to the category's register sheet
+     (Status = Confirmed / Rejected), which releases the slot on rejection and unlocks the receipt & poster on the portal. */
+  function sponsorDecide(state, ctx, user, id, dec, remarks) {
+    need(user, 'decideIncome');
+    var s = state.settings(), row = findBy(state.t('Income'), 'id', id);
+    if (!row) throw E('Income entry ' + id + ' not found.');
+    var cat = sponsorCat(s, row.source);
+    if (!cat) throw E(id + ' is not a sponsorship request from a portal.');
+    if (row.status !== 'SOURCE_PENDING' && row.status !== 'PENDING') throw E(id + ' is already ' + row.status.toLowerCase() + '.');
+    if (!incomeScope(user.role, s, row)) throw E('Sponsorship is approved with the Finance code.');
+    if (row.createdBy === user.id) throw E('Added with this profile – approve it with another profile.');
+    remarks = str(remarks, 300);
+    if (dec !== 'APPROVED' && dec !== 'REJECTED') throw E('Unknown decision.');
+    if (dec === 'REJECTED' && remarks.length < 5) throw E('Give the reason for rejecting – it goes in the message to the sponsor.');
+    var ref = String(row.sourceRef).replace(/^[^:]*:/, '');
+    if (!(dec === 'APPROVED' && row.srcStatus === 'APPROVED')) {
+      if (!ctx.sponsorDecide) throw E('The sponsorship register link is not available.');
+      var r = ctx.sponsorDecide(cat, ref, dec === 'APPROVED' ? 'Confirmed' : 'Rejected', user.name) || {};
+      if (String(r.status) !== (dec === 'APPROVED' ? 'Confirmed' : 'Rejected')) throw E('The register did not confirm the decision. Fetch from sources and try again.');
+    }
+    if (dec === 'APPROVED') {
+      row.srcStatus = 'APPROVED'; approveIncome(state, user, row, user.name);
+      state.log(user, 'INCOME_APPROVE', id, cat.cat + ' ' + ref + ' · ' + inr(row.amount) + ' · ' + row.party);
+    } else {
+      row.srcStatus = 'REJECTED'; row.status = 'REJECTED'; row.remarks = remarks; row.decidedBy = user.name; row.decidedAt = state.now; state.touch('Income');
+      state.log(user, 'INCOME_REJECT', id, cat.cat + ' ' + ref + ' · ' + remarks + ' (slot released)');
+    }
+    return row;
+  }
   function syncSources(state, ctx, user) {
     need(user, 'sync');
     var s = state.settings(), recs = ctx.fetchSources(s) || [], inc = state.t('Income'), heads = headMap(state.t('Heads'));
@@ -752,7 +788,7 @@ var FinCore = (function () {
       var row = { id: 'INC-' + pad(state.next('INC'), 4), source: r.source, sourceRef: r.sourceRef, head: r.head, party: str(r.party, 120) || '(not given)', team: str(r.team, 60),
         description: str(r.description, 200) || heads[r.head].name, amount: amt, mode: str(r.mode, 20), utr: str(r.utr, 40).toUpperCase(), paidOn: validDate(r.paidOn) ? r.paidOn : '', proof: str(r.proof, 500),
         status: r.srcStatus === 'APPROVED' ? 'PENDING' : 'SOURCE_PENDING', srcStatus: r.srcStatus, srcReceipt: str(r.srcReceipt, 40), outbound: false, note: '', createdBy: 'SYNC', createdAt: state.now,
-        decidedBy: '', decidedAt: '', remarks: '', receiptNo: '', ledgerNo: '', bankId: '', srcType: str(r.srcType, 10), contactName: str(r.contactName, 60), contactPhone: str(r.contactPhone, 15) };
+        decidedBy: '', decidedAt: '', remarks: '', receiptNo: '', ledgerNo: '', bankId: '', srcType: str(r.srcType, 12), contactName: str(r.contactName, 60), contactPhone: str(r.contactPhone, 15) };
       if (!row.paidOn) row.paidOn = String(state.now).slice(0, 10);
       inc.push(row); state.touch('Income'); res.added++;
       if (r.trust && r.srcStatus === 'APPROVED') { if (r.srcReceipt) row.receiptNo = r.srcReceipt; approveIncome(state, user, row, r.approver || 'Source approval'); res.autoApproved++; }
@@ -1061,6 +1097,17 @@ var FinCore = (function () {
       var v = obj[k], def = DEFAULT_SETTINGS[k];
       if (typeof def === 'number') { v = Number(v); if (!isFinite(v) || v < 0) throw E('"' + k + '" must be a number of 0 or more.'); }
       else if (typeof def === 'boolean') v = v === true || v === 'true';
+      else if (k === 'sponsorCats') {
+        if (!Array.isArray(v)) throw E('Sponsorship categories must be a list.');
+        v = DEFAULT_SETTINGS.sponsorCats.map(function (d0) {
+          var c = v.filter(function (x) { return x && x.id === d0.id; })[0] || {}, o = JSON.parse(JSON.stringify(Object.assign({}, d0, c)));
+          o.id = d0.id; o.code = d0.code; o.cat = str(o.cat, 40) || d0.cat; o.enabled = o.enabled !== false && o.enabled !== 'false';
+          var m = String(o.sheetId || '').match(/\/d\/([\w-]{20,})/); o.sheetId = m ? m[1] : str(o.sheetId, 80).replace(/[^\w-]/g, '');
+          o.tab = str(o.tab, 60) || 'Sponsorships'; o.portal = str(o.portal, 300); o.api = str(o.api, 300);
+          if (o.api && !/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(o.api)) throw E(o.cat + ': the portal API must be an Apps Script web app address ending in /exec.');
+          return o;
+        });
+      }
       else if (k === 'sources') { if (!Array.isArray(v)) throw E('Sources must be a list.'); v = v.map(function (src) { var d0 = DEFAULT_SETTINGS.sources.filter(function (x) { return x.id === src.id; })[0] || {}; return JSON.parse(JSON.stringify(Object.assign({}, d0, src))); }); }
       else { v = str(v, 300); if ((k === 'periodFrom' || k === 'periodTo') && !validDate(v)) throw E('Enter valid period dates.'); }
       state.setSetting(k, v); changed.push(k);
@@ -1113,7 +1160,7 @@ var FinCore = (function () {
   /* --------------------------------------------------------------- router */
   var WRITE = {
     incomeCreate: incomeCreate, incomeDecide: incomeDecide, syncSources: syncSources, teamDeskDecide: teamDeskDecide,
-    teamDeskInfo: teamDeskInfo, teamDeskFee: teamDeskFee, teamDeskSplit: teamDeskSplit, teamDeskSplitDelete: teamDeskSplitDelete,
+    teamDeskInfo: teamDeskInfo, sponsorDecide: sponsorDecide, teamDeskFee: teamDeskFee, teamDeskSplit: teamDeskSplit, teamDeskSplitDelete: teamDeskSplitDelete,
     expenseCreate: expenseCreate, expenseUpdate: expenseUpdate, expenseCancel: expenseCancel, expenseDecide: expenseDecide, expensePay: expensePay,
     ledgerReverse: ledgerReverse, ledgerCashRecon: ledgerCashRecon,
     bankImport: bankImport, bankMatch: bankMatch, bankUnmatch: bankUnmatch, bankIgnore: bankIgnore, bankDeleteBatch: bankDeleteBatch,
@@ -1142,7 +1189,7 @@ var FinCore = (function () {
     /* Gives a user a new access code outside a session (Apps Script editor / demo seeding). fixed = optional code to set. */
     issueCode: function (store, ctx, match, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var u = st.t('Users').filter(function (x) { return x.id === match || x.name === match; })[0] || st.t('Users').filter(function (x) { return x.role === match && x.active; })[0]; if (!u) throw new Error('No user ' + match); var c = giveCode(st, ctx, u, fixed); st.log(null, 'USER_NEW_CODE', u.id, u.name + ' – code issued from the script editor'); st.flush(); return c; },
     addUser: function (store, ctx, d) { var st = new State(store); st.now = stamp(ctx.now || new Date()); if (st.t('Users').some(function (x) { return x.name.toLowerCase() === String(d.name).toLowerCase(); })) return null; var u = makeUser(st, { mobile: mobile10(d.mobile), name: d.name, role: d.role }); st.t('Users').push(u); var c = giveCode(st, ctx, u, d.code); st.log(null, 'USER_SAVE', u.id, u.name + ' · ' + u.role + ' · added from the script editor'); st.flush(); return c; },
-    normCode: normCode, ROLE_HELP: ROLE_HELP, PROFILE_ORDER: PROFILE_ORDER, canMap: canMap, incomeScope: incomeScope, feeHeads: feeHeads,
+    normCode: normCode, sponsorCat: sponsorCat, ROLE_HELP: ROLE_HELP, PROFILE_ORDER: PROFILE_ORDER, canMap: canMap, incomeScope: incomeScope, feeHeads: feeHeads,
     applyDuties: function (store, ctx) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = applyDuties(st, ctx); st.flush(); return r; },
     ensureProfiles: function (store, ctx, fixed) { var st = new State(store); st.now = stamp(ctx.now || new Date()); var r = ensureProfiles(st, ctx, fixed); st.flush(); return r; },
     coerce: coerce, sha256: sha256, hashPin: hashPin,

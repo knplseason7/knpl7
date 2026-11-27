@@ -82,6 +82,9 @@ Print or "Save as PDF" from the preview; the ledger downloads as CSV for Excel.
 
 Every action is in the **Audit trail**.
 
+### Sponsorships (all categories)
+The **Sponsorships** tab shows Cover Drive, Flick, Straight Drive and sponsorship received directly: totals, each promoter team against the ₹50,000 target, slot status from each portal, and the requests. Requests are approved / rejected here with the Finance code; the decision is written to that category's register sheet (Confirmed / Rejected), so the sponsor can download the receipt and poster, or the slot is released. Connect a category in **Settings ▸ Sponsorship categories** with its register sheet, shared with knplone@gmail.com as Editor.
+
 ### Team accounts
 Jersey fee per team (Franchise fees / Admin code) and sponsorship credit moved between teams (Admin code) are set on the **Team accounts** tab. Both are written to the Team Desk, so the owners see the same figures there, and every change is kept in the audit trail. Credit moves do not touch the money or the ledger.
 
