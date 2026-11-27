@@ -67,7 +67,7 @@
   }
   function act(fn) {
     var args = Array.prototype.slice.call(arguments, 1);
-    return api.apply(null, [fn, TOKEN].concat(args)).then(function (r) { D = r.data; render(); return r.result; })
+    return api.apply(null, [fn, TOKEN].concat(args)).then(function (r) { D = r.data; keep(); render(); return r.result; })
       .catch(function (e) { if (e.code === 'SESSION') { signOut(e.message); } throw e; });
   }
   function run(btn, msgEl, promiseFn, okText) {
@@ -142,15 +142,22 @@
       $('gCode').value = ''; return load(r.data);
     }).catch(function () {});
   }
-  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); if (window.FinFood) window.FinFood.reset(); if (window.FinJersey) window.FinJersey.reset(); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
-  function load(pre) {
+  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); if (window.FinFood) window.FinFood.reset(); if (window.FinJersey) window.FinJersey.reset(); TOKEN = null; D = null; try { sessionStorage.removeItem('knplfin_D'); } catch (e) {} TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
+  /* Speed: the last screen's data is kept in this tab (session storage), so reopening or refreshing shows the desk at once
+     and the fresh data arrives a moment later. It is cleared on sign-out. */
+  function keep() { try { sessionStorage.setItem('knplfin_D', JSON.stringify(D)); } catch (e) {} }
+  function showApp(d) {
+    D = d; $('gate').hidden = true; $('who').hidden = false;
+    $('whoName').replaceChildren(h('b', null, D.me.person), ' · ' + D.me.profile);
+    $('app').hidden = false;
+    if (!UI.inc) UI.inc = can('decideIncome') ? 'PENDING' : 'ALL';
+    if (!UI.exp) UI.exp = is('EXP_CREATE') ? 'MINE' : (can('decideExpense') || can('pay')) ? 'ACTION' : 'ALL';
+    keep(); render();
+  }
+  function load(pre, refresh) {
     return (pre ? Promise.resolve(pre) : api('boot', TOKEN)).then(function (d) {
-      D = d; $('gate').hidden = true; $('who').hidden = false;
-      $('whoName').replaceChildren(h('b', null, D.me.person), ' · ' + D.me.profile);
-      $('app').hidden = false;
-      if (!UI.inc) UI.inc = can('decideIncome') ? 'PENDING' : 'ALL';
-      if (!UI.exp) UI.exp = is('EXP_CREATE') ? 'MINE' : (can('decideExpense') || can('pay')) ? 'ACTION' : 'ALL';
-      render();
+      if (refresh) { var typing = document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName); D = d; keep(); if (!typing && !document.querySelector('.modal')) render(); }
+      else showApp(d);
       setTimeout(autoFetch, 1500);
     }).catch(function (e) { if (e.code === 'SESSION' || /session/i.test(e.message)) signOut(); else showGate(e.message); });
   }
@@ -163,7 +170,7 @@
     AUTO.busy = true; AUTO.last = Date.now();
     api('syncSources', TOKEN).then(function (r) {
       var typing = document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
-      D = r.data;
+      D = r.data; keep();
       if (!typing && !document.querySelector('.modal')) render();
       var x = r.result || {}; if (x.added || x.updated) toast('Live update: ' + (x.added || 0) + ' new · ' + (x.updated || 0) + ' updated' + (x.autoApproved ? ' · ' + x.autoApproved + ' auto-approved' : ''));
     }).catch(function (e) { if (e && e.code === 'SESSION') signOut(e.message); }).then(function () { AUTO.busy = false; });
@@ -1156,5 +1163,8 @@
   }
 
   /* ---------------------------------------------------------------- start */
-  if (TOKEN) load(); else showGate();
+  if (!DEMO) { try { fetch(CFG.API_URL, { method: 'POST', body: JSON.stringify({ fn: 'ping', args: [] }) }).catch(function () {}); } catch (e) {} }   // wakes the server while the page opens / the code is typed
+  var cachedD = null; try { cachedD = JSON.parse(sessionStorage.getItem('knplfin_D') || 'null'); } catch (e) {}
+  if (TOKEN && cachedD && cachedD.me && !DEMO) { showApp(cachedD); load(null, true); }
+  else if (TOKEN) load(); else showGate();
 })();
