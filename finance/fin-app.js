@@ -139,12 +139,12 @@
     try { localStorage.setItem('knplfin_name', $('gName').value.trim()); } catch (e) {}
     run(b, $('gMsg'), function () { return api('login', $('gCode').value, $('gName').value); }).then(function (r) {
       TOKEN = r.token; try { sessionStorage.setItem('knplfin_tok', TOKEN); } catch (e) {}
-      $('gCode').value = ''; return load();
+      $('gCode').value = ''; return load(r.data);
     }).catch(function () {});
   }
   function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); if (window.FinFood) window.FinFood.reset(); if (window.FinJersey) window.FinJersey.reset(); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
-  function load() {
-    return api('boot', TOKEN).then(function (d) {
+  function load(pre) {
+    return (pre ? Promise.resolve(pre) : api('boot', TOKEN)).then(function (d) {
       D = d; $('gate').hidden = true; $('who').hidden = false;
       $('whoName').replaceChildren(h('b', null, D.me.person), ' · ' + D.me.profile);
       $('app').hidden = false;

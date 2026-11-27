@@ -1216,7 +1216,7 @@ var FinCore = (function () {
     args = args || [];
     var state = new State(store); state.now = stamp(ctx.now || new Date());
     var result;
-    if (fn === 'login') { result = login(state, ctx, args[0], args[1]); state.flush(); return result; }
+    if (fn === 'login') { result = login(state, ctx, args[0], args[1]); state.flush(); result.data = boot(state, session(state, ctx, result.token)); return result; }   // the first screen's data comes back with the sign-in (one round trip, speed)
     if (fn === 'logout') { if (args[0]) ctx.cache.remove('sess:' + args[0]); return true; }
     if (fn === 'ping') return { ok: true, version: VERSION };
     var user = session(state, ctx, args[0]), rest = args.slice(1);

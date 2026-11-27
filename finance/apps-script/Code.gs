@@ -122,6 +122,40 @@ function newAdminCode() {
   CacheService.getScriptCache().remove('fail:codes');
 }
 
+/* ===================== sheet menu: generate access codes ===================== */
+/** Adds the "KNPL Finance" menu to the Finance Ledger sheet (reload the sheet once to see it). */
+function onOpen() {
+  try {
+    SpreadsheetApp.getUi().createMenu('KNPL Finance')
+      .addItem('Generate access code for a profile…', 'generateAccessCode')
+      .addItem('Generate codes for profiles that have none', 'generateMissingCodes')
+      .addToUi();
+  } catch (e) {}
+}
+
+/** Pick a profile, confirm, and a new access code is shown once on screen. The old code of that profile stops at once. */
+function generateAccessCode() {
+  var ui = SpreadsheetApp.getUi(), store = new SheetStore_();
+  var users = store.get('Users').filter(function (u) { return String(u.active).toUpperCase() !== 'FALSE' && u.active !== false; });
+  if (!users.length) { ui.alert('KNPL Finance', 'No access profiles found. Run setup() first.', ui.ButtonSet.OK); return; }
+  var pick = ui.prompt('Generate access code', 'Type the number of the profile:\n\n' + users.map(function (u, i) { return (i + 1) + '.  ' + u.name; }).join('\n'), ui.ButtonSet.OK_CANCEL);
+  if (pick.getSelectedButton() !== ui.Button.OK) return;
+  var n = parseInt(String(pick.getResponseText()).trim(), 10), u = users[n - 1];
+  if (!u) { ui.alert('KNPL Finance', 'That number is not in the list. Nothing was changed.', ui.ButtonSet.OK); return; }
+  var ok = ui.alert('Replace the code of "' + u.name + '"?', 'A new code will be made. The old code of this profile stops working at once and anyone signed in with it is signed out.', ui.ButtonSet.YES_NO);
+  if (ok !== ui.Button.YES) return;
+  var code = FinCore.issueCode(store, ctx_(), u.id);
+  CacheService.getScriptCache().remove('fail:codes');
+  ui.alert('New access code – ' + u.name, code + '\n\nCopy it now and share it only with the people who do this work. It is not stored anywhere readable; if it is lost, generate a new one.', ui.ButtonSet.OK);
+}
+
+/** Makes a code for every active profile that has none yet and shows them once. */
+function generateMissingCodes() {
+  var ui = SpreadsheetApp.getUi(), list = FinCore.ensureProfiles(new SheetStore_(), ctx_());
+  if (!list || !list.length) { ui.alert('KNPL Finance', 'Every profile already has an access code. Use "Generate access code for a profile…" to replace one.', ui.ButtonSet.OK); return; }
+  ui.alert('New access codes', list.map(function (x) { return x.profile + ':  ' + x.code; }).join('\n') + '\n\nCopy them now – they are not stored anywhere readable.', ui.ButtonSet.OK);
+}
+
 function logCodes_(list) {
   if (!list || !list.length) { console.log('Every profile already has an access code. Use "New code" in Settings ▸ Access profiles to replace one.'); return; }
   console.log('ACCESS CODES – share each only with the people who do that work:\n' + list.map(function (x) { return '  ' + x.profile + ': ' + x.code; }).join('\n'));
