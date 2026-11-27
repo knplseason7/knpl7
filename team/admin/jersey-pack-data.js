@@ -383,6 +383,7 @@ const PACK_TEAMS={
 ]
 ],
 "fixes": [
+"FRONT: the submitted design has a logo on the front. Not allowed: the front carries the team name in letters only (KAALIYANZ / OF DWARAKA). Remove the front logo; logos go only in the two 9 cm chest slots.",
 "Confirm the spelling \"KAALIYANZ\"; the concept sheet reads \"KAALIYANS\".",
 "Change the V-neck to the standard polo collar.",
 "Approve the violet on a printed swatch; it prints duller than on screen."
