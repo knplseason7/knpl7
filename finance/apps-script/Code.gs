@@ -92,7 +92,8 @@ function ctx_() {
     cache: { get: function (k) { return cache.get(k); }, put: function (k, v, s) { cache.put(k, String(v), Math.min(21600, s || 600)); }, remove: function (k) { cache.remove(k); } },
     uuid: function () { return Utilities.getUuid(); },
     saveFile: saveFile_,
-    fetchSources: fetchSources_
+    fetchSources: fetchSources_,
+    teamDeskDecide: teamDeskDecide_
   };
 }
 
@@ -172,12 +173,26 @@ function fetchSources_(settings) {
   return out;
 }
 
-function teamDesk_(s, errors) {
+function teamDeskCall_(fn, args) {
   var props = PropertiesService.getScriptProperties(), pin = props.getProperty('TEAMDESK_PIN'), url = props.getProperty('TEAMDESK_API') || TEAMDESK_API_DEFAULT;
-  if (!pin) { errors.push('Team Desk: set the script property TEAMDESK_PIN (the Finance PIN of the Team Desk).'); return []; }
-  var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: JSON.stringify({ fn: 'teamDeskAdmin', args: [pin] }), muteHttpExceptions: true, followRedirects: true });
-  var j = JSON.parse(res.getContentText() || '{}');
-  if (!j.ok) { errors.push('Team Desk: ' + String(j.error || 'request failed').split('\n')[0]); return []; }
+  if (!pin) { var e0 = new Error('Team Desk: set the script property TEAMDESK_PIN (the Finance PIN of the Team Desk).'); e0.user = true; throw e0; }
+  var res = UrlFetchApp.fetch(url, { method: 'post', contentType: 'text/plain;charset=utf-8', payload: JSON.stringify({ fn: fn, args: [pin].concat(args || []) }), muteHttpExceptions: true, followRedirects: true });
+  var j; try { j = JSON.parse(res.getContentText() || '{}'); } catch (err) { j = { ok: false, error: 'unexpected reply' }; }
+  if (!j.ok) { var e = new Error('Team Desk: ' + String(j.error || 'request failed').split('\n')[0]); e.user = true; throw e; }
+  return j.result;
+}
+/** Writes an approve / reject decision to the Team Desk (same as the Approve / Reject buttons there) and returns the payment's new state. */
+function teamDeskDecide_(paymentId, dec, remarks) {
+  var d = teamDeskCall_('teamDeskAdminDecide', [paymentId, dec, remarks || '']);
+  var p = ((d && d.payments) || []).filter(function (x) { return String(x.id) === String(paymentId); })[0];
+  if (!p) { var e = new Error('Team Desk: payment ' + paymentId + ' not found after the decision.'); e.user = true; throw e; }
+  return { status: p.status, receiptNo: p.receiptNo || '', remarks: p.remarks || '' };
+}
+function teamDesk_(s, errors) {
+  var result;
+  try { result = teamDeskCall_('teamDeskAdmin', []); } catch (e) { errors.push(e.message); return []; }
+  var j = { result: result };
+  var owners = {}; (result.teams || []).forEach(function (t) { owners[t.team] = t.owner || {}; });
   var map = s.map || {}, rows = [];
   (j.result.payments || []).forEach(function (p) {
     if (p.type === 'REPL') return;                                   // replacement requests carry no money
@@ -188,7 +203,8 @@ function teamDesk_(s, errors) {
     rows.push({
       source: 'TEAMDESK', sourceRef: 'TD:' + p.id, head: head, party: title_(p.team), team: title_(p.team), description: p.kind || p.type,
       amount: Number(p.amount) || 0, mode: modeOf_(p.mode), utr: p.utr || '', paidOn: String(p.paidOn || '').slice(0, 10), proof: p.proof || '',
-      srcStatus: st === 'APPROVED' ? 'APPROVED' : st === 'REJECTED' ? 'REJECTED' : 'PENDING', srcReceipt: p.receiptNo || '', trust: !!s.trust, approver: 'Team Desk (Finance)'
+      srcStatus: st === 'APPROVED' ? 'APPROVED' : st === 'REJECTED' ? 'REJECTED' : 'PENDING', srcReceipt: p.receiptNo || '', trust: !!s.trust, approver: 'Team Desk (Finance)',
+      srcType: p.type || '', contactName: (owners[p.team] || {}).name || '', contactPhone: String((owners[p.team] || {}).wa || '').replace(/\D/g, '')
     });
   });
   return rows;
