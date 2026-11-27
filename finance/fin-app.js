@@ -134,7 +134,7 @@
       $('gCode').value = ''; return load();
     }).catch(function () {});
   }
-  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); TOKEN = null; D = null; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
+  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
   function load() {
     return api('boot', TOKEN).then(function (d) {
       D = d; $('gate').hidden = true; $('who').hidden = false;
@@ -170,6 +170,7 @@
   }
   function tabs() {
     var t = [['overview', 'Overview'], ['income', 'Income'], ['expenses', 'Expenses'], ['budget', 'Budget']];
+    if (can('teamView')) t.push(['teams', 'Team accounts']);
     if (can('viewAll')) t.push(['bank', 'Bank & Reconcile'], ['reports', 'Ledger & Statements'], ['audit', 'Audit trail']);
     if (can('admin')) t.push(['settings', 'Settings']);
     return t;
@@ -181,7 +182,7 @@
     list.forEach(function (x) { nav.appendChild(h('button', { role: 'tab', 'aria-selected': TAB === x[0] ? 'true' : 'false', onclick: function () { TAB = x[0]; render(); window.scrollTo({ top: 0 }); } }, x[1], c[x[0]] ? h('span', { class: 'cnt' }, c[x[0]]) : null)); });
     if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk ↗'));
     var v = $('view'), keep = window.scrollY; v.replaceChildren();
-    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
+    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
     window.scrollTo({ top: keep });
   }
   function go(tab, patch) { TAB = tab; Object.assign(UI, patch || {}); render(); window.scrollTo({ top: 0 }); }
@@ -814,6 +815,65 @@
       tw.replaceChildren(t);
     }
     draw();
+  }
+
+  /* -------------------------------------------------------- team accounts */
+  var TDI = null, TDI_LOADING = false, TDI_ERR = '';
+  function tdTitle(t) { return String(t || '').toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }).replace(/\bOf\b/g, 'of'); }
+  function tdLoad(force) {
+    if (TDI_LOADING || ((TDI || TDI_ERR) && !force)) return;
+    TDI_LOADING = true; TDI_ERR = '';
+    api('teamDeskInfo', TOKEN).then(function (r) { TDI = r.result; D = r.data; }).catch(function (e) { if (e.code === 'SESSION') return signOut(e.message); TDI_ERR = e.message || String(e); })
+      .then(function () { TDI_LOADING = false; if (TAB === 'teams') render(); });
+  }
+  function tdAct(fn) { var a = Array.prototype.slice.call(arguments); return act.apply(null, a).then(function (r) { TDI = r; render(); return r; }); }
+  function vTeams(v) {
+    var head = h('div', { class: 'row sp-b' }, h('h2', { style: 'margin:0' }, 'Team accounts'), h('button', { class: 'btn ghost sm', onclick: function () { tdLoad(true); render(); } }, '⟳ Refresh from Team Desk'));
+    var intro = h('p', { class: 'small muted' }, 'Team jersey fees and sponsorship credit between teams are set here and written to the Team Desk, so each owner sees the same figures there. Every change is kept in the audit trail.');
+    if (!TDI) { tdLoad(); v.appendChild(h('div', { class: 'card' }, head, intro, TDI_ERR ? h('div', { class: 'msg err' }, TDI_ERR) : h('p', { class: 'muted' }, h('span', { class: 'spin' }), ' Reading the Team Desk…'))); return; }
+    var teams = TDI.teams.length ? TDI.teams : TEAMS.map(function (t) { return t.toUpperCase(); });
+    // jersey fee
+    var paid = {}; D.income.forEach(function (i) { if (i.source === 'TEAMDESK' && i.srcType === 'JER' && ['APPROVED', 'PENDING', 'SOURCE_PENDING'].indexOf(i.status) >= 0) { var k = String(i.team).toUpperCase(); paid[k] = paid[k] || { ok: 0, wait: 0 }; paid[k][i.status === 'APPROVED' ? 'ok' : 'wait'] += i.amount; } });
+    var fmsg = h('div', { class: 'msg' }), edit = can('teamFees'), tot = 0, totPaid = 0;
+    var ft = h('table', { class: 't' }, h('tr', null, h('th', null, 'Team'), h('th', { class: 'num' }, 'Jersey fee (₹)'), h('th', null, 'How worked out'), h('th', { class: 'num' }, 'Received'), h('th', null, 'Status'), edit ? h('th', null, '') : null));
+    teams.forEach(function (tm) {
+      var f = TDI.fees[tm] || { amount: 0, note: '' }, p = paid[tm] || { ok: 0, wait: 0 }; tot += f.amount; totPaid += p.ok;
+      var st = !f.amount ? h('span', { class: 'muted' }, 'No fee / sponsored') : p.ok >= f.amount - 0.004 ? pill('Paid', 'ok') : p.wait ? pill('Payment awaiting approval', 'warn') : pill(money(f.amount - p.ok) + ' due', 'bad');
+      var a = inp({ type: 'number', min: 0, step: 1, value: f.amount || '', style: 'max-width:120px;text-align:right', 'aria-label': 'Jersey fee for ' + tdTitle(tm) }), n = inp({ value: f.note, placeholder: 'e.g. 14 jerseys × ₹350', 'aria-label': 'Note for ' + tdTitle(tm) });
+      ft.appendChild(h('tr', null, h('td', null, tdTitle(tm)), h('td', { class: 'num' }, edit ? a : money(f.amount)), h('td', null, edit ? n : f.note), h('td', { class: 'num' }, p.ok ? money(p.ok) : '–'), h('td', null, st),
+        edit ? h('td', null, h('button', { class: 'btn sm', onclick: function (ev) {
+          var amt = Number(a.value || 0); if (amt === f.amount && n.value.trim() === f.note) return toast('No change for ' + tdTitle(tm) + '.');
+          if (!confirm((amt ? 'Set the jersey fee of ' + tdTitle(tm) + ' to ' + money(amt) : 'Remove the jersey fee of ' + tdTitle(tm)) + '? The owner sees it on the Team Desk.')) return;
+          quiet(run(ev.currentTarget, fmsg, function () { return tdAct('teamDeskFee', tm, amt, n.value); }, 'Jersey fee saved for ' + tdTitle(tm)));
+        } }, 'Save')) : null));
+    });
+    ft.appendChild(h('tr', { class: 'tot' }, h('td', null, 'Total'), h('td', { class: 'num' }, money(tot)), h('td', null, ''), h('td', { class: 'num' }, money(totPaid)), h('td', null, tot ? money(Math.max(0, tot - totPaid)) + ' still to collect' : ''), edit ? h('td', null, '') : null));
+    v.appendChild(h('div', { class: 'card' }, head, intro, h('h3', null, 'Team jersey fee (at actuals)'),
+      h('p', { class: 'small muted' }, 'Only for teams without a jersey sponsor. Update by 25 Jan 2027; teams pay by 10 Feb 2027 on the Team Desk, and the payment comes to Income for approval. Enter 0 to remove.' + (edit ? '' : ' Set with the Franchise fees or Admin code.')),
+      h('div', { class: 'tw' }, ft), fmsg));
+    // sponsorship credit
+    var cm = h('div', { class: 'msg' }), cedit = can('teamCredit');
+    var ct = h('table', { class: 't' }, h('tr', null, h('th', null, 'Sponsor / item'), h('th', null, 'From'), h('th', null, 'To'), h('th', { class: 'num' }, 'Amount'), h('th', null, 'Note'), h('th', null, 'Added'), cedit ? h('th', null, '') : null));
+    TDI.splits.forEach(function (x) {
+      ct.appendChild(h('tr', null, h('td', null, x.sponsor), h('td', null, tdTitle(x.from)), h('td', null, tdTitle(x.to)), h('td', { class: 'num' }, money(x.amount)), h('td', null, x.note), h('td', { class: 'nowrap' }, dmy(x.at)),
+        cedit ? h('td', null, h('button', { class: 'btn no sm', disabled: !TDI.creditReady, onclick: function (ev) { if (!confirm('Cancel this credit move (' + money(x.amount) + ' ' + tdTitle(x.from) + ' → ' + tdTitle(x.to) + ')?')) return; quiet(run(ev.currentTarget, cm, function () { return tdAct('teamDeskSplitDelete', x.row, x.sponsor + ' · ' + money(x.amount) + ' · ' + tdTitle(x.from) + ' → ' + tdTitle(x.to)); }, 'Credit move cancelled')); } }, 'Cancel')) : null));
+    });
+    if (!TDI.splits.length) ct.appendChild(h('tr', null, h('td', { colspan: 7, class: 'muted' }, 'No credit moves yet.')));
+    var card = h('div', { class: 'card' }, h('h3', null, 'Sponsorship credit between teams'),
+      h('p', { class: 'small muted' }, 'Use this when a sponsorship raised jointly is shared later – e.g. move ₹50,000 of the Ever-Rolling Trophy credit from Madhura Mavericks to another team. The money and the ledger do not change; only the team credit on the Team Desk (target, deposit, ranking) moves.' + (cedit ? '' : ' Moved with the Admin code.')),
+      h('div', { class: 'tw' }, ct));
+    if (cedit) {
+      var opts = teams.map(function (t) { return [t, tdTitle(t)]; });
+      var sS = inp({ placeholder: 'Ever-Rolling Trophy – 1/3 share' }), sA = inp({ type: 'number', min: 1 }), sF = sel(opts, teams.indexOf('MADHURA MAVERICKS') >= 0 ? 'MADHURA MAVERICKS' : teams[0]), sT = sel(opts, teams[1]), sN = inp({ placeholder: 'Committee decision of …' });
+      card.appendChild(h('div', { class: 'grid g3', style: 'margin-top:12px' }, field('Sponsor / item', sS, true), field('Amount (₹)', sA, true), field('Note (why)', sN, true), field('From team', sF, true), field('To team', sT, true)));
+      if (!TDI.creditReady) card.appendChild(h('div', { class: 'msg err' }, 'The Team Desk allows credit moves only with its committee admin PIN. To move credit from here, add that PIN as the script property TEAMDESK_ADMIN_PIN in the Finance Desk Apps Script (Project Settings ▸ Script properties).'));
+      card.appendChild(h('div', { class: 'row', style: 'margin-top:10px' }, h('button', { class: 'btn sf', disabled: !TDI.creditReady, onclick: function (ev) {
+        if (!confirm('Move ' + money(sA.value) + ' credit from ' + tdTitle(sF.value) + ' to ' + tdTitle(sT.value) + '?')) return;
+        quiet(run(ev.currentTarget, cm, function () { return tdAct('teamDeskSplit', { sponsor: sS.value, from: sF.value, to: sT.value, amount: sA.value, note: sN.value }); }, 'Credit moved'));
+      } }, 'Move credit')));
+    }
+    card.appendChild(cm);
+    v.appendChild(card);
   }
 
   /* ------------------------------------------------------------- settings */

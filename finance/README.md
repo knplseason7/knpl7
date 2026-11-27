@@ -25,7 +25,7 @@ The page also uses `../team/ocr.js` (bill / receipt reader) and `../team/a/knpl.
    With `API_URL` empty the page opens in demo mode, so this is safe to do first.
 2. In the KNPL Google account (knplone@gmail.com), **create a new Google Sheet** named `KNPL-7 Finance Ledger`.
 3. **Extensions ▸ Apps Script**. Replace `Code.gs` with `apps-script/Code.gs`; add a script file `FinanceCore` and paste `apps-script/FinanceCore.gs`.
-4. **Project Settings ▸ Script properties** – add `TEAMDESK_PIN` = the Team Desk **Finance** PIN (lets the Finance Desk read franchise payments).
+4. **Project Settings ▸ Script properties** – add `TEAMDESK_PIN` = the Team Desk **Finance** PIN (lets the Finance Desk read franchise payments, approve them and set jersey fees). Optional: `TEAMDESK_ADMIN_PIN` = the Team Desk committee admin PIN, needed only to move sponsorship credit between teams from the Finance Desk.
 5. Run **`setup`** once (allow the permissions). The execution log shows the **access codes of the 5 profiles**.
    The sheet now has the tabs Users, Heads, Income, Expenses, Ledger, Bank, Payees, Audit and Settings.
 6. **Deploy ▸ New deployment ▸ Web app** – Execute as: *Me* · Who has access: *Anyone*. Copy the web app URL.
@@ -81,6 +81,9 @@ Statement and a certification block. It is stamped DRAFT until everything is app
 Print or "Save as PDF" from the preview; the ledger downloads as CSV for Excel.
 
 Every action is in the **Audit trail**.
+
+### Team accounts
+Jersey fee per team (Franchise fees / Admin code) and sponsorship credit moved between teams (Admin code) are set on the **Team accounts** tab. Both are written to the Team Desk, so the owners see the same figures there, and every change is kept in the audit trail. Credit moves do not touch the money or the ledger.
 
 ## Demo
 

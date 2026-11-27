@@ -25,6 +25,14 @@
       var id = 'demo-' + Object.keys(FILES).length; FILES[id] = url; return url; // large files kept for this session only
     },
     fetchSources: function () { return sampleSources(); },
+    teamDesk: function (fn, args) {
+      var T = load('knplfin_demo_td') || { fees: { 'KALINGA UNITED': { amount: 4900, note: '14 jerseys × ₹350' } }, splits: [], n: 1 };
+      if (fn === 'teamDeskAdminFee') { if (Number(args[1]) > 0) T.fees[args[0]] = { amount: Number(args[1]), note: args[2] }; else delete T.fees[args[0]]; }
+      if (fn === 'teamDeskAdminSplit') { var x = args[0]; T.splits.push({ row: ++T.n, sponsor: x.sponsor, from: x.from, to: x.to, amount: x.amount, note: x.note, at: new Date().toISOString().slice(0, 10) }); }
+      if (fn === 'teamDeskAdminSplitDelete') T.splits = T.splits.filter(function (s) { return String(s.row) !== String(args[0]); });
+      save('knplfin_demo_td', T);
+      return { role: 'admin', teams: TEAMS.map(function (t) { return { team: t.toUpperCase() }; }), fees: T.fees, splits: T.splits };
+    },
     teamDeskDecide: function (id, dec, remarks) { return { status: dec, receiptNo: dec === 'APPROVED' ? 'KNPL7-TD-9' + String(Date.now()).slice(-2) : '', remarks: remarks }; }
   };
   function day(n) { var d = new Date(Date.now() + 5.5 * 3600e3 - n * 864e5); return d.toISOString().slice(0, 10); }
