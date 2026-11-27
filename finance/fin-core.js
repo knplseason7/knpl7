@@ -45,7 +45,7 @@ var FinCore = (function () {
   /* Access profiles – one access code per profile (job), shared by whoever does that job. The person also types
      their name at sign-in, so every approval and the audit trail show "Name · Profile". */
   var ROLES = { ADMIN: 'Admin', FEES: 'Franchise fees', FIN_OPS: 'Other income, expense approval & payments', EXP_CREATE: 'Expense creation', VIEWER: 'Viewer / Auditor',
-    INCOME: 'Other income', EXP_APPROVE: 'Expense approval', PAY: 'Payments & bank' };
+    INCOME: 'Other income', EXP_APPROVE: 'Expense approval', PAY: 'Payments & bank', FOOD: 'Food management' };
   var ROLE_HELP = {
     ADMIN: 'Everything: settings, budget, access codes, second approval of large / outbound expenses, reversals, sponsorship credit between teams',
     FEES: 'Fetch Team Desk payments; approve franchise income (ownership, caution deposit, draft, jersey fees); set each team\'s jersey fee',
@@ -54,11 +54,12 @@ var FinCore = (function () {
     EXP_APPROVE: 'Verify expense orders against the budget, acknowledge explanations, approve / query / reject',
     EXP_CREATE: 'Raise expense orders with bills; add outbound income for approval',
     PAY: 'Pay approved orders and record the transaction; import the bank statement and reconcile',
-    VIEWER: 'Read-only: dashboard, ledger, statements, audit trail'
+    VIEWER: 'Read-only: dashboard, ledger, statements, audit trail',
+    FOOD: 'Food Arrangement only: Yes/No counts, counter allotment, buffer, daily record. No access to any finance data'
   };
   /* The KNPL-7 duty split: one code each. INCOME / EXP_APPROVE / PAY remain available as separate profile types if the work is split later. */
-  var PROFILE_ORDER = ['ADMIN', 'FEES', 'FIN_OPS', 'EXP_CREATE', 'VIEWER'];
-  var PROFILE_NAMES = { ADMIN: 'Admin – Krishnadas M N', FEES: 'Franchise fees – Unnikrishnan S', FIN_OPS: 'Finance – Vineeth Kannath', EXP_CREATE: 'Expense creation (committee)', VIEWER: 'Viewer / Auditor' };
+  var PROFILE_ORDER = ['ADMIN', 'FEES', 'FIN_OPS', 'EXP_CREATE', 'VIEWER', 'FOOD'];
+  var PROFILE_NAMES = { ADMIN: 'Admin – Krishnadas M N', FEES: 'Franchise fees – Unnikrishnan S', FIN_OPS: 'Finance – Vineeth Kannath', EXP_CREATE: 'Expense creation (committee)', VIEWER: 'Viewer / Auditor', FOOD: 'Food management – Vishal AN' };
   var KINDS = { INCOME: 'Income', EXPENSE: 'Expense', DEPOSIT: 'Deposit (refundable)' };
   var PAY_MODES = ['UPI', 'NEFT', 'IMPS', 'RTGS', 'Cheque', 'Cash'];
   var DEFAULT_HEADS = [
@@ -394,7 +395,7 @@ var FinCore = (function () {
   var CAN = {
     viewAll: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_APPROVE', 'PAY', 'VIEWER'], createExpense: ['ADMIN', 'EXP_CREATE'], createIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME', 'EXP_CREATE'],
     decideIncome: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], decideExpense: ['ADMIN', 'FIN_OPS', 'EXP_APPROVE'], pay: ['ADMIN', 'FIN_OPS', 'PAY'], bank: ['ADMIN', 'FIN_OPS', 'PAY'], admin: ['ADMIN'], sync: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'],
-    teamView: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], teamFees: ['ADMIN', 'FEES'], teamCredit: ['ADMIN']
+    teamView: ['ADMIN', 'FEES', 'FIN_OPS', 'INCOME'], teamFees: ['ADMIN', 'FEES'], teamCredit: ['ADMIN'], food: ['ADMIN', 'FOOD']
   };
   function need(user, what) { if (CAN[what].indexOf(user.role) < 0) throw E('The "' + ROLES[user.role] + '" profile cannot do this. Sign in with the right access code.'); }
   function canMap(role) { var m = {}; Object.keys(CAN).forEach(function (k) { m[k] = CAN[k].indexOf(role) >= 0; }); return m; }
@@ -612,6 +613,9 @@ var FinCore = (function () {
       users: user.role === 'ADMIN' ? users.map(publicUser) : [],
       lastSync: (findBy(state.t('Settings'), 'key', 'lastSync') || {}).value || null
     };
+    if (user.role === 'FOOD') {                               // Food management sees only the Food tab: nothing from the ledger, budget, payees or settings
+      out.heads = []; out.summary = summary([], [], [], []); out.names = {}; out.income = []; out.expenses = []; out.ledger = []; out.bank = []; out.payees = []; out.recon = null; out.audit = []; out.users = []; out.lastSync = null; out.settings = {};
+    }
     if (user.role === 'VIEWER') out.payees = out.payees.map(function (p) { var q = JSON.parse(JSON.stringify(p)); q.accNo = q.accNo ? 'XXXX' + q.accNo.slice(-4) : ''; return q; });
     return out;
   }
@@ -1177,8 +1181,10 @@ var FinCore = (function () {
     if (fn === 'ping') return { ok: true, version: VERSION };
     var user = session(state, ctx, args[0]), rest = args.slice(1);
     if (fn === 'boot') return boot(state, user);
+    if (fn === 'foodAuth') { need(user, 'food'); return { person: user.person, role: user.role, profile: user.profile }; }   // lets the Food backend trust a Finance Desk sign-in
     if (!WRITE[fn]) throw E('Unknown request: ' + fn);
     if (user.role === 'VIEWER') throw E('Viewers cannot change anything.');
+    if (user.role === 'FOOD') throw E('The Food management profile can only use the Food tab.');
     result = WRITE[fn].apply(null, [state, ctx, user].concat(rest));
     state.flush();
     return { result: result, data: boot(state, user) };

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>KNPL-7 Food: Yes / No</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../desk.css?v=17"><link rel="stylesheet" href="food.css?v=2">
+<script src="../common.js?v=4"></script><script src="config.js?v=1"></script>
+</head><body>
+<header><div class="wrap"><img class="hlogo" src="../a/knpl.png" alt="KNPL"><div class="sp"><div class="kick">KNPL-7 · <span data-t="kick"></span></div><h1 data-t="h1"></h1><div class="tagline" id="team"></div></div>
+<div class="lang" role="group" aria-label="Language"><button data-l="en" aria-pressed="true">English</button><button data-l="ml" aria-pressed="false">മലയാളം</button></div></div></header>
+<main class="wrap">
+<div class="card" id="state"><span data-t="loading"></span></div>
+<div id="formbox" hidden>
+  <div class="card">
+    <p data-th="intro"></p>
+    <p class="small muted" id="closes"></p>
+    <label class="fl" for="pname" data-t="name"></label><input id="pname" type="text" maxlength="40" autocomplete="name">
+    <label class="fl" for="plast4" data-t="last4"></label><input id="plast4" type="text" inputmode="numeric" maxlength="4" autocomplete="off">
+    <p class="small muted" data-t="why4"></p>
+  </div>
+  <div class="card">
+    <div class="row"><button class="btn ok sm" id="yall" data-t="yesAll"></button><button class="btn no sm" id="nall" data-t="noAll"></button></div>
+    <div id="days"></div>
+    <div class="row"><button class="btn or" id="send" data-t="send"></button></div>
+    <div class="msg" id="msg" role="status"></div>
+  </div>
+</div>
+</main>
+<footer data-t="foot"></footer>
+<script>
+window.TX = {
+ kick:['Food Arrangement','ഭക്ഷണ ക്രമീകരണം'],h1:['Yes / No','Yes / No'],loading:['Loading…','ലോഡ് ചെയ്യുന്നു…'],
+ intro:['Will you take food at the KNPL-7 grounds? Mark <b>Yes</b> or <b>No</b> for every meal. The food is prepared on these counts.','KNPL-7 ഗ്രൗണ്ടുകളിൽ നിങ്ങൾ ഭക്ഷണം കഴിക്കുമോ? ഓരോ നേരത്തിനും <b>Yes</b> അല്ലെങ്കിൽ <b>No</b> രേഖപ്പെടുത്തുക. ഈ എണ്ണത്തിന്റെ അടിസ്ഥാനത്തിലാണ് ഭക്ഷണം തയ്യാറാക്കുന്നത്.'],
+ closesAt:['Closes on {d}. You can open this link again and change your answers until then.','{d}-ന് അവസാനിക്കും. അതുവരെ ഈ ലിങ്ക് വീണ്ടും തുറന്ന് ഉത്തരം മാറ്റാം.'],
+ name:['Your name','നിങ്ങളുടെ പേര്'],last4:['Last 4 digits of your mobile number','മൊബൈൽ നമ്പറിന്റെ അവസാന 4 അക്കം'],why4:['Used only to tell apart players with the same name.','ഒരേ പേരുള്ള കളിക്കാരെ തിരിച്ചറിയാൻ മാത്രം.'],
+ yesAll:['Yes to all','എല്ലാത്തിനും Yes'],noAll:['No to all','എല്ലാത്തിനും No'],send:['Submit my answers','ഉത്തരം സമർപ്പിക്കുക'],
+ yes:['Yes','Yes'],no:['No','No'],day:['Day {n}','ദിവസം {n}'],
+ done:['Thank you, {n}. Your answers are saved. You can open this link again to change them before it closes.','നന്ദി, {n}. നിങ്ങളുടെ ഉത്തരങ്ങൾ സേവ് ചെയ്തു. അവസാനിക്കുന്നതിന് മുൻപ് ഈ ലിങ്ക് വീണ്ടും തുറന്ന് മാറ്റാം.'],
+ closed:['The Yes/No window has closed. Please contact your team owner.','Yes/No സമയം അവസാനിച്ചു. ടീം ഉടമയെ ബന്ധപ്പെടുക.'],
+ notopen:['The Yes/No window is not open yet.','Yes/No ഇതുവരെ തുറന്നിട്ടില്ല.'],noLink:['This link is not valid. Please ask your team owner for the link.','ഈ ലിങ്ക് ശരിയല്ല. ടീം ഉടമയിൽ നിന്ന് ലിങ്ക് വാങ്ങുക.'],
+ answerAll:['Please answer Yes or No for every meal.','എല്ലാ നേരത്തിനും Yes അല്ലെങ്കിൽ No നൽകുക.'],foot:['KNPL-7 · Kerala Namboodiris Premier League','KNPL-7 · Kerala Namboodiris Premier League'],
+ sending:['Saving…','സേവ് ചെയ്യുന്നു…'],
+ Breakfast:['Breakfast · 7:30–9:00 AM','Breakfast · രാവിലെ 7:30–9:00'],Lunch:['Lunch · 12:00–1:30 PM','Lunch · ഉച്ചയ്ക്ക് 12:00–1:30'],Tea:['Tea · 3:00–4:30 PM','Tea · വൈകുന്നേരം 3:00–4:30']
+};
+const MEALS = [['B', 'Breakfast'], ['L', 'Lunch'], ['T', 'Tea']];
+const CODE = new URLSearchParams(location.search).get('c') || '';
+let INFO = null; const ANS = {};
+function draw() {
+  applyStatic();
+  if (!INFO) return;
+  $('closes').textContent = t('closesAt', {d: new Date(window.FOOD_CLOSES).toLocaleString('en-GB', {day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'})});
+  const box = $('days'); box.replaceChildren();
+  INFO.days.forEach(d => {
+    box.append(el('div', 'dayhead', t('day', {n: d.day}) + (d.date ? ' · ' + dmy(d.date) : '')));
+    MEALS.forEach(([m, name]) => {
+      const k = d.day + m, row = el('div', 'mini-yn'), yn = el('div', 'yn');
+      [['y', 1, 'yes'], ['n', 0, 'no']].forEach(([cls, v, key]) => { const b = el('button', cls, t(key)); b.type = 'button'; b.setAttribute('aria-pressed', ANS[k] === v); b.onclick = () => { ANS[k] = v; draw(); }; yn.append(b); });
+      row.append(el('b', null, t(name)), el('span'), yn); box.append(row);
+    });
+  });
+}
+async function init() {
+  applyStatic();
+  const S = $('state');
+  try { INFO = await foodApi('rsvpInfo', {code: CODE}); } catch (e) { S.textContent = CODE ? msgOf(e) : t('noLink'); return; }
+  $('team').textContent = title(INFO.team);
+  if (INFO.closed) { S.textContent = t('closed'); return; }
+  if (!INFO.open) { S.textContent = t('notopen'); return; }
+  S.hidden = true; $('formbox').hidden = false; draw();
+}
+$('yall').onclick = () => { INFO.days.forEach(d => MEALS.forEach(([m]) => ANS[d.day + m] = 1)); draw(); };
+$('nall').onclick = () => { INFO.days.forEach(d => MEALS.forEach(([m]) => ANS[d.day + m] = 0)); draw(); };
+$('send').onclick = async () => {
+  const msg = $('msg'); msg.className = 'msg err'; msg.textContent = '';
+  const all = INFO.days.every(d => MEALS.every(([m]) => ANS[d.day + m] === 0 || ANS[d.day + m] === 1));
+  if (!all) { msg.textContent = t('answerAll'); return; }
+  $('send').disabled = true; msg.className = 'msg'; msg.textContent = t('sending');
+  try { await foodApi('rsvpSubmit', {code: CODE, name: $('pname').value, last4: $('plast4').value, answers: ANS}); msg.className = 'msg ok'; msg.textContent = t('done', {n: $('pname').value.trim()}); }
+  catch (e) { msg.className = 'msg err'; msg.textContent = msgOf(e); }
+  finally { $('send').disabled = false; }
+};
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, draw));
+init();
+</script></body></html>

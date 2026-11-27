@@ -1,0 +1,33 @@
+/* Food Arrangement: Team Desk tab, Yes/No page, counter and committee pages. Builds on ../desk.css */
+.fcode{font:800 clamp(44px,12vw,72px)/1 var(--display);letter-spacing:.18em;color:var(--navy);background:var(--saffron-soft);border:2px dashed var(--saffron);border-radius:14px;padding:12px 18px;text-align:center;margin:8px 0}
+@media (prefers-color-scheme:dark){.fcode{color:#fff}}
+.fnow{background:var(--navy);color:#fff;border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.fnow .kick2{color:#ffb366}.fnow b.g{font:800 clamp(26px,7vw,38px)/1.1 var(--display);display:block;margin-top:2px}
+.ftbl{width:100%;border-collapse:collapse;font-size:14px}.ftbl th{font:800 12px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px;border-bottom:2px solid var(--line)}
+body.ml .ftbl th{font:700 12px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
+.ftbl td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}.ftbl tr.dayrow td{background:var(--bg);font:800 14px var(--display);letter-spacing:.06em}
+.ftbl tr.cur td{background:var(--saffron-soft)}.ftbl .gr{font-weight:800}
+.chip{display:inline-block;font:700 11px var(--body);padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--muted);margin-left:6px;white-space:nowrap}
+.chip.admin{background:var(--amber-soft);color:var(--amber)}
+.rules{padding-left:0;list-style:none;counter-reset:r;margin:8px 0 0}.rules li{counter-increment:r;position:relative;padding:8px 0 8px 36px;border-bottom:1px solid var(--line);font-size:14px}
+.rules li:before{content:counter(r);position:absolute;left:0;top:8px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font:800 13px/26px var(--display);text-align:center}
+.mini-yn{display:grid;grid-template-columns:1fr auto auto;gap:8px 10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.yn{display:flex;gap:6px}.yn button{font:800 15px var(--body);min-width:64px;padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.yn button.y[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#fff}.yn button.n[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+.dayhead{font:800 15px var(--display);letter-spacing:.08em;text-transform:uppercase;margin:16px 0 2px;color:var(--saffron)}
+/* counter */
+body.ctr{background:#0b1220;color:#f1f5ff;font-size:17px}
+.ctr header{background:#0b1220;border-bottom:3px solid var(--saffron)}.ctr h1{font-size:28px}
+.ctr .card{background:#142039;border-color:#26355a;color:#f1f5ff}.ctr label.fl{color:#b9c6e4}
+.ctr input,.ctr select{background:#0b1220;color:#fff;border-color:#34466f;font-size:20px}
+.ctr input.keyin,.keyin{font:800 44px/1 var(--display);letter-spacing:.3em;text-align:center;padding:14px 8px!important}
+.res{border-radius:16px;padding:18px;margin-top:12px;text-align:center}
+.res .sub{display:block}.res .big{font:800 clamp(30px,9vw,46px)/1.05 var(--display);display:block}.res .sub{font-size:17px;margin-top:6px;font-weight:600}
+.res.green{background:#136b46}.res.amber{background:#9a6a00}.res.red{background:#a02b20}.res.grey{background:#34466f}
+.res .nums{display:flex;justify-content:center;gap:22px;margin-top:10px;font-weight:700}.res .nums b{font:800 30px var(--display);display:block}
+.servebtn{width:100%;font:800 26px var(--display);letter-spacing:.06em;padding:18px;margin-top:12px;border-radius:14px;border:0;background:#fff;color:#0b1220;cursor:pointer}
+.servebtn[disabled]{opacity:.4}.row2{display:flex;gap:10px;margin-top:10px}.row2 .btn{flex:1}
+.ctr .btn.ghost{color:#fff;border-color:#4a5d8a}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#fff;color:#0b1220;font:800 18px var(--body);padding:12px 20px;border-radius:99px;box-shadow:0 6px 24px #0008;z-index:9}
+.recent{font-size:14px;color:#b9c6e4;margin-top:10px}.recent li{padding:3px 0}
+.tag{display:inline-block;font:800 12px var(--display);letter-spacing:.1em;padding:2px 8px;border-radius:6px;background:#26355a;margin-right:6px}

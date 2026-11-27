@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>KNPL-7 Food: Committee</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../desk.css?v=17"><link rel="stylesheet" href="food.css?v=2">
+<script src="../common.js?v=4"></script><script src="config.js?v=1"></script>
+</head><body>
+<header><div class="wrap"><img class="hlogo" src="../a/knpl.png" alt="KNPL"><div class="sp"><div class="kick">KNPL-7 · Core Committee</div><h1>Food Desk</h1><div class="tagline">Counts, allotment, buffer and daily record</div></div></div></header>
+<main class="wrap">
+<section id="login" class="card"><label class="fl" for="acode">Committee food code</label><input id="acode" type="password" autocomplete="off"><div class="row"><button class="btn or" id="go">Open</button></div><div class="msg err" id="lmsg"></div></section>
+<section id="app" hidden>
+  <div class="card"><div class="cardhead"><h3 style="margin:0">Meals</h3><button class="btn ghost sm" id="ref">Refresh</button></div>
+  <p class="small muted">Before 7:30 / 12:00 / 3:00 the split is a live preview from the Yes counts and the fixture, so the caterer can plan. The timer locks it at the meal time. After locking, only the changes made here apply.</p>
+  <div id="meals"></div><div class="msg" id="msg" role="status"></div></div>
+  <div class="card"><h3>Daily record (used vs given)</h3><div class="row"><select id="rday" style="max-width:140px"><option>1</option><option>2</option><option>3</option><option>4</option></select><button class="btn sm" id="rrun">Show</button><button class="btn ghost sm" id="rtest">Show practice entries</button></div><div id="rep" class="small" style="margin-top:10px"></div></div>
+  <div class="card"><h3>Teams</h3><div id="teams" class="small"></div><div class="row"><button class="btn no sm" id="clr">Clear all practice entries</button></div></div>
+</section>
+</main>
+<script>
+const MN = {B: 'Breakfast', L: 'Lunch', T: 'Tea'}, esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+let TOKEN = '', D = null; const say = (s, bad) => { $('msg').className = 'msg ' + (bad ? 'err' : 'ok'); $('msg').textContent = s; };
+const tn = id => { const t = D.teams.find(x => x.id === id); return t ? title(t.name) : id; };
+async function load() { try { D = await foodApi('adminSummary', {token: TOKEN}); paint(); } catch (e) { say(msgOf(e), 1); } }
+function paint() {
+  let h = ''; let day = 0;
+  D.meals.forEach((m, i) => {
+    if (m.day !== day) { day = m.day; h += '<div class="dayhead">Day ' + day + '</div>'; }
+    h += '<details class="card" style="margin:6px 0;padding:10px 12px"><summary><b>' + MN[m.meal] + '</b> · Yes ' + m.totalYes + ' · ' + D.grounds[0] + ' <b>' + m.totals[0] + '</b> / ' + D.grounds[1] + ' <b>' + m.totals[1] + '</b> · Buffer ' + (m.buffer == null ? m.suggestedBuffer + ' (suggested)' : m.buffer) + ' each · ' + (m.locked ? '🔒 locked' : 'preview') + '</summary>';
+    h += '<div class="row" style="margin:8px 0"><button class="btn sm" data-gen="' + i + '">' + (m.locked ? 'Regenerate' : 'Generate now') + '</button>' + (m.locked ? '<span class="small">Buffer per counter: <input type="number" min="0" style="width:80px;display:inline-block" id="buf' + i + '" value="' + m.buffer + '"> <button class="btn ghost sm" data-buf="' + i + '">Set</button></span>' : '') + '</div>';
+    h += '<table class="ftbl"><thead><tr><th>Team</th><th>Yes</th><th>Counter</th><th>Basis</th></tr></thead><tbody>' + m.teams.filter(t => t.yes > 0 || m.locked).sort((a, b) => tn(a.id).localeCompare(tn(b.id))).map(t => '<tr><td>' + esc(tn(t.id)) + '</td><td>' + (m.locked ? '<input type="number" min="0" style="width:70px" data-y="' + i + '|' + t.id + '" value="' + t.yes + '">' : t.yes) + '</td><td>' + (m.locked ? '<select data-g="' + i + '|' + t.id + '"><option value="0"' + (t.ground === 0 ? ' selected' : '') + '>' + esc(D.grounds[0]) + '</option><option value="1"' + (t.ground === 1 ? ' selected' : '') + '>' + esc(D.grounds[1]) + '</option></select>' : esc(D.grounds[t.ground])) + '</td><td>' + esc(t.basis) + '</td></tr>').join('') + '</tbody></table></details>';
+  });
+  $('meals').innerHTML = h;
+  $('teams').innerHTML = '<table class="ftbl"><thead><tr><th>Team</th><th>Food code</th><th>Accepted by</th></tr></thead><tbody>' + D.teams.map(t => '<tr><td>' + esc(title(t.name)) + '</td><td><b>' + esc(t.code || '–') + '</b></td><td>' + esc(t.consent || 'not yet') + '</td></tr>').join('') + '</tbody></table>';
+  document.querySelectorAll('[data-gen]').forEach(b => b.onclick = async () => { const m = D.meals[Number(b.dataset.gen)]; if (m.locked && !confirm('Regenerate ' + MN[m.meal] + ' of day ' + m.day + '? Counter overrides for this meal will be reset.')) return; try { await foodApi('adminGenerate', {token: TOKEN, day: m.day, meal: m.meal}); say('Generated.'); load(); } catch (e) { say(msgOf(e), 1); } });
+  document.querySelectorAll('[data-buf]').forEach(b => b.onclick = async () => { const i = Number(b.dataset.buf), m = D.meals[i]; try { await foodApi('adminBuffer', {token: TOKEN, day: m.day, meal: m.meal, size: $('buf' + i).value}); say('Buffer saved.'); load(); } catch (e) { say(msgOf(e), 1); } });
+  document.querySelectorAll('[data-g]').forEach(s => s.onchange = async () => { const [i, id] = s.dataset.g.split('|'), m = D.meals[Number(i)]; try { await foodApi('adminOverride', {token: TOKEN, day: m.day, meal: m.meal, teamId: id, ground: Number(s.value)}); say('Counter changed.'); load(); } catch (e) { say(msgOf(e), 1); } });
+  document.querySelectorAll('[data-y]').forEach(s => s.onchange = async () => { const [i, id] = s.dataset.y.split('|'), m = D.meals[Number(i)]; try { await foodApi('adminSetYes', {token: TOKEN, day: m.day, meal: m.meal, teamId: id, yes: s.value}); say('Yes count saved.'); load(); } catch (e) { say(msgOf(e), 1); } });
+}
+async function report(test) {
+  try { const r = await foodApi('adminReport', {token: TOKEN, day: Number($('rday').value), test}); $('rep').innerHTML = r.length ? r.map(m => '<div class="dayhead">' + MN[m.meal] + ' · Yes ' + m.totalYes + ' · Buffer used ' + D.grounds[0] + ' ' + m.bufferUsed[0] + ' / ' + D.grounds[1] + ' ' + m.bufferUsed[1] + ' of ' + m.buffer + '</div><table class="ftbl"><tbody>' + m.teams.filter(t => t.yes || t.served).map(t => '<tr><td>' + esc(title(t.team)) + '</td><td>' + esc(t.ground) + '</td><td>Given ' + t.served + ' of ' + t.yes + '</td></tr>').join('') + '</tbody></table>').join('') : 'Nothing locked for this day yet.'; } catch (e) { say(msgOf(e), 1); }
+}
+$('go').onclick = async () => { try { TOKEN = (await foodApi('adminLogin', {code: $('acode').value})).token; $('login').hidden = true; $('app').hidden = false; load(); } catch (e) { $('lmsg').textContent = msgOf(e); } };
+$('ref').onclick = load; $('rrun').onclick = () => report(false); $('rtest').onclick = () => report(true);
+$('clr').onclick = async () => { if (!confirm('Delete all practice entries?')) return; try { const r = await foodApi('adminClearTest', {token: TOKEN}); say('Cleared ' + r.cleared + ' practice entries.'); } catch (e) { say(msgOf(e), 1); } };
+</script></body></html>

@@ -26,7 +26,7 @@ The page also uses `../team/ocr.js` (bill / receipt reader) and `../team/a/knpl.
 2. In the KNPL Google account (knplone@gmail.com), **create a new Google Sheet** named `KNPL-7 Finance Ledger`.
 3. **Extensions ▸ Apps Script**. Replace `Code.gs` with `apps-script/Code.gs`; add a script file `FinanceCore` and paste `apps-script/FinanceCore.gs`.
 4. **Project Settings ▸ Script properties** – add `TEAMDESK_PIN` = the Team Desk **Finance** PIN (lets the Finance Desk read franchise payments, approve them and set jersey fees). Optional: `TEAMDESK_ADMIN_PIN` = the Team Desk committee admin PIN, needed only to move sponsorship credit between teams from the Finance Desk.
-5. Run **`setup`** once (allow the permissions). The execution log shows the **access codes of the 5 profiles**.
+5. Run **`setup`** once (allow the permissions). The execution log shows the **access codes of the 6 profiles** (the 6th, *Food management – Vishal AN*, opens only the Food tab).
    The sheet now has the tabs Users, Heads, Income, Expenses, Ledger, Bank, Payees, Audit and Settings.
 6. **Deploy ▸ New deployment ▸ Web app** – Execute as: *Me* · Who has access: *Anyone*. Copy the web app URL.
 7. Put the URL in `finance/config.js` → `API_URL: 'https://script.google.com/macros/s/…/exec'` and upload it.
@@ -91,4 +91,9 @@ Jersey fee per team (Franchise fees / Admin code) and sponsorship credit moved b
 ## Demo
 
 Open the page with `?demo=1` (or an empty `API_URL`). Demo codes: Admin ADMN-DEMO · Franchise fees FEES-DEMO · Finance FNCE-DEMO ·
-Expense creation CRTE-DEMO · Viewer VWER-DEMO. *Reset demo data* in the yellow bar restores the sample set.
+Expense creation CRTE-DEMO · Viewer VWER-DEMO · Food management FOOD-DEMO. *Reset demo data* in the yellow bar restores the sample set.
+
+
+## Food tab (Food Arrangement committee page)
+The *Food management – Vishal AN* profile (and Admin) sees a **Food** tab: Yes/No collection status per team, meal-by-meal counter allotment, buffer, daily used-vs-given record and a change log with names. The FOOD profile sees no finance data and cannot change anything else.
+Go-live: deploy `FoodApi.gs` (see its header), then paste its `/exec` URL into `FOOD_API_URL` in `config.js`. Redeploy the Finance script too (it gained the `foodAuth` check), and re-run `setup` once to create the Food profile code.

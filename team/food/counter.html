@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>KNPL-7 Food Counter</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b1220">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../desk.css?v=17"><link rel="stylesheet" href="food.css?v=2">
+<script src="../common.js?v=4"></script><script src="config.js?v=1"></script>
+</head><body class="ctr">
+<header><div class="wrap"><img class="hlogo" src="../a/knpl.png" alt="KNPL" style="width:44px;height:44px"><div class="sp"><div class="kick">KNPL-7 · Food Counter</div><h1 id="who">Counter</h1></div>
+<div class="lang"><button data-l="en" aria-pressed="true">EN</button><button data-l="ml" aria-pressed="false">മല</button></div></div></header>
+<main class="wrap">
+<section id="login" class="card">
+  <label class="fl" for="gsel">Ground / കൗണ്ടർ</label><select id="gsel"><option value="0">FISAT</option><option value="1">Boundary Grounds</option></select>
+  <label class="fl" for="pin">Counter PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="off">
+  <div class="row"><button class="btn or" id="go">Open counter</button></div><div class="msg err" id="lmsg"></div>
+</section>
+<section id="app" hidden>
+  <div class="card">
+    <div class="grid2">
+      <div><label class="fl" for="day" data-t="day"></label><select id="day"></select></div>
+      <div><label class="fl" for="meal" data-t="meal"></label><select id="meal"><option value="B">Breakfast</option><option value="L">Lunch</option><option value="T">Tea</option></select></div>
+    </div>
+    <div class="note" id="mode" hidden></div>
+    <label class="fl" for="code" data-t="code"></label>
+    <input id="code" class="keyin" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="•••••">
+    <div class="msg err" id="cmsg" role="alert"></div>
+    <div id="res"></div>
+    <div id="act" hidden>
+      <button class="servebtn" id="serve"></button>
+      <div class="row2"><button class="btn ghost" id="plus5" data-t="plus5"></button><button class="btn ghost" id="undo" data-t="undo"></button><button class="btn ghost" id="clear" data-t="clear"></button></div>
+    </div>
+  </div>
+  <div class="card"><div class="kick2" data-t="tally"></div><div id="tally" class="small"></div><ul class="recent" id="recent"></ul></div>
+</section>
+</main>
+<script>
+window.TX = {
+ day:['Day','ദിവസം'],meal:['Meal','നേരം'],code:['Team Code','Team Code'],plus5:['+5 together','+5 ഒരുമിച്ച്'],undo:['Undo last','അവസാനത്തേത് റദ്ദാക്കുക'],clear:['Next team','അടുത്ത ടീം'],tally:['This counter, this meal','ഈ കൗണ്ടർ, ഈ നേരം'],
+ serve:['+ SERVE 1 PERSON','+ 1 ആൾക്ക് വിളമ്പി'],serveB:['+ BUFFER SERVE 1 PERSON','+ BUFFER: 1 ആൾക്ക് വിളമ്പി'],
+ allotted:['ALLOTTED HERE','ഇവിടെ അനുവദിച്ചിട്ടുണ്ട്'],quota:['QUOTA FINISHED','Quota കഴിഞ്ഞു'],other:['NOT ALLOTTED HERE','ഇവിടെ അനുവദിച്ചിട്ടില്ല'],noyes:['NO YES COUNT','Yes എണ്ണം ഇല്ല'],full:['BUFFER FINISHED','Buffer തീർന്നു'],bad:['CODE NOT FOUND','കോഡ് കണ്ടെത്തിയില്ല'],notopen:['NOT OPEN YET','ഇതുവരെ തുറന്നിട്ടില്ല'],
+ subAllotted:['Serve per person. Quota left: {r}','ഓരോരുത്തർക്കും വിളമ്പുക. ബാക്കി Quota: {r}'],
+ subQuota:['Team quota is done. Buffer Serving only. Buffer left: {r}','ടീമിന്റെ Quota കഴിഞ്ഞു. Buffer Serving മാത്രം. Buffer ബാക്കി: {r}'],
+ subOther:['Allotted to {g}. Buffer Serving only. Buffer left: {r}','{g}-ൽ ആണ് അനുവദിച്ചത്. Buffer Serving മാത്രം. Buffer ബാക്കി: {r}'],
+ subNoyes:['This team has no Yes count for this meal. Buffer Serving only. Buffer left: {r}','ഈ നേരത്തേക്ക് ടീമിന് Yes എണ്ണം ഇല്ല. Buffer Serving മാത്രം. Buffer ബാക്കി: {r}'],
+ subFull:['Please politely send them to {g}.','മര്യാദപൂർവ്വം {g}-ലേക്ക് അയക്കുക.'],subNotopen:['This meal opens at {t}.','ഈ നേരം {t}-ന് തുറക്കും.'],
+ yes:['Yes','Yes'],served:['Served','വിളമ്പി'],left:['Left','ബാക്കി'],bufL:['Buffer left','Buffer ബാക്കി'],
+ practice:['PRACTICE MODE: today is not a match day. Entries are kept separate as test entries.','PRACTICE MODE: ഇന്ന് മത്സര ദിവസമല്ല. എൻട്രികൾ test ആയി പ്രത്യേകം സൂക്ഷിക്കും.'],
+ tAllot:['Allotted served: {a}','അനുവദിച്ചവർക്ക് വിളമ്പിയത്: {a}'],tBuf:['Buffer used: {b} of {s}','Buffer ഉപയോഗിച്ചത്: {b} / {s}'],done:['Served ✔','വിളമ്പി ✔'],undone:['Undone','റദ്ദാക്കി'],other_g:['the other counter','മറ്റേ കൗണ്ടർ']
+};
+const MN = {B: 'Breakfast', L: 'Lunch', T: 'Tea'}; let ST = null, G = 0, GN = ['FISAT', 'Boundary Grounds'], TOKEN = '', PRACTICE = false, LAST = null, busy = false;
+const ctx = () => ({token: TOKEN, day: Number($('day').value), meal: $('meal').value, test: PRACTICE});
+function toast(s) { const d = el('div', 'toast', s); document.body.append(d); setTimeout(() => d.remove(), 1400); }
+async function login() {
+  $('lmsg').textContent = '';
+  try { const r = await foodApi('counterLogin', {ground: Number($('gsel').value), pin: $('pin').value}); TOKEN = r.token; G = r.ground; GN = r.names; PRACTICE = r.practice;
+    $('who').textContent = r.groundName + ' · Counter'; $('login').hidden = true; $('app').hidden = false;
+    $('day').replaceChildren(...[1, 2, 3, 4].map(n => { const o = el('option', null, n); o.value = n; return o; })); $('day').value = r.day || 1; $('meal').value = r.meal;
+    if (PRACTICE) { $('mode').hidden = false; $('mode').textContent = t('practice'); } $('code').focus(); refreshSide();
+  } catch (e) { $('lmsg').textContent = msgOf(e); }
+}
+function paint(r) {
+  const box = $('res'); box.replaceChildren(); $('act').hidden = true; LAST = r;
+  if (!r) return;
+  const other = GN[1 - G], vars = {r: r.remaining, g: r.allotted || other, t: r.opensAt ? new Date(r.opensAt).toLocaleTimeString('en-GB', {hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata'}) : ''};
+  const color = {allotted: 'green', quota: 'amber', other: 'amber', noyes: 'amber', full: 'red', bad: 'red', notopen: 'grey'}[r.status];
+  const d = el('div', 'res ' + color); d.append(el('span', 'big', t(r.status)));
+  if (r.team) d.append(el('span', 'sub', title(r.team)));
+  const subKey = {allotted: 'subAllotted', quota: 'subQuota', other: 'subOther', noyes: 'subNoyes', full: 'subFull', notopen: 'subNotopen'}[r.status];
+  if (subKey) d.append(el('span', 'sub', t(subKey, vars)));
+  if (r.yes != null && r.status !== 'bad' && r.status !== 'notopen') { const n = el('div', 'nums'); [[r.yes, 'yes'], [r.served, 'served'], [r.bufferLeft, 'bufL']].forEach(([v, k]) => { const c = el('span'); c.append(el('b', null, v), t(k)); n.append(c); }); d.append(n); }
+  box.append(d);
+  if (r.canServe) { $('act').hidden = false; $('serve').textContent = t(r.kind === 'A' ? 'serve' : 'serveB'); $('serve').style.background = r.kind === 'A' ? '#fff' : '#ffd37a'; }
+}
+async function check() {
+  const c = $('code').value.trim(); $('cmsg').textContent = '';
+  if (c.length < 5) { paint(null); return; }
+  try { paint(await foodApi('counterCheck', Object.assign(ctx(), {code: c}))); } catch (e) { paint(null); $('cmsg').textContent = msgOf(e); }
+}
+async function serve(n) {
+  if (busy) return; busy = true; $('cmsg').textContent = '';
+  try { const r = await foodApi('counterServe', Object.assign(ctx(), {code: $('code').value.trim(), n})); toast(t('done') + (n > 1 ? ' ×' + n : '')); paint(r); refreshSide(); if (navigator.vibrate) navigator.vibrate(40); }
+  catch (e) { $('cmsg').textContent = msgOf(e); check(); } finally { busy = false; }
+}
+async function refreshSide() {
+  try {
+    const s = await foodApi('counterStats', ctx()); $('tally').textContent = t('tAllot', {a: s.allotted}) + ' · ' + t('tBuf', {b: s.buffer, s: s.bufferSize == null ? '–' : s.bufferSize});
+    const rc = await foodApi('counterRecent', ctx()); $('recent').replaceChildren(...rc.map(x => { const li = el('li'); li.append(el('span', 'tag', x.kind === 'A' ? 'ALLOT' : 'BUFFER'), document.createTextNode(title(x.team) + ' · ' + x.qty + ' · ' + new Date(x.ts).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata'}))); return li; }));
+  } catch (e) {}
+}
+$('go').onclick = login; $('pin').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+$('code').addEventListener('input', () => { $('code').value = $('code').value.replace(/\D/g, '').slice(0, 5); check(); });
+$('serve').onclick = () => serve(1); $('plus5').onclick = () => serve(5);
+$('undo').onclick = async () => { try { await foodApi('counterUndo', ctx()); toast(t('undone')); check(); refreshSide(); } catch (e) { $('cmsg').textContent = msgOf(e); } };
+$('clear').onclick = () => { $('code').value = ''; paint(null); $('cmsg').textContent = ''; $('code').focus(); };
+['day', 'meal'].forEach(id => $(id).onchange = () => { refreshSide(); check(); });
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, () => paint(LAST)));
+applyStatic();
+</script></body></html>

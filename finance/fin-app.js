@@ -134,7 +134,7 @@
       $('gCode').value = ''; return load();
     }).catch(function () {});
   }
-  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
+  function signOut(msg) { if (TOKEN) quiet(api('logout', TOKEN)); if (window.FinFood) window.FinFood.reset(); TOKEN = null; D = null; TDI = null; TDI_ERR = ''; REGL = null; REGL_ERR = ''; TAB = 'overview'; UI = { inc: null, incSrc: '', incQ: '', exp: null, expQ: '', bank: 'OPEN', bankQ: '', ledQ: '', ledHead: '', audQ: '' }; try { sessionStorage.removeItem('knplfin_tok'); } catch (e) {} showGate(msg); }
   function load() {
     return api('boot', TOKEN).then(function (d) {
       D = d; $('gate').hidden = true; $('who').hidden = false;
@@ -170,22 +170,28 @@
     });
   }
   function tabs() {
+    if (is('FOOD')) return [['food', 'Food']];
     var t = [['overview', 'Overview'], ['income', 'Income'], ['expenses', 'Expenses'], ['budget', 'Budget']];
     if (can('viewAll')) t.push(['sponsors', 'Sponsorships'], ['regs', 'Registrations']);
     if (can('teamView')) t.push(['teams', 'Team accounts']);
     if (can('viewAll')) t.push(['bank', 'Bank & Reconcile'], ['reports', 'Ledger & Statements'], ['audit', 'Audit trail']);
     if (can('admin')) t.push(['settings', 'Settings']);
+    if (can('food')) t.push(['food', 'Food']);
     return t;
   }
   function render() {
     if (!D) return;
     var c = counts(), nav = $('tabs'); nav.replaceChildren();
-    var list = tabs(); if (!list.some(function (x) { return x[0] === TAB; })) TAB = 'overview';
+    var list = tabs(); if (!list.some(function (x) { return x[0] === TAB; })) TAB = list[0][0];
     list.forEach(function (x) { nav.appendChild(h('button', { role: 'tab', 'aria-selected': TAB === x[0] ? 'true' : 'false', onclick: function () { TAB = x[0]; render(); window.scrollTo({ top: 0 }); } }, x[1], c[x[0]] ? h('span', { class: 'cnt' }, c[x[0]]) : null)); });
     if (CFG.TEAM_DESK_ADMIN && is('ADMIN', 'FEES')) nav.appendChild(h('a', { class: 'btn ghost sm', style: 'margin:auto 0 6px auto', href: CFG.TEAM_DESK_ADMIN, target: '_blank', rel: 'noopener' }, 'Team Desk ↗'));
     var v = $('view'), keep = window.scrollY; v.replaceChildren();
-    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, sponsors: vSponsors, regs: vRegs, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings })[TAB](v);
+    ({ overview: vOverview, income: vIncome, expenses: vExpenses, budget: vBudget, sponsors: vSponsors, regs: vRegs, teams: vTeams, bank: vBank, reports: vReports, audit: vAudit, settings: vSettings, food: vFood })[TAB](v);
     window.scrollTo({ top: keep });
+  }
+  function vFood(v) {
+    if (!window.FinFood) { v.appendChild(h('div', { class: 'card muted' }, 'The Food module did not load. Refresh the page.')); return; }
+    window.FinFood.mount(v, { financeToken: TOKEN, admin: is('ADMIN') });
   }
   function go(tab, patch) { TAB = tab; Object.assign(UI, patch || {}); render(); window.scrollTo({ top: 0 }); }
 

@@ -2,7 +2,7 @@
  * (saved in localStorage), so the whole workflow can be tried before the Apps Script backend is deployed. */
 (function () {
   'use strict';
-  var KEY = 'knplfin_demo_v8', CK = 'knplfin_demo_cache_v5';
+  var KEY = 'knplfin_demo_v9', CK = 'knplfin_demo_cache_v6';
   var FILES = {};
   function load(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -66,7 +66,7 @@
   function call(fn, args) { return FinCore.handle(store, ctx, fn, args); }
   function seed() {
     db = {}; cache = {}; save(KEY, db); save(CK, cache);
-    FinCore.ensureSetup(store, ctx, { codes: { ADMIN: 'ADMN-DEMO', FEES: 'FEES-DEMO', FIN_OPS: 'FNCE-DEMO', EXP_CREATE: 'CRTE-DEMO', VIEWER: 'VWER-DEMO' } });
+    FinCore.ensureSetup(store, ctx, { codes: { ADMIN: 'ADMN-DEMO', FEES: 'FEES-DEMO', FIN_OPS: 'FNCE-DEMO', EXP_CREATE: 'CRTE-DEMO', VIEWER: 'VWER-DEMO', FOOD: 'FOOD-DEMO' } });
     var A = call('login', ['ADMN-DEMO', 'Krishnadas M N']).token;
     var FE = call('login', ['FEES-DEMO', 'Unnikrishnan S']).token, IN = call('login', ['FNCE-DEMO', 'Vineeth Kannath']).token, AP = IN, PY = IN;
     var M = call('login', ['CRTE-DEMO', 'Ivish Kumar']).token, F = AP;
@@ -109,6 +109,6 @@
     reset: function () { seed(); },
     slots: slots,
     sampleStatement: function () { return 'Txn Date,Description,Ref No,Debit,Credit,Balance\n'; },
-    logins: [['Admin', 'ADMN-DEMO'], ['Franchise fees', 'FEES-DEMO'], ['Finance (income, expense approval, payments)', 'FNCE-DEMO'], ['Expense creation (committee)', 'CRTE-DEMO'], ['Viewer / auditor', 'VWER-DEMO']]
+    logins: [['Admin', 'ADMN-DEMO'], ['Franchise fees', 'FEES-DEMO'], ['Finance (income, expense approval, payments)', 'FNCE-DEMO'], ['Expense creation (committee)', 'CRTE-DEMO'], ['Viewer / auditor', 'VWER-DEMO'], ['Food management (Vishal AN)', 'FOOD-DEMO']]
   };
 })();
