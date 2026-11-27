@@ -66,7 +66,7 @@ var FinCore = (function () {
   var DEFAULT_HEADS = [
     ['INC-REG', 'Player Registration Fee', 'INCOME', 232000, '232 players × ₹1,000 (248 completed Phase 2; 16 franchise owners exempted)'],
     ['INC-OWN', 'Franchise Ownership Fee (KNPL-7 instalment)', 'INCOME', 80000, '16 franchises × ₹5,000'],
-    ['INC-DRAFT', 'Draft Fee', 'INCOME', 0, 'Set after the draft window closes'],
+    ['INC-DRAFT', 'Draft Fee', 'INCOME', 192030, 'KNPL-7 share of the final draft (frozen 27 Nov 2026, all 16 teams): owner 100% + drafted players 50%; paid 10 Dec 2026 and 10 Feb 2027'],
     ['INC-JERSEY', 'Team Jersey Fee (at actuals)', 'INCOME', 0, 'Teams without a jersey sponsor'],
     ['INC-SPONS', 'Sponsorship', 'INCOME', 800000, '16 franchises × ₹50,000 target'],
     ['INC-OTHER', 'Other / Outbound Income', 'INCOME', 0, 'Unbudgeted income'],
