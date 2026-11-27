@@ -51,7 +51,7 @@
   function api(fn) {
     var args = Array.prototype.slice.call(arguments, 1);
     if (DEMO) return window.FinDemo.api(fn, args).catch(function (e) { throw e; });
-    return fetch(CFG.API_URL, { method: 'POST', body: JSON.stringify({ fn: fn, args: args, c: 1 }), redirect: 'follow' })
+    return fetch(CFG.API_URL, { method: 'POST', body: JSON.stringify({ fn: fn, args: args }), redirect: 'follow' })
       .catch(function () { throw new Error('Could not reach the Finance Desk server. Check your internet connection and try again.'); })
       .then(function (r) { return r.json().catch(function () { throw new Error('The server sent an unexpected reply. Try again in a minute.'); }); })
       .then(function (j) { if (!j.ok) { var e = new Error(j.error || 'Request failed.'); e.code = j.code; throw e; } return expand(j.result); });
