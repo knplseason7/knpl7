@@ -21,15 +21,15 @@
       return login(financeToken).then(function () { args.token = S.token; return call(fn, args); });
     });
   }
-  function login(financeToken) { return call('adminLogin', { financeToken: financeToken }).then(function (r) { S.token = r.token; }); }
+  function login(financeToken, withSummary) { return call('adminLogin', { financeToken: financeToken, withSummary: !!withSummary }).then(function (r) { S.token = r.token; return r.summary || null; }); }
 
   function mount(root, opts) {
     var ft = opts.financeToken, canClear = opts.admin;
     function say(m, bad) { S.msg = m; S.bad = !!bad; draw(); }
     function load() {
       S.busy = true; S.err = '';
-      var go = S.token ? Promise.resolve() : login(ft);
-      return go.then(function () { return authed('adminSummary', {}, ft); })
+      var go = S.token ? Promise.resolve(null) : login(ft, true);   // first open: one call does sign-in + summary
+      return go.then(function (pre) { return pre || authed('adminSummary', {}, ft); })
         .then(function (d) { S.D = d; S.busy = false; draw(); })
         .catch(function (e) { S.busy = false; S.err = e.message; draw(); });
     }
