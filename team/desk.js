@@ -43,7 +43,7 @@ window.TX = {
  ocrFail:['The receipt could not be read automatically. Please type the details.','Receipt സ്വയം വായിക്കാനായില്ല. വിവരങ്ങൾ ടൈപ്പ് ചെയ്യുക.'],
  ocrWait:['Please wait – the receipt is still being read.','ദയവായി കാത്തിരിക്കുക – Receipt വായിക്കുന്നു.'],
  fTxn:['Transaction no.','Transaction No.'],fDt:['Date','തീയതി'],fMd:['Mode','രീതി'],
- tabHelp:['Help','സഹായം'],helpTitle:['Help & contacts – topic-wise','സഹായം – ഓരോ വിഷയത്തിനും ബന്ധപ്പെടേണ്ടവർ'],
+ tabHelp:['Help','സഹായം'],tabFix:['Fixture & Ladder','Fixture & Ladder'],helpTitle:['Help & contacts – topic-wise','സഹായം – ഓരോ വിഷയത്തിനും ബന്ധപ്പെടേണ്ടവർ'],
  helpIntro:['Each topic is handled by its KNPL Playbook presenter. For any query or clarification, contact the person for that topic directly.','ഓരോ വിഷയവും KNPL Playbook-ൽ അവതരിപ്പിച്ച ആളാണ് കൈകാര്യം ചെയ്യുന്നത്. സംശയങ്ങൾക്കും വിശദീകരണങ്ങൾക്കും ആ വിഷയത്തിന്റെ ആളെ നേരിട്ട് ബന്ധപ്പെടുക.'],
  call:['Call','വിളിക്കുക'],wa:['WhatsApp','WhatsApp'],
  footer2:['KNPL-7 Team Desk · For queries, see the Help tab · Team KNPL','KNPL-7 Team Desk · സംശയങ്ങൾക്ക് Help Tab കാണുക · Team KNPL'],
@@ -596,14 +596,16 @@ async function renderDesigns() {
   if (DESIGN_IMG === undefined) { box.append(el('div', 'dswait', t('dsLoading'))); try { const r = await api('teamDeskDesign', CODE); DESIGN_IMG = r ? 'data:' + r.mime + ';base64,' + r.data : null; } catch (e) { DESIGN_IMG = null; } box.replaceChildren(); }
   if (DESIGN_IMG) { const a = el('a'), im = el('img'); im.src = DESIGN_IMG; im.alt = 'Final design'; a.href = DESIGN_IMG; a.download = 'KNPL-7 final jersey design.jpg'; a.append(im); box.append(a); }
 }
-function tab(k) { ['pay', 'jer', 'rep', 'spo', 'help'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } if (k === 'jer') renderDesigns(); }
-document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, render));
+const FIX_BASE = 'https://knplseason7.github.io/knpl7-fixture/';
+function renderFix() { const f = $('fixfr'), src = FIX_BASE + '#/embed?team=' + encodeURIComponent(S.team) + '&lang=' + LANG; if (f.dataset.src !== src) { f.dataset.src = src; f.src = src; } }
+function tab(k) { ['pay', 'fix', 'jer', 'rep', 'spo', 'help'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } if (k === 'jer') renderDesigns(); if (k === 'fix') renderFix(); }
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, () => { render(); if (!$('pg-fix').hidden) renderFix(); }));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 $('upAny').onclick = () => openForm(''); $('fitem').onchange = () => { itemInfo(); renderCover(OCR.f && OCR.f.res ? fixAmount(OCR.f.res.amount, uploadable()) : null); }; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
 $('jsave').onclick = saveJersey;
 $('jcopy').onclick = async () => { try { await navigator.clipboard.writeText($('jlink').value); } catch (e) { $('jlink').select(); document.execCommand('copy'); } $('jcopy').textContent = t('copied'); setTimeout(() => $('jcopy').textContent = t('copy'), 1500); };
 $('rout').onchange = fillIn; $('ffile').onchange = () => readReceipt('f'); $('rsend').onclick = sendRepl;
-$('tb-pay').onclick = () => tab('pay'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo'); $('tb-help').onclick = () => tab('help');
+$('tb-pay').onclick = () => tab('pay'); $('tb-fix').onclick = () => tab('fix'); $('tb-jer').onclick = () => tab('jer'); $('tb-rep').onclick = () => tab('rep'); $('tb-spo').onclick = () => tab('spo'); $('tb-help').onclick = () => tab('help');
 $('spCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spLink').value); } catch (e) { $('spLink').select(); document.execCommand('copy'); } $('spCopy').textContent = t('copied'); setTimeout(() => $('spCopy').textContent = t('copy'), 1500); };
 $('spMsgCopy').onclick = async () => { try { await navigator.clipboard.writeText($('spMsg').value); } catch (e) { $('spMsg').select(); document.execCommand('copy'); } $('spMsgCopy').textContent = t('copied'); setTimeout(() => $('spMsgCopy').textContent = t('shCopyMsg'), 1500); };
 $('spMsg').oninput = () => { $('spMsg').dataset.edited = '1'; $('spWa').href = 'https://wa.me/?text=' + encodeURIComponent($('spMsg').value); };

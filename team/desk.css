@@ -188,3 +188,5 @@ body.ml .cth{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;te
 body.ml .pq li.pqh{font:700 13px "Noto Sans Malayalam",var(--body);letter-spacing:0;text-transform:none}
 .pq li.wt{background:var(--bg);opacity:.9}.pq li.wt .pqn{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
 .cov{border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}.cov .fl{margin-top:0}.cov .chk{margin:6px 0}.covtot{font-weight:700;margin-top:6px}
+
+#fixfr{display:block;width:100%;height:calc(100vh - 150px);min-height:560px;border:0;border-radius:12px;background:#fff}

@@ -12,7 +12,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap">
-<link rel="stylesheet" href="desk.css?v=12">
+<link rel="stylesheet" href="desk.css?v=13">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="receipt.js?v=5" defer></script>
 <script src="common.js?v=4"></script>
@@ -34,6 +34,7 @@
   <div class="teambar"><span id="tlogo"></span><div class="sp"><b id="tname"></b><span class="muted small" id="towner"></span></div><button class="btn ghost sm" id="out" data-t="logout"></button></div>
   <div class="tabs" role="tablist">
     <button role="tab" id="tb-pay" aria-selected="true" data-t="tabPay"></button>
+    <button role="tab" id="tb-fix" aria-selected="false" data-t="tabFix"></button>
     <button role="tab" id="tb-jer" aria-selected="false" data-t="tabJer"></button>
     <button role="tab" id="tb-rep" aria-selected="false" data-t="tabRep"></button>
     <button role="tab" id="tb-spo" aria-selected="false" data-t="tabSpo"></button>
@@ -74,6 +75,10 @@
     <div class="card"><div class="cardhead"><h3 data-t="schedTitle"></h3><button class="btn or sm" id="upAny" data-t="uploadAny"></button></div><div class="sched" id="sched"></div>
       <details class="small" style="margin-top:10px"><summary data-t="draftBreak"></summary><table class="brk" id="dbrk"></table></details></div>
     <div class="card"><h3 data-t="histTitle"></h3><ul class="hist" id="hist"></ul></div>
+  </div>
+
+  <div id="pg-fix" hidden>
+    <iframe id="fixfr" title="KNPL-7 Fixture & Ladder" loading="lazy" allow="clipboard-write"></iframe>
   </div>
 
   <div id="pg-jer" hidden>
@@ -171,5 +176,5 @@
 </main>
 <footer data-t="footer2"></footer>
 <script src="ocr.js?v=1"></script>
-<script src="desk.js?v=16"></script>
+<script src="desk.js?v=17"></script>
 </body></html>
