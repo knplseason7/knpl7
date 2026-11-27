@@ -18,12 +18,12 @@
 <main class="wrap">
   <section class="card gate" id="gate" hidden>
     <h2>Sign in</h2>
-    <p class="small muted">Only Core Committee members and the Finance team have access. Enter the access code of your profile (Franchise fees, Other income, Expense approval, Expense creation, Payments &amp; bank …) and your own name.</p>
-    <label class="fl" for="gName">Your name</label><input id="gName" autocomplete="name" maxlength="40" placeholder="e.g. Unnikrishnan S">
+    <p class="small muted">Only Core Committee members and the Finance team have access. Enter the access code of your profile (Franchise fees, Other income, Expense approval, Expense creation, Payments &amp; bank …).</p>
+    <input id="gName" type="hidden" value="">
     <label class="fl" for="gCode">Access code</label><input id="gCode" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="XXXX-XXXX" style="font:700 22px var(--mono);letter-spacing:.12em;text-transform:uppercase">
     <div class="row" style="margin-top:12px"><button class="btn sf" id="gGo">Sign in</button></div>
     <div class="msg err" id="gMsg"></div>
-    <p class="small muted" style="margin-top:12px">Keep your code private – it works like a password. Your name is recorded with every approval. Lost or leaked code? Ask the Admin for a new one; the old code stops working at once.</p>
+    <p class="small muted" style="margin-top:12px">Keep your code private – it works like a password. The profile name is recorded with what you approve. Lost or leaked code? Ask the Admin for a new one; the old code stops working at once.</p>
     <div id="demoLogins" class="note info small" hidden></div>
   </section>
   <section id="app" hidden>
@@ -39,5 +39,5 @@
 <script src="../team/ocr.js?v=1"></script>
 <script src="food-tab.js?v=1"></script>
 <script src="jersey-tab.js?v=1"></script>
-<script src="fin-app.js?v=6"></script>
+<script src="fin-app.js?v=8"></script>
 </body></html>

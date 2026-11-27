@@ -564,13 +564,14 @@ var FinCore = (function () {
   }
   function login(state, ctx, code, person) {
     var c = normCode(code); person = str(person, 40);
-    if (person.length < 3) throw E('Enter your name – it is recorded with everything you approve or change.');
+    if (person && person.length < 3) throw E('Your name is optional – leave it blank, or enter at least 3 letters.');
     if (c.length !== 8) throw E('Enter your 8-character access code (e.g. 7KQ3-PXM9).');
     var fk = 'fail:codes', fails = Number(ctx.cache.get(fk) || 0);
     if (fails >= 30) throw E('Too many wrong codes were tried. Please try again after 15 minutes.');
     var h = codeHash(c), u = state.t('Users').filter(function (x) { return x.codeHash && x.codeHash === h; })[0];
     if (!u) { ctx.cache.put(fk, String(fails + 1), 900); throw E('This access code is not valid. Check it and try again.'); }
     if (!u.active) throw E('This access code has been switched off. Contact the Finance Desk Admin.');
+    if (!person) person = u.name;                              // no name typed: the profile's own name is recorded
     var token = String(ctx.uuid()).replace(/-/g, '') + String(ctx.uuid()).replace(/-/g, '').slice(0, 8);
     ctx.cache.put('sess:' + token, JSON.stringify({ id: u.id, k: u.codeHash.slice(0, 16), p: person }), 6 * 3600);
     u.lastLogin = state.now + ' · ' + person; state.touch('Users');
@@ -583,7 +584,7 @@ var FinCore = (function () {
     if (!u || !u.active || !u.codeHash || o.k !== u.codeHash.slice(0, 16)) { var e = E('Your session has ended. Please sign in again.'); e.code = 'SESSION'; throw e; }
     ctx.cache.put('sess:' + token, v, 6 * 3600);              // sessions end when the profile's code is replaced
     // the acting user: the profile, named after the person who signed in with it
-    return { id: u.id, role: u.role, profile: u.name, person: o.p, name: o.p + ' · ' + u.name, active: true, _row: u };
+    return { id: u.id, role: u.role, profile: u.name, person: o.p, name: o.p === u.name ? u.name : o.p + ' · ' + u.name, active: true, _row: u };
   }
   function giveCode(state, ctx, u, fixed) {
     var users = state.t('Users'), code, h, tries = 0;

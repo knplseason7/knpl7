@@ -132,8 +132,7 @@
   function showGate(msg) {
     $('app').hidden = true; $('who').hidden = true; $('gate').hidden = false; $('gMsg').textContent = msg || '';
     if (DEMO) { var b = $('demoLogins'); b.hidden = false; b.replaceChildren(h('b', null, 'Demo sign-ins'), h('br'));
-      window.FinDemo.logins.forEach(function (l) { b.appendChild(h('div', null, h('button', { class: 'btn link', onclick: function () { $('gCode').value = l[1]; if (!$('gName').value) $('gName').value = 'Demo user'; signIn(); } }, l[0]), ' – code ' + l[1])); }); }
-    try { if (!$('gName').value) $('gName').value = localStorage.getItem('knplfin_name') || ''; } catch (e) {}
+      window.FinDemo.logins.forEach(function (l) { b.appendChild(h('div', null, h('button', { class: 'btn link', onclick: function () { $('gCode').value = l[1]; signIn(); } }, l[0]), ' – code ' + l[1])); }); }
   }
   function signIn() {
     var b = $('gGo');
