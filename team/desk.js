@@ -596,9 +596,9 @@ async function renderDesigns() {
   if (DESIGN_IMG === undefined) { box.append(el('div', 'dswait', t('dsLoading'))); try { const r = await api('teamDeskDesign', CODE); DESIGN_IMG = r ? 'data:' + r.mime + ';base64,' + r.data : null; } catch (e) { DESIGN_IMG = null; } box.replaceChildren(); }
   if (DESIGN_IMG) { const a = el('a'), im = el('img'); im.src = DESIGN_IMG; im.alt = 'Final design'; a.href = DESIGN_IMG; a.download = 'KNPL-7 final jersey design.jpg'; a.append(im); box.append(a); }
 }
-const FIX_BASE = 'https://knplseason7.github.io/knpl7-fixture/?v=5';
+const FIX_BASE = 'https://knplseason7.github.io/knpl7-fixture/?v=6';
 function renderFix() { const f = $('fixfr'), src = FIX_BASE + '#/embed?team=' + encodeURIComponent(S.team) + '&lang=' + LANG; if (f.dataset.src !== src) { f.dataset.src = src; f.src = src; } }
-function tab(k) { ['pay', 'fix', 'jer', 'rep', 'spo', 'help'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } if (k === 'jer') renderDesigns(); if (k === 'fix') renderFix(); }
+function tab(k) { ['pay', 'fix', 'jer', 'rep', 'spo', 'help'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } if (k === 'jer') renderDesigns(); if (k === 'fix') { renderFix(); document.querySelector('.tabs').scrollIntoView({ block: 'start' }); } }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, () => { render(); if (!$('pg-fix').hidden) renderFix(); }));
 $('go').onclick = login; $('code').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 $('upAny').onclick = () => openForm(''); $('fitem').onchange = () => { itemInfo(); renderCover(OCR.f && OCR.f.res ? fixAmount(OCR.f.res.amount, uploadable()) : null); }; $('fsend').onclick = sendForm; $('fcancel').onclick = closeForm; $('fx').onclick = closeForm; $('formcard').addEventListener('click', e => { if (e.target.id === 'formcard') closeForm(); }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('formcard').hidden) closeForm(); });
