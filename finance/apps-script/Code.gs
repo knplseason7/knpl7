@@ -9,11 +9,9 @@
  *   1. Create a new Google Sheet "KNPL-7 Finance Ledger" in the KNPL account.
  *   2. Extensions ▸ Apps Script ▸ add the two files.
  *   3. Project Settings ▸ Script properties:
- *        ADMIN_NAME      Krishnadas M N
- *        ADMIN_MOBILE    9986218725
  *        TEAMDESK_PIN    <the Team Desk Finance PIN>        (to read franchise payments)
  *        TEAMDESK_API    <optional – Team Desk web app URL; defaults to the one below>
- *   4. Run setup() once and read the temporary Admin PIN in the execution log.
+ *   4. Run setup() once and read the ACCESS CODES of the 7 profiles in the execution log.
  *   5. Deploy ▸ New deployment ▸ Web app · Execute as: Me · Who has access: Anyone.
  *   6. Put the web app URL in finance/config.js (API_URL).
  */
@@ -53,30 +51,28 @@ function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).se
 
 /* ============================== one-time setup ============================ */
 function setup() {
-  var props = PropertiesService.getScriptProperties();
-  var name = props.getProperty('ADMIN_NAME') || 'Krishnadas M N';
-  var mobile = props.getProperty('ADMIN_MOBILE') || '9986218725';
   var store = new SheetStore_();
   Object.keys(FinCore.FIELDS).forEach(function (t) { store.sheet_(t); });
-  var r = FinCore.ensureSetup(store, ctx_(), { name: name, mobile: mobile });
+  var r = FinCore.ensureSetup(store, ctx_(), {});
   var def = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
   if (def && def.getLastRow() === 0 && SpreadsheetApp.getActiveSpreadsheet().getSheets().length > 1) SpreadsheetApp.getActiveSpreadsheet().deleteSheet(def);
   folder_();
-  if (r.admin) console.log('First Admin created: mobile ' + r.admin.mobile + ' · TEMPORARY PIN ' + r.admin.pin + '  (sign in and set your own PIN)');
-  else console.log('Setup already done – users exist. Use "Reset PIN" in Settings, or resetAdminPin() below.');
+  logCodes_(r.profiles);
   if (r.heads) console.log(r.heads + ' default budget heads created – review the amounts in the Budget tab.');
 }
 
-/** Emergency: gives the first Admin (ADMIN_MOBILE) a new temporary PIN. Run from the editor only. */
-function resetAdminPin() {
-  var mobile = PropertiesService.getScriptProperties().getProperty('ADMIN_MOBILE') || '9986218725';
-  var store = new SheetStore_(), users = store.get('Users'), u = users.filter(function (x) { return String(x.mobile) === mobile; })[0];
-  if (!u) throw new Error('No user with mobile ' + mobile);
-  var pin = String(Math.floor(100000 + Math.random() * 900000));
-  u.salt = FinCore.sha256(String(Math.random()) + u.id).slice(0, 16); u.pinHash = FinCore.hashPin(pin, u.salt); u.mustChange = true; u.active = true; u.role = 'ADMIN';
-  store.put('Users', users.map(function (x) { return FinCore.coerce('Users', x); }));
-  CacheService.getScriptCache().remove('fail:' + mobile);
-  console.log('Temporary PIN for ' + u.name + ': ' + pin);
+/** Creates any missing access profile and issues codes to profiles that have none (safe to run again). */
+function issueProfileCodes() { logCodes_(FinCore.ensureProfiles(new SheetStore_(), ctx_())); }
+
+/** Emergency: new code for the Admin profile (the old Admin code stops working at once). */
+function newAdminCode() {
+  console.log('New ADMIN access code: ' + FinCore.issueCode(new SheetStore_(), ctx_(), 'Admin'));
+  CacheService.getScriptCache().remove('fail:codes');
+}
+
+function logCodes_(list) {
+  if (!list || !list.length) { console.log('Every profile already has an access code. Use "New code" in Settings ▸ Access profiles to replace one.'); return; }
+  console.log('ACCESS CODES – share each only with the people who do that work:\n' + list.map(function (x) { return '  ' + x.profile + ': ' + x.code; }).join('\n'));
 }
 
 /* ============================== context =================================== */
