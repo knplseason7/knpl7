@@ -1167,7 +1167,7 @@ var FinCore = (function () {
     var rows = state.t('Jersey');
     function view() {
       var teams = [];
-      try { if (ctx.teamDesk) teams = (ctx.teamDesk('teamDeskAdmin', [], false).teams || []).map(function (t) { return String(t.team); }); } catch (e) { teams = []; }
+      try { if (ctx.jersey) teams = (ctx.jersey('jerseyAdmin', []).teams || []).map(function (t) { return String(t.team); }); } catch (e) { teams = []; }
       rows.forEach(function (r) { if (teams.indexOf(r.team) < 0) teams.push(r.team); });
       return { teams: teams.sort(), files: rows.filter(function (r) { return !r.removed; }).map(function (r) { return { id: r.id, team: r.team, url: r.url, name: r.name, note: r.note, version: Number(r.version), at: r.at, by: r.by }; }) };
     }
