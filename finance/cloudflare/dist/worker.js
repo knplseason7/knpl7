@@ -1297,7 +1297,7 @@ export default {
     const fn = String(body.fn || '');
     if (fn === 'ping') return reply(env, req, { ok: true, result: { ok: true, version: FinCore.VERSION } });
     const stub = env.FIN.get(env.FIN.idFromName('main'), { locationHint: 'apac' });
-    const res = await stub.run({ fn, args: Array.isArray(body.args) ? body.args : [], adminSecret: req.headers.get('X-Admin-Secret') || '' });
+    const res = await stub.run({ fn, args: Array.isArray(body.args) ? body.args : [], adminSecret: req.headers.get('X-Admin-Secret') || String(body.adminSecret || '') });
     return reply(env, req, res);
   }
 };
