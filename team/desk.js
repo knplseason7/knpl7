@@ -596,7 +596,7 @@ async function renderDesigns() {
   if (DESIGN_IMG === undefined) { box.append(el('div', 'dswait', t('dsLoading'))); try { const r = await api('teamDeskDesign', CODE); DESIGN_IMG = r ? 'data:' + r.mime + ';base64,' + r.data : null; } catch (e) { DESIGN_IMG = null; } box.replaceChildren(); }
   if (DESIGN_IMG) { const a = el('a'), im = el('img'); im.src = DESIGN_IMG; im.alt = 'Final design'; a.href = DESIGN_IMG; a.download = 'KNPL-7 final jersey design.jpg'; a.append(im); box.append(a); }
 }
-const FIX_BASE = 'https://knplseason7.github.io/knpl7-fixture/?v=9';
+const FIX_BASE = 'https://knplseason7.github.io/knpl7-fixture/?v=10';
 function renderFix() { const f = $('fixfr'), src = FIX_BASE + '#/embed?team=' + encodeURIComponent(S.team) + '&lang=' + LANG; if (f.dataset.src !== src) { f.dataset.src = src; f.src = src; } }
 function tab(k) { document.querySelector('.tabs').classList.toggle('mini', k === 'fix'); document.body.classList.toggle('fixmode', k === 'fix'); document.documentElement.classList.toggle('fixmode', k === 'fix'); ['pay', 'fix', 'jer', 'rep', 'spo', 'help'].forEach(x => { $('tb-' + x).setAttribute('aria-selected', x === k); $('pg-' + x).hidden = x !== k; }); if (k === 'spo') { renderSpo(); if (!SPO) loadSpo(); } if (k === 'jer') renderDesigns(); if (k === 'fix') { renderFix(); window.scrollTo(0, 0); document.querySelector('.tabs').scrollLeft = 0; } }
 document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l, () => { render(); if (!$('pg-fix').hidden) renderFix(); }));
