@@ -6,6 +6,7 @@
  * and running the request again with the answer (the first run is rolled back, so nothing is applied twice). */
 import { DurableObject } from 'cloudflare:workers';
 import FinCore from './core.js';
+export { FoodDO } from './food.js';
 
 const SYNC_GAP_MS = 120000;
 const BRIDGE_FNS = { saveFile: 1, fetchSources: 1, teamDeskDecide: 1, sponsorDecide: 1, regList: 1, teamDesk: 1, jersey: 1 };
@@ -21,12 +22,19 @@ function cors(env, req) {
 function reply(env, req, obj, status) { return new Response(JSON.stringify(obj), { status: status || 200, headers: Object.assign({ 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }, cors(env, req)) }); }
 
 export default {
+  async scheduled(event, env, ctx) {                                                      // every minute: Food meal timer
+    ctx.waitUntil(env.FOOD.get(env.FOOD.idFromName('main'), { locationHint: 'apac' }).tick());
+  },
   async fetch(req, env) {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(env, req) });
     if (req.method === 'GET') return reply(env, req, { ok: true, result: { service: 'KNPL-7 Finance Desk', version: FinCore.VERSION, backend: 'cloudflare' } });
     if (req.method !== 'POST') return reply(env, req, { ok: false, error: 'Bad request.' }, 405);
     let text; try { text = await req.text(); } catch (e) { return reply(env, req, { ok: false, error: 'Bad request.' }, 400); }
     let body; try { body = JSON.parse(text || '{}'); } catch (e) { return reply(env, req, { ok: false, error: 'Bad request.' }); }
+    if (new URL(req.url).pathname.replace(/\/+$/, '') === '/food') {                      // Food Arrangement (same Worker, its own Durable Object)
+      const f = env.FOOD.get(env.FOOD.idFromName('main'), { locationHint: 'apac' });
+      return reply(env, req, await f.run({ fn: String(body.fn || ''), args: body.args, adminSecret: req.headers.get('X-Admin-Secret') || String(body.adminSecret || '') }));
+    }
     const fn = String(body.fn || '');
     if (fn === 'ping') return reply(env, req, { ok: true, result: { ok: true, version: FinCore.VERSION } });
     const stub = env.FIN.get(env.FIN.idFromName('main'), { locationHint: 'apac' });

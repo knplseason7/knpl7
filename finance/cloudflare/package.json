@@ -1,9 +1,11 @@
 {
   "name": "knpl7-finance-api",
   "private": true,
+  "type": "module",
   "version": "1.0.0",
   "scripts": {
     "sync-core": "cp ../fin-core.js src/core.js",
+    "build-food": "node scripts/build-food.mjs",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"
   },

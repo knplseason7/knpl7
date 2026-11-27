@@ -1,15 +1,28 @@
 name = "knpl7-finance-api"
 main = "src/index.js"
 compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
 
 # One Durable Object (SQLite) holds every Finance Desk table. It serialises requests, so no locks are needed.
 [[durable_objects.bindings]]
 name = "FIN"
 class_name = "FinanceDO"
 
+[[durable_objects.bindings]]
+name = "FOOD"
+class_name = "FoodDO"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["FinanceDO"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["FoodDO"]
+
+# Food meal timer (7:30 / 12:00 / 3:00 allotment): runs every minute
+[triggers]
+crons = ["* * * * *"]
 
 # Secrets (set once in the Cloudflare dashboard, never in this file):
 #   BRIDGE_URL     - the existing Finance Apps Script web app URL (.../exec)

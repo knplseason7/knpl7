@@ -112,3 +112,8 @@ are no longer the live store; they remain as a backup and as a **bridge** (Drive
 sheets) protected by the script property `BRIDGE_SECRET`. Worker secrets: `BRIDGE_URL`, `BRIDGE_SECRET`, `ADMIN_SECRET`.
 Deploys: pushing to GitHub builds `finance/cloudflare` automatically (root directory `finance/cloudflare`). Keep `cloudflare/src/core.js` and
 `cloudflare/dist/worker.js` in step with `fin-core.js` (`npm run sync-core`, then rebuild the bundle).
+
+### Food Arrangement on Cloudflare
+The same Worker also serves the Food Arrangement backend at `/food`. `cloudflare/src/food-src.gs` is the Food Apps Script (unchanged rules); run
+`npm run build-food` after editing it to regenerate `src/food-core.js`. Its sheets, cache and settings live in the `FoodDO` Durable Object, and the
+7:30 / 12:00 / 3:00 allotment timer is the Worker's cron trigger (every minute). The Food page URLs are `FOOD_API_URL` in `finance/config.js` and `team/food/config.js`.
