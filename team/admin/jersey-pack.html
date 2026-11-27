@@ -287,7 +287,7 @@ function teamPage(key, idx) {
 <h2>Jersey sponsor</h2>
 <div class="card" style="padding:1.6mm 3.2mm;font-size:8.2pt">${spHtml}<div class="cap" style="margin-top:.4mm">Logo files come from the Core Committee; print only what the approved proof shows.</div></div>
 <div style="height:1.8mm"></div>
-<div class="dz" style="grid-template-columns:1.5fr 1fr"><div><h2>Notes specific to this team</h2><div class="card" style="padding:.8mm 3.4mm"><ul class="b" style="font-size:7.8pt">${fixes}</ul></div>${rec}</div>
+<div class="dz" style="grid-template-columns:1.5fr 1fr"><div><h2>Notes specific to this team</h2><div class="card" style="padding:.8mm 3.4mm"><ul class="b" style="font-size:${t.fixes.length>3?7.2:7.8}pt">${fixes}</ul></div>${rec}</div>
 <div><h2>Sign-off</h2><div class="card" style="padding:.8mm 3mm 1.4mm"><div class="cap" style="margin:0">Proof and swatch approved by the owner:</div><div class="sign" style="grid-template-columns:1fr 1fr"><div>Name</div><div>Date</div></div><div class="sign" style="grid-template-columns:1fr"><div>Signature</div></div></div></div></div>
 </div>${FT(idx)}</div>`;
 }
